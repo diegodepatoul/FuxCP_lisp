@@ -13,6 +13,7 @@
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "3sp-ctp" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "4sp-ctp" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "5sp-ctp" :type "lisp")
+    (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "6sp-ctp" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "fuxcp-main" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "interface" :type "lisp")
 ))

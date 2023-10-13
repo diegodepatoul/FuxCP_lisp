@@ -1690,7 +1690,7 @@
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))
     (case species
-        (1 (make-list len :initial-element 1))
+        ((1 6) (make-list len :initial-element 1))
         (2 (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
         (3 (append (make-list (* 4 len-1) :initial-element 1/4) '(1)))
         (4 (build-rythmic-pattern

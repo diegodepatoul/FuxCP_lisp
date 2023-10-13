@@ -670,7 +670,7 @@
         (om::om-make-point 170 50)
         (om::om-make-point 200 20)
         "Chosen species"
-        :range (list "1st" "2nd" "3rd" "4th" "5th")
+        :range (list "1st" "2nd" "3rd" "4th" "5th" "6th")
         :value (species-param (om::object editor))
         :di-action #'(lambda (cost)
             (setf (species-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
@@ -796,6 +796,14 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
+            let (
+                species = (convert-to-species-integer (species-param (om::object editor)))
+                (if (< species 6)
+                    (setf (current-csp (om::object editor)) (fux-cp species))
+                    (setf (current-csp (om::object editor)) (fux-cp species))
+                )
+
+            )
             (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
         )
         )
@@ -900,6 +908,7 @@
     ((equal param "3rd") 3)
     ((equal param "4th") 4)
     ((equal param "5th") 5)
+    ((equal param "6th") 6)
     )
 )
 

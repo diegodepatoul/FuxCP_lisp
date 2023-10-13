@@ -132,13 +132,20 @@
 
     ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
     (defparameter *cp (list nil nil nil nil))
+    (defparameter *cp2 (list nil nil nil nil))
     (defparameter *h-intervals (list nil nil nil nil))
+    (defparameter *h-intervals2 (list nil nil nil nil))
     (defparameter *m-intervals-brut (list nil nil nil nil))
+    (defparameter *m-intervals-brut2 (list nil nil nil nil))
     (defparameter *m-intervals (list nil nil nil nil))
+    (defparameter *m-intervals2 (list nil nil nil nil))
     (defvar *m2-intervals-brut)
+    (defvar *m2-intervals-brut2)
     (defvar *m2-intervals)
+    (defvar *m2-intervals2)
     (defvar *cf-brut-m-intervals)
     (defvar *is-p-cons-arr)
+    (defvar *is-p-cons-arr2)
     (defparameter *motions (list nil nil nil nil))
     (defparameter *motions-cost (list nil nil nil nil))
     (defvar *is-cf-bass)
@@ -209,7 +216,7 @@
     (set-space-variables)
     
     (print (list "Choosing species: " species))
-    (case species ; [1, 2, 3, 4, 5]
+    (case species ; [1, 2, 3, 4, 5, 6]
         (1 (progn
             (setq *N-COST-FACTORS 5)
             (fux-cp-1st)
@@ -230,11 +237,16 @@
             (setq *N-COST-FACTORS 8)
             (fux-cp-5th)
         ))
+        (6 (progn
+            (setq *N-COST-FACTORS 5)
+            (fux-cp-6th)
+        ))
+        
         (otherwise (error "Species ~A not implemented" species))
     )
 )
 
-(defun fux-search-engine (the-cp &optional (species 1))
+(defun fux-search-engine (the-cp &optional (species 1) (the-cp2 nil))
     (let (se tstop sopts)
         ; TOTAL COST
         (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
@@ -247,8 +259,8 @@
         
         ;; BRANCHING
         (print "Branching...")
-        (setq var-branch-type gil::INT_VAR_DEGREE_SIZE_MAX)
-        (setq val-branch-type gil::INT_VAL_RANGE_MIN)
+        (setq var-branch-type gil::INT_VAR_DEGREE_MAX)
+        (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
 
         ; 5th species specific
         (if (eq species 5) ; otherwise there is no species array
@@ -321,7 +333,7 @@
         (sopts (fourth l))
         (species (fifth l))
         (check t)
-        sol sol-pitches sol-species
+        sol sol-pitches sol-pitches2 sol-species
         )
 
         (time (om::while check :do
@@ -339,7 +351,16 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        #| (case species
+         (case species
+            ((1 6) (progn
+                (print "PRINT 1st species")
+                ;(print (list "(first *m-intervals-brut)" (gil::g-values sol (first *m-intervals-brut))))
+                (print (list "*cf-brut-m-intervals     " (gil::g-values sol *cf-brut-m-intervals)))
+                ;(print (list "(first *motions)       " (gil::g-values sol (first *motions))))
+                (print (list "(first *h-intervals)     " (gil::g-values sol (first *h-intervals))))
+            ))
+        )
+        #|(case species
             (1 (progn
                 (print "PRINT 1st species")
                 (print (list "(first *m-intervals-brut)" (gil::g-values sol (first *m-intervals-brut))))
@@ -427,7 +448,9 @@
         (print (list "borrowed-scale" *borrowed-scale))
         (print (list "off-scale     " (reverse *off-scale))) |#
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
+        (setq sol-pitches2 (gil::g-values sol the-cp))
         (print sol-pitches)
+        (print sol-pitches2)
         (case species
             (4 (progn
                 (setq rythmic+pitches (get-basic-rythmic 4 *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
@@ -466,7 +489,14 @@
                 (setq pitches-om sol-pitches)
             ))
         )
-        (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
+        (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
+            (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
+            (make-instance 'poly 
+                :voices (
+                    list
+                    (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
+                    (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)))
+        )
     )
 )
 
