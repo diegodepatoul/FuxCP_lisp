@@ -296,6 +296,21 @@
     )
 )
 
+; append two lists of cp IntVar
+; attention: lengths should be the same
+(defun append-cp (cp-list total-cp)
+    (let ((cp-len (length (first cp-list))))
+        (print cp-len)
+        (loop for i from 0 below cp-len do
+            (setf (nth i total-cp) (nth i (first cp-list)))
+        )
+        (loop for i from 0 below cp-len do
+            (setf (nth (+ cp-len i) total-cp) (nth i (second cp-list)))
+        )
+    )
+)
+
+
 ; create the harmonic intervals between @cp and @cf in @h-intervals
 (defun create-h-intervals (cp cf h-intervals)
     (loop

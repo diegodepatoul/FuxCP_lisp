@@ -17,12 +17,15 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first *cp) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
     (setf (first *cp2) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
-    (setq *total-cp (append *cp *cp2))
+    (setq *total-cp-len (* 2 *cf-len))
+    (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
+    (append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+
 
     (if (and (eq species 6) (is-borrow-allowed))
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
-        ;(setf (nth *cf-penult-index (first *cp2)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
+        (setf (nth *cf-penult-index (first *cp2)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
     )
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
@@ -103,7 +106,7 @@
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
-    (add-no-unisson-cst (first *cp) *cf)
+    ;(add-no-unisson-cst (first *cp) *cf)
 
     #|(if (/= species 3)
         ; then
@@ -158,7 +161,7 @@
     
 
     ;============================================ COST FACTORS ====================================
-    (print "Cost function...")
+    #|(print "Cost function...")
 
     (if (eq species 6)
         ; then
@@ -174,15 +177,15 @@
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
         )
-    )
+    ) |#
     
 
     
     ; RETURN
     (if (eq species 6)
         ; then create the search engine
-        (append (fux-search-engine (first *cp)) (list species))
-        ;(append (fux-search-engine *total-cp) (list species))
+        ;(append (fux-search-engine (first *cp)) (list species))
+        (append (fux-search-engine *total-cp 6) (list species))
         ; else
         nil
     )

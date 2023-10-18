@@ -243,10 +243,14 @@
 )
 
 (defun fux-search-engine (the-cp &optional (species 1))
+    (print the-cp)
+    (print (length the-cp))
     (let (se tstop sopts)
         ; TOTAL COST
-        (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
-        (gil::g-cost *sp* *total-cost) ; set the cost function
+        (if (< species 6) (progn
+            (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
+            (gil::g-cost *sp* *total-cost) ; set the cost function
+        ))
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -286,11 +290,13 @@
         )
 
         ; branching *total-cost
-        (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
-        (if (eq species 2)
-            (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
-        )
-        (print "branching *total-cost works")
+        (if (< species 6) (progn
+            (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
+            (if (eq species 2)
+                (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
+            )
+            (print "branching *total-cost works")
+        ))
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)
@@ -349,7 +355,7 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        (case species
+        #|(case species
             ((1 6) (progn
                 (print "PRINT 1st species")
                 (print (list "(first *m-intervals-brut)" (gil::g-values sol (first *m-intervals-brut))))
@@ -357,7 +363,7 @@
                 (print (list "(first *motions)       " (gil::g-values sol (first *motions))))
                 (print (list "(first *h-intervals)     " (gil::g-values sol (first *h-intervals))))
             ))
-        )
+        )|#
         #| (case species
             (1 (progn
                 (print "PRINT 1st species")
@@ -486,15 +492,11 @@
                 (setq pitches-om sol-pitches)
             ))
         )
-        (print rythmic-om)
-        (print pitches-om)
-        (print *cf-tempo)
         (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
             (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
             (progn
                 (print (subseq pitches-om 0 *cf-len))
                 (print (subseq pitches-om *cf-len))
-                (print pitches-om)
                 (make-instance 'poly 
                     :voices (
                         list
