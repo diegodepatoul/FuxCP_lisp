@@ -17,41 +17,42 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first *cp) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
     (setf (first *cp2) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
+    (setq *total-cp (append *cp *cp2))
 
     (if (and (eq species 6) (is-borrow-allowed))
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
-        (setf (nth *cf-penult-index (first *cp2)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
+        ;(setf (nth *cf-penult-index (first *cp2)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
     )
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first *h-intervals) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (setf (first *h-intervals2) (gil::add-int-var-array *sp* *cf-len 0 11))
+    ;(setf (first *h-intervals2) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first *cp) *cf (first *h-intervals))
-    (create-h-intervals (first *cp2) *cf (first *h-intervals2))
+    ;(create-h-intervals (first *cp2) *cf (first *h-intervals2))
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
     (setf (first *m-intervals) (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setf (first *m-intervals2) (gil::add-int-var-array *sp* *cf-last-index 0 12))
+    ;(setf (first *m-intervals2) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first *m-intervals-brut) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-    (setf (first *m-intervals-brut2) (gil::add-int-var-array *sp* *cf-last-index -12 12))
+    ;(setf (first *m-intervals-brut2) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first *cp) (first *m-intervals) (first *m-intervals-brut))
-    (create-m-intervals-self (first *cp2) (first *m-intervals2) (first *m-intervals-brut2))
+    ;(create-m-intervals-self (first *cp2) (first *m-intervals2) (first *m-intervals-brut2))
 
     (if (eq species 6) ; only for the first species
         ; then
         (progn
             ; creating melodic intervals array between the note n and n+2
             (setq *m2-intervals (gil::add-int-var-array *sp* *cf-penult-index 0 12))
-            (setq *m2-intervals2 (gil::add-int-var-array *sp* *cf-penult-index 0 12))
+            ;(setq *m2-intervals2 (gil::add-int-var-array *sp* *cf-penult-index 0 12))
             (setq *m2-intervals-brut (gil::add-int-var-array *sp* *cf-penult-index -12 12))
-            (setq *m2-intervals-brut2 (gil::add-int-var-array *sp* *cf-penult-index -12 12))
+            ;(setq *m2-intervals-brut2 (gil::add-int-var-array *sp* *cf-penult-index -12 12))
             (create-m2-intervals (first *cp) *m2-intervals *m2-intervals-brut)
-            (create-m2-intervals (first *cp2) *m2-intervals2 *m2-intervals-brut2)
+            ;(create-m2-intervals (first *cp2) *m2-intervals2 *m2-intervals-brut2)
             
             ; creating boolean is counterpoint off key array
             (print "Creating is counterpoint off key array...")
@@ -64,12 +65,12 @@
     (print "Creating perfect consonances boolean array...")
     ; array of BoolVar representing if the interval between the cantus firmus and the counterpoint is a perfect consonance
     (setq *is-p-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setq *is-p-cons-arr2 (gil::add-bool-var-array *sp* *cf-len 0 1))
+    ;(setq *is-p-cons-arr2 (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first *h-intervals) *is-p-cons-arr)
-    (create-is-p-cons-arr (first *h-intervals2) *is-p-cons-arr2)
+    ;(create-is-p-cons-arr (first *h-intervals2) *is-p-cons-arr2)
 
-    #|; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
-    ; 0 for being the bass, 1 for the tenor, 2 for the soprano
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
     (print "Creating order of pitch array...")
     (setf (first *is-cf-bass-arr) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-cf-bass-arr (first *cp) *cf (first *is-cf-bass-arr))
@@ -78,7 +79,7 @@
     (print "Creating motion array...")
     (setf (first *motions) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first *motions-cost) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first *m-intervals-brut) *cf-brut-m-intervals (first *motions) (first *motions-cost)) |#
+    (create-motions (first *m-intervals-brut) *cf-brut-m-intervals (first *motions) (first *motions-cost)) 
 
 
     ;============================================ HARMONIC CONSTRAINTS ============================
@@ -86,28 +87,25 @@
 
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
-    (case species
-        (1 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals)))
+    #|(case species
+        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals)))
         (2 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_THESIS_VAR))
         (3 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_1Q_VAR))
-        (6 (progn
+        #|(6 (progn
                 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals))
-                (print (list "(first *h-intervals)     " (first *h-intervals)))
-                (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals2))
-                (print (list "(first *h-intervals2)     " (first *h-intervals2)))
+                ;(print (list "(first *h-intervals)     " (first *h-intervals)))
+                ;(add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals2))
+                ;(print (list "(first *h-intervals2)     " (first *h-intervals2)))
             )
-        )
+        )|#
         (otherwise (error "Species not supported"))
-    )
-
-    
-    #|
+    )|#
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
     (add-no-unisson-cst (first *cp) *cf)
 
-    (if (/= species 3)
+    #|(if (/= species 3)
         ; then
         (progn
         ; must start with a perfect consonance
@@ -127,12 +125,12 @@
         ; then
         (add-penult-cons-cst (penult (first *is-cf-bass-arr)) (penult (first *h-intervals)))
     )
-
+    |#
 
     ;============================================ MELODIC CONSTRAINTS =============================
     
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
-    (print "Melodic constraints...")
+    #|(print "Melodic constraints...")
     (if (eq species 6)
         ; then
         (progn
@@ -156,7 +154,7 @@
             (print "No battuta kind of motion...")
             (add-no-battuta-cst (first *motions) (first *h-intervals) (first *m-intervals-brut) (first *is-cf-bass-arr))
         )
-    )
+    )|#
     
 
     ;============================================ COST FACTORS ====================================
@@ -177,13 +175,14 @@
             (add-cost-to-factors (first *motions-cost))
         )
     )
-    |#
+    
 
-
+    
     ; RETURN
     (if (eq species 6)
         ; then create the search engine
-        (append (fux-search-engine (first *cp) 6 (first *cp2)) (list species))
+        (append (fux-search-engine (first *cp)) (list species))
+        ;(append (fux-search-engine *total-cp) (list species))
         ; else
         nil
     )

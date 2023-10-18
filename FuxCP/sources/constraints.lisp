@@ -1697,6 +1697,7 @@
                 (get-4th-species-array len-2)
                 (get-4th-notes-array cp cp-len)
         ))
+        ;(6 (make-list (* 2 len) :initial-element 1))
     )
 )
 

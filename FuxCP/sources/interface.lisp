@@ -796,14 +796,13 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
-            let (
+            #|let (
                 species = (convert-to-species-integer (species-param (om::object editor)))
                 (if (< species 6)
                     (setf (current-csp (om::object editor)) (fux-cp species))
                     (setf (current-csp (om::object editor)) (fux-cp species))
                 )
-
-            )
+            ) |#
             (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
         )
         )
