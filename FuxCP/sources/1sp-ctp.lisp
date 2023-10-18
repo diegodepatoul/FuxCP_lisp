@@ -83,9 +83,9 @@
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
-    (add-no-unisson-cst (first *cp) *cf)
+    ; (add-no-unisson-cst (first *cp) *cf)
 
-    (if (/= species 3)
+    #|(if (/= species 3)
         ; then
         (progn
         ; must start with a perfect consonance
@@ -136,7 +136,7 @@
         )
     )
     
-
+ |#
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 

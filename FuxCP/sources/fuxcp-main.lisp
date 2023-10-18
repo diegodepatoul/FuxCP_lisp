@@ -156,6 +156,7 @@
 
     ;; SIXTH SPECIES COUNTERPOINT GLOBAL VARIABLES
     (defparameter *cp2 (list nil nil nil nil))
+    (defparameter *h-intervals2 (list nil nil nil nil))
 
 
     ;; SECOND SPECIES COUNTERPOINT GLOBAL VARIABLES
@@ -243,7 +244,7 @@
 )
 
 (defun fux-search-engine (the-cp &optional (species 1))
-    (print the-cp)
+    ;(print the-cp)
     (print (length the-cp))
     (let (se tstop sopts)
         ; TOTAL COST
@@ -290,13 +291,13 @@
         )
 
         ; branching *total-cost
-        (if (< species 6) (progn
+        #|(if (< species 6) (progn
             (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
             (if (eq species 2)
                 (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
             )
             (print "branching *total-cost works")
-        ))
+        )) |#
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)
