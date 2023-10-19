@@ -28,6 +28,7 @@
     (setf (first *h-intervals) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first *cp) *cf (first *h-intervals))
 
+    #|
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
@@ -68,24 +69,25 @@
     (setf (first *motions-cost) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (create-motions (first *m-intervals-brut) *cf-brut-m-intervals (first *motions) (first *motions-cost))
 
-
+    |#
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
 
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
     (case species
-        (1 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals)))
+        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals)))
         (2 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_THESIS_VAR))
         (3 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_1Q_VAR))
         (otherwise (error "Species not supported"))
     )
 
+    #|
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
-    ; (add-no-unisson-cst (first *cp) *cf)
+    (add-no-unisson-cst (first *cp) *cf)
 
-    #|(if (/= species 3)
+    (if (/= species 3)
         ; then
         (progn
         ; must start with a perfect consonance
@@ -136,7 +138,7 @@
         )
     )
     
- |#
+ 
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
@@ -154,7 +156,7 @@
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
         )
-    )
+    )|#
 
 
     ; RETURN
