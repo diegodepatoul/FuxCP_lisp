@@ -28,7 +28,6 @@
     (setf (first *h-intervals) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first *cp) *cf (first *h-intervals))
 
-    #|
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
@@ -36,6 +35,7 @@
     (setf (first *m-intervals-brut) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first *cp) (first *m-intervals) (first *m-intervals-brut))
 
+    
     (if (eq species 1) ; only for the first species
         ; then
         (progn
@@ -56,6 +56,7 @@
     ; array of BoolVar representing if the interval between the cantus firmus and the counterpoint is a perfect consonance
     (setq *is-p-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first *h-intervals) *is-p-cons-arr)
+    
 
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
     ; 0 for being the bass, 1 for being above
@@ -63,13 +64,14 @@
     (setf (first *is-cf-bass-arr) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-cf-bass-arr (first *cp) *cf (first *is-cf-bass-arr))
 
+
     ; creating motion array
     (print "Creating motion array...")
     (setf (first *motions) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first *motions-cost) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (create-motions (first *m-intervals-brut) *cf-brut-m-intervals (first *motions) (first *motions-cost))
 
-    |#
+    
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
 
@@ -82,7 +84,6 @@
         (otherwise (error "Species not supported"))
     )
 
-    #|
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
     (add-no-unisson-cst (first *cp) *cf)
@@ -103,17 +104,14 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (if (eq species 1)
-        ; then
-        (add-penult-cons-cst (penult (first *is-cf-bass-arr)) (penult (first *h-intervals)))
+    (case species
+        (1 6) (add-penult-cons-cst (penult (first *is-cf-bass-arr)) (penult (first *h-intervals)))
     )
 
-
     ;============================================ MELODIC CONSTRAINTS =============================
-    
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
     (print "Melodic constraints...")
-    (if (eq species 1)
+    (case species (1 6)
         ; then
         (progn
             ; no more than minor sixth melodic interval
@@ -139,6 +137,7 @@
     )
     
  
+
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
@@ -156,9 +155,9 @@
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
         )
-    )|#
+    )
 
-
+    (print "exiting 1sp")
     ; RETURN
     (if (eq species 1)
         ; then create the search engine

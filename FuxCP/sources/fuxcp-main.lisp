@@ -141,7 +141,7 @@
     (defvar *is-p-cons-arr)
     (defparameter *motions (list nil nil nil nil))
     (defparameter *motions-cost (list nil nil nil nil))
-    (defvar *is-cf-bass)
+    (defvar *is-cf-bass) ; is this even used somewhere ?
     (defparameter *is-cf-bass-arr (list nil nil nil nil))
     (defvar *is-cp-off-key-arr)
     (defvar *N-COST-FACTORS)
@@ -157,6 +157,28 @@
     ;; SIXTH SPECIES COUNTERPOINT GLOBAL VARIABLES
     (defparameter *cp2 (list nil nil nil nil))
     (defparameter *h-intervals2 (list nil nil nil nil))
+    (defparameter *m-intervals-brut2 (list nil nil nil nil))
+    (defparameter *m-intervals2 (list nil nil nil nil))
+    (defvar *m2-intervals-brut2)
+    (defvar *m2-intervals2)
+    (defvar *cf-brut-m-intervals2)
+    (defvar *is-p-cons-arr2)
+    (defparameter *motions2 (list nil nil nil nil))
+    (defparameter *motions-cost2 (list nil nil nil nil))
+    (defvar *is-cf-bass2) ; this is not used anywhere
+    (defparameter *is-cf-bass-arr2 (list nil nil nil nil))
+    (defvar *is-cp-off-key-arr2)
+    (defvar *N-COST-FACTORS2)
+    (defvar *cost-factors2)
+    (defvar *total-cost2)
+    (defvar *p-cons-cost2)
+    (defvar *fifth-cost2)
+    (defvar *octave-cost2)
+    (defvar *m-degrees-cost2)
+    (defvar *m-degrees-type2)
+    (defvar *off-key-cost2)
+
+
 
 
     ;; SECOND SPECIES COUNTERPOINT GLOBAL VARIABLES
@@ -248,10 +270,10 @@
     (print (length the-cp))
     (let (se tstop sopts)
         ; TOTAL COST
-        #|(if (< species 6) (progn
+        (if (< species 6) (progn
             (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
             (gil::g-cost *sp* *total-cost) ; set the cost function
-        ))|#
+        ))
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -291,13 +313,13 @@
         )
 
         ; branching *total-cost
-        #|(if (< species 6) (progn
+        (if (< species 6) (progn
             (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
             (if (eq species 2)
                 (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
             )
             (print "branching *total-cost works")
-        )) |#
+        ))
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)

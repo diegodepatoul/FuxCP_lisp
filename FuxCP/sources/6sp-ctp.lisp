@@ -12,18 +12,43 @@
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
 (defun fux-cp-6th (&optional (species 6))
     (print "########## SIXTH SPECIES ##########")
-    (print *cp)
     (fux-cp-1st 6)
-    (print *cp)
+
     (setf *cp2 (copy-list *cp))
     (setf *h-intervals2 (copy-list *h-intervals))
+    (setf *m-intervals-brut2 (copy-list *m-intervals-brut))
+    (setf *m-intervals2 (copy-list *m-intervals))
+    (setf *m2-intervals-brut2 *m2-intervals-brut)
+    (setf *m2-intervals2 *m2-intervals)
+    (setf *cf-brut-m-intervals2 *cf-brut-m-intervals)
+    (setf *is-p-cons-arr2 *is-p-cons-arr)
+    (setf *motions2 (copy-list *motions))
+    (setf *motions-cost2 (copy-list *motions-cost))
+    ;(setf *is-cf-bass2 *is-cf-bass)
+    (setf *is-cf-bass-arr2 (copy-list *is-cf-bass-arr))
+    (setf *is-cp-off-key-arr2 *is-cp-off-key-arr)
+    (setf *N-COST-FACTORS2 *N-COST-FACTORS)
+    ;(setf *cost-factors2 *cost-factors)
+    ;(setf *total-cost2 *total-cost)
+    ;(setf *p-cons-cost2 *p-cons-cost)
+    ;(setf *fifth-cost2 *fifth-cost)
+    ;(setf *octave-cost2 *octave-cost)
+    ;(setf *m-degrees-cost2 *m-degrees-cost)
+    ;(setf *m-degrees-type2 *m-degrees-type)
+    ;(setf *off-key-cost2 *off-key-cost)
+
     (fux-cp-1st 6)
-    (print *cp)
-    (print *cp2)
+
 
     (setq *total-cp-len (* 2 *cf-len))
     (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
     (append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+
+
+
+
+
+
 
     (print "no unisson between cp1 and cp2")
     (add-no-unisson-cst (first *cp) (first *cp2))
