@@ -270,6 +270,7 @@
     (print (length the-cp))
     (let (se tstop sopts)
         ; TOTAL COST
+        (print (list "Starting fux-search-engine with species = " species))
         (if (< species 6) (progn
             (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
             (gil::g-cost *sp* *total-cost) ; set the cost function

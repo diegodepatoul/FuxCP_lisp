@@ -13,7 +13,7 @@
 (defun fux-cp-6th (&optional (species 6))
     (print "########## SIXTH SPECIES ##########")
     (fux-cp-1st 6)
-
+    
     (setf *cp2 (copy-list *cp))
     (setf *h-intervals2 (copy-list *h-intervals))
     (setf *m-intervals-brut2 (copy-list *m-intervals-brut))
@@ -28,14 +28,14 @@
     (setf *is-cf-bass-arr2 (copy-list *is-cf-bass-arr))
     (setf *is-cp-off-key-arr2 *is-cp-off-key-arr)
     (setf *N-COST-FACTORS2 *N-COST-FACTORS)
-    ;(setf *cost-factors2 *cost-factors)
-    ;(setf *total-cost2 *total-cost)
+    (setf *cost-factors2 *cost-factors)
+    (setf *total-cost2 *total-cost)
     ;(setf *p-cons-cost2 *p-cons-cost)
-    ;(setf *fifth-cost2 *fifth-cost)
-    ;(setf *octave-cost2 *octave-cost)
-    ;(setf *m-degrees-cost2 *m-degrees-cost)
-    ;(setf *m-degrees-type2 *m-degrees-type)
-    ;(setf *off-key-cost2 *off-key-cost)
+    (setf *fifth-cost2 *fifth-cost)
+    (setf *octave-cost2 *octave-cost)
+    (setf *m-degrees-cost2 *m-degrees-cost)
+    (setf *m-degrees-type2 *m-degrees-type)
+    (setf *off-key-cost2 *off-key-cost)
 
     (fux-cp-1st 6)
 
@@ -45,14 +45,8 @@
     (append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
 
 
-
-
-
-
-
     (print "no unisson between cp1 and cp2")
     (add-no-unisson-cst (first *cp) (first *cp2))
-
 
 
     ; RETURN
@@ -63,4 +57,5 @@
         ; else
         nil
     )
+    
 )

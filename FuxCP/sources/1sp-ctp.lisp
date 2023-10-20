@@ -17,10 +17,10 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first *cp) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
     
-    (if (and (eq species 1) (is-borrow-allowed))
+    (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
-    )
+    )))
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
@@ -36,7 +36,7 @@
     (create-m-intervals-self (first *cp) (first *m-intervals) (first *m-intervals-brut))
 
     
-    (if (eq species 1) ; only for the first species
+    (case species ((1 6) ; only for the first species
         ; then
         (progn
             ; creating melodic intervals array between the note n and n+2
@@ -49,7 +49,7 @@
             (setq *is-cp-off-key-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
             (create-is-member-arr (first *cp) *is-cp-off-key-arr *off-domain)
         )
-    )
+    ))
 
     ; creating perfect consonances boolean array
     (print "Creating perfect consonances boolean array...")
@@ -81,7 +81,7 @@
         ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals)))
         (2 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_THESIS_VAR))
         (3 (add-h-cons-cst *cf-len *cf-penult-index (first *h-intervals) PENULT_1Q_VAR))
-        (otherwise (error "Species not supported"))
+        ;(otherwise (error "Species not supported"))
     )
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
@@ -97,7 +97,7 @@
 
         ; must end with a perfect consonance
         (print "Perfect consonance at the end...")
-        (add-p-cons-end-cst (first *h-intervals))
+        ; (add-p-cons-end-cst (first *h-intervals))
         )
     )
 
@@ -105,13 +105,13 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        (1 6) (add-penult-cons-cst (penult (first *is-cf-bass-arr)) (penult (first *h-intervals)))
+        ((1 6) (add-penult-cons-cst (penult (first *is-cf-bass-arr)) (penult (first *h-intervals))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
     (print "Melodic constraints...")
-    (case species (1 6)
+    (case species ((1 6)
         ; then
         (progn
             ; no more than minor sixth melodic interval
@@ -134,14 +134,14 @@
             (print "No battuta kind of motion...")
             (add-no-battuta-cst (first *motions) (first *h-intervals) (first *m-intervals-brut) (first *is-cf-bass-arr))
         )
-    )
+    ))
     
  
 
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
-    (if (eq species 1)
+    (case species ((1)
         ; then
         (progn
             (setq *m-all-intervals (first *m-intervals))
@@ -155,7 +155,7 @@
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
         )
-    )
+    ))
 
     (print "exiting 1sp")
     ; RETURN
