@@ -757,6 +757,15 @@
     (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
 )
 
+(defun add-no-together-move-cst (motions1 motions2)
+    (loop
+        for motion1 in motions1
+        for motion2 in motions2
+        for i from 0 below (length motions1)
+        do (gil::g-rel *sp* motion1 gil::IRT_NQ motion2)
+    )
+)
+
 ; add the constraint such that the first harmonic interval is a perfect consonance
 (defun add-p-cons-start-cst (h-intervals)
     (gil::g-member *sp* P_CONS_VAR (first h-intervals))

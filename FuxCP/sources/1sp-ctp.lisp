@@ -88,7 +88,7 @@
     (print "No unisson...")
     (add-no-unisson-cst (first *cp) *cf)
 
-    (if (and (/= species 3) (/= species 6))
+    (case species ((1 2) 
         ; then
         (progn
         ; must start with a perfect consonance
@@ -99,7 +99,7 @@
         (print "Perfect consonance at the end...")
         (add-p-cons-end-cst (first *h-intervals))
         )
-    )
+    ))
 
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
@@ -157,7 +157,6 @@
         )
     ))
 
-    (print "exiting 1sp")
     ; RETURN
     (if (eq species 1)
         ; then create the search engine

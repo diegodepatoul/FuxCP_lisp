@@ -375,16 +375,7 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        #|(case species
-            ((1 6) (progn
-                (print "PRINT 1st species")
-                (print (list "(first *m-intervals-brut)" (gil::g-values sol (first *m-intervals-brut))))
-                (print (list "*cf-brut-m-intervals     " (gil::g-values sol *cf-brut-m-intervals)))
-                (print (list "(first *motions)       " (gil::g-values sol (first *motions))))
-                (print (list "(first *h-intervals)     " (gil::g-values sol (first *h-intervals))))
-            ))
-        )|#
-        #| (case species
+        (case species
             (1 (progn
                 (print "PRINT 1st species")
                 (print (list "(first *m-intervals-brut)" (gil::g-values sol (first *m-intervals-brut))))
@@ -460,6 +451,17 @@
                 (print (list "*sp-arr3" (gil::g-values sol (third *sp-arr))))
                 (print (list "*sp-arr4" (gil::g-values sol (fourth *sp-arr))))
             ))
+            (6 (progn
+                (print "PRINT 6th species")
+                (print (list "(first *h-intervals)      " (gil::g-values sol (first *h-intervals))))
+                (print (list "(first *h-intervals)2     " (gil::g-values sol (first *h-intervals2))))
+                (print (list "(first *m-intervals-brut) " (gil::g-values sol (first *m-intervals-brut))))
+                (print (list "(first *m-intervals-brut2)" (gil::g-values sol (first *m-intervals-brut2))))
+                (print (list "*cf-brut-m-intervals      " (gil::g-values sol *cf-brut-m-intervals)))
+                (print (list "*cf-brut-m-intervals2     " (gil::g-values sol *cf-brut-m-intervals2)))
+                (print (list "(first *motions)        " (gil::g-values sol (first *motions))))
+                (print (list "(first *motions)2       " (gil::g-values sol (first *motions2))))
+            ))
         )
         (print (list "*m-degrees-cost    " (gil::g-values sol *m-degrees-cost)))
         (print (list "*m-degrees-type    " (gil::g-values sol *m-degrees-type)))
@@ -470,7 +472,9 @@
         (print (list "### COST ### " (gil::g-values sol *total-cost)))
         (print (list "scale         " *scale))
         (print (list "borrowed-scale" *borrowed-scale))
-        (print (list "off-scale     " (reverse *off-scale))) |#
+        (print (list "off-scale     " (reverse *off-scale))) 
+
+
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
         ; (setq sol-pitches2 (gil::g-values sol the-cp))
         (print sol-pitches)
