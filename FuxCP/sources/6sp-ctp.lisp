@@ -37,6 +37,7 @@
     (setf *m-degrees-type2 *m-degrees-type)
     (setf *off-key-cost2 *off-key-cost)
 
+    (print (list "Fifth cost = " *fifth-cost))
     (fux-cp-1st 6)
 
 

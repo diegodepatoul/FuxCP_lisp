@@ -180,6 +180,7 @@
         ; else
         (add-h-inter-cost-cst (restbutlast (first *h-intervals)))
     )
+    (print "Added h-inter costs")
     (add-cost-to-factors *fifth-cost)
     (add-cost-to-factors *octave-cost)
 )

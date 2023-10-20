@@ -258,7 +258,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 5)
+            (setq *N-COST-FACTORS 10)
             (fux-cp-6th)
         ))
         (otherwise (error "Species ~A not implemented" species))
@@ -271,10 +271,8 @@
     (let (se tstop sopts)
         ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
-        (if (< species 6) (progn
-            (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
-            (gil::g-cost *sp* *total-cost) ; set the cost function
-        ))
+        (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
+        (gil::g-cost *sp* *total-cost) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -314,13 +312,11 @@
         )
 
         ; branching *total-cost
-        (if (< species 6) (progn
-            (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
-            (if (eq species 2)
-                (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
-            )
-            (print "branching *total-cost works")
-        ))
+        (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
+        (if (eq species 2)
+            (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
+        )
+        (print "branching *total-cost works")
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)

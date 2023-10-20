@@ -88,7 +88,7 @@
     (print "No unisson...")
     (add-no-unisson-cst (first *cp) *cf)
 
-    (if (/= species 3)
+    (if (and (/= species 3) (/= species 6))
         ; then
         (progn
         ; must start with a perfect consonance
@@ -97,7 +97,7 @@
 
         ; must end with a perfect consonance
         (print "Perfect consonance at the end...")
-        ; (add-p-cons-end-cst (first *h-intervals))
+        (add-p-cons-end-cst (first *h-intervals))
         )
     )
 
@@ -141,7 +141,7 @@
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
-    (case species ((1)
+    (case species ((1 6)
         ; then
         (progn
             (setq *m-all-intervals (first *m-intervals))
