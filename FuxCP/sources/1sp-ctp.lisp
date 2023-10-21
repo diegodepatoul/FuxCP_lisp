@@ -88,7 +88,7 @@
     (print "No unisson...")
     (add-no-unisson-cst (first *cp) *cf)
 
-    (case species ((1 2) 
+    (case species ((1 2 6) 
         ; then
         (progn
         ; must start with a perfect consonance
@@ -125,10 +125,13 @@
             ;==================================== MOTION CONSTRAINTS ============================
             (print "Motion constraints...")
 
+            (if (eq species 1) ; for the 6th species, it isn't a constraint but a cost
             ; no direct motion to reach a perfect consonance
-            (print "No direct motion to reach a perfect consonance...")
-            (add-no-direct-move-to-p-cons-cst (first *motions) *is-p-cons-arr)
-
+                (progn
+                    (print "No direct motion to reach a perfect consonance...")
+                    (add-no-direct-move-to-p-cons-cst (first *motions) *is-p-cons-arr)
+                )
+            )
             ; no battuta kind of motion
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
@@ -145,7 +148,7 @@
         ; then
         (progn
             (setq *m-all-intervals (first *m-intervals))
-            (set-cost-factors)
+            (if (eq *is-first-run 1) (set-cost-factors))
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
             (add-p-cons-cost-cst)

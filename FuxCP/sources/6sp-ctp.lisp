@@ -41,6 +41,7 @@
     (setf *off-key-cost2 *off-key-cost)
 
     ; Creating the second counterpoint
+    (setf *is-first-run 0)
     (fux-cp-1st 6)
 
     ; Joining both counterpoints in a single array

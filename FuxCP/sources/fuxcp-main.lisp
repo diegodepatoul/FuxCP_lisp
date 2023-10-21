@@ -178,6 +178,8 @@
     (defvar *m-degrees-type2)
     (defvar *off-key-cost2)
 
+    (defvar *is-first-run) ; 1 if we are computing the first counterpoint, 0 if it is the second
+
 
 
 
@@ -234,6 +236,7 @@
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; re/set global variables
     (set-space-variables)
+    (setf *is-first-run 1)
     
     (print (list "Choosing species: " species))
     (case species ; [1, 2, 3, 4, 5, 6]
@@ -463,16 +466,37 @@
                 (print (list "(first *motions)2       " (gil::g-values sol (first *motions2))))
             ))
         )
-        (print (list "*m-degrees-cost    " (gil::g-values sol *m-degrees-cost)))
-        (print (list "*m-degrees-type    " (gil::g-values sol *m-degrees-type)))
-        (print (list "*off-key-cost     " (gil::g-values sol *off-key-cost)))
-        (print (list "*fifth-cost  " (gil::g-values sol *fifth-cost)))
-        (print (list "*octave-cost " (gil::g-values sol *octave-cost)))
-        (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-        (print (list "### COST ### " (gil::g-values sol *total-cost)))
-        (print (list "scale         " *scale))
-        (print (list "borrowed-scale" *borrowed-scale))
-        (print (list "off-scale     " (reverse *off-scale))) 
+        (if (< species 6) 
+            (progn
+            (print (list "*m-degrees-cost    " (gil::g-values sol *m-degrees-cost)))
+            (print (list "*m-degrees-type    " (gil::g-values sol *m-degrees-type)))
+            (print (list "*off-key-cost     " (gil::g-values sol *off-key-cost)))
+            (print (list "*fifth-cost  " (gil::g-values sol *fifth-cost)))
+            (print (list "*octave-cost " (gil::g-values sol *octave-cost)))
+            (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+            (print (list "### COST ### " (gil::g-values sol *total-cost)))
+            (print (list "scale         " *scale))
+            (print (list "borrowed-scale" *borrowed-scale))
+            (print (list "off-scale     " (reverse *off-scale))) 
+        ) (progn
+            (print (list "*m-degrees-cost     " (gil::g-values sol *m-degrees-cost)))
+            (print (list "*m-degrees-cost2    " (gil::g-values sol *m-degrees-cost2)))
+            (print (list "*m-degrees-type     " (gil::g-values sol *m-degrees-type)))
+            (print (list "*m-degrees-type2    " (gil::g-values sol *m-degrees-type2)))
+            (print (list "*off-key-cost      " (gil::g-values sol *off-key-cost)))
+            (print (list "*off-key-cost2     " (gil::g-values sol *off-key-cost2)))
+            (print (list "*fifth-cost   " (gil::g-values sol *fifth-cost)))
+            (print (list "*fifth-cost2  " (gil::g-values sol *fifth-cost2)))
+            (print (list "*octave-cost  " (gil::g-values sol *octave-cost)))
+            (print (list "*octave-cost2 " (gil::g-values sol *octave-cost2)))
+            (print (list "*cost-factors " (gil::g-values sol *cost-factors)))
+            ;(print (list "*cost-factors2" (gil::g-values sol *cost-factors2)))
+            (print (list "### COST ### " (gil::g-values sol *total-cost)))
+            (print (list "scale         " *scale))
+            (print (list "borrowed-scale" *borrowed-scale))
+            (print (list "off-scale     " (reverse *off-scale))) 
+        )
+        )
 
 
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
