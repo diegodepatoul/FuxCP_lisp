@@ -149,6 +149,7 @@
         (progn
             (setq *m-all-intervals (first *m-intervals))
             (if (eq *is-first-run 1) (set-cost-factors))
+
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
             (add-p-cons-cost-cst)
@@ -157,6 +158,13 @@
 
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
+
+            ; 6) as few direct motion to reach a perfect consonance as possible
+            (if (eq species 6) (progn
+                (setf (first *direct-move-to-p-cons-cost) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
+                (compute-no-direct-move-to-p-cons-costs-cst (first *motions) (first *direct-move-to-p-cons-cost) *is-p-cons-arr)
+                (add-cost-to-factors (first *direct-move-to-p-cons-cost))
+            ))
         )
     ))
 

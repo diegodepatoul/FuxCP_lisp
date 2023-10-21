@@ -177,8 +177,11 @@
     (defvar *m-degrees-cost2)
     (defvar *m-degrees-type2)
     (defvar *off-key-cost2)
+    
+    (defvar *direct-move-to-p-cons-cost (list nil nil nil nil))
+    (defvar *direct-move-to-p-cons-cost2 (list nil nil nil nil))
 
-    (defvar *is-first-run) ; 1 if we are computing the first counterpoint, 0 if it is the second
+    (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
 
 
 
@@ -236,7 +239,6 @@
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; re/set global variables
     (set-space-variables)
-    (setf *is-first-run 1)
     
     (print (list "Choosing species: " species))
     (case species ; [1, 2, 3, 4, 5, 6]
@@ -261,7 +263,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 10)
+            (setq *N-COST-FACTORS 12)
             (fux-cp-6th)
         ))
         (otherwise (error "Species ~A not implemented" species))
@@ -462,8 +464,12 @@
                 (print (list "(first *m-intervals-brut2)" (gil::g-values sol (first *m-intervals-brut2))))
                 (print (list "*cf-brut-m-intervals      " (gil::g-values sol *cf-brut-m-intervals)))
                 (print (list "*cf-brut-m-intervals2     " (gil::g-values sol *cf-brut-m-intervals2)))
-                (print (list "(first *motions)        " (gil::g-values sol (first *motions))))
-                (print (list "(first *motions)2       " (gil::g-values sol (first *motions2))))
+                (print (list "(first *motions)          " (gil::g-values sol (first *motions))))
+                (print (list "(first *motions)2         " (gil::g-values sol (first *motions2))))
+                (print (list "(first *motions-costs)    " (gil::g-values sol (first *motions-cost))))
+                (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
+                (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
+                (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
             ))
         )
         (if (< species 6) 

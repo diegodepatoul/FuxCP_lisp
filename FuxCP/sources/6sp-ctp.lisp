@@ -39,6 +39,8 @@
     (setf *m-degrees-cost2 *m-degrees-cost)
     (setf *m-degrees-type2 *m-degrees-type)
     (setf *off-key-cost2 *off-key-cost)
+    
+    (setf *direct-move-to-p-cons-cost2 (copy-list *direct-move-to-p-cons-cost))
 
     ; Creating the second counterpoint
     (setf *is-first-run 0)

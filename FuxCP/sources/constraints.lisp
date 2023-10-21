@@ -971,6 +971,7 @@
     )
 )
 
+; create the motions array based on the melodic intervals of the melodic intervals it is given
 (defun create-motions (m-intervals-brut cf-brut-m-intervals motions costs)
     (loop
         for p in m-intervals-brut
@@ -1071,8 +1072,26 @@
     (loop
         for m in motions
         for b in (rest-if is-p-cons-arr r)
-        do
+        do 
             (gil::g-rel-reify *sp* m gil::IRT_NQ DIRECT b gil::RM_IMP)
+    )
+)
+
+; add the costs such that there is perfect consonance are costly to reach by direct motion
+(defun compute-no-direct-move-to-p-cons-costs-cst (motions cost-array is-p-cons-arr &optional (r t))
+    (loop
+        for m in motions
+        for c in cost-array
+        for is-p-cons in (rest-if is-p-cons-arr r)
+        do (let (
+                (is-direct-move (gil::add-bool-var *sp* 0 1))
+                (is-direct-move-to-p-cons (gil::add-bool-var *sp* 0 1))
+            )
+                (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct-move) ; is-direct-move = (m = direct)
+                (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+        )
+            
     )
 )
 
