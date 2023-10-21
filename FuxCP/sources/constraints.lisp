@@ -757,12 +757,20 @@
     (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
 )
 
+; add the constraint that the three voices go in different directions
+; i.e. that there are no two direct motions
+; i.e. that either motions1 is direct or motions 2 is direct, but not both
 (defun add-no-together-move-cst (motions1 motions2)
-    (loop
+    (loop 
         for motion1 in motions1
         for motion2 in motions2
-        for i from 0 below (length motions1)
-        do (gil::g-rel *sp* motion1 gil::IRT_NQ motion2)
+        do (progn
+            (setf motion1-equals-two (gil::add-bool-var *sp* 0 1))
+            (setf motion2-equals-two (gil::add-bool-var *sp* 0 1))
+            (gil::g-rel-reify *sp* motion1 gil::IRT_EQ 2 motion1-equals-two) ; motion1-equals-two = (motion1 == 2)
+            (gil::g-rel-reify *sp* motion2 gil::IRT_EQ 2 motion2-equals-two) ; motion2-equals-two = (motion2 == 2)
+            (gil::g-rel *sp* motion1-equals-two gil::BOT_OR motion2-equals-two) ; NOT (motion1-equals-two AND motion2-equals-two) (not both at the same time)
+        )
     )
 )
 
