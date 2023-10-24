@@ -8,11 +8,13 @@
 
 ### TO BE DONE  
 * Always privilegiate the fundamental state (1-3-5) 
-* Avoid the succession of two perfect consonances
+* Avoid the succession of two perfect consonances -> between the same lines, right?
 * On peut avoir un renversement d’accord si la basse fait un mouvement conjoint par la suite
 * Il faut essayer de maximiser la variété de notes dans chaque voix -> WIP
 
 
 # Questions to the promotor and assistant
 * Les règles à 2 voix doivent en général être suivies par chaque paire de voix -> tu as vu ça où?
-* Le dernier accord ne peut pas être mineur (Fux dit que ça ne donne pas un sens de conclusion assez fort). Il faut donc omettre la tierce dans les modes ou ce dernier accord est mineur (ré, mi, la). Si on ne peut pas omettre la tierce, alors elle doit être majeure (e.g. ré fa# la)
+* Le dernier accord ne peut pas être mineur (Fux dit que ça ne donne pas un sens de conclusion assez fort). Il faut donc omettre la tierce dans les modes ou ce dernier accord est mineur (ré, mi, la). Si on ne peut pas omettre la tierce, alors elle doit être majeure (e.g. ré fa# la) -> contradiction avec la seconde règle qui dit que ça doit être une consonance parfaite, qui est-ce que je suis?
+* Avec les coûts activés le 6sp prend beaucoup de temps -> ça va poser problème avec plus de coûts (p.ex. variété de notes)
+* Souci de pas de solution réglé avec l'ajout d'un autre scope pour le 2e CP

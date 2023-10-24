@@ -42,6 +42,20 @@
 
     ; Creating the second counterpoint
     (setf *is-first-run 0)
+    (setf VOICE_TYPE voice-type)
+    (setf RANGE_UB (+ 12 (* 6 VOICE_TYPE)))
+    (setf RANGE_LB (+ -6 (* 6 VOICE_TYPE)))
+    ; set the pitch range of the counterpoint
+    (setf *cp-range (range (+ *tone-pitch-cf RANGE_UB) :min (+ *tone-pitch-cf RANGE_LB))) ; arbitrary range
+    ; set counterpoint pitch domain
+    (setf *cp-domain (intersection *cp-range *scale))
+    ; penultimate (first *cp) note domain
+    (setf *chromatic-cp-domain (intersection *cp-range *chromatic-scale))
+    ; set counterpoint extended pitch domain
+    (setf *extended-cp-domain (intersection *cp-range (union *scale *borrowed-scale)))
+    ; set the domain of the only barrowed notes
+    (setf *off-domain (intersection *cp-range *off-scale))
+
     (fux-cp-1st 6)
 
     ; Joining both counterpoints in a single array

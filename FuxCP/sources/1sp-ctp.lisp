@@ -159,6 +159,7 @@
             ; 5) motion costs
             (add-cost-to-factors (first *motions-cost))
 
+            
             (if (eq species 6) (progn
                 ; 6) as few direct motion to reach a perfect consonance as possible
                 (setf (first *direct-move-to-p-cons-cost) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
@@ -166,10 +167,11 @@
                 (add-cost-to-factors (first *direct-move-to-p-cons-cost))
 
                 ; 7) as many different notes as possible
-                (setf *diversity-cost (gil::add-int-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
+                #|(setf *diversity-cost (gil::add-int-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
                 (compute-diversity-cost (first *cp) *diversity-cost)
-                (add-cost-to-factors *diversity-cost)
+                (add-cost-to-factors *diversity-cost)|#
             ))
+            
         )
     ))
 

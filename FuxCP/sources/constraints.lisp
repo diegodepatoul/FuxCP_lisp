@@ -1108,7 +1108,7 @@
                 (is-equal (gil::add-bool-var *sp* 0 1))
             )
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 0 is-equal gil::RM_IMP)
                 (setf k (+ 1 k))
             )
         )
