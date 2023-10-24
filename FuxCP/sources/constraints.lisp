@@ -1098,7 +1098,7 @@
     ;(gil::g-rel-reify *sp* (first cp) gil::IRT_EQ (second cp) (first diversity-cost))
     (let (
         (k 0)
-        (bool-diversity-cost (gil::add-bool-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
+        ;(bool-diversity-cost (gil::add-bool-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
         )
     (loop
         for i from 0 to (- *cf-len 1)
