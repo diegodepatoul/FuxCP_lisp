@@ -175,8 +175,10 @@
     (defvar *m-degrees-type2)
     (defvar *off-key-cost2)
     
-    (defvar *direct-move-to-p-cons-cost (list nil nil nil nil))
-    (defvar *direct-move-to-p-cons-cost2 (list nil nil nil nil))
+    (defparameter *direct-move-to-p-cons-cost (list nil nil nil nil))
+    (defparameter *direct-move-to-p-cons-cost2 (list nil nil nil nil))
+    (defvar *diversity-cost)
+    (defvar *diversity-cost2)
 
     (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
 
@@ -260,7 +262,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 12)
+            (setq *N-COST-FACTORS 14)
             (fux-cp-6th)
         ))
         (otherwise (error "Species ~A not implemented" species))
@@ -268,8 +270,6 @@
 )
 
 (defun fux-search-engine (the-cp &optional (species 1))
-    ;(print the-cp)
-    (print (length the-cp))
     (let (se tstop sopts)
         ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
@@ -467,6 +467,9 @@
                 (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
+                (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
+                (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                (print (list "*p-cons-arr               " (gil::g-values sol *is-p-cons-arr)))
             ))
         )
         (if (< species 6) 

@@ -301,7 +301,6 @@
 ; attention: lengths should be the same
 (defun append-cp (cp-list total-cp)
     (let ((cp-len (length (first cp-list))))
-        (print cp-len)
         (loop for i from 0 below cp-len do
             (setf (nth i total-cp) (nth i (first cp-list)))
         )
@@ -1092,9 +1091,31 @@
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
         )
-            
     )
 )
+
+(defun compute-diversity-cost (cp diversity-cost)
+    ;(gil::g-rel-reify *sp* (first cp) gil::IRT_EQ (second cp) (first diversity-cost))
+    (let (
+        (k 0)
+        (bool-diversity-cost (gil::add-bool-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
+        )
+    (loop
+        for i from 0 to (- *cf-len 1)
+        do (loop
+            for j from (+ i 1) to (- *cf-len 1)
+            do(let (
+                (is-equal (gil::add-bool-var *sp* 0 1))
+            )
+                (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal gil::RM_IMP)
+                (setf k (+ 1 k))
+            )
+        )
+    )
+    )
+)
+
 
 ; return the rest of the list if the boolean is true, else return the list
 (defun rest-if (l b)
@@ -1904,7 +1925,7 @@
     )
 )
 
-; add a the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
+; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 (defun add-cost-to-factors (factor-arr)
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)

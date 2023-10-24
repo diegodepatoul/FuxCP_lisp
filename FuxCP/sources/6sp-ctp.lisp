@@ -38,6 +38,7 @@
     (setf *off-key-cost2 *off-key-cost)
     
     (setf *direct-move-to-p-cons-cost2 (copy-list *direct-move-to-p-cons-cost))
+    (setf *diversity-cost2 (copy-list *diversity-cost))
 
     ; Creating the second counterpoint
     (setf *is-first-run 0)
