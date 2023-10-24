@@ -168,9 +168,6 @@
     (defvar *is-cf-bass2) ; this is not used anywhere
     (defparameter *is-cf-bass-arr2 (list nil nil nil nil))
     (defvar *is-cp-off-key-arr2)
-    (defvar *N-COST-FACTORS2)
-    (defvar *cost-factors2)
-    (defvar *total-cost2)
     (defvar *p-cons-cost2)
     (defvar *fifth-cost2)
     (defvar *octave-cost2)

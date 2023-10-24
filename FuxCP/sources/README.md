@@ -8,10 +8,9 @@
 
 ### TO BE DONE  
 * Always privilegiate the fundamental state (1-3-5) 
-* Never have two fundamental states following themselves
 * Avoid the succession of two perfect consonances
 * On peut avoir un renversement d’accord si la basse fait un mouvement conjoint par la suite
-* Il faut essayer de maximiser la variété de notes dans chaque voix
+* Il faut essayer de maximiser la variété de notes dans chaque voix -> WIP
 
 
 # Questions to the promotor and assistant
