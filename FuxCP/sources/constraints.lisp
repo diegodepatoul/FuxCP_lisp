@@ -762,14 +762,15 @@
 ; i.e. that either motions1 is direct or motions 2 is direct, but not both
 (defun add-no-together-move-cst (motions1 motions2)
     (loop 
-        for motion1 in motions1
-        for motion2 in motions2
-        do (progn
-            (setf motion1-equals-two (gil::add-bool-var *sp* 0 1))
-            (setf motion2-equals-two (gil::add-bool-var *sp* 0 1))
-            (gil::g-rel-reify *sp* motion1 gil::IRT_EQ 2 motion1-equals-two) ; motion1-equals-two = (motion1 == 2)
-            (gil::g-rel-reify *sp* motion2 gil::IRT_EQ 2 motion2-equals-two) ; motion2-equals-two = (motion2 == 2)
-            (gil::g-rel *sp* motion1-equals-two gil::BOT_OR motion2-equals-two) ; NOT (motion1-equals-two AND motion2-equals-two) (not both at the same time)
+        for m1 in motions1
+        for m2 in motions2
+        do (let (
+            (m1-eq-two (gil::add-bool-var *sp* 0 1))
+            (m2-eq-two (gil::add-bool-var *sp* 0 1))
+        )
+            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-eq-two) ; m1-eq-two := (motion1 == 2)
+            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-eq-two) ; m2-eq-two := (motion2 == 2)
+            (gil::g-op *sp* m1-eq-two gil::BOT_AND m2-eq-two 0) ; NOT (motion1-equals-two AND motion2-equals-two) (not both at the same time)
         )
     )
 )
