@@ -167,9 +167,9 @@
                 (add-cost-to-factors (first *direct-move-to-p-cons-cost))
 
                 ; 7) as many different notes as possible
-                #|(setf *diversity-cost (gil::add-int-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
+                (setf *diversity-cost (gil::add-int-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
                 (compute-diversity-cost (first *cp) *diversity-cost)
-                (add-cost-to-factors *diversity-cost)|#
+                (add-cost-to-factors *diversity-cost)
             ))
             
         )

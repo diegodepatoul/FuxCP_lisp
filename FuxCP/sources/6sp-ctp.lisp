@@ -42,7 +42,8 @@
 
     ; Creating the second counterpoint
     (setf *is-first-run 0)
-    (setf VOICE_TYPE voice-type)
+    ; Swap first and second voices
+    (setf VOICE_TYPE VOICE_TYPE2)
     (setf RANGE_UB (+ 12 (* 6 VOICE_TYPE)))
     (setf RANGE_LB (+ -6 (* 6 VOICE_TYPE)))
     ; set the pitch range of the counterpoint
