@@ -1103,12 +1103,13 @@
     (loop
         for i from 0 to (- *cf-len 1)
         do (loop
-            for j from (+ i 1) to (- *cf-len 1)
+            for j from (+ i 1) to (min (+ i 3) (- *cf-len 1))
             do(let (
                 (is-equal (gil::add-bool-var *sp* 0 1))
             )
+                (print (list k i j))
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 0 is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal gil::RM_IMP)
                 (setf k (+ 1 k))
             )
         )
