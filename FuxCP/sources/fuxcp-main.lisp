@@ -467,8 +467,8 @@
                 (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
-                (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
-                (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
+                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
             ))
         )
         (if (< species 6) 
@@ -484,6 +484,7 @@
             (print (list "borrowed-scale" *borrowed-scale))
             (print (list "off-scale     " (reverse *off-scale))) 
         ) (progn
+            (print (list "*extended-cp-domain" *extended-cp-domain))
             (print (list "*m-degrees-cost     " (gil::g-values sol *m-degrees-cost)))
             (print (list "*m-degrees-cost2    " (gil::g-values sol *m-degrees-cost2)))
             (print (list "*m-degrees-type     " (gil::g-values sol *m-degrees-type)))
@@ -505,7 +506,6 @@
 
 
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
-        ; (setq sol-pitches2 (gil::g-values sol the-cp))
         (print sol-pitches)
         (case species
             (4 (progn
@@ -550,11 +550,13 @@
             (progn
                 (print (subseq pitches-om 0 *cf-len))
                 (print (subseq pitches-om *cf-len))
+                (print (gil::g-values sol (first *cp)))
+                (print (gil::g-values sol (first *cp2)))
                 (make-instance 'poly 
                     :voices (
                         list
-                        (make-instance 'voice :chords (to-midicent (subseq pitches-om 0 *cf-len)) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
-                        (make-instance 'voice :chords (to-midicent (subseq pitches-om *cf-len)) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)))
+                        (make-instance 'voice :chords (to-midicent (gil::g-values sol (first *cp))) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
+                        (make-instance 'voice :chords (to-midicent (gil::g-values sol (first *cp2))) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)))
             )
         )
     )

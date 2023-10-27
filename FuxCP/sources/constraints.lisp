@@ -245,7 +245,7 @@
         )
         ; sum of the cost of the off-key notes
         (add-cost-to-factors *off-key-cost)
-
+    
         ; 3) melodic intervals should be as small as possible
         (print "Melodic intervals should be as small as possible...")
         ; IntVar array representing the cost to have melodic large intervals
@@ -752,8 +752,11 @@
 )
 
 ; add the constraint such that there is no unisson unless it is the first or last note
-(defun add-no-unisson-cst (cp cf)
-    (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
+(defun add-no-unisson-cst (cp cf species)
+    (if (< species 6)
+        (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
+        (add-no-unisson-at-all-cst cp cf)
+    )
 )
 
 ; add the constraint that the three voices go in different directions
@@ -782,6 +785,19 @@
 ; add the constraint such that the last harmonic interval is a perfect consonance
 (defun add-p-cons-end-cst (h-intervals)
     (gil::g-member *sp* P_CONS_VAR (lastone h-intervals))
+)
+
+; add the constraint that the chord shall be perfect (1-3-5)
+(defun add-p-chord-cst (h-interval1 h-interval2)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ h-interval2)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 0)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 0)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 3)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 3)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 8)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 8)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 9)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)
 )
 
 ; add the constraint such that the first and last harmonic interval are 0 if cp is at the bass
@@ -1095,10 +1111,8 @@
 )
 
 (defun compute-diversity-cost (cp diversity-cost)
-    ;(gil::g-rel-reify *sp* (first cp) gil::IRT_EQ (second cp) (first diversity-cost))
     (let (
         (k 0)
-        ;(bool-diversity-cost (gil::add-bool-var-array *sp* (/ (* *cf-len (- *cf-len 1)) 2) 0 1))
         )
     (loop
         for i from 0 to (- *cf-len 1)

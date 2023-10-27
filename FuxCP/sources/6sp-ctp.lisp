@@ -62,14 +62,19 @@
     ; Joining both counterpoints in a single array
     (setq *total-cp-len (* 2 *cf-len))
     (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+    (merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
 
     ; Constraints on the two counterpoints
     (print "no unisson between cp1 and cp2")
-    (add-no-unisson-cst (first *cp) (first *cp2))
+    (add-no-unisson-cst (first *cp) (first *cp2) species)
 
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first *motions) (first *motions2))
+
+    (print "Perfect chord at the beginning...")
+    (add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
+    (print "Perfect chord at the end...")
+    (add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
 
     ; RETURN
     (if (eq species 6)

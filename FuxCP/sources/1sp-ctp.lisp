@@ -21,6 +21,22 @@
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
     )))
+        (print *cf)
+
+    (if (eq species 6)
+        (let (
+            (my 3)
+            (perfect-chord (list 
+                    (+ (car (last *cf)) 4)
+                    (+ (car (last *cf)) 7)
+                )
+            )
+        )
+        (print perfect-chord)
+        (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* ))
+        (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* (union cp-domain (    ))))
+        )
+    )
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
@@ -86,9 +102,9 @@
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
-    (add-no-unisson-cst (first *cp) *cf)
+    (add-no-unisson-cst (first *cp) *cf species)
 
-    (case species ((1 2 6) 
+    (case species ((1 2) 
         ; then
         (progn
         ; must start with a perfect consonance
