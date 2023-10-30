@@ -266,6 +266,10 @@
             (setq *N-COST-FACTORS 15)
             (fux-cp-6th)
         ))
+        (7 (progn
+            (setq *N-COST-FACTORS 15)
+            (fux-cp-7th)
+        ))
         (otherwise (error "Species ~A not implemented" species))
     )
 )
@@ -549,8 +553,7 @@
         (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
             (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
             (progn
-                (print (subseq pitches-om 0 *cf-len))
-                (print (subseq pitches-om *cf-len))
+                (print (list "species" species))
                 (print (gil::g-values sol (first *cp)))
                 (print (gil::g-values sol (first *cp2)))
                 (make-instance 'poly 

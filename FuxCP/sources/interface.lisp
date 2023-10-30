@@ -671,7 +671,7 @@
         (om::om-make-point 170 50)
         (om::om-make-point 200 20)
         "Chosen species"
-        :range (list "1st" "2nd" "3rd" "4th" "5th" "6th")
+        :range (list "1st" "2nd" "3rd" "4th" "5th" "6th" "7th")
         :value (species-param (om::object editor))
         :di-action #'(lambda (cost)
             (setf (species-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
@@ -930,6 +930,7 @@
     ((equal param "4th") 4)
     ((equal param "5th") 5)
     ((equal param "6th") 6)
+    ((equal param "7th") 7)
     )
 )
 
