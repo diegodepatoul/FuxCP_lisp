@@ -177,6 +177,7 @@
     
     (defparameter *direct-move-to-p-cons-cost (list nil nil nil nil))
     (defparameter *direct-move-to-p-cons-cost2 (list nil nil nil nil))
+    (defvar *p-chords-cost)
     (defvar *diversity-cost)
     (defvar *diversity-cost2)
 
@@ -262,7 +263,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 14)
+            (setq *N-COST-FACTORS 15)
             (fux-cp-6th)
         ))
         (otherwise (error "Species ~A not implemented" species))
@@ -466,6 +467,7 @@
                 (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
+                (print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
                 (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
                 (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
             ))

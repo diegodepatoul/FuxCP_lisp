@@ -801,6 +801,35 @@
     (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)
 )
 
+(defun add-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)
+    (loop
+    for h1 in h-intervals1
+    for h2 in h-intervals2
+    for c in costs
+    do
+        (let (
+            (is-h1-4 (gil::add-bool-var *sp* 0 1))
+            (is-h1-7 (gil::add-bool-var *sp* 0 1))
+            (is-h2-4 (gil::add-bool-var *sp* 0 1))
+            (is-h2-7 (gil::add-bool-var *sp* 0 1))
+            (is-p-chord-1 (gil::add-bool-var *sp* 0 1))
+            (is-p-chord-2 (gil::add-bool-var *sp* 0 1))
+            (is-p-chord (gil::add-bool-var *sp* 0 1))
+            (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
+        ) 
+            (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 4 is-h2-4) ; 
+            (gil::g-rel-reify *sp* h1 gil::IRT_EQ 7 is-h1-7) ; 
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) ;
+            (gil::g-op *sp* is-h1-4 gil::BOT_AND is-h2-7 is-p-chord-1)
+            (gil::g-op *sp* is-h1-7 gil::BOT_AND is-h2-4 is-p-chord-2)
+            (gil::g-op *sp* is-p-chord-1 gil::BOT_OR is-p-chord-2 is-p-chord)
+            (gil::g-op *sp* is-p-chord gil::BOT_XOR is-not-p-chord 1)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a p-chord
+        )
+    )
+)
+
 ; add the constraint such that the first and last harmonic interval are 0 if cp is at the bass
 ;   not(is-cf-bass[0, 0]) => h-interval[0, 0] = 0
 ;   not(is-cf-bass[-1, -1]) => h-interval[-1, -1] = 0
