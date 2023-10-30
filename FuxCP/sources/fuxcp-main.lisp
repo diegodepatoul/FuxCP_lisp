@@ -284,6 +284,7 @@
         ;; BRANCHING
         (print "Branching...")
         (setq var-branch-type gil::INT_VAR_DEGREE_MAX)
+        ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
 
         ; 5th species specific
@@ -318,11 +319,9 @@
         (if (eq species 2)
             (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
         )
-        (print "branching *total-cost works")
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)
-        (print "solution variables branching works")
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
@@ -467,8 +466,8 @@
                 (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
-                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
-                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
+                (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
             ))
         )
         (if (< species 6) 
@@ -484,7 +483,7 @@
             (print (list "borrowed-scale" *borrowed-scale))
             (print (list "off-scale     " (reverse *off-scale))) 
         ) (progn
-            (print (list "*extended-cp-domain" *extended-cp-domain))
+            (print (list "*extended-cp-domain " *extended-cp-domain))
             (print (list "*m-degrees-cost     " (gil::g-values sol *m-degrees-cost)))
             (print (list "*m-degrees-cost2    " (gil::g-values sol *m-degrees-cost2)))
             (print (list "*m-degrees-type     " (gil::g-values sol *m-degrees-type)))

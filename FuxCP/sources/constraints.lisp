@@ -246,7 +246,8 @@
         ; sum of the cost of the off-key notes
         (add-cost-to-factors *off-key-cost)
     
-        ; 3) melodic intervals should be as small as possible
+        ; this cost is slowing down everything
+        ; 3) melodic intervals should be as small as possible 
         (print "Melodic intervals should be as small as possible...")
         ; IntVar array representing the cost to have melodic large intervals
         (setq degrees-cost-domain
@@ -753,7 +754,7 @@
 
 ; add the constraint such that there is no unisson unless it is the first or last note
 (defun add-no-unisson-cst (cp cf species)
-    (if (< species 6)
+    (if (< species 7)
         (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
         (add-no-unisson-at-all-cst cp cf)
     )
@@ -1107,6 +1108,13 @@
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
         )
+    )
+)
+
+(defun add-no-successive-p-cons-cst (is-p-cons-array)
+    (loop 
+    for i from 0 to (- (length is-p-cons-array) 2)
+    do (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) 0) ; NOT (is-curr-consonant AND is-next-consonant))
     )
 )
 

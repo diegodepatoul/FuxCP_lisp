@@ -71,10 +71,14 @@
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first *motions) (first *motions2))
 
-    (print "Perfect chord at the beginning...")
-    (add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
-    (print "Perfect chord at the end...")
-    (add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+
+    (print "prefer perfect chords")
+    ; TODO
+
+    ;(print "Perfect chord at the beginning...")
+    ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
+    ;(print "Perfect chord at the end...")
+    ;(add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
 
     ; RETURN
     (if (eq species 6)

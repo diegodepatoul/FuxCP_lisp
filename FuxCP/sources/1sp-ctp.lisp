@@ -23,7 +23,7 @@
     )))
         (print *cf)
 
-    (if (eq species 6)
+    #|(if (eq species 6)
         (let (
             (my 3)
             (perfect-chord (list 
@@ -36,7 +36,7 @@
         (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* ))
         (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* (union cp-domain (    ))))
         )
-    )
+    )|#
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
@@ -152,6 +152,13 @@
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
             (add-no-battuta-cst (first *motions) (first *h-intervals) (first *m-intervals-brut) (first *is-cf-bass-arr))
+
+            (if (eq species 6)
+                (progn
+                    (print "No two perfect consonances after one another")
+                    (add-no-successive-p-cons-cst *is-p-cons-arr)
+                )
+            )
         )
     ))
     
