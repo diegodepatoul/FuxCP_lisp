@@ -71,14 +71,21 @@
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first *motions) (first *motions2))
 
+    (print "No successive perfect consonances (counterpoint1 to counterpoint2)")
+    (setf h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+    (create-h-intervals (first *cp) (first *cp2) h-intervals-1-2)
+
+    (setq are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
+    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
     (print "prefer perfect chords")
     ; TODO
 
-    ;(print "Perfect chord at the beginning...")
-    ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
-    ;(print "Perfect chord at the end...")
-    ;(add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+    (print "Perfect chord at the beginning...")
+    (add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
+    (print "Perfect chord at the end...")
+    (add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
 
     ; RETURN
     (if (eq species 6)

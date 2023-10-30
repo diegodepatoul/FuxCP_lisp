@@ -155,7 +155,7 @@
 
             (if (eq species 6)
                 (progn
-                    (print "No two perfect consonances after one another")
+                    (print "No successive perfect consonances (counterpoint to cantus firmus)")
                     (add-no-successive-p-cons-cst *is-p-cons-arr)
                 )
             )
