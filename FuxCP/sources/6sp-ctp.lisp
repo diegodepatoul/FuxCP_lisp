@@ -57,37 +57,39 @@
     ; set the domain of the only barrowed notes
     (setf *off-domain (intersection *cp-range *off-scale))
 
-    (fux-cp-1st 6)
+    (if (eq species 6) (progn
+        (fux-cp-1st 6)
 
-    ; Joining both counterpoints in a single array
-    (setq *total-cp-len (* 2 *cf-len))
-    (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+        ; Joining both counterpoints in a single array
+        (setq *total-cp-len (* 2 *cf-len))
+        (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
+        (merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
 
-    ; Constraints on the two counterpoints
-    (print "no unisson between cp1 and cp2")
-    (add-no-unisson-cst (first *cp) (first *cp2) species)
+        ; Constraints on the two counterpoints
+        (print "no unisson between cp1 and cp2")
+        (add-no-unisson-cst (first *cp) (first *cp2) species)
 
-    (print "all voices can't go in the same direction")
-    (add-no-together-move-cst (first *motions) (first *motions2))
+        (print "all voices can't go in the same direction")
+        (add-no-together-move-cst (first *motions) (first *motions2))
 
-    (print "No successive perfect consonances (counterpoint1 to counterpoint2)")
-    (setf h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first *cp) (first *cp2) h-intervals-1-2)
+        (print "No successive perfect consonances (counterpoint1 to counterpoint2)")
+        (setf h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+        (create-h-intervals (first *cp) (first *cp2) h-intervals-1-2)
 
-    (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
+        (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+        (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
+        (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
-    (print "prefer perfect chords")
-    (setf *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-    (add-prefer-p-chords-cost (first *h-intervals) (first *h-intervals2) *p-chords-cost)
-    (add-cost-to-factors *p-chords-cost)
+        (print "prefer perfect chords")
+        (setf *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+        (add-prefer-p-chords-cost (first *h-intervals) (first *h-intervals2) *p-chords-cost)
+        (add-cost-to-factors *p-chords-cost)
 
-    (print "Perfect chord at the beginning...")
-    ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
-    (print "Perfect chord at the end...")
-    ;(add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+        (print "Perfect chord at the beginning...")
+        ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
+        (print "Perfect chord at the end...")
+        ;(add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+    ))
 
     ; RETURN
     (if (eq species 6)

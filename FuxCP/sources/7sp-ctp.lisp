@@ -14,6 +14,7 @@
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
     ;; ADD FIRST SPECIES CONSTRAINTS
     (fux-cp-6th 7)
+    (fux-cp-2nd 2)
 
     (print "########## SEVENTH SPECIES ##########")
 

@@ -241,7 +241,7 @@
     (set-space-variables)
     
     (print (list "Choosing species: " species))
-    (case species ; [1, 2, 3, 4, 5, 6]
+    (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
             (setq *N-COST-FACTORS 5)
             (fux-cp-1st)
@@ -511,7 +511,6 @@
 
 
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
-        (print sol-pitches)
         (case species
             (4 (progn
                 (setq rythmic+pitches (get-basic-rythmic 4 *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
@@ -550,17 +549,31 @@
                 (setq pitches-om sol-pitches)
             ))
         )
+        (print pitches-om)
         (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
             (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
             (progn
-                (print (list "species" species))
-                (print (gil::g-values sol (first *cp)))
-                (print (gil::g-values sol (first *cp2)))
+                (print (list "Species = " species))
+                (case species
+                    (6 (progn 
+                        (setf first-cp (gil::g-values sol (first *cp)))
+                        (setf second-cp (gil::g-values sol (first *cp2)))
+                    ))
+                    (7 (progn
+                        (setf first-cp nil)
+                        (loop 
+                            for v1 in (gil::g-values sol (first *cp))
+                            for v2 in (gil::g-values sol (third *cp))
+                            do (setf first-cp (append first-cp (list v1 v2)))
+                        )
+                        (setf first-cp (append first-cp (last (gil::g-values sol (first *cp)))))
+                    ))
+                )
                 (make-instance 'poly 
                     :voices (
                         list
-                        (make-instance 'voice :chords (to-midicent (gil::g-values sol (first *cp))) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
-                        (make-instance 'voice :chords (to-midicent (gil::g-values sol (first *cp2))) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)))
+                        (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
+                        (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)))
             )
         )
     )

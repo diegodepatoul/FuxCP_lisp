@@ -1816,14 +1816,15 @@
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))
     (case species
-        ((1 6) (make-list len :initial-element 1))
+        (1 (make-list len :initial-element 1))
         (2 (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
         (3 (append (make-list (* 4 len-1) :initial-element 1/4) '(1)))
         (4 (build-rythmic-pattern
                 (get-4th-species-array len-2)
                 (get-4th-notes-array cp cp-len)
         ))
-        ;(6 (make-list (* 2 len) :initial-element 1))
+        (6 (list (make-list len :initial-element 1) (make-list len :initial-element 1)))
+        (7 (list (append (make-list (* 2 len-1) :initial-element 1/2) '(1)) (make-list len :initial-element 1)))
     )
 )
 
