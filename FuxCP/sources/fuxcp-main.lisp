@@ -267,7 +267,7 @@
             (fux-cp-6th)
         ))
         (7 (progn
-            (setq *N-COST-FACTORS 15)
+            (setq *N-COST-FACTORS 15) ;; TODO change the n-cost
             (fux-cp-7th)
         ))
         (otherwise (error "Species ~A not implemented" species))
@@ -475,6 +475,24 @@
                 (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
                 (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
             ))
+            (7 (progn
+                (print "PRINT 6th species")
+                (print (list "(first *h-intervals)      " (gil::g-values sol (first *h-intervals))))
+                (print (list "(first *h-intervals)2     " (gil::g-values sol (first *h-intervals2))))
+                (print (list "(first *m-intervals-brut) " (gil::g-values sol (first *m-intervals-brut))))
+                (print (list "(first *m-intervals-brut2)" (gil::g-values sol (first *m-intervals-brut2))))
+                (print (list "*cf-brut-m-intervals      " (gil::g-values sol *cf-brut-m-intervals)))
+                (print (list "*cf-brut-m-intervals2     " (gil::g-values sol *cf-brut-m-intervals2)))
+                (print (list "(first *motions)          " (gil::g-values sol (first *motions))))
+                (print (list "(first *motions)2         " (gil::g-values sol (first *motions2))))
+                (print (list "(first *motions-costs)    " (gil::g-values sol (first *motions-cost))))
+                (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
+                ;(print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
+                ;(print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
+                ;(print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
+                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
+                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+            ))
         )
         (if (< species 6) 
             (progn
@@ -567,13 +585,16 @@
                             do (setf first-cp (append first-cp (list v1 v2)))
                         )
                         (setf first-cp (append first-cp (last (gil::g-values sol (first *cp)))))
+                        (setf second-cp (gil::g-values sol (first *cp2)))
                     ))
                 )
                 (make-instance 'poly 
                     :voices (
                         list
                         (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
-                        (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)))
+                        (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)
+                        )
+                )
             )
         )
     )

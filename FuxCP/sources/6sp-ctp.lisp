@@ -62,7 +62,7 @@
 
         ; Joining both counterpoints in a single array
         (setq *total-cp-len (* 2 *cf-len))
-        (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
+        (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) 
         (merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
 
         ; Constraints on the two counterpoints
