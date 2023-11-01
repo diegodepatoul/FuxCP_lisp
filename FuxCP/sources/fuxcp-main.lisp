@@ -469,11 +469,13 @@
                 (print (list "(first *motions)2         " (gil::g-values sol (first *motions2))))
                 (print (list "(first *motions-costs)    " (gil::g-values sol (first *motions-cost))))
                 (print (list "(first *motions-costs2)   " (gil::g-values sol (first *motions-cost2))))
+                (print (list "*m-degrees-cost    " (gil::g-values sol *m-degrees-cost)))
+                (print (list "*m-degrees-type    " (gil::g-values sol *m-degrees-type)))
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
-                (print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
-                (print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
-                (print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                ;(print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
+                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
+                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
             ))
             (7 (progn
                 (print "PRINT 6th species")
@@ -496,6 +498,8 @@
         )
         (if (< species 6) 
             (progn
+            (print (list "(first *motions)          " (gil::g-values sol (first *motions))))
+            (print (list "(first *motions-costs)    " (gil::g-values sol (first *motions-cost))))
             (print (list "*m-degrees-cost    " (gil::g-values sol *m-degrees-cost)))
             (print (list "*m-degrees-type    " (gil::g-values sol *m-degrees-type)))
             (print (list "*off-key-cost     " (gil::g-values sol *off-key-cost)))
@@ -508,7 +512,7 @@
             (print (list "off-scale     " (reverse *off-scale))) 
         ) (progn
             (print (list "*extended-cp-domain " *extended-cp-domain))
-            (print (list "*m-degrees-cost     " (gil::g-values sol *m-degrees-cost)))
+            #|(print (list "*m-degrees-cost     " (gil::g-values sol *m-degrees-cost)))
             (print (list "*m-degrees-cost2    " (gil::g-values sol *m-degrees-cost2)))
             (print (list "*m-degrees-type     " (gil::g-values sol *m-degrees-type)))
             (print (list "*m-degrees-type2    " (gil::g-values sol *m-degrees-type2)))
@@ -517,7 +521,7 @@
             (print (list "*fifth-cost   " (gil::g-values sol *fifth-cost)))
             (print (list "*fifth-cost2  " (gil::g-values sol *fifth-cost2)))
             (print (list "*octave-cost  " (gil::g-values sol *octave-cost)))
-            (print (list "*octave-cost2 " (gil::g-values sol *octave-cost2)))
+            (print (list "*octave-cost2 " (gil::g-values sol *octave-cost2)))|#
             (print (list "*cost-factors " (gil::g-values sol *cost-factors)))
             ;(print (list "*cost-factors2" (gil::g-values sol *cost-factors2)))
             (print (list "### COST ### " (gil::g-values sol *total-cost)))

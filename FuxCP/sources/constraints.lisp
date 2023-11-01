@@ -246,7 +246,6 @@
         ; sum of the cost of the off-key notes
         (add-cost-to-factors *off-key-cost)
     
-        ; this cost is slowing down everything
         ; 3) melodic intervals should be as small as possible 
         (print "Melodic intervals should be as small as possible...")
         ; IntVar array representing the cost to have melodic large intervals
@@ -258,7 +257,10 @@
         (setq *m-degrees-cost (gil::add-int-var-array-dom *sp* m-len degrees-cost-domain))
         (setq *m-degrees-type (gil::add-int-var-array *sp* m-len 1 8))
         (add-m-degrees-cost-cst *m-all-intervals *m-degrees-cost *m-degrees-type is-cst-arr2)
-        (add-cost-to-factors *m-degrees-cost)
+        ;(if (eq 1 *is-first-run) ; todo del this condition
+            (add-cost-to-factors *m-degrees-cost) ; when run on two different counterpoints, it makes it really slow
+        ;    nil
+        ;)
         (gil::g-count *sp* *m-degrees-type 2 gil::IRT_LQ (floor (* (- 1 (getparam 'min-skips-slider)) m-len)))
     )
 )
@@ -754,7 +756,7 @@
 
 ; add the constraint such that there is no unisson unless it is the first or last note
 (defun add-no-unisson-cst (cp cf species)
-    (if (< species 7)
+    (if (< species 7) ;; TODO GET BACK TO < 6
         (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
         (add-no-unisson-at-all-cst cp cf)
     )
@@ -788,9 +790,16 @@
     (gil::g-member *sp* P_CONS_VAR (lastone h-intervals))
 )
 
+
+(defun last-chord-not-minor-cst (h-interval1 h-interval2)
+    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 3)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 3)
+)
 ; add the constraint that the chord shall be perfect (1-3-5)
 (defun add-p-chord-cst (h-interval1 h-interval2)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ h-interval2)
+    (gil::g-rel *sp* h-interval2 gil::IRT_EQ 4)
+    (gil::g-rel *sp* h-interval1 gil::IRT_EQ 7)
+    #|(gil::g-rel *sp* h-interval1 gil::IRT_NQ h-interval2)
     (gil::g-rel *sp* h-interval1 gil::IRT_NQ 0)
     (gil::g-rel *sp* h-interval2 gil::IRT_NQ 0)
     (gil::g-rel *sp* h-interval1 gil::IRT_NQ 3)
@@ -798,7 +807,7 @@
     (gil::g-rel *sp* h-interval1 gil::IRT_NQ 8)
     (gil::g-rel *sp* h-interval2 gil::IRT_NQ 8)
     (gil::g-rel *sp* h-interval1 gil::IRT_NQ 9)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)
+    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)|#
 )
 
 (defun add-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)

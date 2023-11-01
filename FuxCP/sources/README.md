@@ -8,12 +8,13 @@
 * Il faut essayer de maximiser la variété de notes dans chaque voix
 * On ne peut pas avoir deux consonances parfaites à la suite
 * Always privilegiate the fundamental state (1-3-5) (might need to be reworked)
+* Le dernier accord ne peut pas être mineur (Fux dit que ça ne donne pas un sens de conclusion assez fort). Il faut donc omettre la tierce dans les modes ou ce dernier accord est mineur (ré, mi, la). Si on ne peut pas omettre la tierce, alors elle doit être majeure (e.g. ré fa# la) 
 
 ### TO BE DONE  
 * On peut avoir un renversement d’accord si la basse fait un mouvement conjoint par la suite
-* Le dernier accord ne peut pas être mineur (Fux dit que ça ne donne pas un sens de conclusion assez fort). Il faut donc omettre la tierce dans les modes ou ce dernier accord est mineur (ré, mi, la). Si on ne peut pas omettre la tierce, alors elle doit être majeure (e.g. ré fa# la) 
+
 
 ### QUESTIONS TO ASK
-- interval costs are taking a huge time alone
-- when running 6sp with parameter 1 -> super fast, when running it with parameter 6 and hardcoding param1 values -> not the same results
+- interval costs are taking a huge time 
 - changing the fux-search-engine generation (see return in 1sp) changes the speed of finding a solution
+- plus on rajoute de couts plus ça va lentement

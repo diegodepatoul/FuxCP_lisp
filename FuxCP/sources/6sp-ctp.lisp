@@ -30,6 +30,7 @@
         (print "no unisson between cp1 and cp2")
         (add-no-unisson-cst (first *cp) (first *cp2) species)
 
+
         (print "all voices can't go in the same direction")
         (add-no-together-move-cst (first *motions) (first *motions2))
 
@@ -41,15 +42,17 @@
         (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
         (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
-        (print "prefer perfect chords")
+        (print "prefer perfect chords") ; isn't this kind of the 1st and 2nd costs?
         (setf *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
         (add-prefer-p-chords-cost (first *h-intervals) (first *h-intervals2) *p-chords-cost)
         (add-cost-to-factors *p-chords-cost)
 
-        (print "Perfect chord at the beginning...")
+        ;(print "Perfect chord at the beginning...")
         ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
         (print "Perfect chord at the end...")
-        ;(add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+        (add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
+
+        (last-chord-not-minor-cst (last (first *h-intervals)) (last (first *h-intervals2))) ; redundant with last constraint
     ))
 
     ; RETURN

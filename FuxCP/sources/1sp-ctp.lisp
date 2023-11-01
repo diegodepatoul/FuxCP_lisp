@@ -17,26 +17,18 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first *cp) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
     
+    (if (eq species 6) (let (
+        (tonal (mod (car (last *cf)) 12))
+        )
+        (case tonal ((2 4 9) 
+            (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
+        )))
+    )
     (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first *cp)) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
     )))
-        (print *cf)
 
-    #|(if (eq species 6)
-        (let (
-            (my 3)
-            (perfect-chord (list 
-                    (+ (car (last *cf)) 4)
-                    (+ (car (last *cf)) 7)
-                )
-            )
-        )
-        (print perfect-chord)
-        (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* ))
-        (setf (nth *cf-last-index (first *cp)) (gil::add-int-var-dom *sp* (union cp-domain (    ))))
-        )
-    )|#
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
@@ -201,6 +193,7 @@
     (print "exiting 1sp")
     ; RETURN
     (if (eq species 1)
+    ;(if (or (eq species 1) (eq species 6)) ; todo del this line
         ; then create the search engine
         (append (fux-search-engine (first *cp)) (list species))
         ; else

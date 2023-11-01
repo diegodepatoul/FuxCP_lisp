@@ -46,5 +46,7 @@
 (defun create-2v-cp ()
     (setq *total-cp-len (* 2 *cf-len))
     (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) 
-    (merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+    ;(merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+    ;(append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
+    (setf *total-cp (append (first *cp) (first *cp2)))
 )
