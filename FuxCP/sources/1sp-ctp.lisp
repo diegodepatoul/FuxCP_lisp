@@ -8,6 +8,7 @@
 ;; FIRST SPECIES            #
 ;;==========================#
 (defun fux-cp-1st (counterpoint &optional (species 1))
+    (print "########## FIRST SPECIES ##########")
     "Create the CSP for the first species of Fux's counterpoint."
 
     ;============================================ CREATING GIL ARRAYS =============================
@@ -16,18 +17,18 @@
     (print (slot-value counterpoint 'cp))
     
     ; add the counterpoint array to the space with the domain *cp-domain
-    (setf (first (slot-value counterpoint 'cp)) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain))
+    (setf (first (slot-value counterpoint 'cp)) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain)) ;; TODO DOMAIN
     
-    (if (eq species 6) (let (
+    (if (eq species 6) (let ( ; if re-mi-la is the last cf note then you can use a major third even if it's note in the harmony
         (tonal (mod (car (last *cf)) 12))
         )
         (case tonal ((2 4 9) 
-            (setf (nth *cf-last-index (first (slot-value counterpoint 'cp))) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
+            (setf (nth *cf-last-index (first (slot-value counterpoint 'cp))) (gil::add-int-var-dom *sp* *chromatic-cp-domain)) ;TODO DOMAIN
         )))
     )
     (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
-        (setf (nth *cf-penult-index (first (slot-value counterpoint 'cp))) (gil::add-int-var-dom *sp* *chromatic-cp-domain))
+        (setf (nth *cf-penult-index (first (slot-value counterpoint 'cp))) (gil::add-int-var-dom *sp* *chromatic-cp-domain)) ;TODO DOMAIN
     )))
 
     ; creating harmonic intervals array
@@ -49,22 +50,22 @@
         ; then
         (progn
             ; creating melodic intervals array between the note n and n+2
-            (setq *m2-intervals (gil::add-int-var-array *sp* *cf-penult-index 0 12))
-            (setq *m2-intervals-brut (gil::add-int-var-array *sp* *cf-penult-index -12 12))
-            (create-m2-intervals (first (slot-value counterpoint 'cp)) *m2-intervals *m2-intervals-brut)
+            (setf (slot-value counterpoint 'm2-intervals) (gil::add-int-var-array *sp* *cf-penult-index 0 12))
+            (setf (slot-value counterpoint 'm2-intervals-brut) (gil::add-int-var-array *sp* *cf-penult-index -12 12))
+            (create-m2-intervals (first (slot-value counterpoint 'cp)) (slot-value counterpoint 'm2-intervals) (slot-value counterpoint 'm2-intervals-brut))
             
             ; creating boolean is counterpoint off key array
             (print "Creating is counterpoint off key array...")
-            (setq *is-cp-off-key-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (create-is-member-arr (first (slot-value counterpoint 'cp)) *is-cp-off-key-arr *off-domain)
+            (setf (slot-value counterpoint 'is-cp-off-key-arr) (gil::add-bool-var-array *sp* *cf-len 0 1))
+            (create-is-member-arr (first (slot-value counterpoint 'cp)) (slot-value counterpoint 'is-cp-off-key-arr) *off-domain) ;TODO off-domain
         )
     ))
 
     ; creating perfect consonances boolean array
     (print "Creating perfect consonances boolean array...")
     ; array of BoolVar representing if the interval between the cantus firmus and the counterpoint is a perfect consonance
-    (setq *is-p-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr (first (slot-value counterpoint 'h-intervals)) *is-p-cons-arr)
+    (setf (slot-value counterpoint 'is-p-cons-arr) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-p-cons-arr (first (slot-value counterpoint 'h-intervals)) (slot-value counterpoint 'is-p-cons-arr))
     
 
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
@@ -129,7 +130,7 @@
 
             ; no *chromatic motion between three consecutive notes
             (print "No chromatic motion...")
-            (add-no-chromatic-m-cst (first (slot-value counterpoint 'm-intervals-brut)) *m2-intervals-brut)
+            (add-no-chromatic-m-cst (first (slot-value counterpoint 'm-intervals-brut)) (slot-value counterpoint 'm2-intervals-brut))
 
             ;==================================== MOTION CONSTRAINTS ============================
             (print "Motion constraints...")
@@ -138,7 +139,7 @@
             ; no direct motion to reach a perfect consonance
                 (progn
                     (print "No direct motion to reach a perfect consonance...")
-                    (add-no-direct-move-to-p-cons-cst (first (slot-value counterpoint 'motions)) *is-p-cons-arr)
+                    (add-no-direct-move-to-p-cons-cst (first (slot-value counterpoint 'motions)) (slot-value counterpoint 'is-p-cons-arr))
                 )
             )
             ; no battuta kind of motion
@@ -149,7 +150,7 @@
             (if (eq species 6)
                 (progn
                     (print "No successive perfect consonances (counterpoint to cantus firmus)")
-                    (add-no-successive-p-cons-cst *is-p-cons-arr)
+                    (add-no-successive-p-cons-cst (slot-value counterpoint 'is-p-cons-arr))
                 )
             )
         )
@@ -163,7 +164,7 @@
     (case species ((1 6)
         ; then
         (progn
-            (setq *m-all-intervals (first (slot-value counterpoint 'm-intervals)))
+            (setf (slot-value counterpoint 'm-all-intervals) (first (slot-value counterpoint 'm-intervals)))
             (if (eq *is-first-run 1) (set-cost-factors))
 
             ; 1, 2) imperfect consonances are preferred to perfect consonances
@@ -180,14 +181,14 @@
             
             (if (eq species 6) (progn
                 ; 6) as few direct motion to reach a perfect consonance as possible
-                (setf (first *direct-move-to-p-cons-cost) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
-                (compute-no-direct-move-to-p-cons-costs-cst (first (slot-value counterpoint 'motions)) (first *direct-move-to-p-cons-cost) *is-p-cons-arr)
-                (add-cost-to-factors (first *direct-move-to-p-cons-cost))
+                (setf (first (slot-value counterpoint 'direct-move-to-p-cons-cost)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
+                (compute-no-direct-move-to-p-cons-costs-cst (first (slot-value counterpoint 'motions)) (first (slot-value counterpoint 'direct-move-to-p-cons-cost)) (slot-value counterpoint 'is-p-cons-arr))
+                (add-cost-to-factors (first (slot-value counterpoint 'direct-move-to-p-cons-cost)))
 
                 ; 7) as many different notes as possible
-                (setf *diversity-cost (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-                (compute-diversity-cost (first (slot-value counterpoint 'cp)) *diversity-cost)
-                (add-cost-to-factors *diversity-cost)
+                (setf (slot-value counterpoint 'diversity-cost) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+                (compute-diversity-cost (first (slot-value counterpoint 'cp)) (slot-value counterpoint 'diversity-cost))
+                (add-cost-to-factors (slot-value counterpoint 'diversity-cost))
             ))
             
         )

@@ -139,33 +139,25 @@
     (motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
     (is-cf-bass-arr :initarg :is-cf-bass-arr :initform (list nil nil nil nil))
+    (m2-intervals-brut :initarg :m2-intervals-brut :initform nil)
+    (m2-intervals :initarg :m2-intervals :initform nil)
+    (cf-brut-m-intervals :initarg :cf-brut-m-intervals :initform nil)
+    (is-p-cons-arr :initarg :is-p-cons-arr :initform nil)
+    (is-cp-off-key-arr :initarg :is-cp-off-key-arr :initform nil)
+    (p-cons-cost :initarg :p-cons-cost :initform nil)
+    (fifth-cost :initarg :fifth-cost :initform nil)
+    (octave-cost :initarg :octave-cost :initform nil)
+    (m-degrees-cost :initarg :m-degrees-cost :initform nil)
+    (m-degrees-type :initarg :m-degrees-type :initform nil)
+    (off-key-cost :initarg :off-key-cost :initform nil)
+    (m-all-intervals :initarg :m-all-intervals :initform nil)
 ))
 
 ; re/define all the variables the CSP needs
 (defun set-space-variables (species) (case species 
     ((1 2 3) (progn
         ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
-        (defparameter *cp (list nil nil nil nil))
-        (defparameter *h-intervals (list nil nil nil nil))
-        (defparameter *m-intervals-brut (list nil nil nil nil))
-        (defparameter *m-intervals (list nil nil nil nil))
-        (defvar *m2-intervals-brut)
-        (defvar *m2-intervals)
-        (defvar *cf-brut-m-intervals)
-        (defvar *is-p-cons-arr)
-        (defparameter *motions (list nil nil nil nil))
-        (defparameter *motions-cost (list nil nil nil nil))
-        (defparameter *is-cf-bass-arr (list nil nil nil nil))
-        (defvar *is-cp-off-key-arr)
-        (defvar *N-COST-FACTORS)
-        (defvar *cost-factors)
-        (defvar *total-cost)
-        (defvar *p-cons-cost)
-        (defvar *fifth-cost)
-        (defvar *octave-cost)
-        (defvar *m-degrees-cost)
-        (defvar *m-degrees-type)
-        (defvar *off-key-cost)
+
 
         (case species 
             (2 (progn
