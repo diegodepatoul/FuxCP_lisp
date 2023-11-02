@@ -34,11 +34,9 @@
     (not (equal (getparam 'borrow-mode) "None"))
 )
 
-; re/define all the variables the CSP needs
-(defun set-space-variables ()
-    ; THE CSP SPACE 
-    (defparameter *sp* (gil::new-space))
 
+; define all the constants that are going to be used
+(defun define-global-constants ()
     ;; CONSTANTS
     ; Number of costs added
     (defparameter *n-cost-added 0)
@@ -46,37 +44,6 @@
     (defparameter DIRECT 2)
     (defparameter OBLIQUE 1)
     (defparameter CONTRARY 0)
-
-    ;; COSTS
-    ;; Melodic costs
-    (defparameter *m-step-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-step-cost)))
-    (defparameter *m-third-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-third-cost)))
-    (defparameter *m-fourth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-fourth-cost)))
-    (defparameter *m-tritone-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-tritone-cost)))
-    (defparameter *m-fifth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-fifth-cost)))
-    (defparameter *m-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-sixth-cost)))
-    (defparameter *m-seventh-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-seventh-cost)))
-    (defparameter *m-octave-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-octave-cost)))
-    ;; General costs
-    (defparameter *borrow-cost* (gil::add-int-var-dom *sp* (getparam-val 'borrow-cost)))
-    (defparameter *h-fifth-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-fifth-cost)))
-    (defparameter *h-octave-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-octave-cost)))
-    (defparameter *con-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'con-motion-cost)))
-    (defparameter *obl-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'obl-motion-cost)))
-    (defparameter *dir-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-motion-cost)))
-    ;; Species specific costs
-    (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
-    (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
-    (defparameter *two-beats-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-beats-apart-cost)))
-    (defparameter *two-bars-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-bars-apart-cost)))
-    (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
-
-    ;; Params domains
-    (defparameter *motions-domain*
-        (remove-duplicates (mapcar (lambda (x) (getparam x))
-            (list 'con-motion-cost 'obl-motion-cost 'dir-motion-cost)
-        ))
-    )
 
     ; Integer constants (to represent costs or intervals)
     ; 0 in IntVar
@@ -129,122 +96,160 @@
 
     ; *cf-brut-intervals is the list of brut melodic intervals in the cantus firmus
     (setq *cf-brut-m-intervals (gil::add-int-var-array *sp* *cf-last-index -127 127))
-
-    ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defparameter *cp (list nil nil nil nil))
-    (defparameter *h-intervals (list nil nil nil nil))
-    (defparameter *m-intervals-brut (list nil nil nil nil))
-    (defparameter *m-intervals (list nil nil nil nil))
-    (defvar *m2-intervals-brut)
-    (defvar *m2-intervals)
-    (defvar *cf-brut-m-intervals)
-    (defvar *is-p-cons-arr)
-    (defparameter *motions (list nil nil nil nil))
-    (defparameter *motions-cost (list nil nil nil nil))
-    (defvar *is-cf-bass) ; is this even used somewhere ?
-    (defparameter *is-cf-bass-arr (list nil nil nil nil))
-    (defvar *is-cp-off-key-arr)
-    (defvar *N-COST-FACTORS)
-    (defvar *cost-factors)
-    (defvar *total-cost)
-    (defvar *p-cons-cost)
-    (defvar *fifth-cost)
-    (defvar *octave-cost)
-    (defvar *m-degrees-cost)
-    (defvar *m-degrees-type)
-    (defvar *off-key-cost)
-
-    ;; SIXTH SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defparameter *cp2 (list nil nil nil nil))
-    (defparameter *h-intervals2 (list nil nil nil nil))
-    (defparameter *m-intervals-brut2 (list nil nil nil nil))
-    (defparameter *m-intervals2 (list nil nil nil nil))
-    (defvar *m2-intervals-brut2)
-    (defvar *m2-intervals2)
-    (defvar *cf-brut-m-intervals2)
-    (defvar *is-p-cons-arr2)
-    (defparameter *motions2 (list nil nil nil nil))
-    (defparameter *motions-cost2 (list nil nil nil nil))
-    (defvar *is-cf-bass2) ; this is not used anywhere
-    (defparameter *is-cf-bass-arr2 (list nil nil nil nil))
-    (defvar *is-cp-off-key-arr2)
-    (defvar *p-cons-cost2)
-    (defvar *fifth-cost2)
-    (defvar *octave-cost2)
-    (defvar *m-degrees-cost2)
-    (defvar *m-degrees-type2)
-    (defvar *off-key-cost2)
-    
-    (defparameter *direct-move-to-p-cons-cost (list nil nil nil nil))
-    (defparameter *direct-move-to-p-cons-cost2 (list nil nil nil nil))
-    (defvar *p-chords-cost)
-    (defvar *diversity-cost)
-    (defvar *diversity-cost2)
-
-    (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
-
-
-
-
-    ;; SECOND SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defvar *h-intervals-abs)
-    (defvar *h-intervals-brut)
-    (defparameter *m-succ-intervals (list nil nil nil))
-    (defparameter *m-succ-intervals-brut (list nil nil nil))
-    (defvar *m2-len)
-    (defvar *total-m-len)
-    (defvar *m-all-intervals)
-    (defvar *m-all-intervals-brut)
-    (defvar *real-motions)
-    (defvar *real-motions-cost)
-    (defvar *is-ta-dim-arr)
-    (defvar *is-nbour-arr)
-    (defvar *penult-thesis-cost)
-    (defvar *total-cp)
-
-    ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defvar *is-5qn-linked-arr)
-    (defvar *total-cp-len)
-    (defparameter *is-cons-arr (list nil nil nil nil))
-    (defparameter *cons-cost (list nil nil nil nil))
-    (defvar *is-not-cambiata-arr)
-    (defvar *not-cambiata-cost)
-    (defvar *m2-eq-zero-cost)
-
-    ;; FOURTH SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defvar *is-no-syncope-arr)
-    (defvar *no-syncope-cost)
-
-    ;; FIFTH SPECIES COUNTERPOINT GLOBAL VARIABLES
-    (defvar *species-arr) ; 0: no constraint, 1: first species, 2: second species, 3: third species, 4: fourth species
-    (defvar *sp-arr) ; represents *species-arr by position in the measure
-    (defparameter *is-nth-species-arr (list nil nil nil nil nil)) ; if *species-arr is n, then *is-nth-species-arr is true
-    (defparameter *is-3rd-species-arr (list nil nil nil nil)) ; if *species-arr is 3, then *is-3rd-species-arr is true
-    (defparameter *is-4th-species-arr (list nil nil nil nil)) ; if *species-arr is 4, then *is-4th-species-arr is true
-    (defvar *is-2nd-or-3rd-species-arr) ; if *species-arr is 2 or 3, then *is-2nd-or-3rd-species-arr is true
-    (defvar *m-ta-intervals) ; represents the m-intervals between the thesis note and the arsis note of the same measure
-    (defvar *m-ta-intervals-brut) ; same but without the absolute reduction
-    (defvar *is-mostly-3rd-arr) ; true if second, third and fourth notes are from the 3rd species
-    (defvar *is-constrained-arr) ; represents !(*is-0th-species-arr) i.e. there are species constraints
-    (defparameter *is-cst-arr (list nil nil nil nil)) ; represents *is-constrained-arr for all beats of the measure
-
     ; array representing the brut melodic intervals of the cantus firmus
     (create-cf-brut-m-intervals *cf *cf-brut-m-intervals)
+
+    ;; COSTS
+    ;; Melodic costs
+    (defparameter *m-step-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-step-cost)))
+    (defparameter *m-third-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-third-cost)))
+    (defparameter *m-fourth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-fourth-cost)))
+    (defparameter *m-tritone-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-tritone-cost)))
+    (defparameter *m-fifth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-fifth-cost)))
+    (defparameter *m-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-sixth-cost)))
+    (defparameter *m-seventh-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-seventh-cost)))
+    (defparameter *m-octave-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-octave-cost)))
+    ;; General costs
+    (defparameter *borrow-cost* (gil::add-int-var-dom *sp* (getparam-val 'borrow-cost)))
+    (defparameter *h-fifth-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-fifth-cost)))
+    (defparameter *h-octave-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-octave-cost)))
+    (defparameter *con-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'con-motion-cost)))
+    (defparameter *obl-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'obl-motion-cost)))
+    (defparameter *dir-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-motion-cost)))
+    ;; Species specific costs
+    (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
+    (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
+    (defparameter *two-beats-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-beats-apart-cost)))
+    (defparameter *two-bars-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-bars-apart-cost)))
+    (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
+
+    ;; Params domains
+    (defparameter *motions-domain*
+        (remove-duplicates (mapcar (lambda (x) (getparam x))
+            (list 'con-motion-cost 'obl-motion-cost 'dir-motion-cost)
+        ))
+    )
 )
+
+(defclass counterpoint () (
+    (cp :initarg :cp :initform (list nil nil nil nil))
+    (h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
+    (m-intervals-brut :initarg :m-intervals-brut :initform (list nil nil nil nil))
+    (m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
+    (motions :initarg :motions :initform (list nil nil nil nil))
+    (motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
+    (is-cf-bass-arr :initarg :is-cf-bass-arr :initform (list nil nil nil nil))
+))
+
+; re/define all the variables the CSP needs
+(defun set-space-variables (species) (case species 
+    ((1 2 3) (progn
+        ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
+        (defparameter *cp (list nil nil nil nil))
+        (defparameter *h-intervals (list nil nil nil nil))
+        (defparameter *m-intervals-brut (list nil nil nil nil))
+        (defparameter *m-intervals (list nil nil nil nil))
+        (defvar *m2-intervals-brut)
+        (defvar *m2-intervals)
+        (defvar *cf-brut-m-intervals)
+        (defvar *is-p-cons-arr)
+        (defparameter *motions (list nil nil nil nil))
+        (defparameter *motions-cost (list nil nil nil nil))
+        (defparameter *is-cf-bass-arr (list nil nil nil nil))
+        (defvar *is-cp-off-key-arr)
+        (defvar *N-COST-FACTORS)
+        (defvar *cost-factors)
+        (defvar *total-cost)
+        (defvar *p-cons-cost)
+        (defvar *fifth-cost)
+        (defvar *octave-cost)
+        (defvar *m-degrees-cost)
+        (defvar *m-degrees-type)
+        (defvar *off-key-cost)
+
+        (case species 
+            (2 (progn
+                ;; SECOND SPECIES COUNTERPOINT GLOBAL VARIABLES
+                (defvar *h-intervals-abs)
+                (defvar *h-intervals-brut)
+                (defparameter *m-succ-intervals (list nil nil nil))
+                (defparameter *m-succ-intervals-brut (list nil nil nil))
+                (defvar *m2-len)
+                (defvar *total-m-len)
+                (defvar *m-all-intervals)
+                (defvar *m-all-intervals-brut)
+                (defvar *real-motions)
+                (defvar *real-motions-cost)
+                (defvar *is-ta-dim-arr)
+                (defvar *is-nbour-arr)
+                (defvar *penult-thesis-cost)
+                (defvar *total-cp)
+            ))
+
+            (3 (progn
+                ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
+                (defvar *is-5qn-linked-arr)
+                (defvar *total-cp-len)
+                (defparameter *is-cons-arr (list nil nil nil nil))
+                (defparameter *cons-cost (list nil nil nil nil))
+                (defvar *is-not-cambiata-arr)
+                (defvar *not-cambiata-cost)
+                (defvar *m2-eq-zero-cost)
+            ))
+
+            (6 (progn
+                (defparameter *direct-move-to-p-cons-cost (list nil nil nil nil))
+                (defvar *p-chords-cost) ; should only be declared once
+                (defvar *diversity-cost)
+            ))
+        )
+    ))
+
+    (4 (progn
+        ;; FOURTH SPECIES COUNTERPOINT GLOBAL VARIABLES
+        (defvar *is-no-syncope-arr) ; not necessary as it is overwritten
+        (defvar *no-syncope-cost) ; not necessary as it is overwritten
+    ))
+
+    (5 (progn
+        ;; FIFTH SPECIES COUNTERPOINT GLOBAL VARIABLES
+        (defvar *species-arr) ; 0: no constraint, 1: first species, 2: second species, 3: third species, 4: fourth species
+        (defvar *sp-arr) ; represents *species-arr by position in the measure
+        (defparameter *is-nth-species-arr (list nil nil nil nil nil)) ; if *species-arr is n, then *is-nth-species-arr is true
+        (defparameter *is-3rd-species-arr (list nil nil nil nil)) ; if *species-arr is 3, then *is-3rd-species-arr is true
+        (defparameter *is-4th-species-arr (list nil nil nil nil)) ; if *species-arr is 4, then *is-4th-species-arr is true
+        (defvar *is-2nd-or-3rd-species-arr) ; if *species-arr is 2 or 3, then *is-2nd-or-3rd-species-arr is true
+        (defvar *m-ta-intervals) ; represents the m-intervals between the thesis note and the arsis note of the same measure
+        (defvar *m-ta-intervals-brut) ; same but without the absolute reduction
+        (defvar *is-mostly-3rd-arr) ; true if second, third and fourth notes are from the 3rd species
+        (defvar *is-constrained-arr) ; represents !(*is-0th-species-arr) i.e. there are species constraints
+        (defparameter *is-cst-arr (list nil nil nil nil)) ; represents *is-constrained-arr for all beats of the measure
+
+        (defparameter *m-succ-intervals-brut (list nil nil nil))
+        (defparameter *m-succ-intervals (list nil nil nil))
+        (defparameter *is-cons-arr (list nil nil nil nil))
+        (defparameter *cons-cost (list nil nil nil nil))
+    ))
+))
 
 
 
 ;; DISPATCHER FUNCTION
 (defun fux-cp (species)
     "Dispatches the counterpoint generation to the appropriate function according to the species."
+    ; THE CSP SPACE 
+    (defparameter *sp* (gil::new-space))
+    (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
+
     ; re/set global variables
-    (set-space-variables)
+    (define-global-constants)
+    ;(set-space-variables species)
     
     (print (list "Choosing species: " species))
     (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
             (setq *N-COST-FACTORS 5)
-            (fux-cp-1st)
+            (fux-cp-1st (make-instance 'counterpoint))
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
@@ -381,6 +386,8 @@
 
         ; print the solution from GiL
         (print "Solution: ")
+
+        #|
         (case species
             (1 (progn
                 (print "PRINT 1st species")
@@ -529,7 +536,7 @@
             (print (list "borrowed-scale" *borrowed-scale))
             (print (list "off-scale     " (reverse *off-scale))) 
         )
-        )
+        )|#
 
 
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution

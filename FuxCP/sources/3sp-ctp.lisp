@@ -180,7 +180,7 @@
     (set-cost-factors)
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst)
+    (add-p-cons-cost-cst *h-intervals)
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst)

@@ -171,14 +171,14 @@
 ; add cost constraints such that a cost is added when a fifth or an octave is present in the 1st beat
 ; except for the 4th species where it is the 3rd beat
 ; @is-sync: true means it is the 4th species
-(defun add-p-cons-cost-cst (&optional (is-sync nil))
+(defun add-p-cons-cost-cst (h-intervals &optional (is-sync nil))
     (setq *fifth-cost  (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setq *octave-cost (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (if is-sync
         ; then 4th species
-        (add-h-inter-cost-cst (rest (third *h-intervals)))
+        (add-h-inter-cost-cst (rest (third h-intervals)))
         ; else
-        (add-h-inter-cost-cst (restbutlast (first *h-intervals)))
+        (add-h-inter-cost-cst (restbutlast (first h-intervals)))
     )
     (print "Added h-inter costs")
     (add-cost-to-factors *fifth-cost)

@@ -153,7 +153,7 @@
     (print "Cost factors...")
     (set-cost-factors)
     ; 1, 2) imperfect consonances are preferred to perfect consonances
-    (add-p-cons-cost-cst t)
+    (add-p-cons-cost-cst *h-intervals t)
     
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst)
