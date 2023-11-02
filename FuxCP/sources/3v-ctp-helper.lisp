@@ -43,10 +43,10 @@
     (setf *off-domain (intersection *cp-range *off-scale))
 )
 
-(defun create-2v-cp ()
-    (setq *total-cp-len (* 2 *cf-len))
-    (setq *total-cp (gil::add-int-var-array *sp* *total-cp-len 0 127)) 
+(defun create-2v-cp (cp1 cp2 total-cp)
+    (setf total-cp-len (* 2 *cf-len))
+    (setf total-cp (gil::add-int-var-array *sp* total-cp-len 0 127)) 
     ;(merge-cp-same-len (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
     ;(append-cp (list (first *cp) (first *cp2)) *total-cp) ; merge the two counterpoint arrays into one
-    (setf *total-cp (append (first *cp) (first *cp2)))
+    (setf total-cp (append (first cp1) (first cp2)))
 )

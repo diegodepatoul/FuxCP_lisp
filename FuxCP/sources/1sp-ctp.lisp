@@ -14,7 +14,9 @@
     ;============================================ CREATING GIL ARRAYS =============================
     ;; initialize the variables
     (print "Initializing variables...")
+    (print 'debug)
     (print (slot-value counterpoint 'cp))
+    (print 'debug)
     
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (slot-value counterpoint 'cp)) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain)) ;; TODO DOMAIN

@@ -10,15 +10,17 @@
 ;; Note: fux-cp-2nd execute the first species algorithm without some constraints.
 ;; In this function, all the variable names without the arsis-suffix refers to thesis notes AKA the first species notes.
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
-(defun fux-cp-6th (&optional (species 6))
+(defun fux-cp-6th (counterpoint-1 counterpoint-2 &optional (species 6))
     (print "########## SIXTH SPECIES ##########")
 
     ; Creating the first counterpoint
-    (fux-cp-1st 6)
+    (fux-cp-1st counterpoint-1 6)
+    (setf *total-cp nil)
+    (create-2v-cp (slot-value counterpoint-1 'cp) nil *total-cp)
     
     ; saving values of cp2 and now working with cp1
-    (backup-cp2-values)
-
+    ;(backup-cp2-values)
+#| 
     (if (eq species 6) (progn
         ; creating the second counterpoint
         (fux-cp-1st 6)
@@ -43,7 +45,8 @@
         (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
         (print "prefer perfect chords") ; isn't this kind of the 1st and 2nd costs?
-        (setf *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+        
+        (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
         (add-prefer-p-chords-cost (first *h-intervals) (first *h-intervals2) *p-chords-cost)
         (add-cost-to-factors *p-chords-cost)
 
@@ -53,7 +56,7 @@
         (add-p-chord-cst (last (first *h-intervals)) (last (first *h-intervals2)))
 
         (last-chord-not-minor-cst (last (first *h-intervals)) (last (first *h-intervals2))) ; redundant with last constraint
-    ))
+    ))|#
 
     ; RETURN
     (if (eq species 6)

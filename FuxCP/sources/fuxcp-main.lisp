@@ -132,6 +132,7 @@
 )
 
 (defclass counterpoint () (
+    ; 1st species variables
     (cp :initarg :cp :initform (list nil nil nil nil))
     (h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
     (m-intervals-brut :initarg :m-intervals-brut :initform (list nil nil nil nil))
@@ -151,10 +152,14 @@
     (m-degrees-type :initarg :m-degrees-type :initform nil)
     (off-key-cost :initarg :off-key-cost :initform nil)
     (m-all-intervals :initarg :m-all-intervals :initform nil)
+
+    ; 6st species variables
+    (direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
+    (diversity-cost :initarg :diversity-cost :initform nil)
 ))
 
 ; re/define all the variables the CSP needs
-(defun set-space-variables (species) (case species 
+(defun get-counterpoint (species) (case species 
     ((1 2 3) (progn
         ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
 
@@ -190,9 +195,7 @@
             ))
 
             (6 (progn
-                (defparameter *direct-move-to-p-cons-cost (list nil nil nil nil))
-                (defvar *p-chords-cost) ; should only be declared once
-                (defvar *diversity-cost)
+
             ))
         )
     ))
@@ -261,7 +264,7 @@
         ))
         (6 (progn
             (setq *N-COST-FACTORS 15)
-            (fux-cp-6th)
+            (fux-cp-6th (make-instance 'counterpoint) (make-instance 'counterpoint))
         ))
         (7 (progn
             (setq *N-COST-FACTORS 15) ;; TODO change the n-cost
@@ -577,8 +580,8 @@
                 (print (list "Species = " species))
                 (case species
                     (6 (progn 
-                        (setf first-cp (gil::g-values sol (first *cp)))
-                        (setf second-cp (gil::g-values sol (first *cp2)))
+                        (setf first-cp (subseq pitches-om 0 *cf-len))
+                        (setf second-cp (subseq pitches-om *cf-len))
                     ))
                     (7 (progn
                         (setf first-cp nil)

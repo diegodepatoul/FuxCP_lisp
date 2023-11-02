@@ -226,7 +226,6 @@
     (setq *cost-factors (gil::add-int-var-array *sp* *N-COST-FACTORS 0 COST_UB))
     ; IntVar representing the *total *cost
     (setq *total-cost (gil::add-int-var *sp* COST_LB COST_UB))
-    (print 'debug123)
 )
 
 ; add general costs for most of the species
