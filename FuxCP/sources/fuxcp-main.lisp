@@ -140,7 +140,7 @@
     (off-domain :accessor off-domain :initarg :off-domain :initform nil)
 
     ; 1st species variables
-    (cp :accessor cp :initarg :cp :initform (list nil nil nil nil))
+    (cp :accessor cp :initarg :cp :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
     (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
     (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list nil nil nil nil))
     (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
@@ -162,8 +162,8 @@
     (voice)
 
     ; 6st species variables
-    (direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
-    (diversity-cost :initarg :diversity-cost :initform nil)
+    (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
+    (diversity-cost :accessor diversity-cost :initarg :diversity-cost :initform nil)
 ))
 
 (defun init-counterpoint (voice-type)
@@ -230,10 +230,6 @@
                 (defvar *is-not-cambiata-arr)
                 (defvar *not-cambiata-cost)
                 (defvar *m2-eq-zero-cost)
-            ))
-
-            (6 (progn
-
             ))
         )
     ))
@@ -302,8 +298,8 @@
         ))
         (6 (progn
             (setq *N-COST-FACTORS 15)
-            (fux-cp-6th (make-instance 'counterpoint) 
-                        (make-instance 'counterpoint))
+            (fux-cp-6th (init-counterpoint (first *voices-types))
+                        (init-counterpoint (second *voices-types)))
         ))
         (7 (progn
             (setq *N-COST-FACTORS 15) ;; TODO change the n-cost
@@ -636,8 +632,8 @@
                 (make-instance 'poly 
                     :voices (
                         list
-                        (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
                         (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)
+                        (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
                         )
                 )
             )
