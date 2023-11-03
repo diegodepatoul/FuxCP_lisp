@@ -132,6 +132,13 @@
 )
 
 (defclass counterpoint () (
+    ; voice variables
+    (cp-range :accessor cp-range :initarg :cp-range :initform nil)
+    (cp-domain :accessor cp-domain :initarg :cp-domain :initform nil)
+    (chromatic-cp-domain :accessor chromatic-cp-domain :initarg :chromatic-cp-domain :initform nil)
+    (extended-cp-domain :accessor extended-cp-domain :initarg :extended-cp-domain :initform nil)
+    (off-domain :accessor off-domain :initarg :off-domain :initform nil)
+
     ; 1st species variables
     (cp :accessor cp :initarg :cp :initform (list nil nil nil nil))
     (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
@@ -152,11 +159,42 @@
     (m-degrees-type :accessor m-degrees-type :initarg :m-degrees-type :initform nil)
     (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
     (m-all-intervals :accessor m-all-intervals :initarg :m-all-intervals :initform nil)
+    (voice)
 
     ; 6st species variables
     (direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
     (diversity-cost :initarg :diversity-cost :initform nil)
 ))
+
+(defun init-counterpoint (voice-type)
+    ; Lower bound and upper bound related to the cantus firmus pitch
+    (let (
+        (range-upper-bound (+ 12 (* 6 voice-type)))
+        (range-lower-bound (+ -6 (* 6 voice-type)))
+        )
+        (let (
+            ; set the pitch range of the counterpoint
+            (cp-range (range (+ *tone-pitch-cf range-upper-bound) :min (+ *tone-pitch-cf range-lower-bound))) ; arbitrary range
+            )
+            (let (
+            ; set counterpoint pitch domain
+            (cp-domain (intersection cp-range *scale))
+            ; penultimate (first *cp) note domain
+            (chromatic-cp-domain (intersection cp-range *chromatic-scale))
+            ; set counterpoint extended pitch domain
+            (extended-cp-domain (intersection cp-range (union *scale *borrowed-scale)))
+            ; set the domain of the only barrowed notes
+            (off-domain (intersection cp-range *off-scale))
+            )
+            (make-instance 'counterpoint :cp-range cp-range
+                                         :cp-domain cp-domain
+                                         :chromatic-cp-domain chromatic-cp-domain
+                                         :extended-cp-domain extended-cp-domain
+                                         :off-domain off-domain)
+            )
+        )
+    )
+)
 
 ; re/define all the variables the CSP needs
 (defun get-counterpoint (species) (case species 
@@ -244,7 +282,7 @@
     (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
             (setq *N-COST-FACTORS 5)
-            (fux-cp-1st (make-instance 'counterpoint))
+            (fux-cp-1st (init-counterpoint (first *voices-types)))
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
@@ -264,7 +302,8 @@
         ))
         (6 (progn
             (setq *N-COST-FACTORS 15)
-            (fux-cp-6th (make-instance 'counterpoint) (make-instance 'counterpoint))
+            (fux-cp-6th (make-instance 'counterpoint) 
+                        (make-instance 'counterpoint))
         ))
         (7 (progn
             (setq *N-COST-FACTORS 15) ;; TODO change the n-cost
@@ -274,7 +313,7 @@
     )
 )
 
-(defun fux-search-engine (the-cp &optional (species 1))
+(defun fux-search-engine (the-cp &optional (species 1) (voice-type 0))
     (let (se tstop sopts)
         ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
@@ -312,7 +351,7 @@
         )
 
         ; 5th species specific
-        (if (and (eq species 5) (>= VOICE_TYPE 0)) ; otherwise there is no species array
+        (if (and (eq species 5) (>= voice-type 0)) ; otherwise there is no species array
         (progn
             (gil::g-branch *sp* *no-syncope-cost var-branch-type val-branch-type)
             (gil::g-branch *sp* *not-cambiata-cost var-branch-type val-branch-type)

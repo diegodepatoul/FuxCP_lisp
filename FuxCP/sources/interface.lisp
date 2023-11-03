@@ -48,8 +48,8 @@
     (pref-species-slider-param :accessor pref-species-slider-param :initform 50 :type integer :documentation "")
     ; ---------- Solver parameters ----------
     (species-param :accessor species-param :initform "5th" :type string :documentation "")
-    (voice-type-param :accessor voice-type-param :initform "Above" :type string :documentation "")
-    (voice-type-param2 :accessor voice-type-param2 :initform "Far above" :type string :documentation "")
+    (voice-type-param-1 :accessor voice-type-param-1 :initform "Above" :type string :documentation "")
+    (voice-type-param-2 :accessor voice-type-param-2 :initform "Far above" :type string :documentation "")
     (irreverence-slider-param :accessor irreverence-slider-param :initform 0 :type integer :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
     ; ---------- Output & Stop ----------
@@ -692,9 +692,9 @@
         (om::om-make-point 200 20)
         "Voice range"
         :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
-        :value (voice-type-param (om::object editor))
+        :value (voice-type-param-1 (om::object editor))
         :di-action #'(lambda (cost)
-            (setf (voice-type-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (voice-type-param-1 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         )
 
@@ -712,9 +712,9 @@
         (om::om-make-point 200 20)
         "Voice range"
         :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
-        :value (voice-type-param2 (om::object editor))
+        :value (voice-type-param-2 (om::object editor))
         :di-action #'(lambda (cost)
-            (setf (voice-type-param2 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (voice-type-param-2 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         )
 
@@ -782,10 +782,13 @@
             (if (null (cf-voice (om::object editor))); if the problem is not initialized
                 (error "No voice has been given to the solver. Please set a cantus firmus into the second input and try again.")
             )
+            
+            (setf *voices-types (list (convert-to-voice-integer (voice-type-param-1 (om::object editor)))
+                                      (convert-to-voice-integer (voice-type-param-2 (om::object editor)))
+            ))
+            
             (set-global-cf-variables
                 (cf-voice (om::object editor))
-                (convert-to-voice-integer (voice-type-param (om::object editor)))
-                (convert-to-voice-integer (voice-type-param2 (om::object editor)))
                 (borrow-mode-param (om::object editor))
             )
             (defparameter *params* (make-hash-table))
@@ -964,14 +967,7 @@
 )
 
 ; define all the global variables
-(defun set-global-cf-variables (cantus-firmus voice-type voice-type2 borrow-mode)
-    ; Lower bound and upper bound related to the cantus firmus pitch
-    (defparameter VOICE_TYPE voice-type)
-    (defparameter VOICE_TYPE2 voice-type2)
-    (defparameter RANGE_UB (+ 12 (* 6 VOICE_TYPE)))
-    (defparameter RANGE_UB2 (+ 12 (* 6 VOICE_TYPE2)))
-    (defparameter RANGE_LB (+ -6 (* 6 VOICE_TYPE)))
-    (defparameter RANGE_LB2 (+ -6 (* 6 VOICE_TYPE2)))
+(defun set-global-cf-variables (cantus-firmus borrow-mode)
     (defparameter *prev-sol-check nil)
     (defparameter rythmic+pitches nil)
     (defparameter rythmic-om nil)
@@ -996,21 +992,6 @@
     )
     ; get notes that are not in the natural scale of the tone
     (defparameter *off-scale (set-difference *chromatic-scale *scale))
-    ; set the pitch range of the counterpoint
-    (defparameter *cp-range (range (+ *tone-pitch-cf RANGE_UB) :min (+ *tone-pitch-cf RANGE_LB))) ; arbitrary range
-    (defparameter *cp2-range (range (+ *tone-pitch-cf RANGE_UB2) :min (+ *tone-pitch-cf RANGE_LB2))) ; arbitrary range
-    ; set counterpoint pitch domain
-    (defparameter *cp-domain (intersection *cp-range *scale))
-    (defparameter *cp2-domain (intersection *cp2-range *scale))
-    ; penultimate (first *cp) note domain
-    (defparameter *chromatic-cp-domain (intersection *cp-range *chromatic-scale))
-    (defparameter *chromatic-cp2-domain (intersection *cp2-range *chromatic-scale))
-    ; set counterpoint extended pitch domain
-    (defparameter *extended-cp-domain (intersection *cp-range (union *scale *borrowed-scale)))
-    (defparameter *extended-cp2-domain (intersection *cp-range (union *scale *borrowed-scale)))
-    ; set the domain of the only barrowed notes
-    (defparameter *off-domain (intersection *cp-range *off-scale))
-    (defparameter *off-domain2 (intersection *cp2-range *off-scale))
     ; length of the cantus firmus
     (defparameter *cf-len (length *cf))
     ; *cf-last-index is the number of melodic intervals in the cantus firmus

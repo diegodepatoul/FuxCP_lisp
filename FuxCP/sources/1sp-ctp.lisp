@@ -19,18 +19,18 @@
     (print 'debug)
     
     ; add the counterpoint array to the space with the domain *cp-domain
-    (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len *extended-cp-domain)) ;; TODO DOMAIN
+    (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
     
     (if (eq species 6) (let ( ; if re-mi-la is the last cf note then you can use a major third even if it's note in the harmony
         (tonal (mod (car (last *cf)) 12))
         )
         (case tonal ((2 4 9) 
-            (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* *chromatic-cp-domain)) ;TODO DOMAIN
+            (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
         )))
     )
     (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
-        (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* *chromatic-cp-domain)) ;TODO DOMAIN
+        (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
     )))
 
     ; creating harmonic intervals array
@@ -64,7 +64,7 @@
             ; creating boolean is counterpoint off key array
             (print "Creating is counterpoint off key array...")
             (setf (is-cp-off-key-arr counterpoint) (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (create-is-member-arr (first (cp counterpoint)) (is-cp-off-key-arr counterpoint) *off-domain) ;TODO off-domain
+            (create-is-member-arr (first (cp counterpoint)) (is-cp-off-key-arr counterpoint) (off-domain counterpoint))
         )
     ))
 
