@@ -177,13 +177,13 @@
     (add-no-battuta-cst (fourth *motions) (first *h-intervals) (fourth *m-intervals-brut) (fourth *is-cf-bass-arr)) ; TODO
 
     ;======================================== COST FACTORS ====================================
-    (set-cost-factors)
+    (set-cost-factors  *m-all-intervals)
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
     (add-p-cons-cost-cst *h-intervals)
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
-    (set-general-costs-cst)
+    (set-general-costs-cst counterpoint)
     
     ; 5) contrary motion is preferred
     (add-cost-to-factors (fourth *motions-cost))

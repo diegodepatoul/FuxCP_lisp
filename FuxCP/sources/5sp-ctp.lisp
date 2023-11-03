@@ -328,7 +328,7 @@
 
 
     ;======================================== COST FACTORS ====================================
-    (set-cost-factors)
+    (set-cost-factors *m-all-intervals)
     (print "Imperfect consonances are preferred to perfect consonances...")
     (setq *fifth-cost  (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setq *octave-cost (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
@@ -338,7 +338,7 @@
     (add-cost-to-factors *octave-cost)
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
-    (set-general-costs-cst *total-cp-len *is-constrained-arr (collect-bot-array (butlast *is-constrained-arr) (rest *is-constrained-arr)))
+    (set-general-costs-cst counterpoint *total-cp-len *is-constrained-arr (collect-bot-array (butlast *is-constrained-arr) (rest *is-constrained-arr)))
     
     ; 5) contrary motion is preferred
     (add-cost-to-factors (fourth *motions))

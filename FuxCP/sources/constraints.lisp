@@ -214,8 +214,8 @@
 )
 
 ; setup the cost factors with the minimum cost possible
-(defun set-cost-factors ()
-    (setq m-len (length *m-all-intervals))
+(defun set-cost-factors (m-all-intervals)
+    (setq m-len (length m-all-intervals))
     (setq lb-max (max (ceiling (/ *cf-len 4)) (get-min-m-cost m-len)))
     ; (print (list "lb-max: " lb-max))
     (setq lb-i (floor (* (getparam 'irreverence-slider) (* 2 m-len))))
@@ -229,21 +229,21 @@
 )
 
 ; add general costs for most of the species
-(defun set-general-costs-cst (&optional (cp-len *total-cp-len) (is-cst-arr1 nil) (is-cst-arr2 nil))
+(defun set-general-costs-cst (counterpoint &optional (cp-len *total-cp-len) (is-cst-arr1 nil) (is-cst-arr2 nil))
     (let (
         (m-len (- cp-len 1))
     )
         ; 2) sharps and flats should be used sparingly
         (print "Sharps and flats should be used sparingly...")
-        (setq *off-key-cost (gil::add-int-var-array-dom *sp* cp-len (getparam-dom 'borrow-cost))) ; IntVar array representing the cost to have off-key notes
+        (setf (off-key-cost counterpoint) (gil::add-int-var-array-dom *sp* cp-len (getparam-dom 'borrow-cost))) ; IntVar array representing the cost to have off-key notes
         (if (null is-cst-arr1)
             ; then
-            (add-cost-bool-cst *is-cp-off-key-arr *off-key-cost *borrow-cost*)
+            (add-cost-bool-cst (is-cp-off-key-arr counterpoint) (off-key-cost counterpoint) *borrow-cost*)
             ; else
-            (add-cost-bool-cst-if *is-cp-off-key-arr is-cst-arr1 *off-key-cost *borrow-cost*)
+            (add-cost-bool-cst-if (is-cp-off-key-arr counterpoint) is-cst-arr1 (off-key-cost counterpoint) *borrow-cost*)
         )
         ; sum of the cost of the off-key notes
-        (add-cost-to-factors *off-key-cost)
+        (add-cost-to-factors (off-key-cost counterpoint))
     
         ; 3) melodic intervals should be as small as possible 
         (print "Melodic intervals should be as small as possible...")
@@ -253,14 +253,14 @@
                 (list 'm-step-cost 'm-third-cost 'm-fourth-cost 'm-tritone-cost 'm-fifth-cost 'm-sixth-cost 'm-seventh-cost 'm-octave-cost)
             ))
         )
-        (setq *m-degrees-cost (gil::add-int-var-array-dom *sp* m-len degrees-cost-domain))
-        (setq *m-degrees-type (gil::add-int-var-array *sp* m-len 1 8))
-        (add-m-degrees-cost-cst *m-all-intervals *m-degrees-cost *m-degrees-type is-cst-arr2)
+        (setf (m-degrees-cost counterpoint) (gil::add-int-var-array-dom *sp* m-len degrees-cost-domain))
+        (setf (m-degrees-type counterpoint) (gil::add-int-var-array *sp* m-len 1 8))
+        (add-m-degrees-cost-cst (m-all-intervals counterpoint) (m-degrees-cost counterpoint) (m-degrees-type counterpoint) is-cst-arr2)
         ;(if (eq 1 *is-first-run) ; todo del this condition
-            (add-cost-to-factors *m-degrees-cost) ; when run on two different counterpoints, it makes it really slow
+            (add-cost-to-factors (m-degrees-cost counterpoint)) ; when run on two different counterpoints, it makes it really slow
         ;    nil
         ;)
-        (gil::g-count *sp* *m-degrees-type 2 gil::IRT_LQ (floor (* (- 1 (getparam 'min-skips-slider)) m-len)))
+        (gil::g-count *sp* (m-degrees-type counterpoint) 2 gil::IRT_LQ (floor (* (- 1 (getparam 'min-skips-slider)) m-len)))
     )
 )
 

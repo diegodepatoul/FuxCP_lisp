@@ -151,12 +151,12 @@
 
     ;======================================== COST FACTORS ====================================
     (print "Cost factors...")
-    (set-cost-factors)
+    (set-cost-factors  *m-all-intervals)
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (add-p-cons-cost-cst *h-intervals t)
     
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
-    (set-general-costs-cst)
+    (set-general-costs-cst counterpoint)
 
     ; 5) add no syncopation cost
     (print "No syncopation cost...")

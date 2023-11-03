@@ -17,6 +17,9 @@
     (fux-cp-1st counterpoint-1 6)
     (setf *total-cp nil)
     (create-2v-cp (slot-value counterpoint-1 'cp) nil *total-cp)
+
+    (setf *is-first-run 0)
+    (fux-cp-1st counterpoint-2 6)
     
     ; saving values of cp2 and now working with cp1
     ;(backup-cp2-values)
