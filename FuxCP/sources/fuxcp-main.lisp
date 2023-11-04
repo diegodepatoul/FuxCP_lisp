@@ -315,6 +315,7 @@
         (print (list "Starting fux-search-engine with species = " species))
         (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
         (gil::g-cost *sp* *total-cost) ; set the cost function
+        ;(gil::g-cost *sp* *cost-factors) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")

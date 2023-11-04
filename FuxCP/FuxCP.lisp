@@ -3,7 +3,14 @@
 (defvar *fuxcp-sources-dir* nil)
 (setf *fuxcp-sources-dir* (make-pathname :directory (append (pathname-directory *load-pathname*) '("sources"))))
 
+(mapc 'compile&load (list
+    (make-pathname :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "package" :type "lisp")
+    (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "utils" :type "lisp")
+    (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "interface" :type "lisp")
+    (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "problem-wrapper" :type "lisp")
+))
 
+#|
 (mapc 'compile&load (list
     (make-pathname :directory (append (pathname-directory *load-pathname*) (list "sources")) :name "package" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "utils" :type "lisp")
@@ -19,6 +26,7 @@
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "fuxcp-main" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "interface" :type "lisp")
 ))
+|#
 
 
 (fill-library '(

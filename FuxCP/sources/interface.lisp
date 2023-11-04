@@ -828,7 +828,8 @@
                     (setf (current-csp (om::object editor)) (fux-cp species))
                 )
             ) |#
-            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
+            ; TODO THE NEXT LINE HAS TO BE UNCOMMENTED 
+            ; (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
         )
         )
 

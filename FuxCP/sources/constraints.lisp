@@ -1867,29 +1867,6 @@
     )
 )
 
-; return the tone offset of the voice
-; => [0, ...,  11]
-; 0 = C, 1 = C#, 2 = D, 3 = D#, 4 = E, 5 = F, 6 = F#, 7 = G, 8 = G#, 9 = A, 10 = A#, 11 = B
-(defun get-tone-offset (voice)
-    (let (
-        (tone (om::tonalite voice))
-    )
-        (if (eq tone nil)
-            ; then default to C major
-            0
-            ; else check if the mode is major or minor
-            (let (
-                (mode (om::mode tone))
-            )
-                (if (eq (third mode) 300)
-                    (midicent-to-midi-offset (+ (om::tonmidi tone) 300))
-                    (midicent-to-midi-offset (om::tonmidi tone))
-                )
-            )
-        )
-    )
-)
-
 ; converts a midicent value to the corresponding offset midi value
 ; note:[0, 12700] -> [0, 11]
 ; 0 corresponds to C, 11 to B
