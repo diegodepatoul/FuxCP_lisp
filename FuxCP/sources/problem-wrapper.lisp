@@ -41,12 +41,23 @@
 )
 
 (defun new-counterpoint (cf)
+    (print "Starting new-counterpoint")
     (let (
         (x (cffi::foreign-alloc :int :initial-contents cf))
         )
+        (print "Calling new-problem")
         (new-problem (length cf) x)
     )
 )
+
+#|(defun test-function (a)
+    (print "calls test")
+    (test a)
+)
+
+(cffi::defcfun ("test_function" test) :int
+    (a :int)
+)|#
 
 (cffi::defcfun ("create_new_problem" new-problem) :pointer
     "Creates a new instance of the problem. Returns a void* cast of a Problem*."

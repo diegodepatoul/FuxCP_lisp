@@ -1,4 +1,4 @@
-#include "problem_wrapper.hpp"
+#include "headers/problem_wrapper.hpp"
 
 /**
  * Wraps the FourVoiceTexture constructor.
@@ -11,8 +11,12 @@
  * @return A pointer to a FourVoiceTexture object casted as a void*
  */
 void* create_new_problem(int size, int* cf){
+    // throw UnimplementedException();
     /// date and time for logs
+    std::cout << "Hello, world!" << std::endl;
     write_to_log_file(time().c_str());
+    std::cout << "Hello, world!" << std::endl;
+
 /*
     Tonality *t;
     if(mode == MAJOR_MODE) /// major mode
@@ -26,8 +30,14 @@ void* create_new_problem(int size, int* cf){
     vector<int> states(int_pointer_to_vector(chord_states, size));
 */
     vector<int> cantus_firmus(int_pointer_to_vector(cf, size));
+    std::cout << "Hello, world!" << std::endl;
     auto* pb = new Counterpoint(cantus_firmus, size);
+    std::cout << "Hello, world!" << std::endl;
     return (void*) pb;
+}
+
+int test_function(int a) {
+    return a + 1;
 }
 
 /**

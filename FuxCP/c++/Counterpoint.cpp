@@ -1,13 +1,6 @@
-#include "counterpoint.hpp"
+#include "headers/Counterpoint.hpp"
 #include <iostream>
 #include <exception>
-
-class UnimplementedException : public std::exception {
-public:
-    virtual const char* what() const throw() {
-        return "Function or feature is not yet implemented";
-    }
-};
 
 /***********************************************************************************************************************
  *                                                                                                                     *
@@ -337,7 +330,7 @@ void Counterpoint::print_solution(){
      * @return a string containing the parameters of the problem
      */
 string Counterpoint::parameters(){
-    throw UnimplementedException();
+    //throw UnimplementedException();
     /*
     string message = "-----------------------------------------parameters-----------------------------------------\n";
     message += "Number of chords: " + std::to_string(size) + "\n";

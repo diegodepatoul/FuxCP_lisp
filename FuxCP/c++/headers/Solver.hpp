@@ -1,7 +1,7 @@
 #ifndef MYPROJECT_SOLVER_HPP
 #define MYPROJECT_SOLVER_HPP
 
-#include "counterpoint.hpp"
+#include "Counterpoint.hpp"
 #include "Utilities.hpp"
 
 using namespace Gecode;

@@ -4,7 +4,7 @@
 #include <stdlib.h>
 
 #include "Utilities.hpp"
-#include "counterpoint.hpp"
+#include "Counterpoint.hpp"
 #include "Solver.hpp"
 
 #ifdef __cplusplus
@@ -15,11 +15,12 @@ extern "C" {
  * Wraps the FourVoiceTexture constructor.
  * @todo modify this to include any parameters your FourVoiceTexture constructor requires
  * @param size an integer representing the size of the problem
- * @param chord_degrees an integer array representing the chord degrees
- * @param chord_positions an integer array representing the chord positions
+ * @param cf an integer array representing the melody
  * @return A pointer to a FourVoiceTexture object casted as a void*
  */
 void* create_new_problem(int size, int* cf);
+
+int test_function(int a);
 
 /**
  * returns the size of the problem

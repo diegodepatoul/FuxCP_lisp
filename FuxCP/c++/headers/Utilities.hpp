@@ -14,6 +14,13 @@
 using namespace std;
 using namespace Gecode;
 
+class UnimplementedException : public std::exception {
+public:
+    virtual const char* what() const throw() {
+        return "Function or feature is not yet implemented";
+    }
+};
+
 /***********************************************************************************************************************
  *                                                  Useful constants                                                   *
  ***********************************************************************************************************************/
