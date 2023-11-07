@@ -268,6 +268,7 @@
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
+    (defparameter *sp* (gil::new-space))
     (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
 
     ; re/set global variables
