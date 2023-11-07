@@ -179,7 +179,7 @@ void write_to_log_file(const char* message){
     const char* homeDir = std::getenv("HOME"); // Get the user's home directory
     if (homeDir) {
         std::string filePath(homeDir);
-        filePath += "/Documents/FuxCP/c++/log.txt"; // Specify the desired file path, such as $HOME/log.txt
+        filePath = "/home/anton/Documents/FuxCPlogs/logs.txt"; // Specify the desired file path, such as $HOME/log.txt
 
         std::ofstream myfile(filePath, std::ios::app); // append mode
         if (myfile.is_open()) {

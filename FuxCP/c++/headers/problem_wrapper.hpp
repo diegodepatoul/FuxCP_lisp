@@ -20,7 +20,9 @@ extern "C" {
  */
 void* create_new_problem(int size, int* cf);
 
-int test_function(int a);
+void* set_up_counterpoint(int size, int* cf, int species, int* scale, int* chromatic_scale, int tone_pitch_cf, int mode_param, int* borrowed_scale, int* off_scale);
+
+int* get_counterpoint(void* solver);
 
 /**
  * returns the size of the problem

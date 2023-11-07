@@ -1,6 +1,6 @@
 (cl:defpackage "fuxcp"
   (:nicknames "FUXCP")
-  (:use common-lisp :cl-user :cl :cffi))
+  (:use common-lisp om :cl-user :cl :cffi))
 
 (in-package :fuxcp)
 
@@ -26,19 +26,41 @@
     MINOR
 )
 
-
 ;;;;;;;;;;;;;;;;;;;;;
 ;; Problem methods ;;
 ;;;;;;;;;;;;;;;;;;;;;
 
-(defun new-4-voice (key mode chord-degrees chord-states)
+
+(defun setup-counterpoint (cf species scale chromatic-scale tone-pitch-cf mode-param borrowed-scale off-scale)
+    (print "starting setup-counterpoint")
+    (print (list scale chromatic-scale tone-pitch-cf mode-param borrowed-scale off-scale))
     (let (
-        (x (cffi::foreign-alloc :int :initial-contents chord-degrees))
-        (y (cffi::foreign-alloc :int :initial-contents chord-states))
+        (a (cffi::foreign-alloc :int :initial-contents cf))
+        (b (cffi::foreign-alloc :int :initial-contents scale))
+        (c (cffi::foreign-alloc :int :initial-contents chromatic-scale))
+        (d (cffi::foreign-alloc :int :initial-contents borrowed-scale))
+        (e (cffi::foreign-alloc :int :initial-contents off-scale))
         )
-        (new-problem (length chord-degrees) key mode x y)
-    )
+        (setup-cp (length cf) a species b c tone-pitch-cf mode-param d e)
+    )    
 )
+
+(cffi::defcfun ("set_up_counterpoint" setup-cp) :pointer
+    (size :int)
+    (cf :pointer :int)
+    (species :int)
+    (scale :pointer :int)
+    (chromatic_scale :pointer :int)
+    (tone_pitch-cf :int)
+    (mode_param :int)
+    (borrowed_scale :pointer :int)
+    (off_scale :pointer :int)
+)
+
+(cffi::defcfun ("get_counterpoint" compute-counterpoint) :pointer 
+    (solver :pointer :void)
+)
+
 
 (defun new-counterpoint (cf)
     (print "Starting new-counterpoint")
@@ -104,11 +126,13 @@
     (if (cffi::null-pointer-p sp) ; TODO check
         (error "No (more) solutions.")
     )
+    (print "Entering solution-to-int-array")
     (let* (
             (size (get-size sp))
             (ptr (return-solution sp))
         )
-        (loop for i from 0 below (* size 4)
+        (loop for i from 0 below (* size 1)
+            ;(print "Trying to collect the solutions")
             collect (cffi::mem-aref ptr :int i)
         )
     )

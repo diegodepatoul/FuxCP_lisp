@@ -15,9 +15,11 @@
  * @return a search engine for the given problem
  */
 Search::Base<Counterpoint>* make_solver(Counterpoint* pb, int type){
+    std::cout << "Entering Solver class" << std::endl;
 
     Gecode::Search::Options opts; //@todo add options when necessary
 
+    std::cout << "Returning the solver" << std::endl;
     if (type == BAB_SOLVER){
         write_to_log_file("Solver type: BAB\n");
         return new BAB<Counterpoint>(pb, opts);
@@ -34,7 +36,10 @@ Search::Base<Counterpoint>* make_solver(Counterpoint* pb, int type){
  * @return an instance of the Counterpoint class representing the next solution to the problem
  */
 Counterpoint* get_next_solution_space(Search::Base<Counterpoint>* solver){
+    std::cout << "Calling next solution on sol_space: " << std::endl;
+    std::cout << "Solver = " << solver << std::endl;
     Counterpoint* sol_space = solver->next();
+    std::cout << "Got next solution on sol_space: " << sol_space << std::endl;
     if (sol_space == nullptr) // handle the case of no solution or time out, necessary when sending the data to OM
         return nullptr;
     return sol_space;

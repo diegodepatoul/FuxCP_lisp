@@ -17,231 +17,39 @@
  * Returns a Counterpoint object
  */
 // Counterpoint::Counterpoint(int s, Tonality *t, vector<int> chordDegs, vector<int> chordStas){
-Counterpoint::Counterpoint (int s, vector<int> cantus_firmus) {
-    std::cout << "Entered Counterpoint class" << std::endl;
+Counterpoint::Counterpoint (int s, vector<int> cantus_firmus, int species_, int* scale_, int* chromatic_scale_, int tone_pitch_cf_, int mode_param_, int* borrowed_scale_, int* off_scale_) {
+    std::cout << "Entering Counterpoint class" << std::endl;
+    size = s;
     cf = cantus_firmus;
     cp = IntVarArray(*this, cf.size(), 0, 127); // tonality->get_tonality_notes()
-    size = s;
+    species = species_;
+    scale = scale_;
+    chromatic_scale = chromatic_scale_;
+    tone_pitch_cf = tone_pitch_cf_;
+    mode_param = mode_param_;
+    borrowed_scale = borrowed_scale_;
+    off_scale = off_scale_;
 
-    /*
-    /// basic data
-    size = s;
-    tonality = t;
-    chordDegrees = chordDegs;
-    chordStates = chordStas;
-
-    /// solution array
-    FullChordsVoicing = IntVarArray(*this, nOfVoices * size, 0, 127); // tonality->get_tonality_notes()
-
-    /// variable arrays for melodic intervals for each voice
-    bassMelodicIntervals = IntVarArray(*this, size - 1, -PERFECT_OCTAVE, PERFECT_OCTAVE);
-    tenorMelodicIntervals = IntVarArray(*this, size - 1, -PERFECT_OCTAVE, PERFECT_OCTAVE);
-    altoMelodicIntervals = IntVarArray(*this, size - 1, -PERFECT_OCTAVE, PERFECT_OCTAVE);
-    sopranoMelodicIntervals = IntVarArray(*this, size - 1, -PERFECT_OCTAVE, PERFECT_OCTAVE);
-
-    /// variable arrays for absolute melodic intervals for each voice
-    absoluteBassMelodicIntervals = IntVarArray(*this, size - 1, 0, PERFECT_OCTAVE);
-    absoluteTenorMelodicIntervals = IntVarArray(*this, size - 1, 0, PERFECT_OCTAVE);
-    absoluteAltoMelodicIntervals = IntVarArray(*this, size - 1, 0, PERFECT_OCTAVE);
-    absoluteSopranoMelodicIntervals = IntVarArray(*this, size - 1, 0, PERFECT_OCTAVE);
-
-    /// variable arrays for harmonic intervals between adjacent voices (only positive because there is no direction)
-    bassTenorHarmonicIntervals = IntVarArray(*this, size, 0, PERFECT_OCTAVE + PERFECT_FIFTH);
-    bassAltoHarmonicIntervals = IntVarArray(*this, size, 0, 2 * PERFECT_OCTAVE + PERFECT_FIFTH);
-    bassSopranoHarmonicIntervals = IntVarArray(*this, size, 0, 3 * PERFECT_OCTAVE + PERFECT_FIFTH);
-    tenorAltoHarmonicIntervals = IntVarArray(*this, size, 0, PERFECT_OCTAVE);
-    tenorSopranoHarmonicIntervals = IntVarArray(*this, size, 0, 2 * PERFECT_OCTAVE);
-    altoSopranoHarmonicIntervals = IntVarArray(*this, size, 0, PERFECT_OCTAVE);
-
-    /// cost variables auxiliary arrays
-    nDifferentValuesInDiminishedChord = IntVarArray(*this, size, 0, nOfVoices);
-    nDifferentValuesAllChords = IntVarArray(*this, size, 0, nOfVoices);
-    nOccurrencesBassInFundamentalState = IntVarArray(*this, size, 0, nOfVoices);
-    commonNotesInSoprano = IntVarArray(*this, size-1, 0, 1); // 1 because if it is at the bass we can't prevent it, so it only counts for the soprano
-
-    /// cost variables
-    sumOfMelodicIntervals = IntVar(*this, 0, PERFECT_OCTAVE * nOfVoices * (size - 1));
-    nOfDiminishedChordsWith4notes = IntVar(*this, 0, size);
-    nOfChordsWithLessThan4notes = IntVar(*this, 0, size);
-    nOfFundamentalStateChordsWithoutDoubledBass = IntVar(*this, 0, size);
-    nOfCommonNotesInSoprano = IntVar(*this, 0, size);
-*/
-
-    /// print parameters to log file
-    //write_to_log_file(parameters().c_str());
-
-    /// Test constraints
-
-    /**-----------------------------------------------------------------------------------------------------------------
-    |                                                                                                                  |
-    |                                              link the arrays together                                            |
-    |                                                                                                                  |
-    -------------------------------------------------------------------------------------------------------------------*/
-/*
-    link_melodic_arrays(*this, size, nOfVoices, FullChordsVoicing, bassMelodicIntervals,
-                        altoMelodicIntervals, tenorMelodicIntervals, sopranoMelodicIntervals);
-
-    link_absolute_melodic_arrays(*this, bassMelodicIntervals, tenorMelodicIntervals, altoMelodicIntervals,
-                                 sopranoMelodicIntervals, absoluteBassMelodicIntervals, absoluteTenorMelodicIntervals,
-                                 absoluteAltoMelodicIntervals, absoluteSopranoMelodicIntervals);
-
-    link_harmonic_arrays(*this, size, nOfVoices, FullChordsVoicing, bassTenorHarmonicIntervals,
-                         bassAltoHarmonicIntervals, bassSopranoHarmonicIntervals, tenorAltoHarmonicIntervals,
-                         tenorSopranoHarmonicIntervals, altoSopranoHarmonicIntervals);
-*/
-    /**-----------------------------------------------------------------------------------------------------------------
-    |                                                                                                                  |
-    |                                              generic constraints                                                 |
-    |                                                                                                                  |
-    -------------------------------------------------------------------------------------------------------------------*/
-/*
-    /// restrain the domain of the voices to their range + state that bass <= tenor <= alto <= soprano
-    restrain_voices_domains(*this, size, nOfVoices, FullChordsVoicing);
-
-    for(int i = 0; i < size; i++) {
-        IntVarArgs currentChord(FullChordsVoicing.slice(nOfVoices * i, 1, nOfVoices));
-
-        /// set the chord's domain to the notes of the degree chordDegrees[i]'s chord
-        set_to_chord(*this, tonality, chordDegrees[i], currentChord);
-
-        /// set the bass based on the chord's state
-        set_bass(*this, tonality, chordDegrees[i], chordStates[i], currentChord);
-    }*/
-
-    /**-----------------------------------------------------------------------------------------------------------------
-    |                                                                                                                  |
-    |                                             set up costs computation                                             |
-    |                                                                                                                  |
-    -------------------------------------------------------------------------------------------------------------------*/
-/*
-    // @todo add a cost for doubled notes that are not tonal notes
-
-    /// number of diminished chords in fundamental state with more than 3 notes (cost to minimize)
-    compute_diminished_chords_cost(*this, size, nOfVoices, tonality, chordDegrees,
-                                   chordStates, FullChordsVoicing,
-                                   nDifferentValuesInDiminishedChord,
-                                   nOfDiminishedChordsWith4notes);
-
-    /// number of chords with less than 4 note values (cost to minimize)
-    compute_n_of_notes_in_chord_cost(*this, size, nOfVoices, FullChordsVoicing,
-                                     nDifferentValuesAllChords,nOfChordsWithLessThan4notes);
-
-    /// number of fundamental state chords without doubled bass (cost to minimize)
-    compute_fundamental_state_doubling_cost(*this, size, nOfVoices, tonality,
-                                            chordDegrees, chordStates, FullChordsVoicing,
-                                            nOccurrencesBassInFundamentalState,
-                                            nOfFundamentalStateChordsWithoutDoubledBass);
-
-    /// number of common notes in soprano with first inversion chord going to another chord (cost to minimize)
-    compute_cost_for_common_note_in_soprano(*this, size, nOfVoices, chordStates, FullChordsVoicing,
-                                            commonNotesInSoprano,
-                                            nOfCommonNotesInSoprano);
-
-    /// sum of melodic intervals (cost to minimize)
-    linear(*this, IntVarArgs() << absoluteTenorMelodicIntervals << absoluteAltoMelodicIntervals <<
-                               absoluteSopranoMelodicIntervals << absoluteBassMelodicIntervals,
-                               IRT_EQ, sumOfMelodicIntervals);
-*/
-    /**-----------------------------------------------------------------------------------------------------------------
-    |                                                                                                                  |
-    |     Harmonic constraints: loop over each chord and post the constraints depending on the degree and state        |
-    |                                                                                                                  |
-    -------------------------------------------------------------------------------------------------------------------*/
-/*
-    for(int i = 0; i < size; i++){
-        IntVarArgs currentChord(FullChordsVoicing.slice(nOfVoices * i, 1, nOfVoices));
-
-        /// post the constraints depending on the chord's state
-        if(chordStas[i] == FUNDAMENTAL_STATE){
-            /// each note should be present at least once, doubling is determined with costs
-            chord_note_occurrence_fundamental_state(*this, nOfVoices, chordDegrees[i], tonality,
-                                                    currentChord,
-                                                    nDifferentValuesInDiminishedChord[i]);
-        }
-        /// post the constraints specific to first inversion chords
-        else if(chordStas[i] == FIRST_INVERSION){
-            chord_note_occurrence_first_inversion(*this, size, nOfVoices, i, tonality,
-                                                  chordDegrees, currentChord, bassMelodicIntervals,
-                                                  sopranoMelodicIntervals);
-        }
-        /// post the constraints specific to second inversion chords
-        else if(chordStas[i] == SECOND_INVERSION){
-
-        }
-        else{
-            //@todo add the other cases here (4 note chords, etc)
-        }
-    }*/
-
-    /**-----------------------------------------------------------------------------------------------------------------
-    |                                                                                                                  |
-    | Melodic constraints: loop over each space between chords and post the constraints depending on the state and     |`
-    | quality of the chords                                                                                            |
-    |                                                                                                                  |
-    -------------------------------------------------------------------------------------------------------------------*/
-/*
-    /// between each chord
-    for(int i = 0; i < size-1; i++) {
-        /// parallel unissons, fifths and octaves are forbidden unless we have the same chord twice in a row
-        if(chordDegrees[i] != chordDegrees[i + 1]){
-            forbid_parallel_intervals(*this, size, nOfVoices, {PERFECT_FIFTH, PERFECT_OCTAVE, UNISSON},
-                                      FullChordsVoicing,
-                                      bassTenorHarmonicIntervals, bassAltoHarmonicIntervals,
-                                      bassSopranoHarmonicIntervals,
-                                      tenorAltoHarmonicIntervals, tenorSopranoHarmonicIntervals,
-                                      altoSopranoHarmonicIntervals);
-        }
-
-        /// resolve the tritone if there is one and it needs to be resolved
-        if (chordDegs[i] == SEVENTH_DEGREE && chordDegs[i + 1] == FIRST_DEGREE) {
-            //@todo add other chords that have the tritone
-            tritone_resolution(*this, nOfVoices, i, tonality,
-                               bassMelodicIntervals, tenorMelodicIntervals,
-                               altoMelodicIntervals, sopranoMelodicIntervals,
-                               FullChordsVoicing);
-        }
-
-        /// Exceptions to the general voice leading rules
-
-        /// special rule for interrupted cadence
-        if (chordDegs[i] == FIFTH_DEGREE && chordStas[i] == FUNDAMENTAL_STATE &&
-        chordDegs[i + 1] == SIXTH_DEGREE && chordStas[i + 1] == FUNDAMENTAL_STATE) {
-            interrupted_cadence(*this, i, tonality,
-                                FullChordsVoicing, tenorMelodicIntervals,
-                                altoMelodicIntervals, sopranoMelodicIntervals);
-        }
-        /// general voice leading rules
-        else {
-            /// If the bass moves by a step, other voices should move in contrary motion
-            int bassFirstChord = (tonality->get_degree_note(chordDegrees[i] + 2 * chordStates[i])
-                    % PERFECT_OCTAVE);
-            int bassSecondChord = (tonality->get_degree_note(chordDegrees[i + 1] + 2 * chordStates[i + 1])
-                    % PERFECT_OCTAVE);
-            int bassMelodicMotion = abs(bassSecondChord - bassFirstChord);
-            /// if the bass moves by a step between fund. state chords @todo check if this needs to apply in other cases
-            if ((bassMelodicMotion == MINOR_SECOND || bassMelodicMotion == MAJOR_SECOND ||
-                bassMelodicMotion == MINOR_SEVENTH || bassMelodicMotion == MAJOR_SEVENTH) &&
-                (chordStas[i] == FUNDAMENTAL_STATE && chordStas[i+1] == FUNDAMENTAL_STATE)){
-                /// move other voices in contrary motion
-                contrary_motion_to_bass(*this, i,bassMelodicIntervals,
-                                        tenorMelodicIntervals,altoMelodicIntervals,
-                                        sopranoMelodicIntervals);
-            }
-            /// if II -> V, move voices in contrary motion to bass
-            else if(chordDegs[i] == SECOND_DEGREE && chordDegs[i+1] == FIFTH_DEGREE){
-                contrary_motion_to_bass(*this, i, bassMelodicIntervals,
-                                        tenorMelodicIntervals, altoMelodicIntervals,
-                                        sopranoMelodicIntervals);
-            }
-            else if(chordDegrees[i] != chordDegrees[i + 1]){
-                /// Otherwise, keep common notes in the same voice
-                keep_common_notes_in_same_voice(*this, nOfVoices, i, chordDegrees, tonality,
-                                                FullChordsVoicing);
-            }
-            /// move voices as closely as possible (implemented with costs)
-        }
+    std::cout << "Potential values for variable: ";
+    for (size_t i = 0; i < size; i++)
+    {
+        std::cout << cp[i] << " ";
     }
-*/
+    std::cout << std::endl;
+
+    for (int i = 0; i < size; ++i) {
+        rel(*this, cp[i] == cf[i]);
+    }
+
+    std::cout << "Potential values for variable: ";
+    for (size_t i = 0; i < size; i++)
+    {
+        std::cout << cp[i] << " ";
+    }
+    std::cout << std::endl;
+
+    exampleCost = IntVar(*this, 1, 3);
+
     /**-----------------------------------------------------------------------------------------------------------------
     |                                                                                                                  |
     |                                                       Branching                                                  |
@@ -251,7 +59,45 @@ Counterpoint::Counterpoint (int s, vector<int> cantus_firmus) {
     // @todo make it smarter when it becomes necessary
     std::cout << "Branching:" << std::endl;
     branch(*this, cp, INT_VAR_DEGREE_MAX(), INT_VAL_MIN());
-    std::cout << "Exitting Counterpoint" << std::endl;
+    std::cout << "Exiting Counterpoint" << std::endl;
+
+}
+
+Counterpoint::Counterpoint (int s, vector<int> cantus_firmus) {
+    std::cout << "Entering Counterpoint class" << std::endl;
+    cf = cantus_firmus;
+    cp = IntVarArray(*this, cf.size(), 0, 127); // tonality->get_tonality_notes()
+    size = s;
+    std::cout << "Potential values for variable: ";
+    for (size_t i = 0; i < size; i++)
+    {
+        std::cout << cp[i] << " ";
+    }
+    std::cout << std::endl;
+
+    for (int i = 0; i < size; ++i) {
+        rel(*this, cp[i] == cf[i]);
+    }
+
+    std::cout << "Potential values for variable: ";
+    for (size_t i = 0; i < size; i++)
+    {
+        std::cout << cp[i] << " ";
+    }
+    std::cout << std::endl;
+
+    exampleCost = IntVar(*this, 1, 3);
+
+    /**-----------------------------------------------------------------------------------------------------------------
+    |                                                                                                                  |
+    |                                                       Branching                                                  |
+    |                                                                                                                  |
+    -------------------------------------------------------------------------------------------------------------------*/
+
+    // @todo make it smarter when it becomes necessary
+    std::cout << "Branching:" << std::endl;
+    branch(*this, cp, INT_VAR_DEGREE_MAX(), INT_VAL_MIN());
+    std::cout << "Exiting Counterpoint" << std::endl;
 
 }
 
@@ -263,7 +109,9 @@ Counterpoint::Counterpoint (int s, vector<int> cantus_firmus) {
  * 4. sum of melodic intervals minimizes the melodic movement between chords
  * @return the cost variables in order of importance
  */
-IntVarArgs Counterpoint::cost() const {/*
+IntVarArgs Counterpoint::cost() const {
+    return {exampleCost};
+    /*h
     // @todo maybe give the voices a priority + check the order depending on what is more important
     return {nOfDiminishedChordsWith4notes, nOfChordsWithLessThan4notes, nOfFundamentalStateChordsWithoutDoubledBass,
             sumOfMelodicIntervals, nOfCommonNotesInSoprano};*/
@@ -301,8 +149,16 @@ Space* Counterpoint::copy() {
  * @return an array of integers representing the values of the variables in a solution
  */
 int* Counterpoint::return_solution(){
-    int* solution = new int[size*4];
-    for(int i = 0; i < 4*size; i++){
+    std::cout << "Potential values for variable: ";
+    for (size_t i = 0; i < 3; i++)
+    {
+        std::cout << cp[i] << " ";
+    }
+    std::cout << std::endl;
+
+    std::cout << "Converting the solution" << std::endl;
+    int* solution = new int[size];
+    for(int i = 0; i < size; i++){
         solution[i] = cp[i].val();
     }
     return solution;
@@ -321,7 +177,7 @@ int* Counterpoint::return_solution(){
  * Prints the solution in the console
  */
 void Counterpoint::print_solution(){
-    for(int i = 0; i < 4*size; i++){
+    for(int i = 0; i < size; i++){
         cout << cp[i].val() << " ";
     }
     cout << endl;
@@ -380,10 +236,11 @@ string Counterpoint::to_string(){
     message += "absoluteTenorMelodicIntervals = " + intVarArray_to_string(absoluteTenorMelodicIntervals) + "\n";
     message += "absoluteAltoMelodicIntervals = " + intVarArray_to_string(absoluteAltoMelodicIntervals) + "\n";
     message += "absoluteSopranoMelodicIntervals = " + intVarArray_to_string(absoluteSopranoMelodicIntervals) + "\n\n";
-
+*/
     message += "🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵\n\n";
     message += "Counterpoint = " + intVarArray_to_string(cp) + "\n\n";
     message += "🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵🎵\n\n";
+/*
 
     message += "-------------------------------cost-related auxiliary arrays------------------------------\n";
 

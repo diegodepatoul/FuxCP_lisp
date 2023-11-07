@@ -821,15 +821,9 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
-            #|let (
-                species = (convert-to-species-integer (species-param (om::object editor)))
-                (if (< species 6)
-                    (setf (current-csp (om::object editor)) (fux-cp species))
-                    (setf (current-csp (om::object editor)) (fux-cp species))
-                )
-            ) |#
-            ; TODO THE NEXT LINE HAS TO BE UNCOMMENTED 
-            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
+
+            (fux-cp (convert-to-species-integer (species-param (om::object editor))))
+            ;(setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
         )
         )
 
@@ -839,10 +833,12 @@
         (om::om-make-point 120 20) ; size
         "Next Solution"
         :di-action #'(lambda (b)
-            (if (typep (current-csp (om::object editor)) 'null); if the problem is not initialized
-                (error "The problem has not been initialized. Please set the input and press Start.")
-            )
+            ;(if (typep (current-csp (om::object editor)) 'null); if the problem is not initialized
+            ;    (error "The problem has not been initialized. Please set the input and press Start.")
+            ;)
             (print "Searching for the next solution")
+            (compute-counterpoint *the-solver*)
+#|
             ;reset the boolean because we want to continue the search
             (setparam 'is-stopped nil)
             ;get the next solution
@@ -858,7 +854,7 @@
                         (om::omNG-make-new-instance (result-voice (om::object editor)) "Current solution")
                     )
                 )
-            )
+            )|#
         )
         )
 

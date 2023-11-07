@@ -41,8 +41,17 @@ class Counterpoint: public IntLexMinimizeSpace {
 protected:
     vector<int> cf;
     IntVarArray cp;
-    int nOfVoices = 4;        // The number of voices
+    int species;
     int size;                 // The size of the variable array of interest
+    int* scale; 
+    int* chromatic_scale;
+    int tone_pitch_cf;
+    int mode_param;
+    int* borrowed_scale; 
+    int* off_scale;
+
+
+    IntVar exampleCost;
     /*
     /// Data
     int nOfVoices = 4;        // The number of voices
@@ -96,6 +105,7 @@ public:
      * @return a Counterpoint object
      */
     Counterpoint (int s, vector<int> cf);
+    Counterpoint (int s, vector<int> cf, int species, int* scale, int* chromatic_scale, int tone_pitch_cf, int mode_param, int* borrowed_scale, int* off_scale);
     // Counterpoint(int s, Tonality *t, vector<int> chordDegs, vector<int> chordStas);
 
     /**

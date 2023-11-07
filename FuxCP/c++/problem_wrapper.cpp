@@ -1,14 +1,27 @@
 #include "headers/problem_wrapper.hpp"
 
+void* set_up_counterpoint(int size, int* cf, int species, int* scale, int* chromatic_scale, int tone_pitch_cf, int mode_param, int* borrowed_scale, int* off_scale) {
+    std::cout << "Entered set_up_counterpoint function" << std::endl;
+    std::cout << "Size is " << size << std::endl;
+    vector<int> cantus_firmus(int_pointer_to_vector(cf, size));
+    auto* pb = new Counterpoint(size, cantus_firmus, species, scale, chromatic_scale, tone_pitch_cf, mode_param, borrowed_scale, off_scale);
+    return (void*) make_solver(pb, 1);
+}
+
+int* get_counterpoint(void* solver) {
+    std::cout << "Entered get_counterpoint function" << std::endl;
+    auto* pb = static_cast<Counterpoint*>(get_next_solution_space(static_cast<DFS<Counterpoint>*>(solver)));
+    int* sol = pb->return_solution();
+}
 /**
- * Wraps the FourVoiceTexture constructor.
- * @todo modify this to include any parameters your FourVoiceTexture constructor requires
+ * Wraps the Counterpoint constructor.
+ * @todo modify this to include any parameters your Counterpoint constructor requires
  * @param size an integer representing the size of the problem
  * @param key the key of the tonality
  * @param mode the mode of the tonality
  * @param chord_degrees an integer array representing the chord degrees
  * @param chord_states an integer array representing the chord states
- * @return A pointer to a FourVoiceTexture object casted as a void*
+ * @return A pointer to a Counterpoint object casted as a void*
  */
 void* create_new_problem(int size, int* cf){
     // throw UnimplementedException();
@@ -29,28 +42,15 @@ void* create_new_problem(int size, int* cf){
     vector<int> degrees(int_pointer_to_vector(chord_degrees, size));
     vector<int> states(int_pointer_to_vector(chord_states, size));
 */
-
-    std::vector<int> myVector(cf, cf + size);
-
-    std::cout << "Vector elements: ";
-    
-    for (int i = 0; i < myVector.size(); i++) {
-        std::cout << myVector[i] << " ";
-    }
-
-    std::cout << std::endl;
-
-
-    std::cout << "Converted the cantus firmus into a vector" << std::endl;
     vector<int> cantus_firmus(int_pointer_to_vector(cf, size));
     auto* pb = new Counterpoint(size, cantus_firmus);
-    std::cout << "About to return" << std::endl;
+    std::cout << "Exiting create_new_problem" << std::endl;
     return (void*) pb;
 }
 
 /**
  * returns the size of the problem
- * @param sp a void* pointer to a FourVoiceTexture object
+ * @param sp a void* pointer to a Counterpoint object
  * @return an integer representing the size of the problem
  */
 int get_size(void* sp){
@@ -58,29 +58,30 @@ int get_size(void* sp){
 }
 
 /**
- * returns the values of the variables for a solution
- * @param sp a void* pointer to a FourVoiceTexture object
- * @return an int* pointer representing the values of the variables
- */
-int* return_solution(void* sp){
-    auto* pb = static_cast<Counterpoint*>(sp);
-    int* sol = pb->return_solution();
-    return sol;
-}
-
-/**
- * creates a search engine for FourVoiceTexture objects
- * @param sp a void* pointer to a FourVoiceTexture object
- * @return a void* cast of a Base<FourVoiceTexture>* pointer
+ * creates a search engine for Counterpoint objects
+ * @param sp a void* pointer to a Counterpoint object
+ * @return a void* cast of a Base<Counterpoint>* pointer
  */
 void* create_solver(void* sp, int type){
     return (void*) make_solver(static_cast<Counterpoint*>(sp), type);
 }
 
 /**
+ * returns the next solution space, it should be bound. If not, it will return NULL.
+ * @param solver a void* pointer to a Base<Counterpoint>* pointer for the search engine of the problem
+ * @return a void* cast of a Counterpoint* pointer
+ */
+void* return_next_solution_space(void* solver){
+    std::cout << "Calling return_next_solution_space: " << std::endl;
+    std::cout << "with solver = " << solver << std::endl;
+    return (void*) get_next_solution_space(static_cast<DFS<Counterpoint>*>(solver));
+}
+
+
+/**
  * returns the best solution space, it should be bound. If not, it will return NULL.
- * @param solver a void* pointer to a BAB<FourVoiceTexture> for the search engine of the problem
- * @return a void* cast of a FourVoiceTexture* pointer
+ * @param solver a void* pointer to a BAB<Counterpoint> for the search engine of the problem
+ * @return a void* cast of a Counterpoint* pointer
  */
 void* return_best_solution_space(void* solver){
     Counterpoint *bestSol; // keep a pointer to the best solution
@@ -93,10 +94,12 @@ void* return_best_solution_space(void* solver){
 }
 
 /**
- * returns the next solution space, it should be bound. If not, it will return NULL.
- * @param solver a void* pointer to a Base<FourVoiceTexture>* pointer for the search engine of the problem
- * @return a void* cast of a FourVoiceTexture* pointer
+ * returns the values of the variables for a solution
+ * @param sp a void* pointer to a Counterpoint object
+ * @return an int* pointer representing the values of the variables
  */
-void* return_next_solution_space(void* solver){
-    return (void*) get_next_solution_space(static_cast<DFS<Counterpoint>*>(solver));
+int* return_solution(void* sp){
+    auto* pb = static_cast<Counterpoint*>(sp);
+    int* sol = pb->return_solution();
+    return sol;
 }
