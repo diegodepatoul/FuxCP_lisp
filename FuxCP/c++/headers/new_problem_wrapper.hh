@@ -6,7 +6,7 @@ extern "C" {
 #endif
 
 
-int sixty(int a);
+int test_function(int a);
 
 #ifdef __cplusplus
 };

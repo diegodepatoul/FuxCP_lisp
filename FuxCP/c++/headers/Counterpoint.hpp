@@ -92,12 +92,10 @@ public:
     /**
      * Constructor
      * @param s the number of chords in the progression
-     * @param *t a pointer to a Tonality object
-     * @param chordDegs the degrees of the chord of the chord progression
-     * @param chordStas the states of the chord of the chord progression (fundamental, 1st inversion,...)
+     * @param cf a pointer to a Tonality object
      * @return a Counterpoint object
      */
-    Counterpoint (vector<int> cf, int s);
+    Counterpoint (int s, vector<int> cf);
     // Counterpoint(int s, Tonality *t, vector<int> chordDegs, vector<int> chordStas);
 
     /**

@@ -1,7 +1,7 @@
 all: clean so
 
 #define auxiliary files
-PROBLEM_FILES = # Utilities.cpp Counterpoint.cpp Solver.cpp
+PROBLEM_FILES = Utilities.cpp Counterpoint.cpp Solver.cpp
 
 # Define the log file where all the results are printed
 LOG_FILE = log.txt
@@ -12,7 +12,7 @@ LIBRARIES = -lgecodedriver -lgecodeflatzinc -lgecodefloat -lgecodeint -lgecodeke
 
 #compile the dynamic library for macOS
 dylib: problem_wrapper.cpp
-	g++ $(PROBLEM_FILES) new_problem_wrapper.cpp -std=c++11 -dynamiclib -fPIC -F/Library/Frameworks -framework gecode -o \
+	g++ $(PROBLEM_FILES) problem_wrapper.cpp -std=c++11 -dynamiclib -fPIC -F/Library/Frameworks -framework gecode -o \
 			../sources/libgecode.dylib  -ffast-math -O3
 	# replace the relative path to the Gecode library in the dylib by an absolute path
 	install_name_tool -change gecode.framework/Versions/49/gecode /Library/Frameworks/gecode.framework/Versions/49/gecode\
@@ -20,7 +20,7 @@ dylib: problem_wrapper.cpp
 
 #compile the dynamic library for linux
 so:
-	g++ -fPIC $(PROBLEM_FILES) new_problem_wrapper.cpp -std=c++11 -shared $(LIBRARIES) -o ../sources/libgecode.so -O3 \
+	g++ -fPIC $(PROBLEM_FILES) problem_wrapper.cpp -std=c++11 -shared $(LIBRARIES) -o ../sources/libgecode.so -O3 \
 		-ffast-math
 
 #run the main.cpp file on macOS

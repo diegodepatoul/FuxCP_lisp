@@ -19,9 +19,10 @@
     )
 )
 
-(compile&load (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "new-problem-wrapper" :type "lisp"))
+(compile&load (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "problem-wrapper" :type "lisp"))
 
-#|(mapc 'compile&load (list
+#|
+(mapc 'compile&load (list
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "package" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "problem-wrapper" :type "lisp")
     (make-pathname :directory (pathname-directory *fuxcp-sources-dir*) :name "utils" :type "lisp")
@@ -38,6 +39,7 @@
 
 (fill-library '(
     ("Solver" nil (fuxcp::cp-params) nil)
-))|#
+))
+|#
 
 (print "FuxCP Loaded")

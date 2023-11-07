@@ -13,9 +13,9 @@
 void* create_new_problem(int size, int* cf){
     // throw UnimplementedException();
     /// date and time for logs
-    std::cout << "Hello, world!" << std::endl;
-    write_to_log_file(time().c_str());
-    std::cout << "Hello, world!" << std::endl;
+    std::cout << "Entered create_new_problem function" << std::endl;
+    // write_to_log_file(time().c_str());
+    std::cout << "Size is " << size << std::endl;
 
 /*
     Tonality *t;
@@ -29,15 +29,23 @@ void* create_new_problem(int size, int* cf){
     vector<int> degrees(int_pointer_to_vector(chord_degrees, size));
     vector<int> states(int_pointer_to_vector(chord_states, size));
 */
-    vector<int> cantus_firmus(int_pointer_to_vector(cf, size));
-    std::cout << "Hello, world!" << std::endl;
-    auto* pb = new Counterpoint(cantus_firmus, size);
-    std::cout << "Hello, world!" << std::endl;
-    return (void*) pb;
-}
 
-int test_function(int a) {
-    return a + 1;
+    std::vector<int> myVector(cf, cf + size);
+
+    std::cout << "Vector elements: ";
+    
+    for (int i = 0; i < myVector.size(); i++) {
+        std::cout << myVector[i] << " ";
+    }
+
+    std::cout << std::endl;
+
+
+    std::cout << "Converted the cantus firmus into a vector" << std::endl;
+    vector<int> cantus_firmus(int_pointer_to_vector(cf, size));
+    auto* pb = new Counterpoint(size, cantus_firmus);
+    std::cout << "About to return" << std::endl;
+    return (void*) pb;
 }
 
 /**

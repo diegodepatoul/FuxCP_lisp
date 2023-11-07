@@ -1,5 +1,5 @@
-(cl:defpackage "FuxCP3"
-  (:nicknames "FuxCP3")
+(cl:defpackage "fuxcp"
+  (:nicknames "FUXCP")
   (:use common-lisp :cl-user :cl :cffi))
 
 (in-package :fuxcp)
@@ -49,15 +49,6 @@
         (new-problem (length cf) x)
     )
 )
-
-#|(defun test-function (a)
-    (print "calls test")
-    (test a)
-)
-
-(cffi::defcfun ("test_function" test) :int
-    (a :int)
-)|#
 
 (cffi::defcfun ("create_new_problem" new-problem) :pointer
     "Creates a new instance of the problem. Returns a void* cast of a Problem*."

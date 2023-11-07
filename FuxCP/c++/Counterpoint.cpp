@@ -13,13 +13,12 @@
 /**
  * Constructor
  * @param s the number of chords in the progression
- * @param *t a pointer to a Tonality object
- * @param chordDegs the degrees of the chord of the chord progression
- * @param chordStas the states of the chord of the chord progression (fundamental, 1st inversion,...)
+ * @param cantus_firmus a pointer to a Tonality object
  * Returns a Counterpoint object
  */
 // Counterpoint::Counterpoint(int s, Tonality *t, vector<int> chordDegs, vector<int> chordStas){
-Counterpoint::Counterpoint (vector<int> cantus_firmus, int s) {
+Counterpoint::Counterpoint (int s, vector<int> cantus_firmus) {
+    std::cout << "Entered Counterpoint class" << std::endl;
     cf = cantus_firmus;
     cp = IntVarArray(*this, cf.size(), 0, 127); // tonality->get_tonality_notes()
     size = s;
@@ -69,7 +68,7 @@ Counterpoint::Counterpoint (vector<int> cantus_firmus, int s) {
 */
 
     /// print parameters to log file
-    write_to_log_file(parameters().c_str());
+    //write_to_log_file(parameters().c_str());
 
     /// Test constraints
 
@@ -250,7 +249,10 @@ Counterpoint::Counterpoint (vector<int> cantus_firmus, int s) {
     -------------------------------------------------------------------------------------------------------------------*/
 
     // @todo make it smarter when it becomes necessary
+    std::cout << "Branching:" << std::endl;
     branch(*this, cp, INT_VAR_DEGREE_MAX(), INT_VAL_MIN());
+    std::cout << "Exitting Counterpoint" << std::endl;
+
 }
 
 /**
