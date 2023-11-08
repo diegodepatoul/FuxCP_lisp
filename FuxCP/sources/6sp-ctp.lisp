@@ -12,7 +12,6 @@
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
 (defun fux-cp-6th (counterpoint-1 counterpoint-2 &optional (species 6))
     (print "########## SIXTH SPECIES ##########")
-    (print 'debug)
     ; Creating the first counterpoint
     (fux-cp-1st counterpoint-1 6)
    

@@ -14,13 +14,9 @@
     ;============================================ CREATING GIL ARRAYS =============================
     ;; initialize the variables
     (print "Initializing variables...")
-    (print 'debug)
-    (print (cp counterpoint))
-    (print 'debug)
     
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
-    (print 'debug)
     
     (if (eq species 6) (let ( ; if re-mi-la is the last cf note then you can use a major third even if it's note in the harmony
         (tonal (mod (car (last *cf)) 12))
@@ -29,7 +25,6 @@
             (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
         )))
     )
-    (print 'debug)
     (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
@@ -48,20 +43,15 @@
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
-    (print 'debug)
 
     
     (case species ((1 6) ; only for the first species
         ; then
         (progn
             ; creating melodic intervals array between the note n and n+2
-    (print 'debug)
-    (print (m2-intervals counterpoint))
             (setf (m2-intervals counterpoint) (gil::add-int-var-array *sp* *cf-penult-index 0 12))
-    (print 'debug)
             (setf (m2-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-penult-index -12 12))
             (create-m2-intervals (first (cp counterpoint)) (m2-intervals counterpoint) (m2-intervals-brut counterpoint))
-    (print 'debug)
             
             ; creating boolean is counterpoint off key array
             (print "Creating is counterpoint off key array...")
@@ -190,14 +180,14 @@
             
             (if (eq species 6) (progn
                 ; 6) as few direct motion to reach a perfect consonance as possible
-                (setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
+                #|(setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
                 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
                 (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
 
                 ; 7) as many different notes as possible
                 (setf (diversity-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
                 (compute-diversity-cost (first (cp counterpoint)) (diversity-cost counterpoint))
-                (add-cost-to-factors (diversity-cost counterpoint))
+                (add-cost-to-factors (diversity-cost counterpoint))|#
             ))
             
         )
