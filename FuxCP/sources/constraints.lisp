@@ -1140,10 +1140,14 @@
         do (let (
                 (is-direct-move (gil::add-bool-var *sp* 0 1))
                 (is-direct-move-to-p-cons (gil::add-bool-var *sp* 0 1))
+                (is-not-direct-move-to-p-cons (gil::add-bool-var *sp* 0 1))
             )
                 (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct-move) ; is-direct-move = (m = direct)
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
-                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+                (gil::g-op *sp* is-direct-move-to-p-cons gil::BOT_XOR is-not-direct-move-to-p-cons 1)
+
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
         )
     )
 )

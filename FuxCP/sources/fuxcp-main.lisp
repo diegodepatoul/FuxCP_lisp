@@ -298,7 +298,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 12)
+            (setq *N-COST-FACTORS 14)
             (fux-cp-6th (init-counterpoint (first *voices-types))
                         (init-counterpoint (second *voices-types)))
         ))
