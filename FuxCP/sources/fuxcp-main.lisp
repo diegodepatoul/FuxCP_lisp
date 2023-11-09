@@ -278,8 +278,10 @@
     (print (list "Choosing species: " species))
     (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
-            (setq *N-COST-FACTORS 5)
-            (fux-cp-1st (init-counterpoint (first *voices-types)))
+            (setf *the-solver* (setup-counterpoint *cf 1 *scale *chromatic-scale *tone-pitch-cf mode-param *borrowed-scale *off-scale))
+            (print *the-solver*)
+            ;(setq *N-COST-FACTORS 5)
+            ;(fux-cp-1st (init-counterpoint (first *voices-types)))
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
