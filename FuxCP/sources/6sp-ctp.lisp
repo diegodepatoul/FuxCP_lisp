@@ -39,9 +39,10 @@
 
     (print "prefer perfect chords") ; isn't this kind of the 1st and 2nd costs?
     
-    ;(setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-    ;(add-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
-    ;(add-cost-to-factors *p-chords-cost)
+    (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+    (add-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+    ; 15
+    (add-cost-to-factors *p-chords-cost)
 
     ;(print "Perfect chord at the beginning...")
     ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
