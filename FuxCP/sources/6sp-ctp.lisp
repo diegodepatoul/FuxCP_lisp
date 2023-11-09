@@ -12,7 +12,6 @@
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
 (defun fux-cp-6th (counterpoint-1 counterpoint-2 &optional (species 6))
     (print "########## SIXTH SPECIES ##########")
-    (print 'debug)
     ; Creating the first counterpoint
     (fux-cp-1st counterpoint-1 6)
    
@@ -42,6 +41,7 @@
     
     (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
     (add-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+    ; 15
     (add-cost-to-factors *p-chords-cost)
 
     ;(print "Perfect chord at the beginning...")

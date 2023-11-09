@@ -268,6 +268,7 @@
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
+    (defparameter *sp* (gil::new-space))
     (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
 
     ; re/set global variables
@@ -315,9 +316,9 @@
     (let (se tstop sopts)
         ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
-        (gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
-        (gil::g-cost *sp* *total-cost) ; set the cost function
-        ;(gil::g-cost *sp* *cost-factors) ; set the cost function
+        ;(gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
+        (gil::g-cost *sp* *cost-factors) ; set the cost function
+        ;(gil::g-cost *sp* *total-cost) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -358,7 +359,7 @@
         )
 
         ; branching *total-cost
-        (gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
+        ;(gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
         (if (eq species 2)
             (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
         )
@@ -379,7 +380,7 @@
 
         ;; SEARCH ENGINE
         (print "Search engine...")
-        (setq se (gil::search-engine *sp* (gil::opts sopts) gil::DFS));
+        (setq se (gil::search-engine *sp* (gil::opts sopts) gil::BAB));
         (print se)
 
         (print "CSP constructed")
@@ -571,7 +572,10 @@
         )
         )|#
 
-
+        #|
+        (dolist (v *cost-factors) (print (gil::g-values sol v)))
+        (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+        |#
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
         (case species
             (4 (progn
@@ -649,8 +653,8 @@
     (handler-case
         (gil::search-next se) ; search the next solution, sol is the space of the solution
         (error (c)
-            (print "gil::ERROR")
-            (try-find-solution se)
+            (print "gil::Unexpected error. Please investigate.")
+            ;(try-find-solution se)
         )
     )
 )

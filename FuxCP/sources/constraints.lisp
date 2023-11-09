@@ -1140,10 +1140,14 @@
         do (let (
                 (is-direct-move (gil::add-bool-var *sp* 0 1))
                 (is-direct-move-to-p-cons (gil::add-bool-var *sp* 0 1))
+                (is-not-direct-move-to-p-cons (gil::add-bool-var *sp* 0 1))
             )
                 (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct-move) ; is-direct-move = (m = direct)
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
-                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+                (gil::g-op *sp* is-direct-move-to-p-cons gil::BOT_XOR is-not-direct-move-to-p-cons 1)
+
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
         )
     )
 )
@@ -1160,15 +1164,17 @@
         (k 0)
         )
     (loop
-        for i from 0 to (- *cf-len 1)
+        for i from 0 to *cf-last-index
         do (loop
-            for j from (+ i 1) to (min (+ i 3) (- *cf-len 1))
+            for j from (+ i 1) to (min (+ i 3) *cf-last-index)
             do(let (
                 (is-equal (gil::add-bool-var *sp* 0 1))
+                (is-not-equal (gil::add-bool-var *sp* 0 1))
             )
-                (print (list k i j))
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth i cp) gil::IRT_NQ (nth j cp) is-not-equal)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 0 is-not-equal)
                 (setf k (+ 1 k))
             )
         )
@@ -1965,6 +1971,7 @@
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 (defun add-cost-to-factors (factor-arr)
+    (print (list "nth added = " *n-cost-added))
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)
 )
