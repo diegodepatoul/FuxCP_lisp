@@ -182,12 +182,12 @@
                 ; 6) as few direct motion to reach a perfect consonance as possible
                 #|(setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
                 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
-                (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
+                (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))|#
 
                 ; 7) as many different notes as possible
                 (setf (diversity-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
                 (compute-diversity-cost (first (cp counterpoint)) (diversity-cost counterpoint))
-                (add-cost-to-factors (diversity-cost counterpoint))|#
+                (add-cost-to-factors (diversity-cost counterpoint))
             ))
             
         )

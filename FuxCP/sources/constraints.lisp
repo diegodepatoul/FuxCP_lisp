@@ -1160,14 +1160,17 @@
         (k 0)
         )
     (loop
-        for i from 0 to (- *cf-len 1)
+        for i from 0 to *cf-last-index
         do (loop
-            for j from (+ i 1) to (min (+ i 3) (- *cf-len 1))
+            for j from (+ i 1) to (min (+ i 3) *cf-last-index)
             do(let (
                 (is-equal (gil::add-bool-var *sp* 0 1))
+                (is-not-equal (gil::add-bool-var *sp* 0 1))
             )
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth i cp) gil::IRT_NQ (nth j cp) is-not-equal)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal)
+                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 0 is-not-equal)
                 (setf k (+ 1 k))
             )
         )

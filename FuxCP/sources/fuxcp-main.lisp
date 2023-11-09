@@ -298,7 +298,7 @@
             (fux-cp-5th)
         ))
         (6 (progn
-            (setq *N-COST-FACTORS 11)
+            (setq *N-COST-FACTORS 12)
             (fux-cp-6th (init-counterpoint (first *voices-types))
                         (init-counterpoint (second *voices-types)))
         ))
@@ -316,7 +316,7 @@
         (print (list "Starting fux-search-engine with species = " species))
         ;(gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
         (gil::g-cost *sp* *cost-factors) ; set the cost function
-        ;(gil::g-cost *sp* *cost-factors) ; set the cost function
+        ;(gil::g-cost *sp* *total-cost) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -570,9 +570,10 @@
         )
         )|#
 
+        #|
         (dolist (v *cost-factors) (print (gil::g-values sol v)))
-
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+        |#
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
         (case species
             (4 (progn
