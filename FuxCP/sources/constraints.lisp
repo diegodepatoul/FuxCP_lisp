@@ -228,7 +228,8 @@
 )
 
 ; add general costs for most of the species
-(defun set-general-costs-cst (counterpoint &optional (cp-len *total-cp-len) (is-cst-arr1 nil) (is-cst-arr2 nil))
+;; TODO I MADE &optional total-cp-len MANDATORY, IF BUGGY MIGHT BE BECAUSE OF THAT
+(defun set-general-costs-cst (counterpoint cp-len &optional (is-cst-arr1 nil) (is-cst-arr2 nil))
     (let (
         (m-len (- cp-len 1))
     )

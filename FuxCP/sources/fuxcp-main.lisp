@@ -159,14 +159,24 @@
     (m-degrees-type :accessor m-degrees-type :initarg :m-degrees-type :initform nil)
     (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
     (m-all-intervals :accessor m-all-intervals :initarg :m-all-intervals :initform nil)
-    (voice)
+
+    ; 2nd species variables
+    (h-intervals-abs :accessor h-intervals-abs :initarg :h-intervals-abs :initform (list nil nil nil nil))
+    (h-intervals-brut :accessor h-intervals-brut :initarg :h-intervals-brut :initform (list nil nil nil nil))
+    (m-succ-intervals :accessor m-succ-intervals :initarg :m-succ-intervals :initform (list nil nil nil nil)) 
+    (m-succ-intervals-brut :accessor m-succ-intervals-brut :initarg :m-succ-intervals-brut :initform (list nil nil nil nil)) 
+    (m2-len :accessor m2-len :initarg :m2-len :initform nil)
+    (total-m-len :accessor total-m-len :initarg :total-m-len :initform nil)
+    (m-all-intervals-brut :accessor m-all-intervals-brut :initarg :m-all-intervals-brut :initform nil)
+    (real-motions :accessor real-motions :initarg :real-motions :initform nil)
+    (real-motions-cost :accessor real-motions-cost :initarg :real-motions-cost :initform nil)
+    (is-ta-dim-arr :accessor is-ta-dim-arr :initarg :is-ta-dim-arr :initform nil)
+    (is-nbour-arr :accessor is-nbour-arr :initarg :is-nbour-arr :initform nil)
+    (penult-thesis-cost :accessor penult-thesis-cost :initarg :penult-thesis-cost :initform nil) 
 
     ; 6st species variables
     (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
-    (h-intervals-abs :accessor h-intervals-abs :initarg :h-intervals-abs :initform (list nil nil nil nil))
-    (h-intervals-brut :accessor h-intervals-brut :initarg :h-intervals-brut :initform (list nil nil nil nil))
-
 ))
 
 (defun init-counterpoint (voice-type)
@@ -206,24 +216,6 @@
 
 
         (case species 
-            (2 (progn
-                ;; SECOND SPECIES COUNTERPOINT GLOBAL VARIABLES
-                (defvar *h-intervals-abs)
-                (defvar *h-intervals-brut)
-                (defparameter *m-succ-intervals (list nil nil nil))
-                (defparameter *m-succ-intervals-brut (list nil nil nil))
-                (defvar *m2-len)
-                (defvar *total-m-len)
-                (defvar *m-all-intervals)
-                (defvar *m-all-intervals-brut)
-                (defvar *real-motions)
-                (defvar *real-motions-cost)
-                (defvar *is-ta-dim-arr)
-                (defvar *is-nbour-arr)
-                (defvar *penult-thesis-cost)
-                (defvar *total-cp)
-            ))
-
             (3 (progn
                 ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
                 (defvar *is-5qn-linked-arr)
@@ -286,7 +278,7 @@
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
-            (fux-cp-2nd)
+            (fux-cp-2nd (init-counterpoint (first *voices-types)))
         ))
         (3 (progn
             (setq *N-COST-FACTORS 7)
