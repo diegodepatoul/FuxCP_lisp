@@ -23,7 +23,7 @@
 
     ; Constraints on the two counterpoints
     (print "no unisson between cp1 and cp2")
-    ;(add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)) species)
+    (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)) species)
 
 
     (print "all voices can't go in the same direction")
