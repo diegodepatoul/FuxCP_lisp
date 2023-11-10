@@ -773,23 +773,24 @@
 )
 
 
-(defun last-chord-not-minor-cst (h-interval-1 h-interval-2)
+(defun add-no-minor-third-in-last-chord-cst (h-interval-1 h-interval-2)
     (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 3)
     (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 3)
 )
-; add the constraint that the chord shall be perfect (1-3-5)
-(defun add-p-chord-cst (h-interval-1 h-interval-2)
-    (gil::g-rel *sp* h-interval-1 gil::IRT_EQ 4)
-    (gil::g-rel *sp* h-interval-2 gil::IRT_EQ 7)
-    #|(gil::g-rel *sp* h-interval1 gil::IRT_NQ h-interval2)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 0)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 0)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 3)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 3)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 8)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 8)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 9)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)|#
+
+(defun add-no-tenth-in-last-chord-cst (h-interval-brut-1 h-interval-brut-2)
+    (gil::g-rel *sp* h-interval-brut-1 gil::IRT_NQ 15)
+    (gil::g-rel *sp* h-interval-brut-1 gil::IRT_NQ 16)
+    (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 15)
+    (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 16)
+)
+
+; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
+(defun add-chord-cst (h-interval-1 h-interval-2)
+    (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 8)
+    (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 9)
+    (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 8)
+    (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 9)
 )
 
 (defun compute-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)

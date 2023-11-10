@@ -46,10 +46,15 @@
 
     ;(print "Perfect chord at the beginning...")
     ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
-    (print "Perfect chord at the end...")
+    ;(print "Perfect chord at the end...")
     ;(add-p-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
 
-    (last-chord-not-minor-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) ; redundant with last constraint
+    (print "Last chord cannot be minor")
+    (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
+    (print "Last chord cannot include a tenth")
+    (add-no-tenth-in-last-chord-cst (last (h-intervals-brut counterpoint-1)) (last (h-intervals-brut counterpoint-2)))
+    ;(print "Last chord must be a ... chord") 
+    ;(add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
 
     ; RETURN
     (if (eq species 6)

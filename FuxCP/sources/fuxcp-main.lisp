@@ -164,6 +164,9 @@
     ; 6st species variables
     (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
+    (h-intervals-abs :accessor h-intervals-abs :initarg :h-intervals-abs :initform (list nil nil nil nil))
+    (h-intervals-brut :accessor h-intervals-brut :initarg :h-intervals-brut :initform (list nil nil nil nil))
+
 ))
 
 (defun init-counterpoint (voice-type)
@@ -570,10 +573,10 @@
         )
         )|#
 
-        #|
-        (dolist (v *cost-factors) (print (gil::g-values sol v)))
+        
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-        |#
+        (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+        
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
         (case species
             (4 (progn
@@ -613,7 +616,7 @@
                 (setq pitches-om sol-pitches)
             ))
         )
-        (print pitches-om)
+        (print (list "pitches-om = " pitches-om))
         (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
             (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
             (progn
