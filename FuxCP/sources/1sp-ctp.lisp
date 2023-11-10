@@ -150,6 +150,9 @@
                 (progn
                     (print "No successive perfect consonances (counterpoint to cantus firmus)")
                     (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
+
+                    (print "Ascending sixths sound harsh")
+                    (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
                 )
             )
         )

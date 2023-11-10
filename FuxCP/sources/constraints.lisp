@@ -792,7 +792,7 @@
     (gil::g-rel *sp* h-interval2 gil::IRT_NQ 9)|#
 )
 
-(defun add-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)
+(defun compute-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)
     (loop
     for h1 in h-intervals1
     for h2 in h-intervals2
@@ -1128,6 +1128,31 @@
 
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+        )
+    )
+)
+
+(defun add-no-ascending-sixths-cst (h-intervals cp)
+    (dotimes (i *cf-last-index)
+        (let (
+            (first-is-sixth (gil::add-bool-var *sp* 0 1))
+            (first-h-equals-8 (gil::add-bool-var *sp* 0 1))
+            (first-h-equals-9 (gil::add-bool-var *sp* 0 1))
+            (second-is-sixth (gil::add-bool-var *sp* 0 1))
+            (second-h-equals-8 (gil::add-bool-var *sp* 0 1))
+            (second-h-equals-9 (gil::add-bool-var *sp* 0 1))
+            (both-h-are-sixths (gil::add-bool-var *sp* 0 1))
+            (is-ascending (gil::add-bool-var *sp* 0 1))
+        )
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 8 first-h-equals-8)
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 9 first-h-equals-9)
+        (gil::g-op *sp* first-h-equals-8 gil::BOT_OR first-h-equals-9 first-is-sixth)
+        (gil::g-rel-reify *sp* (nth (+ i 1) h-intervals) gil::IRT_EQ 8 second-h-equals-8)
+        (gil::g-rel-reify *sp* (nth (+ i 1) h-intervals) gil::IRT_EQ 9 second-h-equals-9)
+        (gil::g-op *sp* second-h-equals-8 gil::BOT_OR second-h-equals-9 second-is-sixth)
+        (gil::g-op *sp* first-is-sixth gil::BOT_AND second-is-sixth both-h-are-sixths)
+        (gil::g-rel-reify *sp* (nth i cp) gil::IRT_LE (nth (+ i 1) cp) is-ascending)
+        (gil::g-op *sp* both-h-are-sixths gil::BOT_AND is-ascending 0) ; prohibit that we have ascending sixths
         )
     )
 )

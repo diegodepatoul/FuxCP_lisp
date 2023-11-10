@@ -15,6 +15,3 @@
 
 
 ### QUESTIONS TO ASK
-- interval costs are taking a huge time 
-- changing the fux-search-engine generation (see return in 1sp) changes the speed of finding a solution
-- plus on rajoute de couts plus ça va lentement

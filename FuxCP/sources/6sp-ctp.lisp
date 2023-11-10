@@ -23,7 +23,7 @@
 
     ; Constraints on the two counterpoints
     (print "no unisson between cp1 and cp2")
-    (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)) species)
+    ;(add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)) species)
 
 
     (print "all voices can't go in the same direction")
@@ -40,7 +40,7 @@
     (print "prefer perfect chords") ; isn't this kind of the 1st and 2nd costs?
     
     (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-    (add-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
     ; 15
     (add-cost-to-factors *p-chords-cost)
 
