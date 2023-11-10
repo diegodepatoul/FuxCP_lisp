@@ -163,7 +163,7 @@
 
     ; 6st species variables
     (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
-    (diversity-cost :accessor diversity-cost :initarg :diversity-cost :initform nil)
+    (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
 ))
 
 (defun init-counterpoint (voice-type)
@@ -513,8 +513,8 @@
                 (print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 (print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
                 ;(print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
-                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
-                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                ;(print (list "*variety-cost           " (gil::g-values sol *variety-cost)))
+                ;(print (list "*variety-cost2          " (gil::g-values sol *variety-cost2)))
             ))
             (7 (progn
                 (print "PRINT 6th species")
@@ -531,8 +531,8 @@
                 ;(print (list "(first *direct-move-to-p-cons-cost) " (gil::g-values sol (first *direct-move-to-p-cons-cost))))
                 ;(print (list "(first *direct-move-to-p-cons-cost2)" (gil::g-values sol (first *direct-move-to-p-cons-cost2))))
                 ;(print (list "*p-chords-cost            " (gil::g-values sol *p-chords-cost)))
-                ;(print (list "*diversity-cost           " (gil::g-values sol *diversity-cost)))
-                ;(print (list "*diversity-cost2          " (gil::g-values sol *diversity-cost2)))
+                ;(print (list "*variety-cost           " (gil::g-values sol *variety-cost)))
+                ;(print (list "*variety-cost2          " (gil::g-values sol *variety-cost2)))
             ))
         )
         (if (< species 6) 

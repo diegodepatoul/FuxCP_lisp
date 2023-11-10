@@ -1139,7 +1139,7 @@
     )
 )
 
-(defun compute-diversity-cost (cp diversity-cost)
+(defun compute-variety-cost (cp variety-cost)
     (let (
         (k 0)
         )
@@ -1153,8 +1153,8 @@
             )
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_NQ (nth j cp) is-not-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 1 is-equal)
-                (gil::g-rel-reify *sp* (nth k diversity-cost) gil::IRT_EQ 0 is-not-equal)
+                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 1 is-equal)
+                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 0 is-not-equal)
                 (setf k (+ 1 k))
             )
         )
