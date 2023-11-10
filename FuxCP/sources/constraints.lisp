@@ -180,7 +180,6 @@
         ; else
         (add-h-inter-cost-cst (restbutlast (first h-intervals)))
     )
-    (print "Added h-inter costs")
     (add-cost-to-factors *fifth-cost)
     (add-cost-to-factors *octave-cost)
 )
@@ -298,20 +297,6 @@
         )
     )
 )
-
-; append two lists of cp IntVar
-; attention: lengths should be the same
-(defun append-cp (cp-list total-cp)
-    (let ((cp-len (length (first cp-list))))
-        (loop for i from 0 below cp-len do
-            (setf (nth i total-cp) (nth i (first cp-list)))
-        )
-        (loop for i from 0 below cp-len do
-            (setf (nth (+ cp-len i) total-cp) (nth i (second cp-list)))
-        )
-    )
-)
-
 
 ; create the harmonic intervals between @cp and @cf in @h-intervals
 (defun create-h-intervals (cp cf h-intervals)
@@ -755,11 +740,9 @@
 
 ; add the constraint such that there is no unisson unless it is the first or last note
 (defun add-no-unisson-cst (cp cf species)
-    (if (< species 7) ;; TODO GET BACK TO < 6
-        (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
-        (add-no-unisson-at-all-cst cp cf)
-    )
+    (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
 )
+
 
 ; add the constraint that the three voices go in different directions
 ; i.e. that there are no two direct motions
@@ -790,9 +773,9 @@
 )
 
 
-(defun last-chord-not-minor-cst (h-interval1 h-interval2)
-    (gil::g-rel *sp* h-interval1 gil::IRT_NQ 3)
-    (gil::g-rel *sp* h-interval2 gil::IRT_NQ 3)
+(defun last-chord-not-minor-cst (h-interval-1 h-interval-2)
+    (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 3)
+    (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 3)
 )
 ; add the constraint that the chord shall be perfect (1-3-5)
 (defun add-p-chord-cst (h-interval-1 h-interval-2)
@@ -816,24 +799,33 @@
     for c in costs
     do
         (let (
+            (is-h1-3 (gil::add-bool-var *sp* 0 1))
             (is-h1-4 (gil::add-bool-var *sp* 0 1))
+            (is-h1-3-or-4 (gil::add-bool-var *sp* 0 1))
             (is-h1-7 (gil::add-bool-var *sp* 0 1))
+            (is-h2-3 (gil::add-bool-var *sp* 0 1))
             (is-h2-4 (gil::add-bool-var *sp* 0 1))
+            (is-h2-3-or-4 (gil::add-bool-var *sp* 0 1))
             (is-h2-7 (gil::add-bool-var *sp* 0 1))
             (is-p-chord-1 (gil::add-bool-var *sp* 0 1))
             (is-p-chord-2 (gil::add-bool-var *sp* 0 1))
             (is-p-chord (gil::add-bool-var *sp* 0 1))
             (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
         ) 
+            (gil::g-rel-reify *sp* h1 gil::IRT_EQ 3 is-h1-3)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
-            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 4 is-h2-4) ; 
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 7 is-h1-7) ; 
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 3 is-h2-3) ; 
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 4 is-h2-4) ; 
             (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) ;
-            (gil::g-op *sp* is-h1-4 gil::BOT_AND is-h2-7 is-p-chord-1)
-            (gil::g-op *sp* is-h1-7 gil::BOT_AND is-h2-4 is-p-chord-2)
+            (gil::g-op *sp* is-h1-3 gil::BOT_AND is-h1-4 is-h1-3-or-4)
+            (gil::g-op *sp* is-h2-3 gil::BOT_AND is-h2-4 is-h2-3-or-4)
+            (gil::g-op *sp* is-h1-3-or-4 gil::BOT_AND is-h2-7 is-p-chord-1)
+            (gil::g-op *sp* is-h1-7 gil::BOT_AND is-h2-3-or-4 is-p-chord-2)
             (gil::g-op *sp* is-p-chord-1 gil::BOT_OR is-p-chord-2 is-p-chord)
             (gil::g-op *sp* is-p-chord gil::BOT_XOR is-not-p-chord 1)
             (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a p-chord
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-p-chord) ; it costs 0 to be a p-chord
         )
     )
 )
@@ -1873,6 +1865,29 @@
     )
 )
 
+; return the tone offset of the voice
+; => [0, ...,  11]
+; 0 = C, 1 = C#, 2 = D, 3 = D#, 4 = E, 5 = F, 6 = F#, 7 = G, 8 = G#, 9 = A, 10 = A#, 11 = B
+(defun get-tone-offset (voice)
+    (let (
+        (tone (om::tonalite voice))
+    )
+        (if (eq tone nil)
+            ; then default to C major
+            0
+            ; else check if the mode is major or minor
+            (let (
+                (mode (om::mode tone))
+            )
+                (if (eq (third mode) 300)
+                    (midicent-to-midi-offset (+ (om::tonmidi tone) 300))
+                    (midicent-to-midi-offset (om::tonmidi tone))
+                )
+            )
+        )
+    )
+)
+
 ; converts a midicent value to the corresponding offset midi value
 ; note:[0, 12700] -> [0, 11]
 ; 0 corresponds to C, 11 to B
@@ -1971,7 +1986,6 @@
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 (defun add-cost-to-factors (factor-arr)
-    (print (list "nth added = " *n-cost-added))
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)
 )

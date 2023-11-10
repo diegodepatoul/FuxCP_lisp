@@ -47,7 +47,7 @@
     ;(print "Perfect chord at the beginning...")
     ;(add-p-chord-cst (first (first *h-intervals)) (first (first *h-intervals2)))
     (print "Perfect chord at the end...")
-    (add-p-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
+    ;(add-p-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
 
     (last-chord-not-minor-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) ; redundant with last constraint
 

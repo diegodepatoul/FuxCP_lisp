@@ -18,10 +18,10 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
     
-    (if (eq species 6) (let ( ; if re-mi-la is the last cf note then you can use a major third even if it's note in the harmony
+    (if (eq species 6) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
         (tonal (mod (car (last *cf)) 12))
         )
-        (case tonal ((2 4 9) 
+        (case tonal ((2 4 9 10) 
             (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
         )))
     )
