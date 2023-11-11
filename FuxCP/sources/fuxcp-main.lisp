@@ -174,6 +174,14 @@
     (is-nbour-arr :accessor is-nbour-arr :initarg :is-nbour-arr :initform nil)
     (penult-thesis-cost :accessor penult-thesis-cost :initarg :penult-thesis-cost :initform nil) 
 
+                    ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
+    (is-5qn-linked-arr :accessor is-5qn-linked-arr :initarg :is-5qn-linked-arr :initform nil)
+    (is-not-cambiata-arr :accessor is-not-cambiata-arr :initarg :is-not-cambiata-arr :initform nil)
+    (not-cambiata-cost :accessor not-cambiata-cost :initarg :not-cambiata-cost :initform nil)
+    (m2-eq-zero-cost :accessor m2-eq-zero-cost :initarg :m2-eq-zero-cost :initform nil)
+    (is-cons-arr :accessor is-cons-arr :initarg :is-cons-arr :initform (list nil nil nil nil))
+    (cons-cost :accessor cons-cost :initarg :cons-cost :initform (list nil nil nil nil))
+
     ; 6st species variables
     (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
@@ -211,24 +219,6 @@
 
 ; re/define all the variables the CSP needs
 (defun get-counterpoint (species) (case species 
-    ((1 2 3) (progn
-        ;; FIRST SPECIES COUNTERPOINT GLOBAL VARIABLES
-
-
-        (case species 
-            (3 (progn
-                ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
-                (defvar *is-5qn-linked-arr)
-                (defvar *total-cp-len)
-                (defparameter *is-cons-arr (list nil nil nil nil))
-                (defparameter *cons-cost (list nil nil nil nil))
-                (defvar *is-not-cambiata-arr)
-                (defvar *not-cambiata-cost)
-                (defvar *m2-eq-zero-cost)
-            ))
-        )
-    ))
-
     (4 (progn
         ;; FOURTH SPECIES COUNTERPOINT GLOBAL VARIABLES
         (defvar *is-no-syncope-arr) ; not necessary as it is overwritten
@@ -271,18 +261,20 @@
     ;(set-space-variables species)
     
     (print (list "Choosing species: " species))
+    (setq counterpoint-1 (init-counterpoint (first *voices-types)))
+    (setq counterpoint-2 (init-counterpoint (second *voices-types)))
     (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
             (setq *N-COST-FACTORS 5)
-            (fux-cp-1st (init-counterpoint (first *voices-types)))
+            (fux-cp-1st counterpoint-1)
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
-            (fux-cp-2nd (init-counterpoint (first *voices-types)))
+            (fux-cp-2nd counterpoint-1)
         ))
         (3 (progn
             (setq *N-COST-FACTORS 7)
-            (fux-cp-3rd)
+            (fux-cp-3rd counterpoint-1)
         ))
         (4 (progn
             (setq *N-COST-FACTORS 6)
@@ -294,13 +286,11 @@
         ))
         (6 (progn
             (setq *N-COST-FACTORS 15)
-            (fux-cp-6th (init-counterpoint (first *voices-types))
-                        (init-counterpoint (second *voices-types)))
+            (fux-cp-6th counterpoint-1 counterpoint-2)
         ))
         (7 (progn
             (setq *N-COST-FACTORS 13) ;; TODO change the n-cost
-            (fux-cp-7th (init-counterpoint (first *voices-types))
-                        (init-counterpoint (second *voices-types)))
+            (fux-cp-7th counterpoint-1 counterpoint-2)
         ))
         (otherwise (error "Species ~A not implemented" species))
     )
@@ -332,8 +322,8 @@
 
         ; 3rd and 5th species specific
         (if (member species (list 3 5))(progn
-            (gil::g-branch *sp* *m-degrees-cost var-branch-type val-branch-type)
-            (gil::g-branch *sp* *off-key-cost var-branch-type val-branch-type)
+            (gil::g-branch *sp* (m-degrees-cost counterpoint-1) var-branch-type val-branch-type)
+            (gil::g-branch *sp* (off-key-cost counterpoint-1) var-branch-type val-branch-type)
         )
         (progn ; else
             (if (eq species 2)(progn
