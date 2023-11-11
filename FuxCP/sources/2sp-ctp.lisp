@@ -83,10 +83,6 @@
     ; Note: a diminution is the intermediate note that exists between two notes separated by a jump of a third
     ; i.e. E -> D (dim) -> C
     (setf (is-ta-dim-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (print "DEBUG")
-    (print (first (m-succ-intervals counterpoint)))
-    (print (first (m-intervals counterpoint)))
-    (print (third (m-intervals counterpoint)))
     (create-is-ta-dim-arr (first (m-succ-intervals counterpoint)) (first (m-intervals counterpoint)) (third (m-intervals counterpoint)) (is-ta-dim-arr counterpoint))
 
 
@@ -148,7 +144,15 @@
 
     ; no unisson between two consecutive notes
     (print "No unisson between two consecutive notes...")
-    (add-no-unisson-at-all-cst total-cp (rest total-cp))
+    (print (car (last '(0 1 2 3 4 5) 2)))
+    (print (butlast '(0 1 2 3 4 5) 2))
+    (case species
+        (2 (add-no-unisson-at-all-cst total-cp (rest total-cp)))
+        (7 (progn
+            (add-no-unisson-at-all-cst (butlast total-cp 4) (rest (butlast total-cp 4)))
+            (add-no-unisson-at-all-cst (last total-cp 3) (last total-cp 2))
+        ))
+    )
 
 
     ;======================================== MOTION CONSTRAINTS ============================
@@ -166,7 +170,8 @@
 
 
     ;======================================== COST FACTORS ====================================
-    (set-cost-factors (m-all-intervals counterpoint))
+    ; (set-cost-factors (m-all-intervals counterpoint))
+    (if (eq *is-first-run 1) (set-cost-factors (m-all-intervals counterpoint)))
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
     (add-p-cons-cost-cst (h-intervals counterpoint))
@@ -190,10 +195,15 @@
     (print "Cost function...")
 
     ; RETURN
-    (if (eq species 2)
+    #|(if (eq species 2)
         ; then create the search engine
         (append (fux-search-engine total-cp 2) (list species))
         ; else
         nil
+    )|#
+    (case species
+        (2 (append (fux-search-engine total-cp 2) (list species)))
+        (7 total-cp)
+        (otherwise nil)
     )
 )

@@ -2,10 +2,10 @@
 
 ; Author: Anton Lamotte
 ; Date: October 2023
-; This file contains the function that adds all the necessary constraints to the first species.
+; This file contains the function that adds all the necessary constraints to the first species for three voices.
 
 ;;================================#
-;; First SPECIES for THREE VOICES #
+;; First species for three voices #
 ;;================================#
 ;; Note: fux-cp-6th executes the first species algorithm with some modified constraints.
 (defun fux-cp-6th (counterpoint-1 counterpoint-2 &optional (species 6))
@@ -43,8 +43,8 @@
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     (print "Last chord cannot include a tenth")
     (add-no-tenth-in-last-chord-cst (last (h-intervals-brut counterpoint-1)) (last (h-intervals-brut counterpoint-2)))
-    ;(print "Last chord must be a ... chord") 
-    ;(add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
+    (print "Last chord must be a ... chord") 
+    (add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
 
     ; RETURN
     (if (eq species 6)

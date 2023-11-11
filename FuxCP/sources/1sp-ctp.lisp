@@ -205,7 +205,6 @@
     (print "exiting 1sp")
     ; RETURN
     (if (eq species 1)
-    ;(if (or (eq species 1) (eq species 6)) ; todo del this line
         ; then create the search engine
         (append (fux-search-engine (first (cp counterpoint))) (list species))
         ; else

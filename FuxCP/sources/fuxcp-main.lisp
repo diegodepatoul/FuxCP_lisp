@@ -298,8 +298,9 @@
                         (init-counterpoint (second *voices-types)))
         ))
         (7 (progn
-            (setq *N-COST-FACTORS 15) ;; TODO change the n-cost
-            (fux-cp-7th)
+            (setq *N-COST-FACTORS 13) ;; TODO change the n-cost
+            (fux-cp-7th (init-counterpoint (first *voices-types))
+                        (init-counterpoint (second *voices-types)))
         ))
         (otherwise (error "Species ~A not implemented" species))
     )
@@ -619,7 +620,11 @@
                         (setf second-cp (subseq pitches-om *cf-len))
                     ))
                     (7 (progn
-                        (setf first-cp nil)
+                        (setf first-cp (subseq pitches-om 0 *cf-len))
+                        (print (list "first-cp: " first-cp))
+                        (setf second-cp (subseq pitches-om *cf-len))
+                        (print (list "second-cp: " second-cp))
+                        #|
                         (loop 
                             for v1 in (gil::g-values sol (first *cp))
                             for v2 in (gil::g-values sol (third *cp))
@@ -627,6 +632,7 @@
                         )
                         (setf first-cp (append first-cp (last (gil::g-values sol (first *cp)))))
                         (setf second-cp (gil::g-values sol (first *cp2)))
+                        |#
                     ))
                 )
                 (make-instance 'poly 

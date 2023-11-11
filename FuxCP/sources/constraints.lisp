@@ -784,6 +784,11 @@
     (gil::g-rel *sp* h-interval-brut-1 gil::IRT_NQ 16)
     (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 15)
     (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 16)
+
+    (gil::g-rel *sp* h-interval-brut-1 gil::IRT_NQ 27)
+    (gil::g-rel *sp* h-interval-brut-1 gil::IRT_NQ 28)
+    (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 27)
+    (gil::g-rel *sp* h-interval-brut-2 gil::IRT_NQ 28)
 )
 
 ; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
@@ -1845,7 +1850,7 @@
                 (get-4th-notes-array cp cp-len)
         ))
         (6 (list (make-list len :initial-element 1) (make-list len :initial-element 1)))
-        (7 (list (append (make-list (* 2 len-1) :initial-element 1/2) '(1)) (make-list len :initial-element 1)))
+        (7 (list (make-list len :initial-element 1) (append (make-list (* 2 len-1) :initial-element 1/2) '(1))))
     )
 )
 
