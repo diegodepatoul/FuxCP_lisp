@@ -174,13 +174,17 @@
     (is-nbour-arr :accessor is-nbour-arr :initarg :is-nbour-arr :initform nil)
     (penult-thesis-cost :accessor penult-thesis-cost :initarg :penult-thesis-cost :initform nil) 
 
-                    ;; THIRD SPECIES COUNTERPOINT GLOBAL VARIABLES
+    ; 3rd species variables
     (is-5qn-linked-arr :accessor is-5qn-linked-arr :initarg :is-5qn-linked-arr :initform nil)
     (is-not-cambiata-arr :accessor is-not-cambiata-arr :initarg :is-not-cambiata-arr :initform nil)
     (not-cambiata-cost :accessor not-cambiata-cost :initarg :not-cambiata-cost :initform nil)
     (m2-eq-zero-cost :accessor m2-eq-zero-cost :initarg :m2-eq-zero-cost :initform nil)
     (is-cons-arr :accessor is-cons-arr :initarg :is-cons-arr :initform (list nil nil nil nil))
     (cons-cost :accessor cons-cost :initarg :cons-cost :initform (list nil nil nil nil))
+
+    ; 4th species variables
+    (is-no-syncope-arr :accessor is-no-syncope-arr :initarg :is-no-syncope-arr :initform nil)
+    (no-syncope-cost :accessor no-syncope-cost :initarg :no-syncope-cost :initform nil)
 
     ; 6st species variables
     (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
@@ -219,11 +223,6 @@
 
 ; re/define all the variables the CSP needs
 (defun get-counterpoint (species) (case species 
-    (4 (progn
-        ;; FOURTH SPECIES COUNTERPOINT GLOBAL VARIABLES
-        (defvar *is-no-syncope-arr) ; not necessary as it is overwritten
-        (defvar *no-syncope-cost) ; not necessary as it is overwritten
-    ))
 
     (5 (progn
         ;; FIFTH SPECIES COUNTERPOINT GLOBAL VARIABLES
@@ -278,7 +277,7 @@
         ))
         (4 (progn
             (setq *N-COST-FACTORS 6)
-            (fux-cp-4th)
+            (fux-cp-4th counterpoint-1)
         ))
         (5 (progn
             (setq *N-COST-FACTORS 8)
