@@ -144,13 +144,14 @@
 
     ; no unisson between two consecutive notes
     (print "No unisson between two consecutive notes...")
-    (print (car (last '(0 1 2 3 4 5) 2)))
-    (print (butlast '(0 1 2 3 4 5) 2))
     (case species
         (2 (add-no-unisson-at-all-cst total-cp (rest total-cp)))
         (7 (progn
-            (add-no-unisson-at-all-cst (butlast total-cp 4) (rest (butlast total-cp 4)))
-            (add-no-unisson-at-all-cst (last total-cp 3) (last total-cp 2))
+            (print (last '(0 1 2 3 4 5) 2))
+            (print (butlast '(0 1 2 3 4 5) 2))
+            (gil::g-rel *sp* (car (last total-cp 4)) gil::IRT_EQ (car (last total-cp 3)))
+            (add-no-unisson-at-all-cst (butlast total-cp 3) (rest (butlast total-cp 3)))
+            (add-no-unisson-at-all-cst (last total-cp 3) (rest (last total-cp 3)))
         ))
     )
 

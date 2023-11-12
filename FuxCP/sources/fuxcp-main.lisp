@@ -594,7 +594,7 @@
                 )
             ))
             (otherwise (progn
-                (setq rythmic-om (get-basic-rythmic species *cf-len)) ; get the rythmic correpsonding to the species
+                (setq rythmic-om (get-basic-rythmic species *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
                 (setq pitches-om sol-pitches)
             ))
         )
