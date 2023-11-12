@@ -288,7 +288,7 @@
             (fux-cp-6th counterpoint-1 counterpoint-2)
         ))
         (7 (progn
-            (setq *N-COST-FACTORS 13) ;; TODO change the n-cost
+            (setq *N-COST-FACTORS 15) 
             (fux-cp-7th counterpoint-1 counterpoint-2)
         ))
         (otherwise (error "Species ~A not implemented" species))

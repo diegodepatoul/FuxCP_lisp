@@ -1854,11 +1854,16 @@
             (make-list len :initial-element 1)
             )
         )
-        (7 (list 
-            (make-list len :initial-element 1)
-            (ligature-identical-notes cp (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
-            ;(append (make-list (* 2 len-1) :initial-element 1/2) '(1))
+        (7 (let (
+                (basic-rythmic-2nd (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
             )
+                (setf basic-rythmic-2nd (ligature-identical-notes cp basic-rythmic-2nd))
+                (setf (first basic-rythmic-2nd) -1/2)
+                ; return
+                (list 
+                    (make-list len :initial-element 1)
+                    basic-rythmic-2nd
+            ))
         )
     )
 )
@@ -1868,7 +1873,6 @@
         ; then ligature them
         (setf basic-rythmic (append (butlast basic-rythmic 4) '(1) (last basic-rythmic 2)))
         (let ((len (length cp)))
-            (print len)
             (loop
                 for i from (- len 4) below (- len 1)
                 do (setf (nth i cp) (nth (+ i 1) cp))

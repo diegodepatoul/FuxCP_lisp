@@ -147,6 +147,7 @@
     (case species
         (2 (add-no-unisson-at-all-cst total-cp (rest total-cp)))
         (7 (progn
+            ; in 7th species unison can occur between the 2nd-to-last and 1st-to-last bar
             (add-no-unisson-at-all-cst (butlast total-cp 3) (rest (butlast total-cp 3)))
             (add-no-unisson-at-all-cst (last total-cp 3) (rest (last total-cp 3)))
         ))
@@ -187,6 +188,13 @@
     (add-single-cost-cst (penult (first (h-intervals counterpoint))) gil::IRT_NQ 7 (penult-thesis-cost counterpoint) *penult-sixth-cost*)
     (setf (nth *n-cost-added *cost-factors) (penult-thesis-cost counterpoint))
     (incf *n-cost-added)
+
+    ; 7) as many different notes as possible
+    (if (eq species 7) (progn
+        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+        (add-cost-to-factors (variety-cost counterpoint))
+    ))
 
 
     ;======================================== COST FUNCTION ===================================
