@@ -215,7 +215,7 @@
         nil
     )|#
     (case species 
-        (3 (append (fux-search-engine total-cp 3) '((3))))
+        (3 (append (fux-search-engine total-cp '(3)) '((3))))
         (8 total-cp)
         (otherwise nil)
     )

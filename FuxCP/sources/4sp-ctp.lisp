@@ -176,7 +176,7 @@
     ; RETURN
     (if (eq species 4)
         ; then create the search engine
-        (append (fux-search-engine total-cp 4) '((4)))
+        (append (fux-search-engine total-cp '(4)) '((4)))
         ; else
         nil
     )

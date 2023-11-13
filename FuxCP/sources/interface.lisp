@@ -855,8 +855,6 @@
                 (error "The problem has not been initialized. Please set the input and press Start.")
             )
             (print "Searching for the next solution")
-                    (print "HEEEEEEEEEEEEEEEEEEEEEEREEEEEEeee")
-                    (print (current-csp (om::object editor)))
             ;reset the boolean because we want to continue the search
             (setparam 'is-stopped nil)
             ;get the next solution
