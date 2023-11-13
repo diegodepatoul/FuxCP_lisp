@@ -177,7 +177,7 @@
     (add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-bass-arr counterpoint))) ; TODO 
 
     ;======================================== COST FACTORS ====================================
-    (set-cost-factors  (m-all-intervals counterpoint))
+    (if (eq *is-first-run 1) (set-cost-factors  (m-all-intervals counterpoint)))
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
     (add-p-cons-cost-cst (h-intervals counterpoint))
@@ -208,10 +208,15 @@
 
 
     ; RETURN
-    (if (eq species 3)
+    #|(if (eq species 3)
         ; then create the search engine
         (append (fux-search-engine total-cp 3) (list species))
         ; else
         nil
+    )|#
+    (case species 
+        (3 (append (fux-search-engine total-cp 3) (list species)))
+        (8 total-cp)
+        (otherwise nil)
     )
 )

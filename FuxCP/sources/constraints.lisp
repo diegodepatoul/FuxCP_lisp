@@ -1865,6 +1865,10 @@
                     basic-rythmic-2nd
             ))
         )
+        (8 (list 
+            (make-list len :initial-element 1) 
+            (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
+        ))
     )
 )
 

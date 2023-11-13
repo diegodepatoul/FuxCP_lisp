@@ -291,6 +291,10 @@
             (setq *N-COST-FACTORS 15) 
             (fux-cp-7th counterpoint-1 counterpoint-2)
         ))
+        (8 (progn
+            (setq *N-COST-FACTORS 15)
+            (fux-cp-8th counterpoint-1 counterpoint-2)
+        ))
         (otherwise (error "Species ~A not implemented" species))
     )
 )
@@ -610,18 +614,11 @@
                     ))
                     (7 (progn
                         (setf first-cp (subseq pitches-om 0 *cf-len))
-                        (print (list "first-cp: " first-cp))
                         (setf second-cp (subseq pitches-om *cf-len))
-                        (print (list "second-cp: " second-cp))
-                        #|
-                        (loop 
-                            for v1 in (gil::g-values sol (first *cp))
-                            for v2 in (gil::g-values sol (third *cp))
-                            do (setf first-cp (append first-cp (list v1 v2)))
-                        )
-                        (setf first-cp (append first-cp (last (gil::g-values sol (first *cp)))))
-                        (setf second-cp (gil::g-values sol (first *cp2)))
-                        |#
+                    ))
+                    (8 (progn
+                        (setf first-cp (subseq pitches-om 0 *cf-len))
+                        (setf second-cp (subseq pitches-om *cf-len))
                     ))
                 )
                 (make-instance 'poly 
