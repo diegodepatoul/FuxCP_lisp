@@ -248,7 +248,7 @@
 
 
 ;; DISPATCHER FUNCTION
-(defun fux-cp (species)
+(defun fux-cp (species-list)
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
@@ -259,9 +259,10 @@
     (define-global-constants)
     ;(set-space-variables species)
     
-    (print (list "Choosing species: " species))
+    (print (list "Choosing species: " species-list))
     (setq counterpoint-1 (init-counterpoint (first *voices-types)))
     (setq counterpoint-2 (init-counterpoint (second *voices-types)))
+    (setf species (first species-list))
     (case species ; [1, 2, 3, 4, 5, 6, 7]
         (1 (progn
             (setq *N-COST-FACTORS 5)
@@ -297,9 +298,12 @@
         ))
         (otherwise (error "Species ~A not implemented" species))
     )
+    
+    ;(print toreturn)
+    ;toreturn
 )
 
-(defun fux-search-engine (the-cp &optional (species 1) (voice-type 0))
+(defun fux-search-engine (the-cp &optional (species '(1)) (voice-type 0))
     (let (se tstop sopts)
         ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
@@ -319,26 +323,18 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
 
         ; 5th species specific
-        (if (eq species 5) ; otherwise there is no species array
+        (if (member 5 species) ; otherwise there is no species array
             (gil::g-branch *sp* *species-arr var-branch-type gil::INT_VAL_RND)
         )
 
         ; 3rd and 5th species specific
-        (if (member species (list 3 5))(progn
+        (if (or (member 3 species) (member 5 species)) (progn
             (gil::g-branch *sp* (m-degrees-cost counterpoint-1) var-branch-type val-branch-type)
             (gil::g-branch *sp* (off-key-cost counterpoint-1) var-branch-type val-branch-type)
-        )
-        (progn ; else
-            (if (eq species 2)(progn
-                ; (gil::g-branch *sp* *real-motions-cost var-branch-type val-branch-type)
-                ; (gil::g-branch *sp* *m-degrees-cost var-branch-type gil::INT_VAL_SPLIT_MIN)
-                ; (gil::g-branch *sp* *off-key-cost var-branch-type val-branch-type)
-            ))
-        )
-        )
+        ))
 
         ; 5th species specific
-        (if (and (eq species 5) (>= voice-type 0)) ; otherwise there is no species array
+        (if (and (member 5 species) (>= voice-type 0)) ; otherwise there is no species array
         (progn
             (gil::g-branch *sp* *no-syncope-cost var-branch-type val-branch-type)
             (gil::g-branch *sp* *not-cambiata-cost var-branch-type val-branch-type)
@@ -347,7 +343,7 @@
 
         ; branching *total-cost
         ;(gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
-        (if (eq species 2)
+        (if (member 2 species)
             (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type)
         )
     
@@ -387,7 +383,7 @@
         (the-cp (second l))
         (tstop (third l))
         (sopts (fourth l))
-        (species (fifth l))
+        (species-list (fifth l))
         (check t)
         sol sol-pitches sol-species
         )
@@ -562,74 +558,78 @@
         
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
         (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
-        
+        (print species)
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
-        (case species
-            (4 (progn
-                (setq rythmic+pitches (get-basic-rythmic 4 *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
-                (setq rythmic-om (first rythmic+pitches))
-                (setq pitches-om (second rythmic+pitches))
-            ))
-            (5 (progn
-                (setq sol-species (gil::g-values sol *species-arr)) ; store the values of the solution
-                (setq rythmic+pitches (parse-species-to-om-rythmic sol-species sol-pitches))
-                (setq rythmic-om (first rythmic+pitches))
-                ; (print (list "rythmic-om" rythmic-om))
-                (setq pitches-om (second rythmic+pitches))
-                ; (print (list "pitches-om" pitches-om))
-                (setq check (checksum-sol pitches-om rythmic-om))
-                ; (print (list "check" check))
-                (if (not (null *prev-sol-check))
-                    ; then compare the pitches of the previous solution with the current one
-                    ; if they are the same launch a new search
-                    (if (member check *prev-sol-check)
-                        (progn
-                            (search-next-fux-cp l)
+        (if (eq (length species-list) 1) (progn
+            (case (first species-list)
+                (4 (progn
+                    (setq rythmic+pitches (get-basic-rythmic 4 *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
+                    (setq rythmic-om (first rythmic+pitches))
+                    (setq pitches-om (second rythmic+pitches))
+                ))
+                (5 (progn
+                    (setq sol-species (gil::g-values sol *species-arr)) ; store the values of the solution
+                    (setq rythmic+pitches (parse-species-to-om-rythmic sol-species sol-pitches))
+                    (setq rythmic-om (first rythmic+pitches))
+                    ; (print (list "rythmic-om" rythmic-om))
+                    (setq pitches-om (second rythmic+pitches))
+                    ; (print (list "pitches-om" pitches-om))
+                    (setq check (checksum-sol pitches-om rythmic-om))
+                    ; (print (list "check" check))
+                    (if (not (null *prev-sol-check))
+                        ; then compare the pitches of the previous solution with the current one
+                        ; if they are the same launch a new search
+                        (if (member check *prev-sol-check)
+                            (progn
+                                (search-next-fux-cp l)
+                            )
+                            (progn
+                                (print *prev-sol-check)
+                                (setq *prev-sol-check (append *prev-sol-check (list check)))
+                            )
                         )
+                        ; else register the pitches of the current solution
                         (progn
-                            (print *prev-sol-check)
-                            (setq *prev-sol-check (append *prev-sol-check (list check)))
+                            (setq *prev-sol-check (list check))
                         )
                     )
-                    ; else register the pitches of the current solution
-                    (progn
-                        (setq *prev-sol-check (list check))
+                ))
+                (otherwise (progn
+                    (setq rythmic-om (get-basic-rythmic species *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
+                    (setq pitches-om sol-pitches)
+                ))
+            )
+            (print (list "pitches-om = " pitches-om))
+            (print rythmic-om)
+            (print *cf-tempo)
+            (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
+                (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
+                (progn
+                    (print (list "Species = " species))
+                    (case species
+                        (6 (progn 
+                            (setf first-cp (subseq pitches-om 0 *cf-len))
+                            (setf second-cp (subseq pitches-om *cf-len))
+                        ))
+                        (7 (progn
+                            (setf first-cp (subseq pitches-om 0 *cf-len))
+                            (setf second-cp (subseq pitches-om *cf-len))
+                        ))
+                        (8 (progn
+                            (setf first-cp (subseq pitches-om 0 *cf-len))
+                            (setf second-cp (subseq pitches-om *cf-len))
+                        ))
                     )
-                )
-            ))
-            (otherwise (progn
-                (setq rythmic-om (get-basic-rythmic species *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
-                (setq pitches-om sol-pitches)
-            ))
-        )
-        (print (list "pitches-om = " pitches-om))
-        (if (< species 6) ; for species 1 to 5, create only 1 additional voice, else create 2 voices
-            (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo)
-            (progn
-                (print (list "Species = " species))
-                (case species
-                    (6 (progn 
-                        (setf first-cp (subseq pitches-om 0 *cf-len))
-                        (setf second-cp (subseq pitches-om *cf-len))
-                    ))
-                    (7 (progn
-                        (setf first-cp (subseq pitches-om 0 *cf-len))
-                        (setf second-cp (subseq pitches-om *cf-len))
-                    ))
-                    (8 (progn
-                        (setf first-cp (subseq pitches-om 0 *cf-len))
-                        (setf second-cp (subseq pitches-om *cf-len))
-                    ))
-                )
-                (make-instance 'poly 
-                    :voices (
-                        list
-                        (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)
-                        (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
-                        )
+                    (make-instance 'poly 
+                        :voices (
+                            list
+                            (make-instance 'voice :chords (to-midicent second-cp) :tree (om::mktree (second rythmic-om) '(4 4)) :tempo *cf-tempo)
+                            (make-instance 'voice :chords (to-midicent first-cp) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
+                            )
+                    )
                 )
             )
-        )
+        ))
     )
 )
 

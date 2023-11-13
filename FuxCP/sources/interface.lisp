@@ -47,7 +47,7 @@
     ; Species 5
     (pref-species-slider-param :accessor pref-species-slider-param :initform 50 :type integer :documentation "")
     ; ---------- Solver parameters ----------
-    (species-param :accessor species-param :initform "5th" :type string :documentation "")
+    (species-param :accessor species-param :initform (list "1st" "5th") :type string :documentation "")
     (voice-type-param-1 :accessor voice-type-param-1 :initform "Above" :type string :documentation "")
     (voice-type-param-2 :accessor voice-type-param-2 :initform "Far above" :type string :documentation "")
     (irreverence-slider-param :accessor irreverence-slider-param :initform 0 :type integer :documentation "")
@@ -662,7 +662,7 @@
         'om::om-static-text
         (om::om-make-point 15 50)
         (om::om-make-point 150 20)
-        "Chosen species"
+        "First voice species"
         :font om::*om-default-font1b*
         )
 
@@ -670,11 +670,11 @@
         'om::pop-up-menu
         (om::om-make-point 170 50)
         (om::om-make-point 200 20)
-        "Chosen species"
-        :range (list "1st" "2nd" "3rd" "4th" "5th" "6th" "7th" "8th" "9th" "10th")
-        :value (species-param (om::object editor))
+        "First voice species"
+        :range (list "1st" "2nd" "3rd" "4th" "5th")
+        :value (first (species-param (om::object editor)))
         :di-action #'(lambda (cost)
-            (setf (species-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (first (species-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         )
 
@@ -682,7 +682,7 @@
         'om::om-static-text
         (om::om-make-point 15 100)
         (om::om-make-point 150 20)
-        "Voice range"
+        "First voice range"
         :font om::*om-default-font1b*
         )
 
@@ -702,7 +702,7 @@
         'om::om-static-text
         (om::om-make-point 15 150)
         (om::om-make-point 150 20)
-        "Voice range 2"
+        "Second voice species"
         :font om::*om-default-font1b*
         )
 
@@ -710,11 +710,11 @@
         'om::pop-up-menu
         (om::om-make-point 170 150)
         (om::om-make-point 200 20)
-        "Voice range"
-        :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
-        :value (voice-type-param-2 (om::object editor))
+        "Second voice species"
+        :range (list "None" "1st" "2nd" "3rd" "4th" "5th")
+        :value (second (species-param (om::object editor)))
         :di-action #'(lambda (cost)
-            (setf (voice-type-param-2 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (second (species-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         )
 
@@ -722,13 +722,33 @@
         'om::om-static-text
         (om::om-make-point 15 200)
         (om::om-make-point 150 20)
+        "Second voice range"
+        :font om::*om-default-font1b*
+        )
+
+        (om::om-make-dialog-item
+        'om::pop-up-menu
+        (om::om-make-point 170 200)
+        (om::om-make-point 200 20)
+        "Second voice range"
+        :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
+        :value (voice-type-param-2 (om::object editor))
+        :di-action #'(lambda (cost)
+            (setf (voice-type-param-2 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+        )
+        ) 
+
+        (om::om-make-dialog-item
+        'om::om-static-text
+        (om::om-make-point 15 250)
+        (om::om-make-point 150 20)
         "Irreverence"
         :font om::*om-default-font1b*
         )
 
         (om::om-make-dialog-item
         'om::om-slider
-        (om::om-make-point 170 200)
+        (om::om-make-point 170 250)
         (om::om-make-point 200 20)
         "Irreverence"
         :range '(0 40)
@@ -741,7 +761,7 @@
 
         (om::om-make-dialog-item
         'om::om-static-text
-        (om::om-make-point 15 250)
+        (om::om-make-point 15 300)
         (om::om-make-point 150 20)
         "Minimum % of skips"
         :font om::*om-default-font1b*
@@ -749,7 +769,7 @@
 
         (om::om-make-dialog-item
         'om::om-slider
-        (om::om-make-point 170 250)
+        (om::om-make-point 170 300)
         (om::om-make-point 200 20)
         "Minimum % of skips"
         :range '(0 100)
@@ -821,8 +841,7 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
-
-            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer (species-param (om::object editor)))))
+            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-list (species-param (om::object editor)))))
         )
         )
 
@@ -836,6 +855,8 @@
                 (error "The problem has not been initialized. Please set the input and press Start.")
             )
             (print "Searching for the next solution")
+                    (print "HEEEEEEEEEEEEEEEEEEEEEEREEEEEEeee")
+                    (print (current-csp (om::object editor)))
             ;reset the boolean because we want to continue the search
             (setparam 'is-stopped nil)
             ;get the next solution
@@ -919,18 +940,22 @@
 )
 
 ; convert a species to an integer
-(defun convert-to-species-integer (param)
-    (cond
-    ((equal param "1st") 1)
-    ((equal param "2nd") 2)
-    ((equal param "3rd") 3)
-    ((equal param "4th") 4)
-    ((equal param "5th") 5)
-    ((equal param "6th") 6)
-    ((equal param "7th") 7)
-    ((equal param "8th") 8)
-    ((equal param "9th") 9)
-    ((equal param "10th") 10)
+(defun convert-to-species-list (param-list)
+    (let (
+        (species-list '())
+        )
+        (dolist (param param-list) 
+        (progn 
+            (cond
+                ((equal param "1st") (setf species-list (append species-list '(1))))
+                ((equal param "2nd") (setf species-list (append species-list '(2))))
+                ((equal param "3rd") (setf species-list (append species-list '(3))))
+                ((equal param "4th") (setf species-list (append species-list '(4))))
+                ((equal param "5th") (setf species-list (append species-list '(5))))
+                ((equal param "None") nil)
+            )
+        ))
+        species-list
     )
 )
 

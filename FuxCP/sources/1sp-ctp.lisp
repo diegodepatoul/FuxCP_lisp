@@ -206,7 +206,7 @@
     ; RETURN
     (if (eq species 1)
         ; then create the search engine
-        (append (fux-search-engine (first (cp counterpoint))) (list species))
+        (append (fux-search-engine (first (cp counterpoint))) '((1)))
         ; else
         nil
     )

@@ -387,7 +387,7 @@
     (if (eq species 5)
         ; then create the search engine
         ; (append (fux-search-engine *total-cp) (list species))
-        (append (fux-search-engine *total-cp 5) '(5) VOICE_TYPE) ; TODO VOICE_TYPE is now in the param of the counterpoint objects
+        (append (fux-search-engine *total-cp 5) '((5)) VOICE_TYPE) ; TODO VOICE_TYPE is now in the param of the counterpoint objects
         ; else
         nil
     )

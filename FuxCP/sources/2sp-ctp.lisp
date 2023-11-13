@@ -208,7 +208,7 @@
         nil
     )|#
     (case species
-        (2 (append (fux-search-engine total-cp 2) (list species)))
+        (2 (append (fux-search-engine total-cp 2) '((2))))
         (7 total-cp)
         (otherwise nil)
     )

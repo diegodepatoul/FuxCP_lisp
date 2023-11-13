@@ -52,7 +52,7 @@
     (print species)
     (if (eq species 8)
         ; then create the search engine
-        (append (fux-search-engine solution-array 8) (list species))
+        (append (fux-search-engine solution-array 8) '((species)))
         ; else
         nil
     )
