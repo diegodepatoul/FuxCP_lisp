@@ -18,7 +18,7 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
     
-    (if (eq species 6) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+    (if (>= species 6) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
         (tonal (mod (car (last *cf)) 12))
         )
         (case tonal ((2 4 9 10) 
@@ -95,7 +95,7 @@
     (case species
         ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
         ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
-        (3 (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
+        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
 
@@ -152,7 +152,7 @@
             (print "No battuta kind of motion...")
             (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-bass-arr counterpoint)))
 
-            (if (eq species 6)
+            (if (>= species 6)
                 (progn
                     (print "No successive perfect consonances (counterpoint to cantus firmus)")
                     (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
@@ -184,26 +184,15 @@
 
             ; 5) motion costs
             (print "add motion costs")
-            (print (first (motions-cost counterpoint)))
-            (add-cost-to-factors (first (motions-cost counterpoint)))
-
-            
-            (if (eq species 6) (progn
-                ; 6) as few direct motion to reach a perfect consonance as possible
-                (setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
-                (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
-                (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
-
-                ; 7) as many different notes as possible
-                (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-                (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-                (add-cost-to-factors (variety-cost counterpoint))
-            ))
-            
+            (add-cost-to-factors (first (motions-cost counterpoint)))            
         )
     ))
 
-    (print "exiting 1sp")
+    (if (>= species 6) (progn
+
+    ))
+
+    (print "##### EXITTING FIRST SPECIES ######")
     ; RETURN
     (case species 
         (1 (append (fux-search-engine (first (cp counterpoint))) (list (list 1))))

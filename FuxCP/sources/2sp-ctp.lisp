@@ -15,7 +15,7 @@
     (print "########## SECOND SPECIES ##########")
 
     ;; ADD FIRST SPECIES CONSTRAINTS
-    (fux-cp-1st counterpoint 2)
+    (fux-cp-1st counterpoint species)
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
     ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain cp-domain
@@ -144,7 +144,7 @@
     (print "No unisson between two consecutive notes...")
     (case species
         (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
-        (6 (progn
+        (7 (progn
             ; in 7th species unison can occur between the 2nd-to-last and 1st-to-last bar
             (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
             (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3)))
@@ -188,7 +188,7 @@
     (incf *n-cost-added)
 
     ; 7) as many different notes as possible
-    (if (eq species 6) (progn
+    (if (eq species 7) (progn
         (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
         (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
         (add-cost-to-factors (variety-cost counterpoint))
