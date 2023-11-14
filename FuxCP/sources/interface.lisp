@@ -953,6 +953,7 @@
                 ((equal param "None") nil)
             )
         ))
+        (setq *N-VOICES (length species-list))
         species-list
     )
 )
@@ -1020,4 +1021,6 @@
     (defparameter *cf-penult-index (- *cf-len 2))
     ; COST_UB is the upper bound of the cost function
     (defparameter COST_UB (* *cf-len 20))
+    ; *N-VOICES is the number of voices in the counterpoint
+    (defparameter *N-VOICES 0) ; will be defined when parsing the input
 )

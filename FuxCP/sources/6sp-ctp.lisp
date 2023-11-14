@@ -8,8 +8,12 @@
 ;; First species for three voices #
 ;;================================#
 ;; Note: fux-cp-6th executes the first species algorithm with some modified constraints.
-(defun fux-cp-6th (counterpoint-1 counterpoint-2 &optional (species 6))
+(defun fux-cp-6th (species-list counterpoints &optional (species 6))
     (print "########## SIXTH SPECIES ##########")
+    (setf counterpoint-1 (first counterpoints))
+    (setf counterpoint-2 (second counterpoints))
+    (print (list "species list = " species-list))
+
     ; Creating the first counterpoint
     (fux-cp-1st counterpoint-1 6)
    
