@@ -12,12 +12,10 @@
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
 (defun fux-cp-2nd (counterpoint &optional (species 2))
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
+    (print "########## SECOND SPECIES ##########")
 
     ;; ADD FIRST SPECIES CONSTRAINTS
     (fux-cp-1st counterpoint 2)
-
-    (print "########## SECOND SPECIES ##########")
-
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
     ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain cp-domain
@@ -146,7 +144,7 @@
     (print "No unisson between two consecutive notes...")
     (case species
         (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
-        (7 (progn
+        (6 (progn
             ; in 7th species unison can occur between the 2nd-to-last and 1st-to-last bar
             (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
             (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3)))
@@ -190,7 +188,7 @@
     (incf *n-cost-added)
 
     ; 7) as many different notes as possible
-    (if (eq species 7) (progn
+    (if (eq species 6) (progn
         (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
         (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
         (add-cost-to-factors (variety-cost counterpoint))
@@ -209,7 +207,6 @@
     )|#
     (case species
         (2 (append (fux-search-engine (solution-array counterpoint) '(2)) (list (list 2))))
-        (7 (solution-array counterpoint))
         (otherwise nil)
     )
 )

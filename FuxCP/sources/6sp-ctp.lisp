@@ -13,7 +13,7 @@
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
     (print (list "species list = " species-list))
-
+    (setq *N-COST-FACTORS 1)
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (incf *N-COST-FACTORS 7))
@@ -25,8 +25,8 @@
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (fux-cp-1st (nth i counterpoints) 6))
-            (2 (fux-cp-2nd (nth i counterpoints) 7))
-            (3 (fux-cp-3rd (nth i counterpoints) 8))
+            (2 (fux-cp-2nd (nth i counterpoints) 6))
+            (3 (fux-cp-3rd (nth i counterpoints) 6))
         )
         (setf *is-first-run 0)
     ))
@@ -60,7 +60,7 @@
     (add-no-tenth-in-last-chord-cst (last (h-intervals-brut counterpoint-1)) (last (h-intervals-brut counterpoint-2))) |#
     (print "Last chord must be a ... chord") 
     (add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
-
+ 
     ; RETURN
     (if (eq species 6)
         ; then create the search engine

@@ -47,9 +47,9 @@
     ; Species 5
     (pref-species-slider-param :accessor pref-species-slider-param :initform 50 :type integer :documentation "")
     ; ---------- Solver parameters ----------
-    (species-param :accessor species-param :initform (list "1st" "5th") :type string :documentation "")
-    (voice-type-param-1 :accessor voice-type-param-1 :initform "Above" :type string :documentation "")
-    (voice-type-param-2 :accessor voice-type-param-2 :initform "Really far above" :type string :documentation "")
+    (species-param :accessor species-param :initform (list "1st" "1st") :type string :documentation "")
+    (voice-type-param-1 :accessor voice-type-param-1 :initform "Really far above" :type string :documentation "")
+    (voice-type-param-2 :accessor voice-type-param-2 :initform "Above" :type string :documentation "")
     (irreverence-slider-param :accessor irreverence-slider-param :initform 0 :type integer :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
     ; ---------- Output & Stop ----------

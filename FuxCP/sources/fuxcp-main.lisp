@@ -333,6 +333,7 @@
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
 
+#|
         (loop for i from 0 below *N-VOICES do (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array
@@ -354,11 +355,11 @@
             )
 
             ; branching *total-cost
-            ;(gil::g-branch *sp* *total-cost var-branch-type val-branch-type)
-            (if (eq (nth i species) 2)
-                (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
-            )
+            ;(if (eq (nth i species) 2)
+            ;    (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
+            ;)
         ))
+         |#
     
         ;; Solution variables branching
         (gil::g-branch *sp* the-cp var-branch-type val-branch-type)
