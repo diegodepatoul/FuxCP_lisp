@@ -13,12 +13,12 @@
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
     (print (list "species list = " species-list))
-    (setq *N-COST-FACTORS 1)
+    (setq *N-COST-FACTORS 5)
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
-            (1 (incf *N-COST-FACTORS 7))
-            (2 (incf *N-COST-FACTORS 9))
-            (3 (incf *N-COST-FACTORS 9))
+            (1 (incf *N-COST-FACTORS 5))
+            (2 (incf *N-COST-FACTORS 6))
+            (3 (incf *N-COST-FACTORS 7))
         )
     ))
 
@@ -30,24 +30,12 @@
         )
         (setf *is-first-run 0)
     ))
-
-    (dolist (counterpoint counterpoints) (progn
-        (print "as few direct motion to reach a perfect consonance as possible")
-        ; 6) as few direct motion to reach a perfect consonance as possible
-        (setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
-        (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
-        (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
-        
-        ; 7) as many different notes as possible
-        (print "as many different notes as possible")
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-        (add-cost-to-factors (variety-cost counterpoint))
-    ))
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
-    ; Constraints on the two counterpoints
+    ;================================================================================;
+    ;                                CONSTRAINTS                                     ;
+    ;================================================================================;
     (print "no unisson between cp1 and cp2")
     (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)))
 
@@ -61,12 +49,6 @@
     (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
-    ; Cost #15
-    (print "prefer perfect chords") ; todo check dependency with 1st and 2nd cost
-    (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
-    (add-cost-to-factors *p-chords-cost)
-
     (print "Last chord cannot be minor")
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     ; buggy with 3rd species
@@ -79,8 +61,33 @@
     )
     (print "Last chord must be a ... chord") 
     (add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
- 
-    ; return
+
+    ;================================================================================;
+    ;                                    COSTS                                       ;
+    ;================================================================================;
+    (dolist (counterpoint counterpoints) (progn
+        (print "as few direct motion to reach a perfect consonance as possible")
+        ; Cost #1: as few direct motion to reach a perfect consonance as possible
+        (setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
+        (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
+        (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
+        
+        ; Cost #2: as many different notes as possible
+        (print "as many different notes as possible")
+        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+        (add-cost-to-factors (variety-cost counterpoint))
+    ))
+
+    ; Cost #15
+    (print "prefer perfect chords") ; todo check dependency with 1st and 2nd cost
+    (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+    (add-cost-to-factors *p-chords-cost)
+
+    ;================================================================================;
+    ;                                    RETURN                                      ;
+    ;================================================================================;
     (append (fux-search-engine solution-array species-list) (list species-list))
     
 )

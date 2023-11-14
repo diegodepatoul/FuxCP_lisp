@@ -187,11 +187,6 @@
             (add-cost-to-factors (first (motions-cost counterpoint)))            
         )
     ))
-
-    (if (>= species 6) (progn
-
-    ))
-
     (print "##### EXITTING FIRST SPECIES ######")
     ; RETURN
     (case species 
@@ -201,10 +196,4 @@
             (setf (solution-len counterpoint) *cf-len)
         ))
     )
-    #|(if (eq species 1)
-        ; then create the search engine
-        (append (fux-search-engine (first (cp counterpoint))) (list (list 1)))
-        ; else
-        nil
-    )|#
 )

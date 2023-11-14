@@ -186,25 +186,10 @@
     (add-single-cost-cst (penult (first (h-intervals counterpoint))) gil::IRT_NQ 7 (penult-thesis-cost counterpoint) *penult-sixth-cost*)
     (setf (nth *n-cost-added *cost-factors) (penult-thesis-cost counterpoint))
     (incf *n-cost-added)
-
-    ; 7) as many different notes as possible
-    (if (eq species 7) (progn
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-        (add-cost-to-factors (variety-cost counterpoint))
-    ))
-
-
+    
     ;======================================== COST FUNCTION ===================================
     (print "Cost function...")
 
-    ; RETURN
-    #|(if (eq species 2)
-        ; then create the search engine
-        (append (fux-search-engine (solution-array counterpoint) 2) (list species))
-        ; else
-        nil
-    )|#
     (case species
         (2 (append (fux-search-engine (solution-array counterpoint) '(2)) (list (list 2))))
         (otherwise nil)
