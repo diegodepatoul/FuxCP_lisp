@@ -1838,7 +1838,6 @@
 ; (3 5) -> (1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1)
 ; (4 5) -> ~(-1/2 1 1 1 1/2 1/2 1) depending on the counterpoint
 (defun get-basic-rythmic (species-list len &optional (cp nil))
-    (print (list "get basic species list = " species-list))
     (setq len-1 (- len 1))
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))

@@ -17,7 +17,7 @@
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (incf *N-COST-FACTORS 7))
-            (2 (incf *N-COST-FACTORS 6))
+            (2 (incf *N-COST-FACTORS 7))
             (3 (incf *N-COST-FACTORS 7))
         )
     ))

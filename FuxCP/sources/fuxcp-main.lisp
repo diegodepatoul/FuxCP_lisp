@@ -333,8 +333,6 @@
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
 
-        (print species)
-
         (loop for i from 0 below *N-VOICES do (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array
@@ -573,7 +571,7 @@
         
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
         (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
-        (print species-list)
+        (print (list "species = " species-list))
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
         (case (length species-list) 
             (1 (progn
