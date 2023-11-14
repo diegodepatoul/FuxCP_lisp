@@ -257,18 +257,15 @@
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
     (defparameter *sp* (gil::new-space))
-    (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
 
     ; re/set global variables
     (define-global-constants)
-    ;(set-space-variables species)
+    (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
     
     (print (list "Choosing species: " species-list))
-    (print *voices-types)
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
     (loop for i from 0 below *N-VOICES do (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types))))
 
-    (print (list "Counterpoints =  " counterpoints))
     (case (length species-list)
         (1 (case (first species-list) ; [1, 2, 3, 4, 5, 6, 7]
             (1 (progn
@@ -291,37 +288,23 @@
                 (setq *N-COST-FACTORS 8)
                 (fux-cp-5th (first counterpoints))
             ))
-            #|
-            (6 (progn
-                (setq *N-COST-FACTORS 15)
-                (fux-cp-6th counterpoints)
-            ))
-            (7 (progn
-                (setq *N-COST-FACTORS 15) 
-                (fux-cp-7th counterpoint-1 counterpoint-2)
-            ))
-            (8 (progn
-                (setq *N-COST-FACTORS 15)
-                (fux-cp-8th counterpoint-1 counterpoint-2)
-            )) |#
             (otherwise (error "Species ~A not implemented" species))
             )
         )
         (2 (progn
             (setq *N-COST-FACTORS 1)
-            (fux-cp-6th species-list counterpoints)
+            (fux-cp-3v species-list counterpoints)
         ))
-        (otherwise (error "The species list is longer as what is currently implemented. Length = ~A" species))
+        (otherwise (error "The species list is longer than what is currently implemented. Length = ~A" species))
     )
 )
 
 (defun fux-search-engine (the-cp &optional (species '(1)) (voice-type 0))
     (let (se tstop sopts)
-        ; TOTAL COST
         (print (list "Starting fux-search-engine with species = " species))
-        ;(gil::g-sum *sp* *total-cost *cost-factors) ; sum of all the cost factors
+        
+        ;; COST
         (gil::g-cost *sp* *cost-factors) ; set the cost function
-        ;(gil::g-cost *sp* *total-cost) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -331,8 +314,8 @@
         ;; BRANCHING
         (print "Branching...")
         (setq var-branch-type gil::INT_VAR_DEGREE_MAX)
-        ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
+        ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
 #|
         (loop for i from 0 below *N-VOICES do (progn
@@ -574,7 +557,9 @@
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
         (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
         (print (list "species = " species-list))
+        
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
+
         (case (length species-list) 
             (1 (progn
                 (case (first species-list)
@@ -617,9 +602,6 @@
                         (setq pitches-om sol-pitches)
                     ))
                 )
-                (print (list "pitches-om = " pitches-om))
-                (print rythmic-om)
-                (print *cf-tempo)
                 (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
             ))
             ; else

@@ -101,7 +101,7 @@
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
-    (add-no-unisson-cst (first (cp counterpoint)) *cf species)
+    (add-no-unisson-cst (first (cp counterpoint)) *cf)
 
     (case species ((1 2) 
         ; then

@@ -801,9 +801,7 @@
             (if (null (cf-voice (om::object editor))); if the problem is not initialized
                 (error "No voice has been given to the solver. Please set a cantus firmus into the second input and try again.")
             )
-            
-            (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
-            
+
             (set-global-cf-variables
                 (cf-voice (om::object editor))
                 (borrow-mode-param (om::object editor))
@@ -838,7 +836,10 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
-            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-list (species-param (om::object editor)))))
+            
+            (setq *N-VOICES (length (species-param (om::object editor))))
+            (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
+            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer-list (species-param (om::object editor)))))
         )
         )
 
@@ -935,7 +936,7 @@
 )
 
 ; convert a species to an integer
-(defun convert-to-species-list (param-list)
+(defun convert-to-species-integer-list (param-list)
     (let (
         (species-list '())
         )
@@ -950,7 +951,6 @@
                 ((equal param "None") nil)
             )
         ))
-        (setq *N-VOICES (length species-list))
         species-list
     )
 )

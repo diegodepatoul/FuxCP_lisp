@@ -740,7 +740,7 @@
 )
 
 ; add the constraint such that there is no unisson unless it is the first or last note
-(defun add-no-unisson-cst (cp cf species)
+(defun add-no-unisson-cst (cp cf)
     (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
 )
 
