@@ -264,10 +264,11 @@
     ;(set-space-variables species)
     
     (print (list "Choosing species: " species-list))
-    (setq counterpoints (list (init-counterpoint (first *voices-types)) (init-counterpoint (second *voices-types))))
+    (print *voices-types)
+    (setq counterpoints (make-list *N-VOICES :initial-element nil))
+    (loop for i from 0 below *N-VOICES do (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types))))
+
     (print (list "Counterpoints =  " counterpoints))
-    ;(setq counterpoint-1 (init-counterpoint (first *voices-types)))
-    ;(setq counterpoint-2 (init-counterpoint (second *voices-types)))
     (case (length species-list)
         (1 (case (first species-list) ; [1, 2, 3, 4, 5, 6, 7]
             (1 (progn

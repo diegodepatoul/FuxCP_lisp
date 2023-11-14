@@ -48,8 +48,7 @@
     (pref-species-slider-param :accessor pref-species-slider-param :initform 50 :type integer :documentation "")
     ; ---------- Solver parameters ----------
     (species-param :accessor species-param :initform (list "1st" "1st") :type string :documentation "")
-    (voice-type-param-1 :accessor voice-type-param-1 :initform "Really far above" :type string :documentation "")
-    (voice-type-param-2 :accessor voice-type-param-2 :initform "Above" :type string :documentation "")
+    (voice-type-param :accessor voice-type-param :initform (list "Really far above" "Above") :type string :documentation "")
     (irreverence-slider-param :accessor irreverence-slider-param :initform 0 :type integer :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
     ; ---------- Output & Stop ----------
@@ -692,9 +691,9 @@
         (om::om-make-point 200 20)
         "Voice range"
         :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
-        :value (voice-type-param-1 (om::object editor))
+        :value (first (voice-type-param (om::object editor)))
         :di-action #'(lambda (cost)
-            (setf (voice-type-param-1 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (first (voice-type-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         )
 
@@ -732,9 +731,9 @@
         (om::om-make-point 200 20)
         "Second voice range"
         :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
-        :value (voice-type-param-2 (om::object editor))
+        :value (second (voice-type-param (om::object editor)))
         :di-action #'(lambda (cost)
-            (setf (voice-type-param-2 (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            (setf (second (voice-type-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
         )
         ) 
 
@@ -803,9 +802,7 @@
                 (error "No voice has been given to the solver. Please set a cantus firmus into the second input and try again.")
             )
             
-            (setf *voices-types (list (convert-to-voice-integer (voice-type-param-1 (om::object editor)))
-                                      (convert-to-voice-integer (voice-type-param-2 (om::object editor)))
-            ))
+            (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
             
             (set-global-cf-variables
                 (cf-voice (om::object editor))
@@ -961,15 +958,19 @@
 ;; convert the string for the voice type to an integer
 ;; belong to {"Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below"}
 ;; convert to {-3 -2 -1 0 1 2 3}
-(defun convert-to-voice-integer (param)
-    (cond
-    ((equal param "Really far above") 3)
-    ((equal param "Far above") 2)
-    ((equal param "Above") 1)
-    ((equal param "Same range") 0)
-    ((equal param "Below") -1)
-    ((equal param "Far below") -2)
-    ((equal param "Really far below") -3)
+(defun convert-to-voice-integer-list (params)
+    (let ((integer-list (make-list *N-VOICES :initial-element nil))) (loop for i from 0 below *N-VOICES do
+        (cond
+            ((equal (nth i params) "Really far above") (setf (nth i integer-list) 3))
+            ((equal (nth i params) "Far above") (setf (nth i integer-list) 2))
+            ((equal (nth i params) "Above") (setf (nth i integer-list) 1))
+            ((equal (nth i params) "Same range") (setf (nth i integer-list) 0))
+            ((equal (nth i params) "Below") (setf (nth i integer-list) -1))
+            ((equal (nth i params) "Far below") (setf (nth i integer-list) -2))
+            ((equal (nth i params) "Really far below") (setf (nth i integer-list) -3))
+        )
+    )
+    integer-list
     )
 )
 
