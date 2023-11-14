@@ -46,9 +46,9 @@
     
     ; merging cp and cp-arsis into one array
     (print "Mergin cps...")
-    (setq total-cp-len (+ *cf-len (* *cf-last-index 3))) ; total length of the counterpoint array
-    (setq total-cp (gil::add-int-var-array *sp* total-cp-len 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (merge-cp (cp counterpoint) total-cp) ; merge the four counterpoint arrays into one
+    (setf (solution-len counterpoint) (+ *cf-len (* *cf-last-index 3))) ; total length of the counterpoint array
+    (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
+    (merge-cp (cp counterpoint) (solution-array counterpoint)) ; merge the four counterpoint arrays into one
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
@@ -62,13 +62,13 @@
     (setf (m2-len counterpoint) (- (* *cf-last-index 4) 1)) ; number of melodic intervals between n and n+2 for the total counterpoint
     (setf (m2-intervals counterpoint) (gil::add-int-var-array *sp* (m2-len counterpoint) 0 12))
     (setf (m2-intervals-brut counterpoint) (gil::add-int-var-array *sp* (m2-len counterpoint) -12 12))
-    (create-m2-intervals total-cp (m2-intervals counterpoint) (m2-intervals-brut counterpoint))
+    (create-m2-intervals (solution-array counterpoint) (m2-intervals counterpoint) (m2-intervals-brut counterpoint))
     
     ; creating melodic intervals array between the note n and n+1 for the whole counterpoint
     (setf (total-m-len counterpoint) (* *cf-last-index 4)) ; number of melodic intervals between n and n+1 for the total counterpoint
     (setf (m-all-intervals counterpoint) (gil::add-int-var-array *sp* (total-m-len counterpoint) 0 12))
     (setf (m-all-intervals-brut counterpoint) (gil::add-int-var-array *sp* (total-m-len counterpoint) -12 12))
-    (create-m-intervals-self total-cp (m-all-intervals counterpoint) (m-all-intervals-brut counterpoint))
+    (create-m-intervals-self (solution-array counterpoint) (m-all-intervals counterpoint) (m-all-intervals-brut counterpoint))
 
     ; creating motion array
     ; 0 = contrary, 1 = oblique, 2 = direct/parallel
@@ -114,8 +114,8 @@
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
-    (setf (is-cp-off-key-arr counterpoint) (gil::add-bool-var-array *sp* total-cp-len 0 1))
-    (create-is-member-arr total-cp (is-cp-off-key-arr counterpoint) (off-domain counterpoint))
+    (setf (is-cp-off-key-arr counterpoint) (gil::add-bool-var-array *sp* (solution-len counterpoint) 0 1))
+    (create-is-member-arr (solution-array counterpoint) (is-cp-off-key-arr counterpoint) (off-domain counterpoint))
 
 
     ;======================================== HARMONIC CONSTRAINTS ============================
@@ -183,7 +183,7 @@
     (add-p-cons-cost-cst (h-intervals counterpoint))
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
-    (set-general-costs-cst counterpoint total-cp-len)
+    (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
     (add-cost-to-factors (fourth (motions-cost counterpoint)))
@@ -210,13 +210,13 @@
     ; RETURN
     #|(if (eq species 3)
         ; then create the search engine
-        (append (fux-search-engine total-cp 3) (list species))
+        (append (fux-search-engine (solution-array counterpoint) 3) (list species))
         ; else
         nil
     )|#
     (case species 
-        (3 (append (fux-search-engine total-cp '(3)) '((3))))
-        (8 total-cp)
+        (3 (append (fux-search-engine (solution-array counterpoint) '(3)) (list (list 3))))
+        (8 (solution-array counterpoint))
         (otherwise nil)
     )
 )

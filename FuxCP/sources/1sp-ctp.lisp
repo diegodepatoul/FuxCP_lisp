@@ -184,6 +184,7 @@
 
             ; 5) motion costs
             (print "add motion costs")
+            (print (first (motions-cost counterpoint)))
             (add-cost-to-factors (first (motions-cost counterpoint)))
 
             
@@ -204,10 +205,17 @@
 
     (print "exiting 1sp")
     ; RETURN
-    (if (eq species 1)
+    (case species 
+        (1 (append (fux-search-engine (first (cp counterpoint))) (list (list 1))))
+        (6 (progn
+            (setf (solution-array counterpoint) (first (cp counterpoint)))
+            (setf (solution-len counterpoint) *cf-len)
+        ))
+    )
+    #|(if (eq species 1)
         ; then create the search engine
-        (append (fux-search-engine (first (cp counterpoint))) '((1)))
+        (append (fux-search-engine (first (cp counterpoint))) (list (list 1)))
         ; else
         nil
-    )
+    )|#
 )
