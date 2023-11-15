@@ -1889,10 +1889,10 @@
                 ))
                 (3 (progn
                     (setf (nth i basic-rythmic) (list 
-                        (append (make-list (- (* 4 len) 1) :initial-element 1/4) '(1))
-                        (subseq cp 0 (- (* 4 len) 1))
+                        (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
+                        (subseq cp 0 (- (* 4 len) 3))
                     ))
-                    (setf cp (subseq cp (* 4 len-1)))
+                    (setf cp (subseq cp (- (* 4 len) 3)))
                 ))
                 (4 (progn 
                     (setf (nth i basic-rythmic) (build-rythmic-pattern

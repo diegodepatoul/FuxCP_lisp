@@ -18,7 +18,7 @@
             (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
-            (4 (incf *N-COST-FACTORS 6))
+            (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
@@ -75,9 +75,17 @@
     (dolist (counterpoint counterpoints) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #1: as few direct motion to reach a perfect consonance as possible
-        (setf (first (direct-move-to-p-cons-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8)))
-        (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) (first (direct-move-to-p-cons-cost counterpoint)) (is-p-cons-arr counterpoint))
-        (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
+        (if (eq (species counterpoint) 4)
+            nil ; pass, this cost doesn't apply to 4th species
+            (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
+                (case (species counterpoint)
+                    (1 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
+                    (2 (compute-no-direct-move-to-p-cons-costs-cst (real-motions counterpoint) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
+                    (3 (compute-no-direct-move-to-p-cons-costs-cst (fourth (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
+                )
+                (add-cost-to-factors direct-move-to-p-cons-cost)
+            )
+        )
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
@@ -87,7 +95,7 @@
     ))
 
     ; Cost #15
-    (print "prefer perfect chords") ; todo check dependency with 1st and 2nd cost
+    (print "prefer perfect chords") ; todo check interdependency with 1st and 2nd cost
     (if (member 4 species-list)
         (progn
             (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))

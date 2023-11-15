@@ -258,7 +258,6 @@
     (no-syncope-cost :accessor no-syncope-cost :initarg :no-syncope-cost :initform nil)
 
     ; 6st species variables
-    (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform (list nil nil nil nil))
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
 ))
 
@@ -629,8 +628,8 @@
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
-        ;(print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-        ;(print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+        (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+        (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
         (print (list "species = " species-list))
         
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
