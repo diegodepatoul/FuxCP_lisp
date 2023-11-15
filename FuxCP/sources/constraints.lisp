@@ -213,7 +213,7 @@
 )
 
 ; setup the cost factors with the minimum cost possible
-(defun set-cost-factors (m-all-intervals)
+(defun set-cost-factors (m-all-intervals) ; TODO this function has to be completely changed
     (setq m-len (length m-all-intervals))
     (setq lb-max (max (ceiling (/ *cf-len 4)) (get-min-m-cost m-len)))
     ; (print (list "lb-max: " lb-max))
@@ -1200,9 +1200,9 @@
         (k 0)
         )
     (loop
-        for i from 0 to *cf-last-index
+        for i from 0 below (length cp)
         do (loop
-            for j from (+ i 1) to (min (+ i 3) *cf-last-index)
+            for j from (+ i 1) to (min (+ i 3) (- (length cp) 1))
             do(let (
                 (is-equal (gil::add-bool-var *sp* 0 1))
                 (is-not-equal (gil::add-bool-var *sp* 0 1))
@@ -1871,8 +1871,6 @@
     (let (
         (basic-rythmic (make-list *N-VOICES :initial-element nil))
         )
-        (print (list "N-VOICES = " *N-VOICES))
-        (print (list "starting basic rythmic = " basic-rythmic))
         (loop for i from 0 below *N-VOICES do (progn
             (case (nth i species-list)
                 (1 (progn 
@@ -1927,7 +1925,6 @@
             )
         ))
         (assert  (eql cp nil) (cp) "Assertion failed: cp should be nil at the end of function get-basic-rythmics.")
-        (print (list "returning basic rythmic = " basic-rythmic))
         basic-rythmic
     )
 )

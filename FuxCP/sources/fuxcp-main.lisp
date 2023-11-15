@@ -196,6 +196,9 @@
 )
 
 (defclass counterpoint () (
+    ; species
+    (species :accessor species :initarg :species :initform nil)
+
     ; solution-array
     (solution-array :accessor solution-array :initarg :solution-array :initform nil)
     (solution-len :accessor solution-len :initarg :solution-len :initform nil)
@@ -334,22 +337,27 @@
         (1 (case (first species-list) ; [1, 2, 3, 4, 5, 6, 7]
             (1 (progn
                 (setq *N-COST-FACTORS 5)
+                (setf (species (first counterpoints)) 1)
                 (fux-cp-1st (first counterpoints))
             ))
             (2 (progn
                 (setq *N-COST-FACTORS 6)
+                (setf (species (first counterpoints)) 2)
                 (fux-cp-2nd (first counterpoints))
             ))
             (3 (progn
                 (setq *N-COST-FACTORS 7)
+                (setf (species (first counterpoints)) 3)
                 (fux-cp-3rd (first counterpoints))
             ))
             (4 (progn
                 (setq *N-COST-FACTORS 6)
+                (setf (species (first counterpoints)) 4)
                 (fux-cp-4th (first counterpoints))
             ))
             (5 (progn
                 (setq *N-COST-FACTORS 8)
+                (setf (species (first counterpoints)) 5)
                 (fux-cp-5th (first counterpoints))
             ))
             (otherwise (error "Species ~A not implemented" species))
@@ -357,6 +365,7 @@
         )
         (2 (progn
             (setq *N-COST-FACTORS 1)
+            (loop for i from 0 below *N-VOICES do (setf (species (nth i counterpoints)) (nth i species-list)))
             (fux-cp-3v species-list counterpoints)
         ))
         (otherwise (error "The species list is longer than what is currently implemented. Length = ~A" species))
@@ -620,8 +629,8 @@
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
-        (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-        (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+        ;(print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+        ;(print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
         (print (list "species = " species-list))
         
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution

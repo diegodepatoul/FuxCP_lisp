@@ -65,7 +65,7 @@
             ) 
         )
     )
-    
+
     (print "Last chord must be a perfect chord") 
     (add-last-chord-perfect-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
 
@@ -81,16 +81,32 @@
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
         (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
         (add-cost-to-factors (variety-cost counterpoint))
-
     ))
 
     ; Cost #15
     (print "prefer perfect chords") ; todo check dependency with 1st and 2nd cost
-    (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+    (if (member 4 species-list)
+        (progn
+            (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))
+            (if (eq (species counterpoint-1) 4)
+                (if (eq (species counterpoint-2) 4) 
+                    ; both are of fourth species
+                    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+                    ; only the first is of fourth species
+                    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (rest (first (h-intervals counterpoint-2))) *p-chords-cost)
+                )
+                ; only the second is of fourth species
+                (compute-prefer-p-chords-cost (rest (first (h-intervals counterpoint-1))) (first (h-intervals counterpoint-2)) *p-chords-cost)
+            )
+        )
+        (progn
+            (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+            (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+        )
+    )
     (add-cost-to-factors *p-chords-cost)
 
     ;================================================================================;
