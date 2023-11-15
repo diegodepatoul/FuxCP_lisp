@@ -841,10 +841,10 @@
             (is-p-chord-2nd-possibility (gil::add-bool-var *sp* 0 1))
             (is-p-chord (gil::add-bool-var *sp* 0 1))
             (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
-        ) 
+        )   
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 3 is-h1-3)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
-            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) ;
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) 
             (gil::g-op *sp* is-h1-3 gil::BOT_OR is-h1-4 is-h1-third)
             (gil::g-op *sp* is-h1-third gil::BOT_AND is-h2-7 is-p-chord-1st-possibility)
 
@@ -1883,79 +1883,55 @@
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))
     (let (
-        (basic-rythmic (make-list *N-VOICES :initial-element nil))
+        (rythmic+pitches (make-list *N-VOICES :initial-element nil))
         )
         (loop for i from 0 below *N-VOICES do (progn
             (case (nth i species-list)
                 (1 (progn 
-                    (setf (nth i basic-rythmic) (list
+                    (setf (nth i rythmic+pitches) (list
                         (make-list len :initial-element 1)
                         (subseq cp 0 len)
                     ))
                     (setf cp (subseq cp len))
                 ))
-                (2 (progn 
-                    (setf (nth i basic-rythmic) (list 
-                        (append (make-list (* 2 len-1) :initial-element 1/2) '(1))
-                        (subseq cp 0 (- (* 2 len) 1))
-                    ))
-                    (setf cp (subseq cp (- (* 2 len) 1)))
-                ))
+                (2 (let (
+                        (rythmic (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
+                        (pitches (subseq cp 0 (- (* 2 len) 1)))
+                        )
+                        (if (eq (car (last pitches 4)) (car (last pitches 3))) (progn ; if the first note in the penult bar is the same as the last in the 2nd-to last
+                            ; then ligature them ; to test if it works : (gil::g-rel *sp* (first (last (third (cp counterpoint-1)) 2)) gil::IRT_EQ (first (last (first (cp counterpoint-1)) 2)))
+                            (setf rythmic (append (butlast rythmic 4) '(1) (last rythmic 2)))
+                            (loop
+                                for i from (- (length pitches) 4) below (- (length pitches) 1)
+                                do (setf (nth i pitches) (nth (+ i 1) pitches))
+                            )
+                        ))
+                        (setf (nth i rythmic+pitches) (list
+                            rythmic
+                            pitches
+                        ))
+                        (setf cp (subseq cp (length pitches)))
+                    )                    
+                )
                 (3 (progn
-                    (setf (nth i basic-rythmic) (list 
+                    (setf (nth i rythmic+pitches) (list 
                         (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
                         (subseq cp 0 (- (* 4 len) 3))
                     ))
                     (setf cp (subseq cp (- (* 4 len) 3)))
                 ))
                 (4 (progn 
-                    (setf (nth i basic-rythmic) (build-rythmic-pattern
+                    (setf (nth i rythmic+pitches) (build-rythmic-pattern
                         (get-4th-species-array len-2)
                         (get-4th-notes-array (subseq cp 0 (* 2 len-1)) cp-len)
                     ))
                     (setf cp (subseq cp (* 2 len-1)))
                 ))
-                #|
-                (6 (list 
-                    (make-list len :initial-element 1) 
-                    (make-list len :initial-element 1)
-                    )
-                )
-                (7 (let (
-                        (basic-rythmic-2nd (append (make-list (* 2 len-1) :initial-element 1/2) '(1)))
-                    )
-                        (setf basic-rythmic-2nd (ligature-identical-notes cp basic-rythmic-2nd))
-                        (setf (first basic-rythmic-2nd) -1/2)
-                        ; return
-                        (list 
-                            (make-list len :initial-element 1)
-                            basic-rythmic-2nd
-                    ))
-                )
-                (8 (list 
-                    (make-list len :initial-element 1) 
-                    (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
-                )) |#
             )
         ))
         (assert  (eql cp nil) (cp) "Assertion failed: cp should be nil at the end of function get-basic-rythmics.")
-        basic-rythmic
+        rythmic+pitches
     )
-)
-
-(defun ligature-identical-notes (cp basic-rythmic)
-    (if (eq (car (last cp 4)) (car (last cp 3))) (progn ; if the first note in the penult bar is the same as the last in the 2nd-to last
-        ; then ligature them
-        (setf basic-rythmic (append (butlast basic-rythmic 4) '(1) (last basic-rythmic 2)))
-        (let ((len (length cp)))
-            (loop
-                for i from (- len 4) below (- len 1)
-                do (setf (nth i cp) (nth (+ i 1) cp))
-            )
-        )
-    ))
-    ; return
-    basic-rythmic
 )
 
 ; return a species array for a 4th species counterpoint
