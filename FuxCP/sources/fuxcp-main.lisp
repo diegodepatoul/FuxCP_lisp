@@ -559,13 +559,14 @@
         (print (list "species = " species-list))
         
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
-
+        (print (list "sol-pitches  =" sol-pitches))
         (case (length species-list) 
-            (1 (progn
+            (1 (progn ; if only one voice
                 (case (first species-list)
                     (4 (progn
-                        (error "get basic rythmic was refactored and hence won't work, the call to it first")
-                        (setq rythmic+pitches (get-basic-rythmic 4 *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
+                        ;(error "get basic rythmic was refactored and hence won't work, the call to it first")
+                        (setq rythmic+pitches (get-basic-rythmic '(4) *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
+                        (print (list "rythmic+pitches" rythmic+pitches))
                         (setq rythmic-om (first rythmic+pitches))
                         (setq pitches-om (second rythmic+pitches))
                     ))
@@ -602,10 +603,11 @@
                         (setq pitches-om sol-pitches)
                     ))
                 )
+                (print (list "pitches om" pitches-om))
+                (print (list "rythmic om" rythmic-om))
                 (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree (first rythmic-om) '(4 4)) :tempo *cf-tempo)
             ))
-            ; else
-            (2 (progn
+            (2 (progn ; if two voices
                 (setq rythmic-om (get-basic-rythmic species-list *cf-len sol-pitches)) ; get the rythmic correpsonding to the species
                 (setq pitches-om sol-pitches)
                 (case (first species-list)

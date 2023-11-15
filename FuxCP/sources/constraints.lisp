@@ -1842,17 +1842,22 @@
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))
     (let (
-            (basic-rythmic nil)
+        (basic-rythmic (make-list *N-VOICES :initial-element nil))
         )
+        (print (list "N-VOICES = " *N-VOICES))
+        (print (list "starting basic rythmic = " basic-rythmic))
         (loop for i from 0 below *N-VOICES do (progn
             (case (nth i species-list)
-                (1 (setf basic-rythmic (append basic-rythmic (list (make-list len :initial-element 1)))))
-                (2 (setf basic-rythmic (append basic-rythmic (list (append (make-list (* 2 len-1) :initial-element 1/2) '(1))))))
-                (3 (setf basic-rythmic (append basic-rythmic (list (append (make-list (* 4 len-1) :initial-element 1/4) '(1))))))
-                (4 (setf basic-rythmic (append basic-rythmic (list (build-rythmic-pattern
+                (1 (progn 
+                    (setf (nth i basic-rythmic) (make-list len :initial-element 1))
+                    (setf cp (subseq cp *cf-len))
+                ))
+                (2 (setf (nth i basic-rythmic) (append (make-list (* 2 len-1) :initial-element 1/2) '(1))))
+                (3 (setf (nth i basic-rythmic) (append (make-list (* 4 len-1) :initial-element 1/4) '(1))))
+                (4 (setf (nth i basic-rythmic) (build-rythmic-pattern
                         (get-4th-species-array len-2)
-                        (get-4th-notes-array cp cp-len)
-                )))))
+                        (get-4th-notes-array (subseq cp 0 *cf-len) cp-len)
+                )))
                 #|
                 (6 (list 
                     (make-list len :initial-element 1) 
@@ -1876,6 +1881,7 @@
                 )) |#
             )
         ))
+        (print (list "returning basic rythmic = " basic-rythmic))
         basic-rythmic
     )
 )

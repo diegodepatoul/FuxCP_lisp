@@ -837,9 +837,9 @@
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
             
-            (setq *N-VOICES (length (species-param (om::object editor))))
+            (setf species-integer-list (convert-to-species-integer-list (species-param (om::object editor))))
             (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
-            (setf (current-csp (om::object editor)) (fux-cp (convert-to-species-integer-list (species-param (om::object editor)))))
+            (setf (current-csp (om::object editor)) (fux-cp species-integer-list))
         )
         )
 
@@ -951,6 +951,7 @@
                 ((equal param "None") nil)
             )
         ))
+        (setq *N-VOICES (length species-list))
         species-list
     )
 )
