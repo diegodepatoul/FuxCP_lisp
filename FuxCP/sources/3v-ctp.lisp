@@ -94,7 +94,7 @@
         (add-cost-to-factors (variety-cost counterpoint))
     ))
 
-    ; Cost #15
+    ; Cost #3
     (print "prefer perfect chords") ; todo check interdependency with 1st and 2nd cost
     (if (member 4 species-list)
         (progn

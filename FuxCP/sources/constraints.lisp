@@ -810,7 +810,6 @@
         (gil::g-rel-reify *sp* h2 gil::IRT_NQ 3 is-hbrut2-not-third)
         (gil::g-rel-reify *sp* h2 gil::IRT_NQ 4 is-hbrut2-not-third)
     )
-     
 )
 
 ; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
@@ -832,16 +831,31 @@
         (let (
             (is-h1-3 (gil::add-bool-var *sp* 0 1))
             (is-h1-4 (gil::add-bool-var *sp* 0 1))
-            (is-h1-3-or-4 (gil::add-bool-var *sp* 0 1))
+            (is-h1-third (gil::add-bool-var *sp* 0 1))
+            (is-h1-7 (gil::add-bool-var *sp* 0 1))
+            (is-h2-3 (gil::add-bool-var *sp* 0 1))
+            (is-h2-4 (gil::add-bool-var *sp* 0 1))
+            (is-h2-third (gil::add-bool-var *sp* 0 1))
             (is-h2-7 (gil::add-bool-var *sp* 0 1))
+            (is-p-chord-1st-possibility (gil::add-bool-var *sp* 0 1))
+            (is-p-chord-2nd-possibility (gil::add-bool-var *sp* 0 1))
             (is-p-chord (gil::add-bool-var *sp* 0 1))
             (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
         ) 
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 3 is-h1-3)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
             (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) ;
-            (gil::g-op *sp* is-h1-3 gil::BOT_OR is-h1-4 is-h1-3-or-4)
-            (gil::g-op *sp* is-h1-3-or-4 gil::BOT_AND is-h2-7 is-p-chord)
+            (gil::g-op *sp* is-h1-3 gil::BOT_OR is-h1-4 is-h1-third)
+            (gil::g-op *sp* is-h1-third gil::BOT_AND is-h2-7 is-p-chord-1st-possibility)
+
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 3 is-h2-3)
+            (gil::g-rel-reify *sp* h2 gil::IRT_EQ 4 is-h2-4)
+            (gil::g-rel-reify *sp* h1 gil::IRT_EQ 7 is-h1-7) ;
+            (gil::g-op *sp* is-h2-3 gil::BOT_OR is-h2-4 is-h2-third)
+            (gil::g-op *sp* is-h2-third gil::BOT_AND is-h1-7 is-p-chord-2nd-possibility)
+
+            (gil::g-op *sp* is-p-chord-1st-possibility gil::BOT_OR is-p-chord-1st-possibility is-p-chord)
+
             (gil::g-op *sp* is-p-chord gil::BOT_XOR is-not-p-chord 1)
             (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-p-chord) ; it costs 0 to be a p-chord
             (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a p-chord
