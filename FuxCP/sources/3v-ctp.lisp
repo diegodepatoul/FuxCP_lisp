@@ -19,6 +19,8 @@
             (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
+            (4 (incf *N-COST-FACTORS 6))
+            (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
 
@@ -27,6 +29,8 @@
             (1 (fux-cp-1st (nth i counterpoints) 6))
             (2 (fux-cp-2nd (nth i counterpoints) 7))
             (3 (fux-cp-3rd (nth i counterpoints) 8))
+            (4 (fux-cp-4th (nth i counterpoints) 9))
+            (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
         (setf *is-first-run 0)
     ))
@@ -52,7 +56,7 @@
     (print "Last chord cannot be minor")
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     ; buggy with 3rd species
-    (if (member 3 species-list)
+    (if (or (member 3 species-list) (member 4 species-list))
         nil ; debug
         (progn 
             (print "Last chord cannot include a tenth")
@@ -73,10 +77,15 @@
         (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
         
         ; Cost #2: as many different notes as possible
-        (print "as many different notes as possible")
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-        (add-cost-to-factors (variety-cost counterpoint))
+        (if (member 4 species-list)
+            nil ;debug
+            (progn
+                (print "as many different notes as possible")
+                (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+                (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+                (add-cost-to-factors (variety-cost counterpoint))
+            )
+        )
     ))
 
     ; Cost #15

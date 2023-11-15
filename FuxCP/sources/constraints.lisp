@@ -1829,15 +1829,18 @@
     )
 )
 
-; get the basic rythmic pattern for a given species
-; - species: the species [1 2 3 4]
-; - len: the length of the counterpoint
+; get the basic rythmic pattern and the corresponding notes the given species
+; - species-list: the species [1 2 3 4]
+; - len: the length of the cantus-firmus
+; - cp: the whole solution array
+; return format = '('(rythmics-1 pitches-1) '(rythmics-2 pitches-2) ... '(rythmics-n pitches-n))
 ; examples:
-; (1 5) -> (1 1 1 1 1)
-; (2 5) -> (1/2 1/2 1/2 1/2 1/2 1/2 1/2 1/2 1)
-; (3 5) -> (1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1)
-; (4 5) -> ~(-1/2 1 1 1 1/2 1/2 1) depending on the counterpoint
-(defun get-basic-rythmic (species-list len &optional (cp nil))
+; ((1) 5) -> (((1 1 1 1 1) (60 62 64 65 60)))
+; ((1 2) 5) -> (((1 1 1 1 1) (60 62 64 65 60)) ((1/2 1/2 1/2 1/2 1/2 1/2 1/2 1/2 1) (60 62 64 65 64 62 60 62 60)))
+; ((2) 5) -> ((1/2 1/2 1/2 1/2 1/2 1/2 1/2 1/2 1 (pitches))
+; ((3) 5) -> ((1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1 (pitches))
+; ((4) 5) -> ~((-1/2 1 1 1 1/2 1/2 1 (pitches)) depending on the counterpoint
+(defun get-basic-rythmics (species-list len &optional (cp nil))
     (setq len-1 (- len 1))
     (setq len-2 (- len 2))
     (setq cp-len (+ (* 4 len-1) 1))
@@ -1849,15 +1852,33 @@
         (loop for i from 0 below *N-VOICES do (progn
             (case (nth i species-list)
                 (1 (progn 
-                    (setf (nth i basic-rythmic) (make-list len :initial-element 1))
-                    (setf cp (subseq cp *cf-len))
+                    (setf (nth i basic-rythmic) (list
+                        (make-list len :initial-element 1)
+                        (subseq cp 0 len)
+                    ))
+                    (setf cp (subseq cp len))
                 ))
-                (2 (setf (nth i basic-rythmic) (append (make-list (* 2 len-1) :initial-element 1/2) '(1))))
-                (3 (setf (nth i basic-rythmic) (append (make-list (* 4 len-1) :initial-element 1/4) '(1))))
-                (4 (setf (nth i basic-rythmic) (build-rythmic-pattern
+                (2 (progn 
+                    (setf (nth i basic-rythmic) (list 
+                        (append (make-list (* 2 len-1) :initial-element 1/2) '(1))
+                        (subseq cp 0 (* 2 len-1))
+                    ))
+                    (setf cp (subseq cp (* 2 len-1)))
+                ))
+                (3 (progn
+                    (setf (nth i basic-rythmic) (list 
+                        (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
+                        (subseq cp 0 (* 4 len-1))
+                    ))
+                    (setf cp (subseq cp (* 4 len-1)))
+                ))
+                (4 (progn 
+                    (setf (nth i basic-rythmic) (build-rythmic-pattern
                         (get-4th-species-array len-2)
-                        (get-4th-notes-array (subseq cp 0 *cf-len) cp-len)
-                )))
+                        (get-4th-notes-array (subseq cp 0 (* 2 len-1)) cp-len)
+                    ))
+                    (setf cp (subseq cp (* 2 len-1)))
+                ))
                 #|
                 (6 (list 
                     (make-list len :initial-element 1) 
