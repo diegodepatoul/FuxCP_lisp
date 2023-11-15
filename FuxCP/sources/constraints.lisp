@@ -814,19 +814,19 @@
 )
 
 ; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
-(defun add-last-chord-perfect-cst (h1 h2)
+(defun add-last-chord-perfect-cst (h-intervals-1 h-intervals-2)
     (let (
         (p-chord-intervals (gil::add-int-var-const-array *sp* (list 0 3 4 7)))
         )
-        (gil::g-member *sp* p-chord-intervals (lastone h1))
-        (gil::g-member *sp* p-chord-intervals (lastone h2))
+        (gil::g-member *sp* p-chord-intervals (lastone h-intervals-1))
+        (gil::g-member *sp* p-chord-intervals (lastone h-intervals-2))
     )
 )
 
-(defun compute-prefer-p-chords-cost (h-intervals1 h-intervals2 costs)
+(defun compute-prefer-p-chords-cost (h-intervals-1 h-intervals-2 costs)
     (loop
-    for h1 in h-intervals1
-    for h2 in h-intervals2
+    for h1 in h-intervals-1
+    for h2 in h-intervals-2
     for c in costs
     do
         (let (
