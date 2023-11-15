@@ -2,12 +2,11 @@
 
 ; Author: Anton Lamotte
 ; Date: October 2023
-; This file contains the function that adds all the necessary constraints to the first species for three voices.
+; This file contains the function that adds all the necessary constraints to the five species for three voices.
 
-;;================================#
-;; First species for three voices #
-;;================================#
-;; Note: fux-cp-3v executes the first species algorithm with some modified constraints.
+;;===================================#
+;; Three voices counterpoint handler #
+;;===================================#
 (defun fux-cp-3v (species-list counterpoints)
     (print "########## SIXTH SPECIES ##########")
     (setf counterpoint-1 (first counterpoints))
@@ -60,11 +59,15 @@
         nil ; debug
         (progn 
             (print "Last chord cannot include a tenth")
-            (add-no-tenth-in-last-chord-cst (last (h-intervals-brut counterpoint-1)) (last (h-intervals-brut counterpoint-2))) 
+            (add-no-tenth-in-last-chord-cst 
+                (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2))
+                (h-intervals-brut counterpoint-1) (h-intervals-brut counterpoint-2)
+            ) 
         )
     )
-    (print "Last chord must be a ... chord") 
-    (add-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2))))
+    
+    (print "Last chord must be a perfect chord") 
+    (add-last-chord-perfect-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
 
     ;================================================================================;
     ;                                    COSTS                                       ;
@@ -77,15 +80,11 @@
         (add-cost-to-factors (first (direct-move-to-p-cons-cost counterpoint)))
         
         ; Cost #2: as many different notes as possible
-        (if (member 4 species-list)
-            nil ;debug
-            (progn
-                (print "as many different notes as possible")
-                (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
-                (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-                (add-cost-to-factors (variety-cost counterpoint))
-            )
-        )
+        (print "as many different notes as possible")
+        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 *cf-penult-index) 0 1))
+        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+        (add-cost-to-factors (variety-cost counterpoint))
+
     ))
 
     ; Cost #15

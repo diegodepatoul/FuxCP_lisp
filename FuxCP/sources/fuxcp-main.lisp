@@ -131,6 +131,70 @@
     )
 )
 
+(defun print-counterpoint (my-counterpoint)
+    ; solution-array
+    (format t "solution-array = ~a" (solution-array my-counterpoint))
+    (format t "solution-len = ~a" (solution-len my-counterpoint))
+
+    ; voice variables
+    (format t "cp-range = ~a" (cp-range my-counterpoint))
+    (format t "cp-domain = ~a" (cp-domain my-counterpoint))
+    (format t "chromatic-cp-domain = ~a" (chromatic-cp-domain my-counterpoint))
+    (format t "extended-cp-domain = ~a" (extended-cp-domain my-counterpoint))
+    (format t "off-domain = ~a" (off-domain my-counterpoint))
+
+    ; 1st species variables
+    (format t "cp = ~a" (cp my-counterpoint))
+    (format t "h-intervals = ~a" (h-intervals my-counterpoint))
+    (format t "m-intervals-brut = ~a" (m-intervals-brut my-counterpoint))
+    (format t "m-intervals = ~a" (m-intervals my-counterpoint))
+    (format t "motions = ~a" (motions my-counterpoint))
+    (format t "motions-cost = ~a" (motions-cost my-counterpoint))
+    (format t "is-cf-bass-arr = ~a" (is-cf-bass-arr my-counterpoint))
+    (format t "m2-intervals-brut = ~a" (m2-intervals-brut my-counterpoint))
+    (format t "m2-intervals = ~a" (m2-intervals my-counterpoint))
+    (format t "cf-brut-m-intervals = ~a" (cf-brut-m-intervals my-counterpoint))
+    (format t "is-p-cons-arr = ~a" (is-p-cons-arr my-counterpoint))
+    (format t "is-cp-off-key-arr = ~a" (is-cp-off-key-arr my-counterpoint))
+    (format t "p-cons-cost = ~a" (p-cons-cost my-counterpoint))
+    (format t "fifth-cost = ~a" (fifth-cost my-counterpoint))
+    (format t "octave-cost = ~a" (octave-cost my-counterpoint))
+    (format t "m-degrees-cost = ~a" (m-degrees-cost my-counterpoint))
+    (format t "m-degrees-type = ~a" (m-degrees-type my-counterpoint))
+    (format t "off-key-cost = ~a" (off-key-cost my-counterpoint))
+    (format t "m-all-intervals = ~a" (m-all-intervals my-counterpoint))
+
+    ; 2nd species variables
+    (format t "h-intervals-abs = ~a" (h-intervals-abs my-counterpoint))
+    (format t "h-intervals-brut = ~a" (h-intervals-brut my-counterpoint))
+    (format t "m-succ-intervals = ~a" (m-succ-intervals my-counterpoint))
+    (format t "m-succ-intervals-brut = ~a" (m-succ-intervals-brut my-counterpoint))
+    (format t "m2-len = ~a" (m2-len my-counterpoint))
+    (format t "total-m-len = ~a" (total-m-len my-counterpoint))
+    (format t "m-all-intervals-brut = ~a" (m-all-intervals-brut my-counterpoint))
+    (format t "real-motions = ~a" (real-motions my-counterpoint))
+    (format t "real-motions-cost = ~a" (real-motions-cost my-counterpoint))
+    (format t "is-ta-dim-arr = ~a" (is-ta-dim-arr my-counterpoint))
+    (format t "is-nbour-arr = ~a" (is-nbour-arr my-counterpoint))
+    (format t "penult-thesis-cost = ~a" (penult-thesis-cost my-counterpoint))
+
+    ; 3rd species variables
+    (format t "is-5qn-linked-arr = ~a" (is-5qn-linked-arr my-counterpoint))
+    (format t "is-not-cambiata-arr = ~a" (is-not-cambiata-arr my-counterpoint))
+    (format t "not-cambiata-cost = ~a" (not-cambiata-cost my-counterpoint))
+    (format t "m2-eq-zero-cost = ~a" (m2-eq-zero-cost my-counterpoint))
+    (format t "is-cons-arr = ~a" (is-cons-arr my-counterpoint))
+    (format t "cons-cost = ~a" (cons-cost my-counterpoint))
+
+    ; 4th species variables
+    (format t "is-no-syncope-arr = ~a" (is-no-syncope-arr my-counterpoint))
+    (format t "no-syncope-cost = ~a" (no-syncope-cost my-counterpoint))
+
+    ; 6st species variables
+    (format t "direct-move-to-p-cons-cost = ~a" (direct-move-to-p-cons-cost my-counterpoint))
+    (format t "variety-cost = ~a" (variety-cost my-counterpoint))
+)
+
 (defclass counterpoint () (
     ; solution-array
     (solution-array :accessor solution-array :initarg :solution-array :initform nil)
@@ -553,6 +617,8 @@
         )
         )|#
 
+        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
+        (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
         (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
         (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
