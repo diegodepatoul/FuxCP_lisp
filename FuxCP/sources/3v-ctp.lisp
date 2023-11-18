@@ -23,6 +23,10 @@
         )
     ))
 
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
+    ;(create-is-voice-bass-arr counterpoint-1 counterpoint-2 cf)
+
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (fux-cp-1st (nth i counterpoints) 6))
@@ -51,6 +55,8 @@
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
+
+    (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2)
 
     (print "Last chord cannot be minor")
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 

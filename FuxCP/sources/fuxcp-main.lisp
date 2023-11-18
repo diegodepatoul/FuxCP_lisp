@@ -259,6 +259,7 @@
 
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
+    (is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
 ))
 
 (defun init-counterpoint (voice-type)
@@ -327,10 +328,16 @@
     ; re/set global variables
     (define-global-constants)
     (setf *is-first-run 1) ; 1 if we are computing the first counterpoint, 0 if it is the second
-    
+
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
     (loop for i from 0 below *N-VOICES do (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types))))
+    (if (and (< (first *voices-types) 0) (< (first *voices-types) (second *voices-types)))
+        (setf (is-voice-bass (first counterpoints) 1))
+        (if (< (second *voices-types) 0)
+            (setf (is-voice-bass (second counterpoints) 1))
+        )
+    )
 
     (case (length species-list)
         (1 (case (first species-list) ; [1, 2, 3, 4, 5, 6, 7]

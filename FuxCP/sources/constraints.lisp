@@ -391,6 +391,45 @@
     )
 )
 
+(defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
+    (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len (first counterpoint) 0 1))
+    (loop
+        for i from 0 below *cf-len
+        for cp-1 in (first (cp counterpoint-1))
+        for cp-2 in (first (cp counterpoint-2))
+        for cf in cantus-firmus
+        do (let (
+            (cp-1<cp-2 (gil::add-bool-var *sp* 0 1))
+            (cp-1<cf (gil::add-bool-var *sp* 0 1))
+            (cp-2<cp-1 (gil::add-bool-var *sp* 0 1))
+            (cf<cp-1 (gil::add-bool-var *sp* 0 1))
+            (cf<cp-2 (gil::add-bool-var *sp* 0 1))
+            (cp-2<cf (gil::add-bool-var *sp* 0 1))
+
+            (cf-is-bass (gil::add-bool-var *sp* 0 1))
+            (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
+            (cp-1-is-bass (gil::add-bool-var *sp* 0 1))
+            (cp-1-is-not-bass (gil::add-bool-var *sp* 0 1))
+            (cp-2-is-bass (gil::add-bool-var *sp* 0 1))
+            (cp-2-is-not-bass (gil::add-bool-var *sp* 0 1))
+            )
+            (gil::g-rel-reify *sp* cp-1 gil::IRT_GT cp-2 cp-1<cp-2)
+            (gil::g-rel-reify *sp* cp-1 gil::IRT_GT cf cp-1<cf)
+            (gil::g-rel-reify *sp* cp-2 gil::IRT_GT cf cp-2<cf)
+        
+            (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf (nth i (is-bass-arr counterpoint-1)))
+            (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf (nth i (is-bass-arr counterpoint-2)))
+            ;(gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
+
+
+            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 1 cp-1-is-bass)
+            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 0 cp-1-is-not-bass)
+
+        )
+    )
+)
+
 ; create the boolean array @is-cf-bass-arr indicating if the cantus firmus is the bass or not
 (defun create-is-cf-bass-arr (cp cf is-cf-bass-arr)
     (loop
@@ -587,6 +626,60 @@
             ; else add all consonances
             (if (not (null h-interval))
                 (gil::g-member *sp* ALL_CONS_VAR h-interval)
+            )
+        )
+    )
+)
+
+(defun add-h-cons-cst-2v (penult-dom-var counterpoint-1 counterpoint-2 h-intervals-1-2)
+    (let (
+        (harmonic-array-to-constrain-1 nil)
+        (harmonic-array-to-constrain-2 nil)
+        )
+        (if (eq (is-voice-bass counterpoint-1) 1)
+            (progn
+                (print "cp1 is bass")
+                (setf harmonic-array-to-constrain-1 h-intervals-1-2)
+                (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-1)))
+            )
+            (if (eq (is-voice-bass counterpoint-2) 1)
+                ; cp2 is the bass
+                (progn 
+                    (print "cp2 is bass")
+                    (setf harmonic-array-to-constrain-1 h-intervals-1-2)
+                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))   
+                )
+                ; cf is the bass
+                (progn
+                    (print "cf is bass")
+                    (setf harmonic-array-to-constrain-1 (first (h-intervals counterpoint-1)))
+                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))
+                )
+            )
+        )
+        (loop for i from 0 below *cf-len do
+            (let (
+                (h1 (nth i harmonic-array-to-constrain-1))
+                (h2 (nth i harmonic-array-to-constrain-2))
+                )
+                (if (eq i *cf-penult-index) ; if it is the penultimate note
+                    ; then add major sixth + minor third by default
+                    (progn 
+                        ;(add-penult-dom-cst h1 penult-dom-var)
+                        ;(add-penult-dom-cst h2 penult-dom-var)
+                    )
+                    ; else add all consonances
+                    (progn
+                        (if (not (null h1))
+                            (gil::g-member *sp* ALL_CONS_VAR h1)
+                            nil
+                        )
+                        (if (not (null h2))
+                            (gil::g-member *sp* ALL_CONS_VAR h2)
+                            nil
+                        )
+                    )
+                )
             )
         )
     )
