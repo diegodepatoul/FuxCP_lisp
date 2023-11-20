@@ -332,12 +332,16 @@
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
     (loop for i from 0 below *N-VOICES do (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types))))
+    #| TO BE CORRECTED 
     (if (and (< (first *voices-types) 0) (< (first *voices-types) (second *voices-types)))
-        (setf (is-voice-bass (first counterpoints) 1))
+        (setf *nth-voice-is-bass 0)
         (if (< (second *voices-types) 0)
-            (setf (is-voice-bass (second counterpoints) 1))
+            (setf *nth-voice-is-bass 1)
+            (setf *nth-voice-is-bass -1) ; counterpoint is the bass
         )
     )
+    (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
+    |#
 
     (case (length species-list)
         (1 (case (first species-list) ; [1, 2, 3, 4, 5, 6, 7]

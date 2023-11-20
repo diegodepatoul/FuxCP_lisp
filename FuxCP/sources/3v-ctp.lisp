@@ -56,12 +56,33 @@
     (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
-    (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2)
+    #| TO BE CORRECTED 
+    (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
+    (case *nth-voice-is-bass
+        (-1 (progn
+            (add-penult-cons-cst-3v (list 
+                (first (h-intervals counterpoint-1)) 
+                (first (h-intervals counterpoint-2))
+            ))
+        ))
+        (1 (progn
+            (add-penult-cons-cst-3v (list
+                (first (h-intervals counterpoint-1))
+                (first h-intervals-1-2)
+            ))
+        ))
+        (2 (progn
+            (add-penult-cons-cst-3v (list
+                (first (h-intervals counterpoint-2))
+                (first h-intervals-1-2)
+            ))
+        ))
+    )
+    |#
 
     (print "Last chord cannot be minor")
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
-    ; buggy with 3rd species
-    (if (or (member 3 species-list) (member 4 species-list))
+    (if  (member 4 species-list)
         nil ; debug
         (progn 
             (print "Last chord cannot include a tenth")
