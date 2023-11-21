@@ -412,8 +412,15 @@
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
-        (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-        (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+        (handler-case
+            ((progn 
+                (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
+                (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+            )) 
+            (error (c)
+                (error "All costs are not set correctly. Correct this problem before trying to find a solution.")
+            )
+        )
         (print (list "species = " species-list))
         
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution

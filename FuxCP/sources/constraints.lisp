@@ -2229,4 +2229,5 @@
 (defun add-cost-to-factors (factor-arr)
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)
+    (assert (<= *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined. Please increase the value of *N-COST-FACTORS.")
 )
