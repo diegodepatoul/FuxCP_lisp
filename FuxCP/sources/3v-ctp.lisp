@@ -19,7 +19,7 @@
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
-            (5 (incf *N-COST-FACTORS 6)) ; + 8 from fux-cp-5th and -2 not used in fux-cp-3v
+            (5 (incf *N-COST-FACTORS 7)) ; + 8 from fux-cp-5th and -1 not used in fux-cp-3v
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
@@ -118,11 +118,9 @@
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
-        (if (/= (species counterpoint) 5) (progn
-            (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
-            (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-            (add-cost-to-factors (variety-cost counterpoint))
-        ))
+        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
+        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+        (add-cost-to-factors (variety-cost counterpoint))
     ))
 
     ; Cost #3
