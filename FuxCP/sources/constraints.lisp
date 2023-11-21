@@ -1807,7 +1807,7 @@
 (defun parse-species-to-om-rythmic (species-arr cp-arr extended-cp-domain)
     ; replace the last element of the species array by 1
     (setf (first (last species-arr)) 1)
-    (build-rythmic-pattern species-arr cp-arr nil nil nil extended-cp-domain)
+    (build-rythmic-pattern species-arr cp-arr nil nil extended-cp-domain)
 )
 
 ; build the rythmic pattern for open music from the species array
@@ -1817,7 +1817,7 @@
 ; - notes-arr: array of interger for notes (supposed to be nil and then filled by the recursive function)
 ; - b-debug: boolean to print debug info
 ; note: this function has noting to do with GECODE
-(defun build-rythmic-pattern (species-arr cp-arr &optional (rythmic-arr nil) (notes-arr nil) (b-debug nil) (extended-cp-domain nil))
+(defun build-rythmic-pattern (species-arr cp-arr &optional (rythmic-arr nil) (notes-arr nil) (extended-cp-domain nil) (b-debug nil))
     ; print debug info
     (if b-debug
         (progn
@@ -1881,7 +1881,6 @@
                         (nthcdr 3 cp-arr)
                         (append rythmic-arr (list 1/2 1/4))
                         (append notes-arr (list cn cn+2))
-                        nil
                         extended-cp-domain
                     )
                     ; else 1/2 + 1/2 if [4 0 4 0] (basic syncopation)
@@ -1890,7 +1889,6 @@
                         (nthcdr 4 cp-arr)
                         (append rythmic-arr (list 1/2 1/2))
                         (append notes-arr (list cn cn+2))
-                        nil
                         extended-cp-domain
                     )
                 )
@@ -1902,7 +1900,6 @@
                         (nthcdr 3 cp-arr)
                         (append rythmic-arr (list 3/4))
                         (append notes-arr (list cn))
-                        nil
                         extended-cp-domain
                     )
                     ; else 1 if [4 0 4 0] (basic syncopation)
@@ -1911,7 +1908,6 @@
                         (nthcdr 4 cp-arr)
                         (append rythmic-arr (list 1))
                         (append notes-arr (list cn))
-                        nil
                         extended-cp-domain
                     )
                 )
@@ -1926,7 +1922,6 @@
                         (nthcdr 1 cp-arr)
                         (append rythmic-arr (list 1/8 1/8))
                         (append notes-arr (list cn (find-next-note cn 'lower extended-cp-domain)))
-                        nil
                         extended-cp-domain
                     )
                     ; else eighth note with the next higher note
@@ -1935,7 +1930,6 @@
                         (nthcdr 1 cp-arr)
                         (append rythmic-arr (list 1/8 1/8))
                         (append notes-arr (list cn (find-next-note cn 'higher extended-cp-domain)))
-                        nil
                         extended-cp-domain
                     )
                 )
@@ -1948,7 +1942,6 @@
                     (nthcdr 2 cp-arr)
                     (append rythmic-arr (list -1/2))
                     notes-arr
-                    nil
                     extended-cp-domain
                 )
             )
@@ -1960,7 +1953,6 @@
                     (nthcdr 4 cp-arr)
                     (append rythmic-arr (list 1))
                     (append notes-arr (list cn))
-                    nil
                     extended-cp-domain
                 )
             )
@@ -1972,7 +1964,6 @@
                     (nthcdr 2 cp-arr)
                     (append rythmic-arr (list 1/2))
                     (append notes-arr (list cn))
-                    nil
                     extended-cp-domain
                 )
             )
@@ -1984,7 +1975,6 @@
                     (nthcdr 1 cp-arr)
                     (append rythmic-arr (list 1/4))
                     (append notes-arr (list cn))
-                    nil
                     extended-cp-domain
                 )
             )
@@ -1996,7 +1986,6 @@
                     (nthcdr 2 cp-arr)
                     (append rythmic-arr (list 1/2))
                     (append notes-arr (list cn))
-                    nil
                     extended-cp-domain
                 )
             )
@@ -2077,10 +2066,12 @@
                     (setf (nth i rythmic+pitches) 
                         (parse-species-to-om-rythmic sol-species sol-pitches (extended-cp-domain (nth i counterpoints)))
                     )
+                    (setf sol-pitches (subseq sol-pitches (solution-len (nth i counterpoints))))
                 ))
             )
         ))
-        (assert  (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
+        (print sol-pitches)
+        (assert (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
         rythmic+pitches
     )
 )
