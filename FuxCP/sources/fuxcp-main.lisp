@@ -413,10 +413,10 @@
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
         (handler-case
-            ((progn 
+            (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
                 (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
-            )) 
+            ) 
             (error (c)
                 (error "All costs are not set correctly. Correct this problem before trying to find a solution.")
             )
