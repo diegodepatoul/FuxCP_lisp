@@ -10,7 +10,7 @@
 ;; Note: fux-cp-2nd execute the first species algorithm without some constraints.
 ;; In this function, all the variable names without the arsis-suffix refers to thesis notes AKA the first species notes.
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
-(defun fux-cp-2nd (counterpoint &optional (species 2))
+(defun fux-cp-2nd (counterpoint &optional (species 2) (all-species nil))
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## SECOND SPECIES ##########")
 
@@ -146,8 +146,18 @@
         (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
         (7 (progn
             ; in 7th species unison can occur between the 2nd-to-last and 1st-to-last bar
-            (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
-            (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3)))
+            (if (member 3 all-species) (progn
+                ; when used with third species, the penultimate bar can be a whole note
+                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
+                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 2) (rest (last (solution-array counterpoint) 2)))
+                (gil::g-rel *sp* (first (last (solution-array counterpoint) 4)) gil::IRT_NQ (first (last (solution-array counterpoint) 2)))
+                ; testing
+            ) (progn 
+                ; else
+                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
+                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3)))
+            ))
+            (gil::g-rel *sp* (first (last (solution-array counterpoint) 3)) gil::IRT_EQ (first (last (solution-array counterpoint) 2)))
         ))
     )
 

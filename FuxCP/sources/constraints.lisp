@@ -2019,6 +2019,14 @@
                                 do (setf (nth i pitches) (nth (+ i 1) pitches))
                             )
                         ))
+                        (if (eq (car (last pitches 3)) (car (last pitches 2))) (progn ; same but for 3rd-to-last and 2nd-to-last
+                            ; to test if it works: (gil::g-rel *sp* (first (last (solution-array counterpoint) 3)) gil::IRT_EQ (first (last (solution-array counterpoint) 2)))
+                            (setf rythmic (append (butlast rythmic 3) '(1) (last rythmic 1)))
+                            (loop
+                                for i from (- (length pitches) 3) below (- (length pitches) 1)
+                                do (setf (nth i pitches) (nth (+ i 1) pitches))
+                            )
+                        ))
                         (setf (nth i rythmic+pitches) (list
                             rythmic
                             pitches
