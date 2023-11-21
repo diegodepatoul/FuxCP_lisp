@@ -303,7 +303,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) nil) ; 3rd species
+    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) nil)) ; 3rd species
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4

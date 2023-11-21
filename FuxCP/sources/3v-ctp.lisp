@@ -125,7 +125,7 @@
 
     ; Cost #3
     (print "prefer harmonic triad") ; todo check interdependency with 1st and 2nd cost
-    (if (member 4 species-list)
+    (if (member 4 species-list) ; the 4th species behaves differently, as the note to be considered is the note on the upbeat, and not on the downbeat as the other species
         (progn
             (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))
             (if (eq (species counterpoint-1) 4)

@@ -167,7 +167,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint))
+    (if (eq species 3) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint)))
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
@@ -204,14 +204,6 @@
     ;======================================== COST FUNCTION ===================================
     (print "Cost function...")
 
-
-    ; RETURN
-    #|(if (eq species 3)
-        ; then create the search engine
-        (append (fux-search-engine (solution-array counterpoint) 3) (list species))
-        ; else
-        nil
-    )|#
     (case species 
         (3 (append (fux-search-engine (solution-array counterpoint) '(3)) (list (list 3))))
         (8 (solution-array counterpoint))
