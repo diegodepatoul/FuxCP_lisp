@@ -433,7 +433,6 @@
 
             (loop for i from 0 below *N-VOICES do (progn
                 (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
-                (print (list "r+p = " rythmic+pitches))
                 (setq rythmic-om (first rythmic+pitches))
                 (setq pitches-om (second rythmic+pitches))
                 #|

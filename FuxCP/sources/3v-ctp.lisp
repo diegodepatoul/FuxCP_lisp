@@ -19,7 +19,7 @@
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
-            (5 (incf *N-COST-FACTORS 7)) ; + 8 from fux-cp-5th and -1 not used in fux-cp-3v
+            (5 (incf *N-COST-FACTORS 8))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
@@ -104,13 +104,17 @@
     (dolist (counterpoint counterpoints) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #1: as few direct motion to reach a perfect consonance as possible
-        (if (or (eq (species counterpoint) 4) (eq (species counterpoint) 5))
+        (if (eq (species counterpoint) 4)
             nil ; pass, this cost doesn't apply to 4th species
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
                 (case (species counterpoint)
                     (1 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
                     (2 (compute-no-direct-move-to-p-cons-costs-cst (real-motions counterpoint) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
                     (3 (compute-no-direct-move-to-p-cons-costs-cst (fourth (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
+                    (5 (compute-no-direct-move-to-p-cons-costs-cst 
+                        (fourth (motions counterpoint)) direct-move-to-p-cons-cost (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) nil
+                    ))
+                    (otherwise (error "Unexpected species when computing the cost for no-direct-move-to-p-cons"))
                 )
                 (add-cost-to-factors direct-move-to-p-cons-cost)
             )
