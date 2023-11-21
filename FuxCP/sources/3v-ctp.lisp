@@ -17,7 +17,7 @@
         (case (nth i species-list)
             (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
-            (3 (incf *N-COST-FACTORS 7))
+            (3 (incf *N-COST-FACTORS 8))
             (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
             (5 (incf *N-COST-FACTORS 8))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
@@ -135,20 +135,33 @@
             (if (eq (species counterpoint-1) 4)
                 (if (eq (species counterpoint-2) 4) 
                     ; both are of fourth species
-                    (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
+                    (compute-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
                     ; only the first is of fourth species
-                    (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (rest (first (h-intervals counterpoint-2))) h-triad-cost)
+                    (compute-h-triad-cost (first (h-intervals counterpoint-1)) (rest (first (h-intervals counterpoint-2))) h-triad-cost)
                 )
                 ; only the second is of fourth species
-                (compute-prefer-h-triad-cost (rest (first (h-intervals counterpoint-1))) (first (h-intervals counterpoint-2)) h-triad-cost)
+                (compute-h-triad-cost (rest (first (h-intervals counterpoint-1))) (first (h-intervals counterpoint-2)) h-triad-cost)
             )
         )
         (progn
             (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-            (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
+            (compute-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
         )
     )
     (add-cost-to-factors h-triad-cost)
+
+    ; harmonic triad for 3rd species
+    (dotimes (i *N-VOICES) 
+        (if (eq (species (nth i counterpoints)) 3) (let
+            (
+                (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 3) (list 0 1)))
+            )
+            (dotimes (j 3) (progn ;(print (* j *cf-len)) (print (* (+ j 1) *cf-len)) 
+               (compute-h-triad-cost (nth (+ j 1) (h-intervals (nth i counterpoints))) (first (h-intervals (nth (logxor i 1) counterpoints))) (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index)))
+            ))
+            (add-cost-to-factors h-triad-3rd-species-cost)
+        ))
+    )
     
 
     ;================================================================================;

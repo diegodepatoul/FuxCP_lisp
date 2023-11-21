@@ -887,21 +887,17 @@
         (is-hbrut2-third (gil::add-bool-var *sp* 0 1))
         (is-hbrut2-not-third (gil::add-bool-var *sp* 0 1))
         ) 
-        (print "ok")
         (gil::g-rel-reify *sp* hbrut1 gil::IRT_EQ 3 is-hbrut1-3)
         (gil::g-rel-reify *sp* hbrut1 gil::IRT_EQ 4 is-hbrut1-4)
         (gil::g-rel-reify *sp* hbrut2 gil::IRT_EQ 3 is-hbrut2-3)
         (gil::g-rel-reify *sp* hbrut2 gil::IRT_EQ 4 is-hbrut2-4)
 
-        (print "ok")
         (gil::g-op *sp* is-hbrut1-3 gil::BOT_OR is-hbrut1-4 is-hbrut1-third)
         (gil::g-op *sp* is-hbrut2-3 gil::BOT_OR is-hbrut2-4 is-hbrut2-third)
 
-        (print "ok")
         (gil::g-op *sp* is-hbrut1-third gil::BOT_XOR is-hbrut1-not-third 1)
         (gil::g-op *sp* is-hbrut2-third gil::BOT_XOR is-hbrut2-not-third 1)
 
-        (print "ok")
         (gil::g-rel-reify *sp* h1 gil::IRT_NQ 3 is-hbrut1-not-third)
         (gil::g-rel-reify *sp* h1 gil::IRT_NQ 4 is-hbrut1-not-third)
         (gil::g-rel-reify *sp* h2 gil::IRT_NQ 3 is-hbrut2-not-third)
@@ -919,7 +915,7 @@
     )
 )
 
-(defun compute-prefer-h-triad-cost (h-intervals-1 h-intervals-2 costs)
+(defun compute-h-triad-cost (h-intervals-1 h-intervals-2 costs)
     (loop
     for h1 in h-intervals-1
     for h2 in h-intervals-2
@@ -934,28 +930,28 @@
             (is-h2-4 (gil::add-bool-var *sp* 0 1))
             (is-h2-third (gil::add-bool-var *sp* 0 1))
             (is-h2-7 (gil::add-bool-var *sp* 0 1))
-            (is-p-chord-1st-possibility (gil::add-bool-var *sp* 0 1))
-            (is-p-chord-2nd-possibility (gil::add-bool-var *sp* 0 1))
-            (is-p-chord (gil::add-bool-var *sp* 0 1))
+            (is-harmonic-triad-1st-possibility (gil::add-bool-var *sp* 0 1))
+            (is-harmonic-triad-2nd-possibility (gil::add-bool-var *sp* 0 1))
+            (is-harmonic-triad (gil::add-bool-var *sp* 0 1))
             (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
         )   
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 3 is-h1-3)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
             (gil::g-rel-reify *sp* h2 gil::IRT_EQ 7 is-h2-7) 
             (gil::g-op *sp* is-h1-3 gil::BOT_OR is-h1-4 is-h1-third)
-            (gil::g-op *sp* is-h1-third gil::BOT_AND is-h2-7 is-p-chord-1st-possibility)
+            (gil::g-op *sp* is-h1-third gil::BOT_AND is-h2-7 is-harmonic-triad-1st-possibility)
 
             (gil::g-rel-reify *sp* h2 gil::IRT_EQ 3 is-h2-3)
             (gil::g-rel-reify *sp* h2 gil::IRT_EQ 4 is-h2-4)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 7 is-h1-7) ;
             (gil::g-op *sp* is-h2-3 gil::BOT_OR is-h2-4 is-h2-third)
-            (gil::g-op *sp* is-h2-third gil::BOT_AND is-h1-7 is-p-chord-2nd-possibility)
+            (gil::g-op *sp* is-h2-third gil::BOT_AND is-h1-7 is-harmonic-triad-2nd-possibility)
 
-            (gil::g-op *sp* is-p-chord-1st-possibility gil::BOT_OR is-p-chord-1st-possibility is-p-chord)
+            (gil::g-op *sp* is-harmonic-triad-1st-possibility gil::BOT_OR is-harmonic-triad-1st-possibility is-harmonic-triad)
 
-            (gil::g-op *sp* is-p-chord gil::BOT_XOR is-not-p-chord 1)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-p-chord) ; it costs 0 to be a p-chord
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a p-chord
+            (gil::g-op *sp* is-harmonic-triad gil::BOT_XOR is-not-p-chord 1)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-harmonic-triad) ; it costs 0 to be a harmonic triad
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a harmonic triad
         )
     )
 )
@@ -2227,7 +2223,7 @@
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 (defun add-cost-to-factors (factor-arr)
+    (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined. Please increase the value of *N-COST-FACTORS.")
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)
-    (assert (<= *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined. Please increase the value of *N-COST-FACTORS.")
 )
