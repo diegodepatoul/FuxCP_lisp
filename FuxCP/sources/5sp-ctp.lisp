@@ -380,9 +380,6 @@
         (add-cost-bool-cst (nth i (is-cons-arr counterpoint)) (nth i (cons-cost counterpoint))) ; (cons-cost counterpoint) = 1 if (is-cons-arr counterpoint) == 1
     )
 
-
-    (print (extended-cp-domain counterpoint))
-
     ; RETURN
     (if (eq species 5)
         ; then create the search engine

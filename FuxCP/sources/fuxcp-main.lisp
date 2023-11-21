@@ -642,9 +642,11 @@
 
             (loop for i from 0 below *N-VOICES do (progn
                 (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
+                (print (list "r+p = " rythmic+pitches))
                 (setq rythmic-om (first rythmic+pitches))
                 (setq pitches-om (second rythmic+pitches))
-                (if (eq (nth i species-list) 5)
+                #|
+                (if (eq (nth i species-list) 5) (progn
                         (setq check (checksum-sol pitches-om rythmic-om))
                         ; (print (list "check" check))
                         (if (not (null *prev-sol-check))
@@ -664,8 +666,8 @@
                                 (setq *prev-sol-check (list check))
                             )
                         )
-                )
-                )
+                )) |#
+            )
 
                 (setf (nth i sol-voices) (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo))
             )

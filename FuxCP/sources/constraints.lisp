@@ -919,7 +919,7 @@
     )
 )
 
-(defun compute-prefer-p-chords-cost (h-intervals-1 h-intervals-2 costs)
+(defun compute-prefer-h-triad-cost (h-intervals-1 h-intervals-2 costs)
     (loop
     for h1 in h-intervals-1
     for h2 in h-intervals-2
@@ -2070,7 +2070,6 @@
                 ))
             )
         ))
-        (print sol-pitches)
         (assert (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
         rythmic+pitches
     )

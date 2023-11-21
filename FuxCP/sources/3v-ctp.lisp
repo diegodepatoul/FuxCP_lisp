@@ -19,6 +19,7 @@
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
+            (5 (incf *N-COST-FACTORS 6)) ; + 8 from fux-cp-5th and -2 not used in fux-cp-3v
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
@@ -33,6 +34,7 @@
             (2 (fux-cp-2nd (nth i counterpoints) 7 species-list))
             (3 (fux-cp-3rd (nth i counterpoints) 8))
             (4 (fux-cp-4th (nth i counterpoints) 9))
+            (5 (fux-cp-5th (nth i counterpoints) 10))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
         (setf *is-first-run 0)
@@ -82,7 +84,7 @@
 
     (print "Last chord cannot be minor")
     (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
-    (if  (member 4 species-list)
+    (if (or (member 4 species-list) (member 5 species-list))
         nil ; debug
         (progn 
             (print "Last chord cannot include a tenth")
@@ -102,7 +104,7 @@
     (dolist (counterpoint counterpoints) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #1: as few direct motion to reach a perfect consonance as possible
-        (if (eq (species counterpoint) 4)
+        (if (or (eq (species counterpoint) 4) (eq (species counterpoint) 5))
             nil ; pass, this cost doesn't apply to 4th species
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
                 (case (species counterpoint)
@@ -116,33 +118,36 @@
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
-        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-        (add-cost-to-factors (variety-cost counterpoint))
+        (if (/= (species counterpoint) 5) (progn
+            (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
+            (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
+            (add-cost-to-factors (variety-cost counterpoint))
+        ))
     ))
 
     ; Cost #3
-    (print "prefer perfect chords") ; todo check interdependency with 1st and 2nd cost
+    (print "prefer harmonic triad") ; todo check interdependency with 1st and 2nd cost
     (if (member 4 species-list)
         (progn
-            (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))
+            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))
             (if (eq (species counterpoint-1) 4)
                 (if (eq (species counterpoint-2) 4) 
                     ; both are of fourth species
-                    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+                    (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
                     ; only the first is of fourth species
-                    (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (rest (first (h-intervals counterpoint-2))) *p-chords-cost)
+                    (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (rest (first (h-intervals counterpoint-2))) h-triad-cost)
                 )
                 ; only the second is of fourth species
-                (compute-prefer-p-chords-cost (rest (first (h-intervals counterpoint-1))) (first (h-intervals counterpoint-2)) *p-chords-cost)
+                (compute-prefer-h-triad-cost (rest (first (h-intervals counterpoint-1))) (first (h-intervals counterpoint-2)) h-triad-cost)
             )
         )
         (progn
-            (setq *p-chords-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
-            (compute-prefer-p-chords-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) *p-chords-cost)
+            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+            (compute-prefer-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
         )
     )
-    (add-cost-to-factors *p-chords-cost)
+    (add-cost-to-factors h-triad-cost)
+    
 
     ;================================================================================;
     ;                                    RETURN                                      ;
