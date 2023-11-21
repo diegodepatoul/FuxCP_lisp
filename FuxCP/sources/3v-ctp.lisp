@@ -17,7 +17,7 @@
         (case (nth i species-list)
             (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
-            (3 (incf *N-COST-FACTORS 8))
+            (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
             (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
             (5 (incf *N-COST-FACTORS 8))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
@@ -150,14 +150,17 @@
     )
     (add-cost-to-factors h-triad-cost)
 
-    ; harmonic triad for 3rd species
+    ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the other beats
     (dotimes (i *N-VOICES) 
         (if (eq (species (nth i counterpoints)) 3) (let
             (
                 (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 3) (list 0 1)))
             )
-            (dotimes (j 3) (progn ;(print (* j *cf-len)) (print (* (+ j 1) *cf-len)) 
-               (compute-h-triad-cost (nth (+ j 1) (h-intervals (nth i counterpoints))) (first (h-intervals (nth (logxor i 1) counterpoints))) (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index)))
+            (dotimes (j 3) (progn 
+               (compute-h-triad-cost 
+                    (nth (+ j 1) (h-intervals (nth i counterpoints))) ; this is the jth beat
+                    (first (h-intervals (nth (logxor i 1) counterpoints))) ; these are the intervals of the OTHER counterpoint
+                    (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index))) ; these are the costs corresponding to the jth beat
             ))
             (add-cost-to-factors h-triad-3rd-species-cost)
         ))
