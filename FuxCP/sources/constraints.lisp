@@ -1862,7 +1862,6 @@
             (print (format nil "cn: ~a, cn+1: ~a, cn+2: ~a, cn+3: ~a" cn cn+1 cn+2 cn+3))
             )
         )
-    (print extended-cp-domain) ;(error "debug")
         
 
         (cond
@@ -2081,7 +2080,7 @@
                 ))
             )
         ))
-        ;(assert  (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
+        (assert  (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
         rythmic+pitches
     )
 )
