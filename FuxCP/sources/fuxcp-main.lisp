@@ -209,6 +209,7 @@
     (chromatic-cp-domain :accessor chromatic-cp-domain :initarg :chromatic-cp-domain :initform nil)
     (extended-cp-domain :accessor extended-cp-domain :initarg :extended-cp-domain :initform nil)
     (off-domain :accessor off-domain :initarg :off-domain :initform nil)
+    (voice-type :accessor voice-type :initarg :voice-type :initform nil)
 
     ; 1st species variables
     (cp :accessor cp :initarg :cp :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
@@ -257,6 +258,19 @@
     (is-no-syncope-arr :accessor is-no-syncope-arr :initarg :is-no-syncope-arr :initform nil)
     (no-syncope-cost :accessor no-syncope-cost :initarg :no-syncope-cost :initform nil)
 
+    ; 5th species variables
+    (species-arr :accessor species-arr :initarg :species-arr :initform nil) ; 0: no constraint, 1: first species, 2: second species, 3: third species, 4: fourth species
+    (sp-arr :accessor sp-arr :initarg :sp-arr :initform nil) ; represents *species-arr by position in the measure
+    (is-nth-species-arr :accessor is-nth-species-arr :initarg :is-nth-species-arr :initform (list nil nil nil nil nil)) ; if *species-arr is n, then *is-nth-species-arr is true
+    (is-3rd-species-arr :accessor is-3rd-species-arr :initarg :is-3rd-species-arr :initform (list nil nil nil nil)) ; if *species-arr is 3, then *is-3rd-species-arr is true
+    (is-4th-species-arr :accessor is-4th-species-arr :initarg :is-4th-species-arr :initform (list nil nil nil nil)) ; if *species-arr is 4, then *is-4th-species-arr is true
+    (is-2nd-or-3rd-species-arr :accessor is-2nd-or-3rd-species-arr :initarg :is-2nd-or-3rd-species-arr :initform nil) ; if *species-arr is 2 or 3, then *is-2nd-or-3rd-species-arr is true
+    (m-ta-intervals :accessor m-ta-intervals :initarg :m-ta-intervals :initform nil) ; represents the m-intervals between the thesis note and the arsis note of the same measure
+    (m-ta-intervals-brut :accessor m-ta-intervals-brut :initarg :m-ta-intervals-brut :initform nil) ; same but without the absolute reduction
+    (is-mostly-3rd-arr :accessor is-mostly-3rd-arr :initarg :is-mostly-3rd-arr :initform nil) ; true if second, third and fourth notes are from the 3rd species
+    (is-constrained-arr :accessor is-constrained-arr :initarg :is-constrained-arr :initform nil) ; represents !(*is-0th-species-arr) i.e. there are species constraints
+    (is-cst-arr :accessor is-cst-arr :initarg :is-cst-arr :initform (list nil nil nil nil)) ; represents *is-constrained-arr for all beats of the measure
+
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
     (is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
@@ -286,37 +300,12 @@
                                          :cp-domain cp-domain
                                          :chromatic-cp-domain chromatic-cp-domain
                                          :extended-cp-domain extended-cp-domain
-                                         :off-domain off-domain)
+                                         :off-domain off-domain
+                                         :voice-type voice-type)
             )
         )
     )
 )
-
-; re/define all the variables the CSP needs
-(defun get-counterpoint (species) (case species 
-
-    (5 (progn
-        ;; FIFTH SPECIES COUNTERPOINT GLOBAL VARIABLES
-        (defvar *species-arr) ; 0: no constraint, 1: first species, 2: second species, 3: third species, 4: fourth species
-        (defvar *sp-arr) ; represents *species-arr by position in the measure
-        (defparameter *is-nth-species-arr (list nil nil nil nil nil)) ; if *species-arr is n, then *is-nth-species-arr is true
-        (defparameter *is-3rd-species-arr (list nil nil nil nil)) ; if *species-arr is 3, then *is-3rd-species-arr is true
-        (defparameter *is-4th-species-arr (list nil nil nil nil)) ; if *species-arr is 4, then *is-4th-species-arr is true
-        (defvar *is-2nd-or-3rd-species-arr) ; if *species-arr is 2 or 3, then *is-2nd-or-3rd-species-arr is true
-        (defvar *m-ta-intervals) ; represents the m-intervals between the thesis note and the arsis note of the same measure
-        (defvar *m-ta-intervals-brut) ; same but without the absolute reduction
-        (defvar *is-mostly-3rd-arr) ; true if second, third and fourth notes are from the 3rd species
-        (defvar *is-constrained-arr) ; represents !(*is-0th-species-arr) i.e. there are species constraints
-        (defparameter *is-cst-arr (list nil nil nil nil)) ; represents *is-constrained-arr for all beats of the measure
-
-        (defparameter *m-succ-intervals-brut (list nil nil nil))
-        (defparameter *m-succ-intervals (list nil nil nil))
-        (defparameter *is-cons-arr (list nil nil nil nil))
-        (defparameter *cons-cost (list nil nil nil nil))
-    ))
-))
-
-
 
 ;; DISPATCHER FUNCTION
 (defun fux-cp (species-list)
@@ -647,20 +636,15 @@
         (print (list "sol-pitches  =" sol-pitches))
 
         (let (
-            (basic-rythmics (get-basic-rythmics species-list *cf-len sol-pitches))
+            (basic-rythmics (get-basic-rythmics species-list *cf-len sol-pitches counterpoints sol))
             (sol-voices (make-list *N-VOICES :initial-element nil))
             )
 
             (loop for i from 0 below *N-VOICES do (progn
-                (case (nth i species-list)
-                    (5 (progn
-                        (error "get basic rythmic was refactored and hence won't work, the call to it first")
-                        (setq sol-species (gil::g-values sol *species-arr)) ; store the values of the solution
-                        (setq rythmic+pitches (parse-species-to-om-rythmic sol-species sol-pitches))
-                        (setq rythmic-om (first rythmic+pitches))
-                        ; (print (list "rythmic-om" rythmic-om))
-                        (setq pitches-om (second rythmic+pitches))
-                        ; (print (list "pitches-om" pitches-om))
+                (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
+                (setq rythmic-om (first rythmic+pitches))
+                (setq pitches-om (second rythmic+pitches))
+                (if (eq (nth i species-list) 5)
                         (setq check (checksum-sol pitches-om rythmic-om))
                         ; (print (list "check" check))
                         (if (not (null *prev-sol-check))
@@ -680,16 +664,11 @@
                                 (setq *prev-sol-check (list check))
                             )
                         )
-                    ))
-                    (otherwise (progn
-                        (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
-                        (setq rythmic-om (first rythmic+pitches))
-                        (setq pitches-om (second rythmic+pitches))
-                    ))
+                )
                 )
 
                 (setf (nth i sol-voices) (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo))
-            ))
+            )
             (make-instance 'poly 
                 :voices sol-voices
             )
