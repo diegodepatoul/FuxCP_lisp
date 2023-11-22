@@ -333,21 +333,21 @@
     (setf (octave-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 7 (first (is-cst-arr counterpoint)) (fifth-cost counterpoint) *h-fifth-cost*) ; (fifth-cost counterpoint) = 1 if *h-interval == 7
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 0 (first (is-cst-arr counterpoint)) (octave-cost counterpoint) *h-octave-cost*) ; (octave-cost counterpoint) = 1 if *h-interval == 0
-    (add-cost-to-factors (fifth-cost counterpoint))
-    (add-cost-to-factors (octave-cost counterpoint))
+    (add-cost-to-factors (fifth-cost counterpoint) 'fifth-cost)
+    (add-cost-to-factors (octave-cost counterpoint) 'octave-cost)
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint) (is-constrained-arr counterpoint) (collect-bot-array (butlast (is-constrained-arr counterpoint)) (rest (is-constrained-arr counterpoint))))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (fourth (motions counterpoint)))
+    (add-cost-to-factors (fourth (motions counterpoint)) 'motions-cost)
 
     ; 6) cambiata notes are preferred (cons - dis - cons > cons - cons - cons)
     (print "Cambiata notes are preferred...")
     ; IntVar array representing the cost to have cambiata notes
     (setf (not-cambiata-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index (getparam-dom 'non-cambiata-cost)))
     (add-cost-bool-cst-if (is-not-cambiata-arr counterpoint) (is-mostly-3rd-arr counterpoint) (not-cambiata-cost counterpoint) *non-cambiata-cost*)
-    (add-cost-to-factors (not-cambiata-cost counterpoint))
+    (add-cost-to-factors (not-cambiata-cost counterpoint) 'not-cambiata-cost)
 
     ; 7) intervals between notes n and n+2 are prefered greater than zero
     (print "Intervals between notes n and n+2 are prefered different than zero...")
@@ -358,7 +358,7 @@
         (collect-bot-array (butlast (butlast (is-constrained-arr counterpoint))) (rest (rest (is-constrained-arr counterpoint))))
         (m2-eq-zero-cost counterpoint) *two-beats-apart-cost*
     )
-    (add-cost-to-factors (m2-eq-zero-cost counterpoint))
+    (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
     ; 8) add no syncopation cost
     (setf (no-syncope-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'no-syncopation-cost)))
@@ -368,7 +368,7 @@
         (no-syncope-cost counterpoint)
         *no-syncopation-cost*
     )
-    (add-cost-to-factors (no-syncope-cost counterpoint))
+    (add-cost-to-factors (no-syncope-cost counterpoint) 'no-syncope-cost)
 
 
     ;======================================== COST FUNCTION ===================================

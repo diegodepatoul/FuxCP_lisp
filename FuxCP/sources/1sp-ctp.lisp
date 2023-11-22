@@ -90,8 +90,8 @@
     ; creating motion array
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
-    (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) (first (motions-cost counterpoint)))
+    (setf motions-cost (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
+    (create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) motions-cost)
 
     
     ;============================================ HARMONIC CONSTRAINTS ============================
@@ -189,7 +189,7 @@
 
             ; 5) motion costs
             (print "add motion costs")
-            (add-cost-to-factors (first (motions-cost counterpoint)))            
+            (add-cost-to-factors motions-cost 'motions-cost)    
         )
     ))
     (print "##### EXITTING FIRST SPECIES ######")

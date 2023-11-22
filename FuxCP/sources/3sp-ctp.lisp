@@ -183,21 +183,21 @@
     (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (fourth (motions-cost counterpoint)))
+    (add-cost-to-factors (fourth (motions-cost counterpoint)) 'motions-cost)
 
     ; 6) cambiata notes are preferred (cons - dis - cons > cons - cons - cons)
     (print "Cambiata notes are preferred...")
     ; IntVar array representing the cost to have cambiata notes
     (setf (not-cambiata-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index (getparam-dom 'non-cambiata-cost)))
     (add-cost-bool-cst (is-not-cambiata-arr counterpoint) (not-cambiata-cost counterpoint) *non-cambiata-cost*)
-    (add-cost-to-factors (not-cambiata-cost counterpoint))
+    (add-cost-to-factors (not-cambiata-cost counterpoint) 'not-cambiata-cost)
 
     ; 7) intervals between notes n and n+2 are prefered greater than zero
     (print "Intervals between notes n and n+2 are prefered different than zero...")
     ; IntVar array representing the cost to have intervals between notes n and n+2 equal to zero
     (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (m2-len counterpoint) (getparam-dom 'two-beats-apart-cost)))
     (add-cost-cst (m2-intervals counterpoint) gil::IRT_EQ 0 (m2-eq-zero-cost counterpoint) *two-beats-apart-cost*)
-    (add-cost-to-factors (m2-eq-zero-cost counterpoint))
+    (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
 
     ;======================================== COST FUNCTION ===================================

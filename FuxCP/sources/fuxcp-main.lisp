@@ -131,20 +131,34 @@
     )
 )
 
-(defclass costs-class () (
-    (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
-    (p-cons-cost :accessor p-cons-cost :initarg :p-cons-cost :initform nil)
+(setq *costs-indexes (make-hash-table))                      
+
+;; Function to look up a value by key in the dictionary
+(defun add-to-cost-indexes (key value)
+    (cdr (assoc key dictionary)))
+
+(defclass costs-indexes-class () (
+    ; 1st species
+    (motions-cost :accessor motions-cost :initarg :motions-cost :initform nil)
+    (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
     (fifth-cost :accessor fifth-cost :initarg :fifth-cost :initform nil)
     (octave-cost :accessor octave-cost :initarg :octave-cost :initform nil)
     (m-degrees-cost :accessor m-degrees-cost :initarg :m-degrees-cost :initform nil)
-    (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
+
+    ; other species
+    (p-cons-cost :accessor p-cons-cost :initarg :p-cons-cost :initform nil)
     (real-motions-cost :accessor real-motions-cost :initarg :real-motions-cost :initform nil)
     (penult-thesis-cost :accessor penult-thesis-cost :initarg :penult-thesis-cost :initform nil) 
     (not-cambiata-cost :accessor not-cambiata-cost :initarg :not-cambiata-cost :initform nil)
     (m2-eq-zero-cost :accessor m2-eq-zero-cost :initarg :m2-eq-zero-cost :initform nil)
-    (cons-cost :accessor cons-cost :initarg :cons-cost :initform (list nil nil nil nil))
+    (cons-cost :accessor cons-cost :initarg :cons-cost :initform nil)
     (no-syncope-cost :accessor no-syncope-cost :initarg :no-syncope-cost :initform nil)
+
+    ; 6th species
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
+    (direct-move-to-p-cons-cost :accessor direct-move-to-p-cons-cost :initarg :direct-move-to-p-cons-cost :initform nil)
+    (h-triad-cost :accessor h-triad-cost :initarg :h-triad-cost :initform nil)
+    (h-triad-cost-3rd-species :accessor h-triad-cost-3rd-species :initarg :h-triad-cost-3rd-species :initform nil)
 ))
 
 (defclass counterpoint-class () (
@@ -284,6 +298,7 @@
     )
     (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
     |#
+    ;(setq *costs-indexes (make-instance 'costs-indexes-class))
     (setq *cost-factors (set-cost-factors species-list))
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices

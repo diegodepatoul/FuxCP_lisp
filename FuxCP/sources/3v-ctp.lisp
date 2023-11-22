@@ -116,15 +116,18 @@
                     ))
                     (otherwise (error "Unexpected species when computing the cost for no-direct-move-to-p-cons"))
                 )
-                (add-cost-to-factors direct-move-to-p-cons-cost)
+                (add-cost-to-factors direct-move-to-p-cons-cost 'direct-move-to-p-cons-cost)
             )
         )
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
-        (setf (variety-cost counterpoint) (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
-        (compute-variety-cost (first (cp counterpoint)) (variety-cost counterpoint))
-        (add-cost-to-factors (variety-cost counterpoint))
+        (let (
+            (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
+            )
+            (compute-variety-cost (first (cp counterpoint)) variety-cost)
+            (add-cost-to-factors variety-cost 'variety-cost)
+        )
     ))
 
     ; Cost #3
@@ -148,7 +151,7 @@
             (compute-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
         )
     )
-    (add-cost-to-factors h-triad-cost)
+    (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
     ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the other beats
     (dotimes (i *N-VOICES) 
@@ -162,7 +165,7 @@
                     (first (h-intervals (nth (logxor i 1) counterpoints))) ; these are the intervals of the OTHER counterpoint
                     (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index))) ; these are the costs corresponding to the jth beat
             ))
-            (add-cost-to-factors h-triad-3rd-species-cost)
+            (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
     )
     

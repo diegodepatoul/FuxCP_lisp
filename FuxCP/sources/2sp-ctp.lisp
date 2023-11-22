@@ -185,15 +185,14 @@
     (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (real-motions-cost counterpoint))
+    (add-cost-to-factors (real-motions-cost counterpoint) 'real-motions-cost)
     
     ; 6) the penultimate thesis note is not a fifth
     (print "Penultimate thesis note is not a fifth...")
     ; *penult-thesis-cost = *cf-len (big cost) if penultimate *h-interval /= 7
     (setf (penult-thesis-cost counterpoint) (gil::add-int-var-dom *sp* (getparam-dom 'penult-sixth-cost)))
     (add-single-cost-cst (penult (first (h-intervals counterpoint))) gil::IRT_NQ 7 (penult-thesis-cost counterpoint) *penult-sixth-cost*)
-    (setf (nth *n-cost-added *cost-factors) (penult-thesis-cost counterpoint))
-    (incf *n-cost-added)
+    (add-cost-to-factors (penult-thesis-cost counterpoint) 'penult-thesis-cost nil)
     
     ;======================================== COST FUNCTION ===================================
     (print "Cost function...")

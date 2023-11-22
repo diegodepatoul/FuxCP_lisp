@@ -161,13 +161,13 @@
     (print "No syncopation cost...")
     (setf (no-syncope-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'no-syncopation-cost)))
     (add-cost-cst (butlast (third (m-intervals counterpoint))) gil::IRT_NQ 0 (no-syncope-cost counterpoint) *no-syncopation-cost*)
-    (add-cost-to-factors (no-syncope-cost counterpoint))
+    (add-cost-to-factors (no-syncope-cost counterpoint) 'no-syncope-cost)
 
     ; 6) add m2-intervals equal to 0 cost
     (print "Monotonia...")
     (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (- *cf-len 3) (getparam-dom 'two-bars-apart-cost)))
     (add-cost-multi-cst (third (cp counterpoint)) gil::IRT_EQ (cddr (third (cp counterpoint))) (m2-eq-zero-cost counterpoint) *two-bars-apart-cost*)
-    (add-cost-to-factors (m2-eq-zero-cost counterpoint))
+    (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
     ;======================================== COST FUNCTION ===================================
     (print "Cost function...")

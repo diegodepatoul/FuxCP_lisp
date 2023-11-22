@@ -172,22 +172,22 @@
 ; except for the 4th species where it is the 3rd beat
 ; @is-sync: true means it is the 4th species
 (defun add-p-cons-cost-cst (h-intervals &optional (is-sync nil))
-    (setq *fifth-cost  (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
-    (setq *octave-cost (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
+    (setq fifth-cost  (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
+    (setq octave-cost (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (if is-sync
         ; then 4th species
-        (add-h-inter-cost-cst (rest (third h-intervals)))
+        (add-h-inter-cost-cst (rest (third h-intervals)) fifth-cost octave-cost)
         ; else
-        (add-h-inter-cost-cst (restbutlast (first h-intervals)))
+        (add-h-inter-cost-cst (restbutlast (first h-intervals)) fifth-cost octave-cost)
     )
-    (add-cost-to-factors *fifth-cost)
-    (add-cost-to-factors *octave-cost)
+    (add-cost-to-factors fifth-cost 'fifth-cost)
+    (add-cost-to-factors octave-cost 'octave-cost)
 )
 
 ; add cost constraints such that a cost is added when a fifth or an octave is present in @h-intervals
-(defun add-h-inter-cost-cst (h-intervals)
-        (add-cost-cst h-intervals gil::IRT_EQ 7 *fifth-cost *h-fifth-cost*) ; *fifth-cost = 1 if *h-interval == 7
-        (add-cost-cst h-intervals gil::IRT_EQ 0 *octave-cost *h-octave-cost*) ; *octave-cost = 1 if *h-interval == 0
+(defun add-h-inter-cost-cst (h-intervals fifth-cost octave-cost)
+        (add-cost-cst h-intervals gil::IRT_EQ 7 fifth-cost *h-fifth-cost*) ; *fifth-cost = 1 if *h-interval == 7
+        (add-cost-cst h-intervals gil::IRT_EQ 0 octave-cost *h-octave-cost*) ; *octave-cost = 1 if *h-interval == 0
 )
 
 ; Get the minimum cost possible for a counterpoint depending on the costs of the melodic intervals
@@ -254,7 +254,7 @@
             (add-cost-bool-cst-if (is-cp-off-key-arr counterpoint) is-cst-arr1 (off-key-cost counterpoint) *borrow-cost*)
         )
         ; sum of the cost of the off-key notes
-        (add-cost-to-factors (off-key-cost counterpoint))
+        (add-cost-to-factors (off-key-cost counterpoint) 'off-key-cost)
     
         ; 3) melodic intervals should be as small as possible 
         (print "Melodic intervals should be as small as possible...")
@@ -267,10 +267,7 @@
         (setf (m-degrees-cost counterpoint) (gil::add-int-var-array-dom *sp* m-len degrees-cost-domain))
         (setf (m-degrees-type counterpoint) (gil::add-int-var-array *sp* m-len 1 8))
         (add-m-degrees-cost-cst (m-all-intervals counterpoint) (m-degrees-cost counterpoint) (m-degrees-type counterpoint) is-cst-arr2)
-        ;(if (eq 1 *is-first-run) ; todo del this condition
-            (add-cost-to-factors (m-degrees-cost counterpoint)) ; when run on two different counterpoints, it makes it really slow
-        ;    nil
-        ;)
+        (add-cost-to-factors (m-degrees-cost counterpoint) 'm-degrees-cost) 
         (gil::g-count *sp* (m-degrees-type counterpoint) 2 gil::IRT_LQ (floor (* (- 1 (getparam 'min-skips-slider)) m-len)))
     )
 )
@@ -2233,8 +2230,21 @@
 )
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
-(defun add-cost-to-factors (factor-arr)
+(defun add-cost-to-factors (factor-arr cost-name &optional (g-sum 1))
     (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined (~A). Please increase the value of *N-COST-FACTORS." *N-COST-FACTORS)
-    (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
+    (if g-sum 
+        (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
+        (setf (nth *n-cost-added *cost-factors) factor-arr)
+    )
+    (let (
+        (cost-index (gethash cost-name *costs-indexes))
+        )
+        (if cost-index
+            ; if not nil
+            (setf (gethash cost-name *costs-indexes) (append cost-index (list *n-cost-added)))
+            ; else if nil
+            (setf (gethash cost-name *costs-indexes) (list *n-cost-added))
+        )
+    )
     (incf *n-cost-added)
 )
