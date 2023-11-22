@@ -297,9 +297,34 @@
     )
 )
 
+(defun reorder-costs (species-list)
+    (setf species-tag (reduce #'(lambda (x y) (+ (* x 10) y)) species-list))
+    (let (
+        (ordered-costs (make-list *N-COST-FACTORS :initial-element nil))
+        (costs-names-by-order 
+            (case species-tag
+                (1 (list 'motions-cost 'fifth-cost 'octave-cost 'off-key-cost 'm-degrees-cost))
+            )
+        )
+        (i 0)
+        )
+        (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
+        (loop while (< i *N-COST-FACTORS) do           
+            (loop for index in (gethash (nth i costs-names-by-order) *costs-indexes) do (progn
+                (assert index () "index should not be nil")
+                (setf (nth i ordered-costs) (nth index *cost-factors))
+                (incf i)
+            ))
+        )
+        ordered-costs
+    )
+)
+
 (defun fux-search-engine (the-cp &optional (species '(1)) (voice-type 0))
     (let (se tstop sopts)
         (print (list "Starting fux-search-engine with species = " species))
+        ;; Reorder the costs
+        (reorder-costs species)
         
         ;; COST
         (gil::g-cost *sp* *cost-factors) ; set the cost function
@@ -335,9 +360,9 @@
             ))
 
             ; branching *total-cost
-            (if (eq (nth i species) 2)
-                (gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
-            )
+            ;(if (eq (nth i species) 2)
+                ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
+            ;)
         ))
          
     
