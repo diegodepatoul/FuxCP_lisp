@@ -185,7 +185,7 @@
     (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (real-motions-cost counterpoint) 'real-motions-cost)
+    (add-cost-to-factors (real-motions-cost counterpoint) 'motions-cost)
     
     ; 6) the penultimate thesis note is not a fifth
     (print "Penultimate thesis note is not a fifth...")

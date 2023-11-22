@@ -253,7 +253,8 @@
 
     ; re/set global variables
     (define-global-constants)
-    (setq *costs-indexes (make-hash-table))                      
+    (setq *cost-indexes (make-hash-table))                      
+    (setq *cost-factors (set-cost-factors species-list))
 
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
@@ -268,8 +269,7 @@
     )
     (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
     |#
-    ;(setq *costs-indexes (make-instance 'costs-indexes-class))
-    (setq *cost-factors (set-cost-factors species-list))
+    ;(setq *cost-indexes (make-instance 'cost-indexes-class))
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -298,25 +298,46 @@
 )
 
 (defun reorder-costs (species-list)
+    (print "########## REORDERING ##########")
     (setf species-tag (reduce #'(lambda (x y) (+ (* x 10) y)) species-list))
     (let (
-        (ordered-costs (make-list *N-COST-FACTORS :initial-element nil))
-        (costs-names-by-order 
-            (case species-tag
-                (1 (list 'motions-cost 'fifth-cost 'octave-cost 'off-key-cost 'm-degrees-cost))
-            )
-        )
         (i 0)
+        (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
+        (costs-names-by-order (list 
+                                'motions-cost 
+                                'fifth-cost
+                                'octave-cost
+                                'off-key-cost
+                                'm-degrees-cost
+                                'variety-cost
+                                'h-triad-cost
+                                'h-triad-3rd-species-cost
+                                'direct-move-to-p-cons-cost
+                                'not-cambiata-cost
+                                'm2-eq-zero-cost
+                                'penult-thesis-cost
+                                'no-syncope-cost
+        ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
-        (loop while (< i *N-COST-FACTORS) do           
-            (loop for index in (gethash (nth i costs-names-by-order) *costs-indexes) do (progn
-                (assert index () "index should not be nil")
-                (setf (nth i ordered-costs) (nth index *cost-factors))
-                (incf i)
-            ))
+        (dolist (cost costs-names-by-order)
+            (let ((index (gethash cost *cost-indexes)))
+                (if index (progn
+                    (assert (gethash cost *cost-indexes) () "The hash is nil, but should not be. Current cost name = ~A" (nth i costs-names-by-order))
+                    (loop for index in (gethash cost *cost-indexes) do (progn
+                        (assert index () "index should not be nil")
+                        (setf (nth i reordered-costs) (nth index *cost-factors))
+                        (incf i)
+                    ))
+                    )
+                    ; if index is nil (i.e. if this cost doesn't exist in this species)
+                    (print (list "Cost " cost " was not found."))
+                )
+            )
         )
-        ordered-costs
+        (assert (eq i *N-COST-FACTORS) () "Some costs are missing in the reordering.")
+        (dolist (cost reordered-costs) (assert cost () "A cost is nil. Ordered costs = ~A" reordered-costs))
+        (setf *cost-factors reordered-costs)
     )
 )
 

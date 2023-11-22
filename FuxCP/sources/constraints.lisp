@@ -2236,15 +2236,9 @@
         (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
         (setf (nth *n-cost-added *cost-factors) factor-arr)
     )
-    (let (
-        (cost-index (gethash cost-name *costs-indexes))
-        )
-        (if cost-index
-            ; if not nil
-            (setf (gethash cost-name *costs-indexes) (append cost-index (list *n-cost-added)))
-            ; else if nil
-            (setf (gethash cost-name *costs-indexes) (list *n-cost-added))
-        )
-    )
+    
+    (setf (gethash cost-name *cost-indexes) (append (gethash cost-name *cost-indexes) (list *n-cost-added)))
+    (print "HERE COMES A COST NAME")
+    (print cost-name)
     (incf *n-cost-added)
 )
