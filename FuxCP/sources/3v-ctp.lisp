@@ -37,7 +37,6 @@
             (5 (fux-cp-5th (nth i counterpoints) 10))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
-        (setf *is-first-run 0)
     ))
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
