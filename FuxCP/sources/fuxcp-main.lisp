@@ -228,7 +228,7 @@
     (is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
 ))
 
-(defun init-counterpoint (voice-type)
+(defun init-counterpoint (voice-type species)
     ; Lower bound and upper bound related to the cantus firmus pitch
     (let (
         (range-upper-bound (+ 12 (* 6 voice-type)))
@@ -253,7 +253,8 @@
                                                :chromatic-cp-domain chromatic-cp-domain
                                                :extended-cp-domain extended-cp-domain
                                                :off-domain off-domain
-                                               :voice-type voice-type)
+                                               :voice-type voice-type
+                                               :species species)
             )
         )
     )
@@ -272,7 +273,7 @@
 
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
-    (loop for i from 0 below *N-VOICES do (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types))))
+    (dotimes (i *N-VOICES) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
     #| TO BE CORRECTED 
     (if (and (< (first *voices-types) 0) (< (first *voices-types) (second *voices-types)))
         (setf *nth-voice-is-bass 0)
@@ -287,30 +288,24 @@
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn
-                (setf (species (first counterpoints)) 1)
                 (fux-cp-1st (first counterpoints))
             ))
             (2 (progn
-                (setf (species (first counterpoints)) 2)
                 (fux-cp-2nd (first counterpoints))
             ))
             (3 (progn
-                (setf (species (first counterpoints)) 3)
                 (fux-cp-3rd (first counterpoints))
             ))
             (4 (progn
-                (setf (species (first counterpoints)) 4)
                 (fux-cp-4th (first counterpoints))
             ))
             (5 (progn
-                (setf (species (first counterpoints)) 5)
                 (fux-cp-5th (first counterpoints))
             ))
             (otherwise (error "Species ~A not implemented" species))
             )
         )
         (2 (progn
-            (loop for i from 0 below *N-VOICES do (setf (species (nth i counterpoints)) (nth i species-list)))
             (fux-cp-3v species-list counterpoints)
         ))
         (otherwise (error "The species list is longer than what is currently implemented. Length = ~A" species))
