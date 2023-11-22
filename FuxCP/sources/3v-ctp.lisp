@@ -12,7 +12,7 @@
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
     (print (list "species list = " species-list))
-    (setq *N-COST-FACTORS 5)
+    #|(setq *N-COST-FACTORS 5)
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (incf *N-COST-FACTORS 5))
@@ -22,7 +22,7 @@
             (5 (incf *N-COST-FACTORS 8))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
-    ))
+    ))|#
 
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
     ; 0 for being the bass, 1 for being above

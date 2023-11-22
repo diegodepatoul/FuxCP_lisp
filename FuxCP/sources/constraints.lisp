@@ -212,19 +212,30 @@
     )
 )
 
-; setup the cost factors with the minimum cost possible
-(defun set-cost-factors (m-all-intervals) ; TODO this function has to be completely changed
-    (setq m-len (length m-all-intervals))
-    (setq lb-max (max (ceiling (/ *cf-len 4)) (get-min-m-cost m-len)))
-    ; (print (list "lb-max: " lb-max))
-    (setq lb-i (floor (* (getparam 'irreverence-slider) (* 2 m-len))))
-    ; (print (list "lb-i: " lb-i))
-    (defparameter COST_LB (+ lb-max lb-i))
-    ; (print '("COST_LB: " COST_LB))
-    ; IntVar array representing all the cost factors
-    (setq *cost-factors (gil::add-int-var-array *sp* *N-COST-FACTORS 0 COST_UB))
-    ; IntVar representing the *total *cost
-    ; (setq *total-cost (gil::add-int-var *sp* COST_LB COST_UB))
+(defun set-cost-factors (species-list)
+    (case (length species-list)
+        (1 (case (first species-list)
+            (1 (setq *N-COST-FACTORS 5))
+            (2 (setq *N-COST-FACTORS 6))
+            (3 (setq *N-COST-FACTORS 7))
+            (4 (setq *N-COST-FACTORS 6))
+            (5 (setq *N-COST-FACTORS 8))
+        ))
+        (2 (progn
+            (setq *N-COST-FACTORS 5)
+            (dolist (species species-list)
+                (case species
+                    (1 (incf *N-COST-FACTORS 5))
+                    (2 (incf *N-COST-FACTORS 6))
+                    (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
+                    (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
+                    (5 (incf *N-COST-FACTORS 8))
+                (otherwise (error "Unexpected value in the species list (~A), when calling fux-cp-3v." species))
+                )
+            )
+        ))
+    )
+    (gil::add-int-var-array *sp* *N-COST-FACTORS 0 100)
 )
 
 ; add general costs for most of the species
@@ -2223,7 +2234,7 @@
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 (defun add-cost-to-factors (factor-arr)
-    (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined. Please increase the value of *N-COST-FACTORS.")
+    (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined (~A). Please increase the value of *N-COST-FACTORS." *N-COST-FACTORS)
     (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
     (incf *n-cost-added)
 )

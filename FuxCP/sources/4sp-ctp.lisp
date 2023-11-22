@@ -150,11 +150,7 @@
 
 
     ;======================================== COST FACTORS ====================================
-    (print "Cost factors...")
-    (if (eq *is-first-run 1)
-        (set-cost-factors (m-all-intervals counterpoint))
-    )
-    
+    (print "Cost factors...")    
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (add-p-cons-cost-cst (h-intervals counterpoint) t)
     

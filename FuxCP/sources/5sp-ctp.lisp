@@ -328,7 +328,6 @@
 
 
     ;======================================== COST FACTORS ====================================
-    (if (eq *is-first-run 1) (set-cost-factors (m-all-intervals counterpoint)))
     (print "Imperfect consonances are preferred to perfect consonances...")
     (setf (fifth-cost counterpoint)  (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setf (octave-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
