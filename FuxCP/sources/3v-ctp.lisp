@@ -84,7 +84,7 @@
     )
 
     (print "Last chord must be a perfect chord") 
-    (add-last-chord-perfect-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
+    (add-last-chord-h-triad-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
 
     ;================================================================================;
     ;                                    COSTS                                       ;

@@ -303,20 +303,20 @@
     (let (
         (i 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
-        (costs-names-by-order (list 
-                                'motions-cost 
-                                'fifth-cost
-                                'octave-cost
-                                'off-key-cost
-                                'm-degrees-cost
-                                'variety-cost
-                                'h-triad-cost
-                                'h-triad-3rd-species-cost
+        (costs-names-by-order (list ; from least to most important
                                 'direct-move-to-p-cons-cost
                                 'not-cambiata-cost
                                 'm2-eq-zero-cost
                                 'penult-thesis-cost
                                 'no-syncope-cost
+                                'off-key-cost
+                                'fifth-cost
+                                'octave-cost               
+                                'h-triad-3rd-species-cost
+                                'h-triad-cost                 
+                                'm-degrees-cost
+                                'motions-cost
+                                'variety-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")

@@ -914,12 +914,12 @@
 )
 
 ; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
-(defun add-last-chord-perfect-cst (h-intervals-1 h-intervals-2)
+(defun add-last-chord-h-triad-cst (h-intervals-1 h-intervals-2)
     (let (
-        (p-chord-intervals (gil::add-int-var-const-array *sp* (list 0 3 4 7)))
+        (h-triad (gil::add-int-var-const-array *sp* (list 0 3 4 7)))
         )
-        (gil::g-member *sp* p-chord-intervals (lastone h-intervals-1))
-        (gil::g-member *sp* p-chord-intervals (lastone h-intervals-2))
+        (gil::g-member *sp* h-triad (lastone h-intervals-1))
+        (gil::g-member *sp* h-triad (lastone h-intervals-2))
     )
 )
 
@@ -1244,6 +1244,13 @@
 ; @motions-arsis: motions perceived from the arsis note
 ; @real-motions: motions perceived by the human ear
 (defun create-real-motions (m-intervals-ta motions motions-arsis real-motions motions-costs motions-arsis-costs real-motions-costs)
+    (print m-intervals-ta)
+    (print motions)
+    (print motions-arsis)
+    (print real-motions)
+    (print motions-costs)
+    (print motions-arsis-costs)
+    (print real-motions-costs)
     (loop
         for tai in m-intervals-ta
         for t-move in motions
