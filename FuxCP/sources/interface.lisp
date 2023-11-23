@@ -794,8 +794,8 @@
 
         (om::om-make-dialog-item
         'om::om-button
-        (om::om-make-point 10 50) ; position (horizontal, vertical)
-        (om::om-make-point 120 20) ; size (horizontal, vertical)
+        (om::om-make-point 55 30) ; position (horizontal, vertical)
+        (om::om-make-point 160 20) ; size (horizontal, vertical)
         "Save Config"
         :di-action #'(lambda (b)
             (if (null (cf-voice (om::object editor))); if the problem is not initialized
@@ -845,8 +845,8 @@
 
         (om::om-make-dialog-item
         'om::om-button
-        (om::om-make-point 135 50) ; position
-        (om::om-make-point 120 20) ; size
+        (om::om-make-point 55 70) ; position
+        (om::om-make-point 160 20) ; size
         "Next Solution"
         :di-action #'(lambda (b)
             (if (typep (current-csp (om::object editor)) 'null); if the problem is not initialized
@@ -874,8 +874,39 @@
 
         (om::om-make-dialog-item
         'om::om-button
-        (om::om-make-point 260 50) ; position (horizontal, vertical)
-        (om::om-make-point 120 20) ; size (horizontal, vertical)
+        (om::om-make-point 215 70) ; position
+        (om::om-make-point 160 20) ; size
+        "Best Solution"
+        :di-action #'(lambda (b)
+            (if (typep (current-csp (om::object editor)) 'null); if the problem is not initialized
+                (error "The problem has not been initialized. Please set the input and press Start.")
+            )
+            (print "Searching for the best solution")
+            ;reset the boolean because we want to continue the search
+            (setparam 'is-stopped nil)
+            ;get the next solution
+            (mp:process-run-function ; start a new thread for the execution of the next method
+                "solver-thread" ; name of the thread, not necessary but useful for debugging
+                nil ; process initialization keywords, not needed here
+                (lambda () ; function to call
+                    (let ((check 1) (result nil))
+                        (loop while check do
+                            (setf result (search-next-fux-cp (current-csp (om::object editor))))
+                            (if result (setf (result-voice (om::object editor)) result) (setf check nil))
+                        )
+                    )
+                    ;(om::openeditorframe ; open a voice window displaying the solution
+                    ;    (om::omNG-make-new-instance (result-voice (om::object editor)) "Current solution")
+                    ;)
+                )
+            )
+        )
+        )
+
+        (om::om-make-dialog-item
+        'om::om-button
+        (om::om-make-point 215 30) ; position (horizontal, vertical)
+        (om::om-make-point 160 20) ; size (horizontal, vertical)
         "Stop"
         :di-action #'(lambda (b)
             (setparam 'is-stopped t)

@@ -309,7 +309,7 @@
                                 'm2-eq-zero-cost
                                 'penult-thesis-cost
                                 'no-syncope-cost
-                                'off-key-cost
+                                
                                 'fifth-cost
                                 'octave-cost               
                                 'h-triad-3rd-species-cost
@@ -317,6 +317,7 @@
                                 'm-degrees-cost
                                 'motions-cost
                                 'variety-cost
+                                'off-key-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -495,9 +496,7 @@
 
                 (setf (nth i sol-voices) (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo))
             )
-            (make-instance 'poly 
-                :voices sol-voices
-            )
+            (make-instance 'poly :voices sol-voices)
         )
     )
 )
