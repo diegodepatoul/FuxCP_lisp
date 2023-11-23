@@ -212,9 +212,11 @@
     )
 )
 
-(defun set-cost-factors (species-list)
-    (case (length species-list)
-        (1 (case (first species-list)
+; Initializes the cost factors, accordingly to the species and the number of voices
+; @completely new or reworked
+(defun set-cost-factors ()
+    (case *N-VOICES
+        (1 (case (first *species-list)
             (1 (setq *N-COST-FACTORS 5))
             (2 (setq *N-COST-FACTORS 6))
             (3 (setq *N-COST-FACTORS 7))
@@ -223,14 +225,14 @@
         ))
         (2 (progn
             (setq *N-COST-FACTORS 5)
-            (dolist (species species-list)
+            (dolist (species *species-list)
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
                     (2 (incf *N-COST-FACTORS 6))
                     (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
                     (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
                     (5 (incf *N-COST-FACTORS 8))
-                (otherwise (error "Unexpected value in the species list (~A), when calling fux-cp-3v." species))
+                (otherwise (error "Unexpected value in the species list (~A), when setting the costs." species))
                 )
             )
         ))
@@ -239,7 +241,6 @@
 )
 
 ; add general costs for most of the species
-;; TODO I MADE &optional total-cp-len MANDATORY, IF BUGGY MIGHT BE BECAUSE OF THAT
 (defun set-general-costs-cst (counterpoint cp-len &optional (is-cst-arr1 nil) (is-cst-arr2 nil))
     (let (
         (m-len (- cp-len 1))
@@ -399,6 +400,8 @@
     )
 )
 
+; THIS FUNCTION IS WIP AND DOESN'T WORK YET
+; @completely new or reworked
 (defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
     (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len (first counterpoint) 0 1))
@@ -639,6 +642,8 @@
     )
 )
 
+; THIS FUNCTION IS WIP AND DOESN'T WORK YET
+; @completely new or reworked
 (defun add-h-cons-cst-2v (penult-dom-var counterpoint-1 counterpoint-2 h-intervals-1-2)
     (let (
         (harmonic-array-to-constrain-1 nil)
@@ -849,6 +854,7 @@
 ; add the constraint that the three voices go in different directions
 ; i.e. that there are no two direct motions
 ; i.e. that either motions1 is direct or motions 2 is direct, but not both
+; @completely new or reworked
 (defun add-no-together-move-cst (motions1 motions2)
     (loop 
         for m1 in motions1
@@ -874,12 +880,15 @@
     (gil::g-member *sp* P_CONS_VAR (lastone h-intervals))
 )
 
-
+; add the constraint that there cannot be a minor third in the last chord
+; @completely new or reworked
 (defun add-no-minor-third-in-last-chord-cst (h-interval-1 h-interval-2)
     (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 3)
     (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 3)
 )
 
+; add the constraint that there cannot be a tenth in the last chord
+; @completely new or reworked
 (defun add-no-tenth-in-last-chord-cst (h-intervals-1 h-intervals-2 h-intervals-brut-1 h-intervals-brut-2)
     (let (
         (h1 (lastone h-intervals-1))
@@ -913,7 +922,8 @@
     )
 )
 
-; add the constraint that the chord shall be (1-3-5) or (1-5-8) or (1-3-8)
+; add the constraint that the chord shall be a harmonic triad ((1-3-5) or (1-5-8) or (1-3-8))
+; @completely new or reworked
 (defun add-last-chord-h-triad-cst (h-intervals-1 h-intervals-2)
     (let (
         (h-triad (gil::add-int-var-const-array *sp* (list 0 3 4 7)))
@@ -923,6 +933,9 @@
     )
 )
 
+; computes the harmonic triad cost
+; for each chord not being a harmonic triad, cost += 1
+; @completely new or reworked
 (defun compute-h-triad-cost (h-intervals-1 h-intervals-2 costs)
     (loop
     for h1 in h-intervals-1
@@ -1004,6 +1017,8 @@
     )
 )
 
+; WIP, THIS FUNCTION IS NOT USING YET
+; @completely new or reworked
 (defun add-penult-cons-cst-3v (h-intervals-to-bass)
     (dolist (h h-intervals-to-bass)
         (gil::g-rel *sp* (penult h) gil::IRT_EQ NINE)
@@ -1244,13 +1259,6 @@
 ; @motions-arsis: motions perceived from the arsis note
 ; @real-motions: motions perceived by the human ear
 (defun create-real-motions (m-intervals-ta motions motions-arsis real-motions motions-costs motions-arsis-costs real-motions-costs)
-    (print m-intervals-ta)
-    (print motions)
-    (print motions-arsis)
-    (print real-motions)
-    (print motions-costs)
-    (print motions-arsis-costs)
-    (print real-motions-costs)
     (loop
         for tai in m-intervals-ta
         for t-move in motions
@@ -1281,6 +1289,7 @@
 )
 
 ; add the costs such that there is perfect consonance are costly to reach by direct motion
+; @completely new or reworked
 (defun compute-no-direct-move-to-p-cons-costs-cst (motions cost-array is-p-cons-arr &optional (r t))
     (loop
         for m in motions
@@ -1301,6 +1310,8 @@
     )
 )
 
+; add the constraint that there cannot be two following sixths
+; @completely new or reworked
 (defun add-no-ascending-sixths-cst (h-intervals cp)
     (dotimes (i *cf-last-index)
         (let (
@@ -1326,6 +1337,8 @@
     )
 )
 
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
 (defun add-no-successive-p-cons-cst (is-p-cons-array)
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
@@ -1333,6 +1346,8 @@
     )
 )
 
+; computes the variety cost, i.e. the number of times a note repeats itself in a frame of 7 measures
+; @completely new or reworked
 (defun compute-variety-cost (cp variety-cost)
     (let (
         (k 0)
@@ -1788,8 +1803,7 @@
             (sort extended-cp-domain #'>)
             (sort extended-cp-domain #'<)
         ))
-    )
-
+        )
         (if (eq type 'lower)
             ; then we search the first note in the sorted scale that is lower than the current note
             (progn
@@ -1873,7 +1887,6 @@
             (print (format nil "cn: ~a, cn+1: ~a, cn+2: ~a, cn+3: ~a" cn cn+1 cn+2 cn+3))
             )
         )
-        
 
         (cond
             ; 1 if it is the last note [1 -1 ...]
@@ -2007,7 +2020,9 @@
 ; get the basic rythmic pattern and the corresponding notes the given species
 ; - species-list: the species [1 2 3 4]
 ; - len: the length of the cantus-firmus
-; - cp: the whole solution array
+; - sol-pitches: the whole solution array
+; - counterpoints: the counterpoints we are working with (only useful for the 5th species as it needs the extended-cp-domain)
+; - sol: the solutino space (only useful for the 5th species)
 ; return format = '('(rythmics-1 pitches-1) '(rythmics-2 pitches-2) ... '(rythmics-n pitches-n))
 ; examples:
 ; ((1) 5) -> (((1 1 1 1 1) (60 62 64 65 60)))
@@ -2015,6 +2030,7 @@
 ; ((2) 5) -> ((1/2 1/2 1/2 1/2 1/2 1/2 1/2 1/2 1 (pitches))
 ; ((3) 5) -> ((1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1 (pitches))
 ; ((4) 5) -> ~((-1/2 1 1 1 1/2 1/2 1 (pitches)) depending on the counterpoint
+; @completely new or reworked
 (defun get-basic-rythmics (species-list len sol-pitches counterpoints sol)
     (setq len-1 (- len 1))
     (setq len-2 (- len 2))
@@ -2237,15 +2253,14 @@
 )
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
+; additionnally, keeps track of the index it was added to
+; @completely new or reworked
 (defun add-cost-to-factors (factor-arr cost-name &optional (g-sum 1))
     (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined (~A). Please increase the value of *N-COST-FACTORS." *N-COST-FACTORS)
     (if g-sum 
         (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
         (setf (nth *n-cost-added *cost-factors) factor-arr)
     )
-    
     (setf (gethash cost-name *cost-indexes) (append (gethash cost-name *cost-indexes) (list *n-cost-added)))
-    (print "HERE COMES A COST NAME")
-    (print cost-name)
     (incf *n-cost-added)
 )

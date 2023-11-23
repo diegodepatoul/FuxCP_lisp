@@ -205,7 +205,6 @@
 
     (case species 
         (3 (append (fux-search-engine (solution-array counterpoint) '(3)) (list (list 3))))
-        (8 (solution-array counterpoint))
         (otherwise nil)
     )
 )

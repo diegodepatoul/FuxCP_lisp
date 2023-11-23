@@ -10,7 +10,7 @@
 ;; Note: fux-cp-2nd execute the first species algorithm without some constraints.
 ;; In this function, all the variable names without the arsis-suffix refers to thesis notes AKA the first species notes.
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
-(defun fux-cp-2nd (counterpoint &optional (species 2) (all-species nil))
+(defun fux-cp-2nd (counterpoint &optional (species 2))
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## SECOND SPECIES ##########")
 
@@ -144,21 +144,21 @@
     (print "No unisson between two consecutive notes...")
     (case species
         (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
+        ; ========= 2 counterpoints specific
         (7 (progn
-            ; in 7th species unison can occur between the 2nd-to-last and 1st-to-last bar
-            (if (member 3 all-species) (progn
-                ; when used with third species, the penultimate bar can be a whole note
-                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
-                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 2) (rest (last (solution-array counterpoint) 2)))
-                (gil::g-rel *sp* (first (last (solution-array counterpoint) 4)) gil::IRT_NQ (first (last (solution-array counterpoint) 2)))
-                ; testing
+            ; when there is more than one counterpoint, unison can occur between the fourth-to-last and third-to-last note
+            (if (member 3 *species-list) (progn
+                ; when used in combination with a third species counterpoint, unison can also occurr between the third-to-last and the second-to-last
+                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
+                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 2) (rest (last (solution-array counterpoint) 2))) ; no unison in the two last ones
+                (gil::g-rel *sp* (first (last (solution-array counterpoint) 4)) gil::IRT_NQ (first (last (solution-array counterpoint) 2))) ; but the three of them cannot be a unison
             ) (progn 
-                ; else
-                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3)))
-                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3)))
+                ; when used in combination with another counterpoint (that is not of third species)
+                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
+                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3))) ; no unison in the three last ones
             ))
-            (gil::g-rel *sp* (first (last (solution-array counterpoint) 3)) gil::IRT_EQ (first (last (solution-array counterpoint) 2)))
         ))
+        ; ========= 
     )
 
 

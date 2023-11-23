@@ -131,6 +131,7 @@
     )
 )
 
+; @completely new or reworked
 (defclass counterpoint-class () (
     ; species
     (species :accessor species :initarg :species :initform nil)
@@ -212,6 +213,7 @@
     (is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
 ))
 
+; @completely new or reworked
 (defun init-counterpoint (voice-type species)
     ; Lower bound and upper bound related to the cantus firmus pitch
     (let (
@@ -245,16 +247,17 @@
 )
 
 ;; DISPATCHER FUNCTION
+; @completely new or reworked
 (defun fux-cp (species-list)
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
-    (defparameter *sp* (gil::new-space))
 
     ; re/set global variables
     (define-global-constants)
+    (setq *species-list species-list)
     (setq *cost-indexes (make-hash-table))                      
-    (setq *cost-factors (set-cost-factors species-list))
+    (setq *cost-factors (set-cost-factors))
 
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
@@ -297,6 +300,7 @@
     )
 )
 
+; @completely new or reworked
 (defun reorder-costs (species-list)
     (print "########## REORDERING ##########")
     (setf species-tag (reduce #'(lambda (x y) (+ (* x 10) y)) species-list))
@@ -342,6 +346,7 @@
     )
 )
 
+; @completely new or reworked
 (defun fux-search-engine (the-cp &optional (species '(1)) (voice-type 0))
     (let (se tstop sopts)
         (print (list "Starting fux-search-engine with species = " species))

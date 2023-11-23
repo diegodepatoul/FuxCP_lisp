@@ -18,13 +18,17 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
     
-    (if (>= species 6) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+    ; ======= 2 counterpoints specific
+    (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
         (tonal (mod (car (last *cf)) 12))
         )
         (case tonal ((2 4 9 10) 
+            ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
             (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
         )))
     )
+    ; =======
+
     (if (is-borrow-allowed) (case species ((1 6)
         ; then add to the penultimate note more possibilities
         (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
@@ -37,8 +41,9 @@
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint)) *cf (first (h-intervals counterpoint)))
 
-    (if (>= species 6) (progn
-        (if (eq species 4) (progn ; todo debug here
+    ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
+    (if (eq *N-VOICES 2) (progn
+        (if (eq species 9) (progn 
                 (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
                 (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
                 (create-intervals (rest *cf) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
@@ -49,6 +54,7 @@
             ) 
         )
     ))
+    ; =======
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
@@ -103,7 +109,7 @@
         ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
         ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
         ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
-        ;(otherwise (error "Species not supported"))
+        (otherwise (error "Species not supported"))
     )
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
@@ -140,7 +146,7 @@
             (print "No more than minor sixth...")
             (add-no-m-jump-cst (first (m-intervals counterpoint)))
 
-            ; no *chromatic motion between three consecutive notes
+            ; no chromatic motion between three consecutive notes
             (print "No chromatic motion...")
             (add-no-chromatic-m-cst (first (m-intervals-brut counterpoint)) (m2-intervals-brut counterpoint))
 
@@ -158,21 +164,21 @@
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
             (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-bass-arr counterpoint)))
-
-            (if (>= species 6)
-                (progn
-                    (print "No successive perfect consonances (counterpoint to cantus firmus)")
-                    (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
-
-                    (print "Ascending sixths sound harsh")
-                    (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
-                )
-            )
         )
     ))
-    
- 
 
+    ; ========= 2 counterpoints specific
+    (if (eq *N-VOICES 2)
+        (progn
+            (print "No successive perfect consonances (counterpoint to cantus firmus)")
+            (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
+
+            (print "Ascending sixths sound harsh")
+            (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
+        )
+    )
+    ; =========
+    
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
@@ -183,6 +189,7 @@
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
             (add-p-cons-cost-cst (h-intervals counterpoint))
+
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
             (set-general-costs-cst counterpoint *cf-len)
@@ -192,13 +199,12 @@
             (add-cost-to-factors (first (motions-cost counterpoint)) 'motions-cost)    
         )
     ))
-    (print "##### EXITTING FIRST SPECIES ######")
+
+    (setf (solution-array counterpoint) (first (cp counterpoint)))
+    (setf (solution-len counterpoint) *cf-len)
+
     ; RETURN
     (case species 
-        (1 (append (fux-search-engine (first (cp counterpoint))) (list (list 1))))
-        (6 (progn
-            (setf (solution-array counterpoint) (first (cp counterpoint)))
-            (setf (solution-len counterpoint) *cf-len)
-        ))
+        (1 (append (fux-search-engine (solution-array counterpoint)) (list (list 1))))
     )
 )
