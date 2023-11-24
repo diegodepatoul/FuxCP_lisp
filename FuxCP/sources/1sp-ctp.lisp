@@ -18,6 +18,7 @@
     ; add the counterpoint array to the space with the domain *cp-domain
     (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
     
+    ; @completely new or reworked
     ; ======= 2 counterpoints specific
     (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
         (tonal (mod (car (last *cf)) 12))
@@ -41,6 +42,7 @@
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint)) *cf (first (h-intervals counterpoint)))
 
+    ; @completely new or reworked
     ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
     (if (eq *N-VOICES 2) (progn
         (if (eq species 9) (progn 
@@ -109,7 +111,7 @@
         ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
         ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
         ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
-        (otherwise (error "Species not supported"))
+        ;(otherwise (error "Species not supported"))
     )
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
@@ -167,6 +169,7 @@
         )
     ))
 
+    ; @completely new or reworked
     ; ========= 2 counterpoints specific
     (if (eq *N-VOICES 2)
         (progn

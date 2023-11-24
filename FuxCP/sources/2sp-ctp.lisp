@@ -144,6 +144,7 @@
     (print "No unisson between two consecutive notes...")
     (case species
         (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
+        ; @completely new or reworked
         ; ========= 2 counterpoints specific
         (7 (progn
             ; when there is more than one counterpoint, unison can occur between the fourth-to-last and third-to-last note

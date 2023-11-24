@@ -352,9 +352,19 @@
         (print (list "Starting fux-search-engine with species = " species))
         ;; Reorder the costs
         (reorder-costs species)
-        
+
+        (setf linear-combination nil)
         ;; COST
-        (gil::g-cost *sp* *cost-factors) ; set the cost function
+        (if linear-combination 
+            ; do a linear combination
+            (progn
+                (setq cost (gil::add-int-var-array *sp* 1 0 300))
+                (gil::g-sum *sp* (first cost) *cost-factors)
+                (gil::g-cost *sp* cost) ; set the cost function
+            )
+            ; else lexicographical order
+            (gil::g-cost *sp* *cost-factors) ; set the cost function
+        )
 
         ;; SPECIFY SOLUTION VARIABLES
         (print "Specifying solution variables...")
@@ -442,7 +452,7 @@
             (if (null sol)
                 ; then check if there are solutions left and if the user wishes to continue searching
                 (stopped-or-ended (gil::stopped se) (getparam 'is-stopped))
-                ; else we have found a solution so break the loop
+                ; else we have found a solution so break fthe loop
                 (setf check nil)
             )
         ))
@@ -450,6 +460,9 @@
         ; print the solution from GiL
         (print "Solution: ")
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
+        (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints))))))
+        (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2))))
+        (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
         (handler-case
@@ -475,28 +488,6 @@
                 (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
                 (setq rythmic-om (first rythmic+pitches))
                 (setq pitches-om (second rythmic+pitches))
-                #|
-                (if (eq (nth i species-list) 5) (progn
-                        (setq check (checksum-sol pitches-om rythmic-om))
-                        ; (print (list "check" check))
-                        (if (not (null *prev-sol-check))
-                            ; then compare the pitches of the previous solution with the current one
-                            ; if they are the same launch a new search
-                            (if (member check *prev-sol-check)
-                                (progn
-                                    (search-next-fux-cp l)
-                                )
-                                (progn
-                                    (print *prev-sol-check)
-                                    (setq *prev-sol-check (append *prev-sol-check (list check)))
-                                )
-                            )
-                            ; else register the pitches of the current solution
-                            (progn
-                                (setq *prev-sol-check (list check))
-                            )
-                        )
-                )) |#
             )
 
                 (setf (nth i sol-voices) (make-instance 'voice :chords (to-midicent pitches-om) :tree (om::mktree rythmic-om '(4 4)) :tempo *cf-tempo))

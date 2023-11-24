@@ -40,11 +40,23 @@
     (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
     (print "no successive perfect consonances (cp1 to cp2)")
-    (setf h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint-1)) (first (cp counterpoint-2)) h-intervals-1-2)
+    (setq h-intervals-1-2 (list nil nil nil nil))
+    (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
+    (create-h-intervals (first (cp counterpoint-1)) (first (cp counterpoint-2)) (first h-intervals-1-2))
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr h-intervals-1-2 are-cp1-cp2-cons-arr)
+    (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
+
+
+    ; THIS CLASHES WITH THE PENULT RULES WHEN USED ACROSS TWO DIFFERENT SPECIES
+    ;(add-h-cons-cst *cf-len *cf-last-index (first h-intervals-1-2))
+    ;(dotimes (i *cf-len)
+        ;(if (eq i *cf-last-index)
+            ;(gil::g-member *sp* PENULT_THESIS_VAR (nth i (first h-intervals-1-2)))
+    ;         (gil::g-member *sp* ALL_CONS_VAR (nth i (first h-intervals-1-2)))
+        ;)
+    ;)
+
 
     #| TO BE CORRECTED 
     (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
@@ -71,7 +83,7 @@
     |#
 
     (print "Last chord cannot be minor")
-    (add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
+    ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     (if (or (member 4 species-list) (member 5 species-list))
         nil ; debug
         (progn 
@@ -156,6 +168,10 @@
             (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
     )
+    
+    
+    ; TO DELETE LINE
+    (setq *h-intervals-1-2 h-intervals-1-2)
     
 
     ;================================================================================;
