@@ -13,10 +13,6 @@
     (setf counterpoint-2 (second counterpoints))
     (print (list "species list = " species-list))
 
-    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
-    ; 0 for being the bass, 1 for being above
-    ;(create-is-voice-bass-arr counterpoint-1 counterpoint-2 cf)
-
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
             (1 (fux-cp-1st (nth i counterpoints) 6))
@@ -56,10 +52,13 @@
     ;         (gil::g-member *sp* ALL_CONS_VAR (nth i (first h-intervals-1-2)))
         ;)
     ;)
+    
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
+    (create-is-voice-bass-arr counterpoint-1 counterpoint-2 *cf)
 
-
-    #| TO BE CORRECTED 
     (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
+    #| TO BE CORRECTED     
     (case *nth-voice-is-bass
         (-1 (progn
             (add-penult-cons-cst-3v (list 

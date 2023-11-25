@@ -108,7 +108,7 @@
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
     (case species
-        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
+        ((1 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
         ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
         ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
@@ -135,7 +135,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ((1 6) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
+        ((1 #|6|#) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================

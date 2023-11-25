@@ -210,7 +210,8 @@
 
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
-    (is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
+    ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
+    (is-bass-arr :accessor is-bass-arr :initarg :is-bass-arr :initform nil)
 ))
 
 ; @completely new or reworked
@@ -463,6 +464,10 @@
         (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints))))))
         (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2))))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
+        (print (list "is-cf-bass = " (gil::g-values sol *is-cf-bass-print)))
+        (print (list "temp-1 = " (gil::g-values sol *temp-1)))
+        ;(print (list "temp-2 = " (gil::g-values sol *temp-2)))
+        ;(print (list "temp-1-2 = " (gil::g-values sol *temp-1-2)))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
         (handler-case

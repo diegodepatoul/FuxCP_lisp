@@ -400,11 +400,16 @@
     )
 )
 
-; THIS FUNCTION IS WIP AND DOESN'T WORK YET
 ; @completely new or reworked
 (defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
     (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len (first counterpoint) 0 1))
+    (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setq *is-cf-bass (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setq *is-cf-bass-print (gil::add-int-var-array *sp* *cf-len 0 1))
+
+    (print (length cantus-firmus))
+    (print (length (first (cp counterpoint-1))))
+    (print (length (first (cp counterpoint-2))))
     (loop
         for i from 0 below *cf-len
         for cp-1 in (first (cp counterpoint-1))
@@ -413,29 +418,42 @@
         do (let (
             (cp-1<cp-2 (gil::add-bool-var *sp* 0 1))
             (cp-1<cf (gil::add-bool-var *sp* 0 1))
+
             (cp-2<cp-1 (gil::add-bool-var *sp* 0 1))
-            (cf<cp-1 (gil::add-bool-var *sp* 0 1))
-            (cf<cp-2 (gil::add-bool-var *sp* 0 1))
             (cp-2<cf (gil::add-bool-var *sp* 0 1))
 
+            (cf<cp-1 (gil::add-bool-var *sp* 0 1))
+            (cf<cp-2 (gil::add-bool-var *sp* 0 1))
+
             (cf-is-bass (gil::add-bool-var *sp* 0 1))
-            (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
+            (cf-not-bass (gil::add-bool-var *sp* 0 1))
             (cp-1-is-bass (gil::add-bool-var *sp* 0 1))
-            (cp-1-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp-2-is-bass (gil::add-bool-var *sp* 0 1))
-            (cp-2-is-not-bass (gil::add-bool-var *sp* 0 1))
             )
-            (gil::g-rel-reify *sp* cp-1 gil::IRT_GT cp-2 cp-1<cp-2)
-            (gil::g-rel-reify *sp* cp-1 gil::IRT_GT cf cp-1<cf)
-            (gil::g-rel-reify *sp* cp-2 gil::IRT_GT cf cp-2<cf)
+            (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cp-2 cp-1<cp-2)
+            (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cf cp-1<cf)
+            (gil::g-rel-reify *sp* cp-2 gil::IRT_LE cf cp-2<cf)
+            (gil::g-rel-reify *sp* cp-2 gil::IRT_LE cp-1 cp-2<cp-1)
+            (gil::g-rel-reify *sp* cp-1 gil::IRT_GQ cf cf<cp-1)
+            (gil::g-rel-reify *sp* cp-2 gil::IRT_GQ cf cf<cp-2)
         
             (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf (nth i (is-bass-arr counterpoint-1)))
+            (print 7)
             (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf (nth i (is-bass-arr counterpoint-2)))
-            ;(gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
+            (print 8)
+            (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 (nth i *is-cf-bass))
+
+            
+            ;begin debug 
+            (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
+            (gil::g-op *sp* cf-is-bass gil::BOT_XOR cf-not-bass 1)
+            (gil::g-rel-reify *sp* (nth i *is-cf-bass-print) gil::IRT_EQ 1 cf-is-bass)
+            (gil::g-rel-reify *sp* (nth i *is-cf-bass-print) gil::IRT_EQ 0 cf-not-bass)
 
 
             ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 1 cp-1-is-bass)
-            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 0 cp-1-is-not-bass)
+            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 0 cp-1-is-not-bass)1 
+            
 
         )
     )
@@ -645,55 +663,75 @@
 ; THIS FUNCTION IS WIP AND DOESN'T WORK YET
 ; @completely new or reworked
 (defun add-h-cons-cst-2v (penult-dom-var counterpoint-1 counterpoint-2 h-intervals-1-2)
-    (let (
-        (harmonic-array-to-constrain-1 nil)
-        (harmonic-array-to-constrain-2 nil)
-        )
-        (if (eq (is-voice-bass counterpoint-1) 1)
-            (progn
-                (print "cp1 is bass")
-                (setf harmonic-array-to-constrain-1 h-intervals-1-2)
-                (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-1)))
+    ; get an IntVarArr as if it was constrained
+    ; get another one for cp2
+    ; ite IF 1 is bass THEN h1=temp1 ELSE h1=h1
+    (setq *temp-1 (gil::add-int-var-array *sp* *cf-len 0 11))
+    (setq *temp-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+    (setq *temp-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+    (loop
+        for h-1 in (first (h-intervals counterpoint-1))
+        for h-2 in (first (h-intervals counterpoint-2))
+        for h-1-2 in (first h-intervals-1-2)
+
+        for is-bass-1 in (is-bass-arr counterpoint-1)
+        for is-bass-2 in (is-bass-arr counterpoint-2)
+        for is-cf-bass in *is-cf-bass
+        for i from 0 below *cf-len
+        do (let
+            (
+            (temp-1 (gil::add-int-var *sp* 0 11))
+            (temp-2 (gil::add-int-var *sp* 0 11))
+            (temp-1-2 (gil::add-int-var *sp* 0 11))
             )
-            (if (eq (is-voice-bass counterpoint-2) 1)
-                ; cp2 is the bass
+            (if (eq i *cf-penult-index) ; if it is the penultimate note
+                ; then add major sixth + minor third by default
                 (progn 
-                    (print "cp2 is bass")
-                    (setf harmonic-array-to-constrain-1 h-intervals-1-2)
-                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))   
+                    (add-penult-dom-cst temp-1 penult-dom-var)
+                    (add-penult-dom-cst temp-2 penult-dom-var)
+                    (add-penult-dom-cst temp-1-2 penult-dom-var)
                 )
-                ; cf is the bass
-                (progn
-                    (print "cf is bass")
-                    (setf harmonic-array-to-constrain-1 (first (h-intervals counterpoint-1)))
-                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))
-                )
-            )
-        )
-        (loop for i from 0 below *cf-len do
-            (let (
-                (h1 (nth i harmonic-array-to-constrain-1))
-                (h2 (nth i harmonic-array-to-constrain-2))
-                )
-                (if (eq i *cf-penult-index) ; if it is the penultimate note
-                    ; then add major sixth + minor third by default
-                    (progn 
-                        ;(add-penult-dom-cst h1 penult-dom-var)
-                        ;(add-penult-dom-cst h2 penult-dom-var)
-                    )
-                    ; else add all consonances
-                    (progn
-                        (if (not (null h1))
-                            (gil::g-member *sp* ALL_CONS_VAR h1)
-                            nil
-                        )
-                        (if (not (null h2))
-                            (gil::g-member *sp* ALL_CONS_VAR h2)
-                            nil
-                        )
-                    )
+                ; else
+                (progn 
+                    (gil::g-member *sp* ALL_CONS_VAR temp-1)
+                    (gil::g-member *sp* ALL_CONS_VAR temp-2)
+                    (gil::g-member *sp* ALL_CONS_VAR temp-1-2)
                 )
             )
+            
+            (print (list "is-bass-1" is-bass-1))
+            (print (list "is-bass-2" is-bass-2))
+            (print (list "is-cf-bass" is-cf-bass))
+
+            (print (list "h-1" h-1))
+            (print (list "h-2" h-2))
+            (print (list "h-1-2" h-1-2))
+
+            (gil::g-ite *sp* is-bass-1 temp-1-2 h-1-2 h-1-2)
+            (gil::g-ite *sp* is-bass-1 temp-1 h-1 h-1)
+
+            (gil::g-ite *sp* is-bass-2 temp-1-2 h-1-2 h-1-2)
+            (gil::g-ite *sp* is-bass-2 temp-2 h-2 h-2)
+
+        #|
+            ; debug begin
+            (setq true (gil::add-bool-var *sp* 0 1))
+            (gil::g-op *sp* true gil::BOT_AND true 1)
+            (setq false (gil::add-bool-var *sp* 0 1))
+            (gil::g-op *sp* false gil::BOT_AND false 0)     
+
+            (gil::g-op *sp* is-cf-bass gil::BOT_AND true 0) ; forcing is-cf-bass to equal 0 ; should lead to no solution
+            ; debug end
+ |#
+            (gil::g-ite *sp* is-cf-bass temp-2 h-2 h-2)
+            (gil::g-ite *sp* is-cf-bass temp-1 h-1 h-1)   
+            ;(gil::g-ite *sp* is-cf-bass h-1 temp-1 h-1)   
+
+            ;(gil::g-rel *sp* h-1 gil::IRT_EQ temp-1)
+
+            (setf (nth i *temp-1) temp-1)
+            (setf (nth i *temp-2) temp-2)
+            (setf (nth i *temp-1-2) temp-1-2)
         )
     )
 )
