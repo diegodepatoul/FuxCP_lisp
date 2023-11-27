@@ -134,6 +134,7 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
+    (if (eq species 1) (create-is-voice-bass-arr *cf (list counterpoint)))
     (case species
         ((1 #|6|#) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
     )

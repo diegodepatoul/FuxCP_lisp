@@ -8,6 +8,7 @@
 ;; Three voices counterpoint handler #
 ;;===================================#
 (defun fux-cp-3v (species-list counterpoints)
+    ;(create-is-voice-bass-arr *cf counterpoints)
     (print "########## SIXTH SPECIES ##########")
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
@@ -23,6 +24,7 @@
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     ))
+    (print *cf)
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
@@ -55,7 +57,7 @@
     
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
     ; 0 for being the bass, 1 for being above
-    (create-is-voice-bass-arr counterpoint-1 counterpoint-2 *cf)
+    (create-is-voice-bass-arr *cf counterpoints)
 
     (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
     #| TO BE CORRECTED     

@@ -415,11 +415,49 @@
     )
 )
 
+; TODO delete function
+(setq debugging-var 0)
+(defun bug ()
+    (print debugging-var)
+    (incf debugging-var)
+)
 
 ; @completely new or reworked
-(defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
+(defun create-is-voice-bass-arr (cantus-firmus counterpoints)
+    (print "STARTING CREATE IS VOICE BASS ARR")
+    (setf counterpoint-1 (first counterpoints))
     (case *N-VOICES
+        (1 (progn
+            (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+            (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
+            (setf (first *bass-notes) (gil::add-int-var-array *sp* *cf-len 1 120))
+            (loop
+                for i from 0 below *cf-len
+                for cp-1 in (first (cp counterpoint-1))
+                for cf in cantus-firmus
+                for cp-1-is-bass in (first (is-cp-bass counterpoint-1))        
+                for cf-is-bass in (first *is-cf-bass)    
+                for bass in (first *bass-notes)    
+                do 
+                    (print i)
+                    (print cp-1)
+                    (print cf)
+                    (print cp-1-is-bass)
+                    (print cf-is-bass)
+                    (print bass)
+                    (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cf cp-1-is-bass)
+                    (gil::g-rel-reify *sp* cp-1 gil::IRT_GQ cf cf-is-bass)
+                
+                    (gil::g-ite *sp* cf-is-bass (nth i CANTUS_FIRMUS) bass bass)
+                    (gil::g-ite *sp* cp-1-is-bass cp-1 bass bass)  
+            ))
+            #|
+            (setq *is-cf-bass-print (bool-var-arr-printable (first *is-cf-bass)))
+            (setq *is-cp1-bass-print (bool-var-arr-printable (first (is-cp-bass counterpoint-1))))
+             |#
+        )
         (2 (progn
+            (setf counterpoint-2 (second counterpoints))
             (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first (is-cp-bass counterpoint-2)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
@@ -447,15 +485,29 @@
                     (cf<cp-1 (gil::add-bool-var *sp* 0 1))
                     (cf<cp-2 (gil::add-bool-var *sp* 0 1))
                     )
+                    (print i)
+                    (bug)
+                    (print cp-1)
+                    (print cp-2)
+                    (print cp-1<cp-2)
+                    (print (bool-var-arr-printable (list cp-1<cp-2)))
                     (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cp-2 cp-1<cp-2)
+                    (bug)
                     (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cf cp-1<cf)
+                    (bug)
                     (gil::g-rel-reify *sp* cp-2 gil::IRT_LE cf cp-2<cf)
+                    (bug)
                     (gil::g-rel-reify *sp* cp-2 gil::IRT_LQ cp-1 cp-2<cp-1)
+                    (bug)
                     (gil::g-rel-reify *sp* cp-1 gil::IRT_GQ cf cf<cp-1)
+                    (bug)
                     (gil::g-rel-reify *sp* cp-2 gil::IRT_GQ cf cf<cp-2)
+                    (bug)
                 
                     (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf cp-1-is-bass)
+                    (bug)
                     (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf cp-2-is-bass)
+                    (bug)
                     (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
                     (print bass)
                     (gil::g-ite *sp* cf-is-bass (nth i CANTUS_FIRMUS) bass bass)

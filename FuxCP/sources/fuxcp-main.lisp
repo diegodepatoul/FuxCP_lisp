@@ -282,6 +282,7 @@
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
     (setq *is-cf-bass (list nil nil nil nil))
     (setq *bass-notes (list nil nil nil nil))
+    ;(create-is-voice-bass-arr counterpoint-1 counterpoint-2 *cf)
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -362,7 +363,7 @@
         ;; Reorder the costs
         (reorder-costs species)
 
-        (setf linear-combination nil)
+        (setf linear-combination 1)
         ;; COST
         (if linear-combination 
             ; do a linear combination
@@ -469,15 +470,16 @@
         ; print the solution from GiL
         (print "Solution: ")
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
-        (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints))))))
-        (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2))))
+        (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
+        (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
-        (print (list "bass-notes = " (gil::g-values sol *bass-notes)))
         (handler-case (print (list "is-cp1-bass = " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
         (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
-        (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
-        
+        (handler-case (print (list "bass-notes = " (gil::g-values sol (first *bass-notes)))) (error (c) (print "error with bass-notes")))
+        (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
+        (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
+        (print (list "cf         = " *cf))
         (handler-case
             (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
