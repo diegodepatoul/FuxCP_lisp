@@ -211,7 +211,7 @@
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
     ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
-    (is-bass-arr :accessor is-bass-arr :initarg :is-bass-arr :initform nil)
+    (is-cp-bass :accessor is-cp-bass :initarg :is-cp-bass :initform (list nil nil nil nil))
 ))
 
 ; @completely new or reworked
@@ -274,6 +274,7 @@
     (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
     |#
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
+    (setq *is-cf-bass (list nil nil nil nil))
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn

@@ -418,9 +418,9 @@
 
 ; @completely new or reworked
 (defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
-    (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setq *is-cf-bass (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setf (first (is-cp-bass counterpoint-2)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
 
     (print (length cantus-firmus))
     (print (length (first (cp counterpoint-1))))
@@ -430,6 +430,9 @@
         for cp-1 in (first (cp counterpoint-1))
         for cp-2 in (first (cp counterpoint-2))
         for cf in cantus-firmus
+        for cp1-is-bass in (first (is-cp-bass counterpoint-1))        
+        for cp2-is-bass in (first (is-cp-bass counterpoint-2))        
+        for cf-is-bass in (first *is-cf-bass)        
         do (let (
             (cp-1<cp-2 (gil::add-bool-var *sp* 0 1))
             (cp-1<cf (gil::add-bool-var *sp* 0 1))
@@ -439,11 +442,6 @@
 
             (cf<cp-1 (gil::add-bool-var *sp* 0 1))
             (cf<cp-2 (gil::add-bool-var *sp* 0 1))
-
-            (cf-is-bass (gil::add-bool-var *sp* 0 1))
-            (cf-not-bass (gil::add-bool-var *sp* 0 1))
-            (cp-1-is-bass (gil::add-bool-var *sp* 0 1))
-            (cp-2-is-bass (gil::add-bool-var *sp* 0 1))
             )
             (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cp-2 cp-1<cp-2)
             (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cf cp-1<cf)
@@ -452,14 +450,14 @@
             (gil::g-rel-reify *sp* cp-1 gil::IRT_GQ cf cf<cp-1)
             (gil::g-rel-reify *sp* cp-2 gil::IRT_GQ cf cf<cp-2)
         
-            (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf (nth i (is-bass-arr counterpoint-1)))
-            (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf (nth i (is-bass-arr counterpoint-2)))
-            (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 (nth i *is-cf-bass))
+            (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf cp1-is-bass)
+            (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf cp2-is-bass)
+            (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
         )
     )
-    (setq *is-cf-bass-print (bool-var-arr-printable *is-cf-bass))
-    (setq *is-cp1-bass-print (bool-var-arr-printable (is-bass-arr counterpoint-1)))
-    (setq *is-cp2-bass-print (bool-var-arr-printable (is-bass-arr counterpoint-2)))
+    (setq *is-cf-bass-print (bool-var-arr-printable (first *is-cf-bass)))
+    (setq *is-cp1-bass-print (bool-var-arr-printable (first (is-cp-bass counterpoint-1))))
+    (setq *is-cp2-bass-print (bool-var-arr-printable (first (is-cp-bass counterpoint-2))))
 )
 
 ; create the boolean array @is-cf-bass-arr indicating if the cantus firmus is the bass or not
@@ -677,9 +675,9 @@
         for h-2 in (first (h-intervals counterpoint-2))
         for h-1-2 in (first h-intervals-1-2)
 
-        for is-bass-1 in (is-bass-arr counterpoint-1)
-        for is-bass-2 in (is-bass-arr counterpoint-2)
-        for is-cf-bass in *is-cf-bass
+        for is-bass-1 in (first (is-cp-bass counterpoint-1))
+        for is-bass-2 in (first (is-cp-bass counterpoint-2))
+        for is-cf-bass in (first *is-cf-bass)
         for i from 0 below *cf-len
         do (let
             (
