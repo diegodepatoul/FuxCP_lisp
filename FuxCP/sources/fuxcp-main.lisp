@@ -55,6 +55,11 @@
     ; 9 in IntVar (major sixth)
     (defparameter NINE (gil::add-int-var-dom *sp* (list 9)))
 
+    (defparameter CANTUS_FIRMUS (gil::add-int-var-array *sp* *cf-len 0 120))
+    (dotimes (i *cf-len)
+        (gil::g-rel *sp* (nth i CANTUS_FIRMUS) gil::IRT_EQ (nth i *cf))
+    )
+
     ; Boolean constants
     ; 0 in BoolVar
     (defparameter FALSE (gil::add-bool-var *sp* 0 0))
@@ -241,8 +246,9 @@
                                                :extended-cp-domain extended-cp-domain
                                                :off-domain off-domain
                                                :voice-type voice-type
-                                               :species species)
-            )
+                                               :species species
+                                               :cp (list (gil::add-int-var-array-dom *sp* *cf-len extended-cp-domain) nil nil nil)
+            ))
         )
     )
 )
@@ -275,6 +281,7 @@
     |#
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
     (setq *is-cf-bass (list nil nil nil nil))
+    (setq *bass-notes (list nil nil nil nil))
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -465,6 +472,7 @@
         (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints))))))
         (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2))))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
+        (print (list "bass-notes = " (gil::g-values sol *bass-notes)))
         (handler-case (print (list "is-cp1-bass = " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
         (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
