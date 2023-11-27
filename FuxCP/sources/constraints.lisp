@@ -400,6 +400,22 @@
     )
 )
 
+; TODO to delete
+(defun bool-var-arr-printable (bool-var-arr)
+    (let (
+        (bool-var-arr-print (gil::add-int-var-array *sp* (length bool-var-arr) 0 1))
+        (not-bool-var-arr (gil::add-bool-var-array *sp* (length bool-var-arr) 0 1))
+        )
+        (dotimes (i (length bool-var-arr)) 
+            (gil::g-op *sp*  (nth i bool-var-arr) gil::BOT_XOR (nth i not-bool-var-arr) 1)
+            (gil::g-rel-reify *sp* (nth i bool-var-arr-print) gil::IRT_EQ 1 (nth i bool-var-arr))
+            (gil::g-rel-reify *sp* (nth i bool-var-arr-print) gil::IRT_EQ 0 (nth i not-bool-var-arr))
+        )
+        bool-var-arr-print
+    )
+)
+
+
 ; @completely new or reworked
 (defun create-is-voice-bass-arr (counterpoint-1 counterpoint-2 cantus-firmus)
     (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
@@ -457,6 +473,9 @@
 
         )
     )
+    (setq *is-cf-bass-print (bool-var-arr-printable *is-cf-bass))
+    (setq *is-cp1-bass-print (bool-var-arr-printable (is-bass-arr counterpoint-1)))
+    (setq *is-cp2-bass-print (bool-var-arr-printable (is-bass-arr counterpoint-2)))
 )
 
 ; create the boolean array @is-cf-bass-arr indicating if the cantus firmus is the bass or not

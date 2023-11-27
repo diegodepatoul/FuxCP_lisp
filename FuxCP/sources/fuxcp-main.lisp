@@ -464,10 +464,9 @@
         (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints))))))
         (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2))))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
-        (print (list "is-cf-bass = " (gil::g-values sol *is-cf-bass-print)))
-        (print (list "temp-1 = " (gil::g-values sol *temp-1)))
-        ;(print (list "temp-2 = " (gil::g-values sol *temp-2)))
-        ;(print (list "temp-1-2 = " (gil::g-values sol *temp-1-2)))
+        (handler-case (print (list "is-cp1-bass = " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
+        (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
+        (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
         (print (list "cp1 = " (gil::g-values sol (first (cp (first counterpoints))))))
         
         (handler-case
