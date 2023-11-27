@@ -421,7 +421,6 @@
     (setf (is-bass-arr counterpoint-1) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (setf (is-bass-arr counterpoint-2) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (setq *is-cf-bass (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setq *is-cf-bass-print (gil::add-int-var-array *sp* *cf-len 0 1))
 
     (print (length cantus-firmus))
     (print (length (first (cp counterpoint-1))))
@@ -449,28 +448,13 @@
             (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cp-2 cp-1<cp-2)
             (gil::g-rel-reify *sp* cp-1 gil::IRT_LE cf cp-1<cf)
             (gil::g-rel-reify *sp* cp-2 gil::IRT_LE cf cp-2<cf)
-            (gil::g-rel-reify *sp* cp-2 gil::IRT_LE cp-1 cp-2<cp-1)
+            (gil::g-rel-reify *sp* cp-2 gil::IRT_LQ cp-1 cp-2<cp-1)
             (gil::g-rel-reify *sp* cp-1 gil::IRT_GQ cf cf<cp-1)
             (gil::g-rel-reify *sp* cp-2 gil::IRT_GQ cf cf<cp-2)
         
             (gil::g-op *sp* cp-1<cp-2 gil::BOT_AND cp-1<cf (nth i (is-bass-arr counterpoint-1)))
-            (print 7)
             (gil::g-op *sp* cp-2<cp-1 gil::BOT_AND cp-2<cf (nth i (is-bass-arr counterpoint-2)))
-            (print 8)
             (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 (nth i *is-cf-bass))
-
-            
-            ;begin debug 
-            (gil::g-op *sp* cf<cp-1 gil::BOT_AND cf<cp-2 cf-is-bass)
-            (gil::g-op *sp* cf-is-bass gil::BOT_XOR cf-not-bass 1)
-            (gil::g-rel-reify *sp* (nth i *is-cf-bass-print) gil::IRT_EQ 1 cf-is-bass)
-            (gil::g-rel-reify *sp* (nth i *is-cf-bass-print) gil::IRT_EQ 0 cf-not-bass)
-
-
-            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 1 cp-1-is-bass)
-            ;(gil::g-rel-reify *sp* (is-bass counterpoint-1) gil::IRT_EQ 0 cp-1-is-not-bass)1 
-            
-
         )
     )
     (setq *is-cf-bass-print (bool-var-arr-printable *is-cf-bass))
