@@ -137,9 +137,24 @@
 )
 ; @completely new or reworked
 (defclass bass-notes-class () (
-    (cp :accessor cp :initarg :cp :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
-    (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
+    (cp :accessor cp :initarg :cp :initform 
+        (list 
+            (gil::add-int-var-array *sp* *cf-len 0 120)
+            (gil::add-int-var-array *sp* *cf-len 0 120)
+            (gil::add-int-var-array *sp* *cf-len 0 120)
+            (gil::add-int-var-array *sp* *cf-len 0 120)
+        )
+    ) ; represents the notes of the counterpoint
+    (h-intervals :accessor h-intervals :initarg :h-intervals :initform 
+        (list
+            (gil::add-int-var-array *sp* *cf-len 0 11)
+            (gil::add-int-var-array *sp* *cf-len 0 11)
+            (gil::add-int-var-array *sp* *cf-len 0 11)
+            (gil::add-int-var-array *sp* *cf-len 0 11)
+        )
+    )
 ))
+
 ; @completely new or reworked
 (defclass counterpoint-class () (
     ; species
@@ -277,17 +292,8 @@
     (print (list "Choosing species: " species-list))
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
     (dotimes (i *N-VOICES) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
-    #| TO BE CORRECTED 
-    (if (and (< (first *voices-types) 0) (< (first *voices-types) (second *voices-types)))
-        (setf *nth-voice-is-bass 0)
-        (if (< (second *voices-types) 0)
-            (setf *nth-voice-is-bass 1)
-            (setf *nth-voice-is-bass -1) ; counterpoint is the bass
-        )
-    )
-    (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
-    |#
-    ;(setq *cost-indexes (make-instance 'cost-indexes-class))
+    (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
+    (setq *bass-notes (make-instance 'bass-notes-class))
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -323,11 +329,11 @@
         (i 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
         (costs-names-by-order (list ; from least to most important
-                                'direct-move-to-p-cons-cost
-                                'not-cambiata-cost
                                 'm2-eq-zero-cost
-                                'penult-thesis-cost
+                                'direct-move-to-p-cons-cost
                                 'no-syncope-cost
+                                'not-cambiata-cost
+                                'penult-thesis-cost
                                 'fifth-cost
                                 'octave-cost               
                                 'h-triad-3rd-species-cost

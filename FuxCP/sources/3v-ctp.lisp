@@ -26,17 +26,16 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
     
-    (setq *is-cf-bass (list nil nil nil nil))
-    (setq *bass-notes (make-instance 'bass-notes-class))
+
     (create-is-voice-bass-arr *cf counterpoints)
     
-    (setf (first (h-intervals *bass-notes)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp *bass-notes)) *cf (first (h-intervals *bass-notes)))
     (dolist (counterpoint counterpoints)
-        (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-        (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint)) (first (h-intervals-to-bass counterpoint)))
-
         (case (species counterpoint)
+            ((1 2 3) (progn
+                (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
+                (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint)) (first (h-intervals-to-bass counterpoint)))
+            ))
             (2 (progn
                 (setf (third (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
                 (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
@@ -63,9 +62,11 @@
             ))
             
             (4 (progn
+                (setf (third (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
+                (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
                 (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
                 (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass-notes))) (first (h-intervals-to-bass counterpoint)))
-                ;(add-no-sync-h-cons (first (h-intervals-to-bass counterpoint)) (is-no-syncope-arr counterpoint))
+                (add-no-sync-h-cons (first (h-intervals-to-bass counterpoint)) (is-no-syncope-arr counterpoint))
             ))
         )
     )

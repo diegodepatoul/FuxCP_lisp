@@ -422,7 +422,6 @@
         (1 (progn
             (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (setf (first (cp *bass-notes)) (gil::add-int-var-array *sp* *cf-len 1 120))
             (loop
                 for i from 0 below *cf-len
                 for cp in (first (cp counterpoint-1))
@@ -447,7 +446,6 @@
             (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first (is-cp-bass counterpoint-2)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (setf (first (cp *bass-notes)) (gil::add-int-var-array *sp* *cf-len 1 120))
             (loop
                 for i from 0 below *cf-len
                 for cp-1 in (first (cp counterpoint-1))
