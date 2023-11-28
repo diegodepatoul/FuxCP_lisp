@@ -8,11 +8,10 @@
 ;; Three voices counterpoint handler #
 ;;===================================#
 (defun fux-cp-3v (species-list counterpoints)
-    ;(create-is-voice-bass-arr *cf counterpoints)
     (print "########## SIXTH SPECIES ##########")
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
-    (print (list "species list = " species-list))
+    (print (list "species list = " species-list))   
 
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
@@ -57,7 +56,6 @@
     
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
     ; 0 for being the bass, 1 for being above
-    (create-is-voice-bass-arr *cf counterpoints)
 
     (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
     #| TO BE CORRECTED     

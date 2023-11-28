@@ -231,24 +231,41 @@
             (cp-range (range (+ *tone-pitch-cf range-upper-bound) :min (+ *tone-pitch-cf range-lower-bound))) ; arbitrary range
             )
             (let (
-            ; set counterpoint pitch domain
-            (cp-domain (intersection cp-range *scale))
-            ; penultimate (first *cp) note domain
-            (chromatic-cp-domain (intersection cp-range *chromatic-scale))
-            ; set counterpoint extended pitch domain
-            (extended-cp-domain (intersection cp-range (union *scale *borrowed-scale)))
-            ; set the domain of the only barrowed notes
-            (off-domain (intersection cp-range *off-scale))
+                ; set counterpoint pitch domain
+                (cp-domain (intersection cp-range *scale))
+                ; penultimate (first *cp) note domain
+                (chromatic-cp-domain (intersection cp-range *chromatic-scale))
+                ; set counterpoint extended pitch domain
+                (extended-cp-domain (intersection cp-range (union *scale *borrowed-scale)))
+                ; set the domain of the only barrowed notes
+                (off-domain (intersection cp-range *off-scale))
+                )
+                (setf counterpoint (make-instance 'counterpoint-class 
+                                                :cp-range cp-range
+                                                :cp-domain cp-domain
+                                                :chromatic-cp-domain chromatic-cp-domain
+                                                :extended-cp-domain extended-cp-domain
+                                                :off-domain off-domain
+                                                :voice-type voice-type
+                                                :species species
+                                                :cp (list (gil::add-int-var-array-dom *sp* *cf-len extended-cp-domain) nil nil nil)
+                ))
+                ; ======= 2 counterpoints specific
+                (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+                    (tonal (mod (car (last *cf)) 12))
+                    )
+                    (case tonal ((2 4 9 10) 
+                        ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
+                        (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                    )))
+                )
+                ; =======
+                (if (is-borrow-allowed) (case species ((1 6)
+                    ; then add to the penultimate note more possibilities
+                    (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                )))
+                counterpoint
             )
-            (make-instance 'counterpoint-class :cp-range cp-range
-                                               :cp-domain cp-domain
-                                               :chromatic-cp-domain chromatic-cp-domain
-                                               :extended-cp-domain extended-cp-domain
-                                               :off-domain off-domain
-                                               :voice-type voice-type
-                                               :species species
-                                               :cp (list (gil::add-int-var-array-dom *sp* *cf-len extended-cp-domain) nil nil nil)
-            ))
         )
     )
 )
@@ -282,7 +299,7 @@
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
     (setq *is-cf-bass (list nil nil nil nil))
     (setq *bass-notes (list nil nil nil nil))
-    ;(create-is-voice-bass-arr counterpoint-1 counterpoint-2 *cf)
+    (create-is-voice-bass-arr *cf counterpoints)
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
             (1 (progn
