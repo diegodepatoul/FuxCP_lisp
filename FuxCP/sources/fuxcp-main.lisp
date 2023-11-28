@@ -270,6 +270,81 @@
                                                 :voice-type voice-type
                                                 :species species
                 ))
+                (case species
+                    ((1 2 3) (progn
+                        ; add the counterpoint array to the space with the domain *cp-domain
+                        (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
+
+                        ; ======= 2 counterpoints specific
+                        (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+                            (tonal (mod (car (last *cf)) 12))
+                            )
+                            (case tonal ((2 4 9 10) 
+                                ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
+                                (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                            )))
+                        )
+                        ; =======
+                        (if (is-borrow-allowed) (case species ((1 6)
+                            ; then add to the penultimate note more possibilities
+                            (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                        )))
+                        (case species
+                            (2 (progn
+                                ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain cp-domain
+                                (setf (third (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
+                                ; add to the penultimate note more possibilities
+                                (if (is-borrow-allowed)
+                                    (setf (nth *cf-penult-index (third (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                                )
+                            ))
+                            (3 (progn
+                                (loop for i from 1 to 3 do
+                                    ; add all quarter notes to the space with the domain (cp-domain counterpoint)
+                                    (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
+                                    
+                                    (if (and (eq i 3) (is-borrow-allowed))
+                                        ; then add to the penultimate note more possibilities
+                                        (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                                    )
+                                )
+                            ))
+                        )
+                    ))
+                    (4 (progn
+                        ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain (cp-domain counterpoint)
+                        (setf (third (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
+                        (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
+                        ; add to the penultimate note more possibilities
+                        (if (is-borrow-allowed)
+                            (progn
+                            (setf (nth *cf-penult-index (third (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                            (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                            )
+                        )
+                    ))
+                    (5 (progn
+                        (loop for i from 0 to 3 do
+                            (if (eq i 0)
+                                (progn
+                                    ; add all quarter notes to the space with the domain (cp counterpoint)-domain
+                                    (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
+                                    ; then add to the penultimate note more possibilities
+                                    (if (is-borrow-allowed)
+                                        (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                                    )
+                                )
+                                (progn
+                                    ; same as above but 1 note shorter
+                                    (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
+                                    (if (is-borrow-allowed)
+                                        (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
+                                    )
+                                )
+                            )
+                        )
+                    ))
+                )
                 counterpoint
             )
         )

@@ -52,12 +52,6 @@
     (loop for i from 0 to 3 do
         (if (eq i 0)
             (progn
-                ; add all quarter notes to the space with the domain (cp counterpoint)-domain
-                (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
-                ; then add to the penultimate note more possibilities
-                (if (is-borrow-allowed)
-                    (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
-                )
                 ; creating harmonic intervals array
                 (print "Creating harmonic intervals array...")
                 ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
@@ -66,10 +60,6 @@
             )
             (progn
                 ; same as above but 1 note shorter
-                (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
-                (if (is-borrow-allowed)
-                    (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
-                )
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
                 (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals counterpoint)))
             )

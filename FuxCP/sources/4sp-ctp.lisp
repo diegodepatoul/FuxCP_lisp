@@ -16,16 +16,7 @@
 
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
-    ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain (cp-domain counterpoint)
-    (setf (third (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
-    (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
-    ; add to the penultimate note more possibilities
-    (if (is-borrow-allowed)
-        (progn
-        (setf (nth *cf-penult-index (third (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
-        (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
-        )
-    )
+
     
     ; merging cp and cp-arsis into one array
     (setf (solution-len counterpoint) (* *cf-last-index 2))

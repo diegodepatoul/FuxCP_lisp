@@ -18,16 +18,7 @@
     (fux-cp-1st counterpoint species)
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
-    
-    (loop for i from 1 to 3 do
-        ; add all quarter notes to the space with the domain (cp-domain counterpoint)
-        (setf (nth i (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
-        
-        (if (and (eq i 3) (is-borrow-allowed))
-            ; then add to the penultimate note more possibilities
-            (setf (nth *cf-penult-index (nth i (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
-        )
-    )
+
 
     (loop for i from 1 to 3 do
         (setq i-1 (- i 1))
