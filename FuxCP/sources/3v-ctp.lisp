@@ -26,20 +26,61 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
     
+    (setq *is-cf-bass (list nil nil nil nil))
+    (setq *bass-notes (make-instance 'bass-notes-class))
+    (create-is-voice-bass-arr *cf counterpoints)
+    
+    (setf (first (h-intervals *bass-notes)) (gil::add-int-var-array *sp* *cf-len 0 11))
+    (create-h-intervals (first (cp *bass-notes)) *cf (first (h-intervals *bass-notes)))
+    (dolist (counterpoint counterpoints)
+        (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
+        (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint)) (first (h-intervals-to-bass counterpoint)))
 
-    (setf (first (h-intervals-to-bass counterpoint-1)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (setf (first (h-intervals-to-bass counterpoint-2)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (setf (first (h-intervals         *bass-notes   )) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint-1)) (first (h-intervals-to-bass counterpoint-1)))
-    (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint-2)) (first (h-intervals-to-bass counterpoint-2)))
-    (create-h-intervals (first (cp *bass-notes)) *cf                         (first (h-intervals         *bass-notes   )))
+        (case (species counterpoint)
+            (2 (progn
+                (setf (third (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
+                (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
+                (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals-to-bass counterpoint)) (is-ta-dim-arr counterpoint))
+            ))
+        
+            (3 (progn
+                (loop for i from 1 to 3 do
+                    (setf (nth i (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
+                    (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass-notes))) (nth i (h-intervals-to-bass counterpoint)))
+                )
+                ; creating boolean is consonant array
+                (print "Creating is consonant array...")
+                (loop for i from 0 to 3 do
+                    ; array of BoolVar representing if the interval is consonant
+                    (if (eq i 0)
+                        ; then
+                        (setf (nth i (is-cons-to-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+                        ; else
+                        (setf (nth i (is-cons-to-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+                    )
+                    (create-is-member-arr (nth i (h-intervals-to-bass counterpoint)) (nth i (is-cons-to-bass-arr counterpoint)))
+                )
+            ))
+            
+            (4 (progn
+                (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
+                (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass-notes))) (first (h-intervals-to-bass counterpoint)))
+                ;(add-no-sync-h-cons (first (h-intervals-to-bass counterpoint)) (is-no-syncope-arr counterpoint))
+            ))
+        )
+    )
+
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
     ; all voices must be consonant with the lowest one
-    (dolist (h (first (h-intervals-to-bass counterpoint-1))) (gil::g-member *sp* ALL_CONS_VAR h))
-    (dolist (h (first (h-intervals-to-bass counterpoint-2))) (gil::g-member *sp* ALL_CONS_VAR h))
-    (dolist (h (first (h-intervals         *bass-notes   ))) (gil::g-member *sp* ALL_CONS_VAR h))
+    (dolist (h (first (h-intervals *bass-notes))) (gil::g-member *sp* ALL_CONS_VAR h))
+    (dolist (counterpoint counterpoints)
+        (if (eq (species counterpoint) 4)
+            (dolist (h (third (h-intervals-to-bass counterpoint))) (gil::g-member *sp* ALL_CONS_VAR h))
+            (dolist (h (first (h-intervals-to-bass counterpoint))) (gil::g-member *sp* ALL_CONS_VAR h))
+        )
+    )
     
     ;(dolist (counterpoint counterpoints) (add-penult-cons-cst-3v (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
     ;(dolist (counterpoint counterpoints) (add-penult-cons-cst (penult (first *is-cf-bass)) (penult (first (h-intervals counterpoint)))))
@@ -93,11 +134,18 @@
                 (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2))
                 (h-intervals-brut counterpoint-1) (h-intervals-brut counterpoint-2)
             ) 
+            
+            (print "Last chord must be a perfect chord") 
+            (add-last-chord-h-triad-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
+
+            (print "Ascending sixths sound harsh")
+            (dolist (counterpoint counterpoints) 
+                (add-no-ascending-sixths-cst (first (h-intervals-to-bass counterpoint)) (first (cp counterpoint)))
+            )
         )
     )
 
-    (print "Last chord must be a perfect chord") 
-    (add-last-chord-h-triad-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
+
 
     ;================================================================================;
     ;                                    COSTS                                       ;
@@ -171,7 +219,8 @@
     )
 
     (dolist (counterpoint counterpoints)
-        (if (eq (species counterpoint) 2) (add-p-cons-cost-cst (h-intervals counterpoint)))
+        (case (species counterpoint) ((1 2 3) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint))))
+        (case (species counterpoint) ((4) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint) t)))
     )
     
     

@@ -104,6 +104,7 @@
         )
         (create-is-member-arr (nth i (h-intervals counterpoint)) (nth i (is-cons-arr counterpoint)))
     )
+    
 
     ; creating boolean is not cambiata array
     (print "Creating is not cambiata array...")
@@ -118,18 +119,20 @@
 
     ;======================================== HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
-    ; must start with a perfect consonance
-    (print "Perfect consonance at the beginning...")
-    (add-p-cons-start-cst (first (h-intervals counterpoint)))
+    (if (eq *N-VOICES 1) (progn
+        ; must start with a perfect consonance
+        (print "Perfect consonance at the beginning...")
+        (add-p-cons-start-cst (first (h-intervals counterpoint)))
 
-    ; must end with a perfect consonance
-    (print "Perfect consonance at the end...")
-    (add-p-cons-end-cst (first (h-intervals counterpoint)))
-    
-    ; if penultimate measure, a major sixth or a minor third must be used
-    ; depending if the cantus firmus is at the bass or on the top part
-    (print "Penultimate measure...")
-    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
+        ; must end with a perfect consonance
+        (print "Perfect consonance at the end...")
+        (add-p-cons-end-cst (first (h-intervals counterpoint)))
+        
+        ; if penultimate measure, a major sixth or a minor third must be used
+        ; depending if the cantus firmus is at the bass or on the top part
+        (print "Penultimate measure...")
+        (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
+    ))
     ; the third note of the penultimate measure must be below the fourth one.
     (gil::g-rel *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1)
     ; the second note and the third note of the penultimate measure must be distant by greater than 1 semi-tone from the fourth note
@@ -167,7 +170,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 3) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint)))
+    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint)))
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
@@ -177,7 +180,7 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals counterpoint))
+    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

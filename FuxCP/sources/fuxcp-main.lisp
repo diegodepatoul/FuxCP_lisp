@@ -222,6 +222,7 @@
     ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
     (is-cp-bass :accessor is-cp-bass :initarg :is-cp-bass :initform (list nil nil nil nil))
     (h-intervals-to-bass :accessor h-intervals-to-bass :initarg :h-intervals-to-bass :initform (list nil nil nil nil))
+    (is-cons-to-bass-arr :accessor is-cons-to-bass-arr :initarg :is-cons-to-bass-arr :initform (list nil nil nil nil))
 ))
 
 ; @completely new or reworked
@@ -253,22 +254,7 @@
                                                 :off-domain off-domain
                                                 :voice-type voice-type
                                                 :species species
-                                                :cp (list (gil::add-int-var-array-dom *sp* *cf-len extended-cp-domain) nil nil nil)
                 ))
-                ; ======= 2 counterpoints specific
-                (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
-                    (tonal (mod (car (last *cf)) 12))
-                    )
-                    (case tonal ((2 4 9 10) 
-                        ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
-                        (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
-                    )))
-                )
-                ; =======
-                (if (is-borrow-allowed) (case species ((1 6)
-                    ; then add to the penultimate note more possibilities
-                    (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
-                )))
                 counterpoint
             )
         )
@@ -302,10 +288,7 @@
     (if (>= *nth-voice-is-bass 0) (setf (is-voice-bass (nth *nth-voice-is-bass counterpoints)) 1))
     |#
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
-    (setq *is-cf-bass (list nil nil nil nil))
-    (setq *bass-notes (make-instance 'bass-notes-class))
-    (create-is-voice-bass-arr *cf counterpoints)
-    (case (length species-list)
+    (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
                 (fux-cp-1st (first counterpoints))
@@ -328,7 +311,7 @@
         (2 (progn
             (fux-cp-3v species-list counterpoints)
         ))
-        (otherwise (error "The species list is longer than what is currently implemented. Length = ~A" species))
+        (otherwise (error "Only two additional voices are implemented up to now. You asked for ~A." (length species)))
     )
 )
 
@@ -345,7 +328,6 @@
                                 'm2-eq-zero-cost
                                 'penult-thesis-cost
                                 'no-syncope-cost
-                                
                                 'fifth-cost
                                 'octave-cost               
                                 'h-triad-3rd-species-cost
@@ -491,8 +473,8 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        (handler-case (print (list "h-intervals-to-bass-cp-1 = " (gil::g-values sol (first (h-intervals-to-bass (first counterpoint)))))) (error (c)  (print "error with h-intervals1")))
-        (handler-case (print (list "h-intervals-to-bass-cp-2 = " (gil::g-values sol (first (h-intervals-to-bass (second counterpoint)))))) (error (c)  (print "error with h-intervals2")))
+        (handler-case (print (list "h-intervals-to-bass-cp-1 = " (gil::g-values sol (first (h-intervals-to-bass (first counterpoints)))))) (error (c)  (print "error with h-intervals1")))
+        (handler-case (print (list "h-intervals-to-bass-cp-2 = " (gil::g-values sol (first (h-intervals-to-bass (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
         (handler-case (print (list "h-intervals-to-bass-cf   = " (gil::g-values sol (first (h-intervals *bass-notes))))) (error (c)  (print "error with h-intervals-bass")))
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
@@ -511,6 +493,9 @@
                 (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
             ) 
             (error (c)
+                (dotimes (i *N-COST-FACTORS)
+                    (handler-case (gil::g-values sol (nth i *cost-factors)) (error (c) (print (list "Cost" i "had a problem."))))
+                )
                 (error "All costs are not set correctly. Correct this problem before trying to find a solution.")
             )
         )

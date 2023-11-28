@@ -109,7 +109,7 @@
     ; for all harmonic intervals between the cantus firmus and the arsis notes, the interval must be a consonance
     ; unless the arsis note is a diminution
     (print "No dissonance unless diminution for arsis notes...")
-    (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint))
+    (if (eq *N-VOICES 1) (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint)))
 
     ; Fux does not follow this rule so deactivate ?
     ; no unisson between the cantus firmus and the arsis counterpoint

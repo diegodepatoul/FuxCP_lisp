@@ -16,7 +16,22 @@
     (print "Initializing variables...")
     
     ; add the counterpoint array to the space with the domain *cp-domain
-    ;(setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
+    (setf (first (cp counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
+
+    ; ======= 2 counterpoints specific
+    (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+        (tonal (mod (car (last *cf)) 12))
+        )
+        (case tonal ((2 4 9 10) 
+            ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
+            (setf (nth *cf-last-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+        )))
+    )
+    ; =======
+    (if (is-borrow-allowed) (case species ((1 6)
+        ; then add to the penultimate note more possibilities
+        (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+    )))
     
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
@@ -141,9 +156,6 @@
         (progn
             (print "No successive perfect consonances (counterpoint to cantus firmus)")
             (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
-
-            (print "Ascending sixths sound harsh")
-            (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
         )
     )
     ; =========
@@ -157,7 +169,7 @@
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
-            (add-p-cons-cost-cst (h-intervals counterpoint))
+            (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
 
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
