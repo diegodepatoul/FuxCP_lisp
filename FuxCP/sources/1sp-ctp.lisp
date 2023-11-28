@@ -25,29 +25,12 @@
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint)) *cf (first (h-intervals counterpoint)))
 
-    ; @completely new or reworked
-    ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
-    (if (eq *N-VOICES 2) (progn
-        (if (eq species 9) (progn 
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest *cf) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) (progn
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals *cf (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) 
-        )
-    ))
-    ; =======
-
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
-
     
     (case species ((1 6) ; only for the first species
         ; then
@@ -74,8 +57,8 @@
     ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
     ; 0 for being the bass, 1 for being above
     (print "Creating order of pitch array...")
-    (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-cf-bass-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
+    (setf (first (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-cf-lower-arr (first (cp counterpoint)) *cf (first (is-cf-lower-arr counterpoint)))
 
 
     ; creating motion array
@@ -92,8 +75,8 @@
     (print "Harmonic consonances...")
     (case species
         ((1 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
-        ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
-        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
+        ((2 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
+        ((3 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
 
@@ -118,7 +101,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ((1 #|6|#) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
+        ((1 ) (add-penult-cons-cst (penult (first (is-cf-lower-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================
@@ -148,7 +131,7 @@
             ; no battuta kind of motion
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
-            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-bass-arr counterpoint)))
+            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-lower-arr counterpoint)))
         )
     ))
 

@@ -87,13 +87,13 @@
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (third (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-bass-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-bass-arr counterpoint)))
+    (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
 
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
     (setf (is-nbour-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-nbour-arr (h-intervals-abs counterpoint) (first (is-cf-bass-arr counterpoint)) *cf-brut-m-intervals (is-nbour-arr counterpoint))
+    (create-is-nbour-arr (h-intervals-abs counterpoint) (first (is-cf-lower-arr counterpoint)) *cf-brut-m-intervals (is-nbour-arr counterpoint))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
@@ -120,7 +120,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this
-    (add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+    (if (eq species 2) (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))))
 
 
     ;======================================== MELODIC CONSTRAINTS =============================
@@ -173,14 +173,14 @@
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-bass-arr counterpoint)))
+    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-lower-arr counterpoint)))
 
 
 
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals counterpoint))
+    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
     
     ; 3, 4) add off-key cost, m-degrees cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

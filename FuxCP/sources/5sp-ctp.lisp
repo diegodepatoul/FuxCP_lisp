@@ -133,12 +133,12 @@
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-cf-bass-arr (first (cp counterpoint)) (rest *cf) (first (is-cf-bass-arr counterpoint))) ; 5th
-    (setf (third (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-bass-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-bass-arr counterpoint))) ; 5th
-    (setf (fourth (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-bass-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-bass-arr counterpoint)))
+    (setf (first (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-cf-lower-arr (first (cp counterpoint)) (rest *cf) (first (is-cf-lower-arr counterpoint))) ; 5th
+    (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint))) ; 5th
+    (setf (fourth (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
 
     ; creating boolean are five consecutive notes by joint degree array
     (print "Creating are five consecutive notes by joint degree array...")
@@ -221,7 +221,7 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (add-penult-cons-cst (lastone (fourth (is-cf-bass-arr counterpoint))) (lastone (fourth (h-intervals counterpoint)))
+    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint)))
         (penult (nth 3 (is-nth-species-arr counterpoint)))
     ) ; 3rd species
     ; the third note of the penultimate measure must be below the fourth one. (3rd species)
@@ -236,7 +236,7 @@
     
     ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
     ; major sixth or minor third
-    (add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint)))
+    (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))
         (penult (butlast (nth 4 (is-nth-species-arr counterpoint))))
     ) ; 4th species
     ; seventh or second
@@ -266,7 +266,7 @@
 
     ; no seventh dissonance if the cantus firmus is at the top
     (print "No seventh dissonance if the cantus firmus is at the top...")
-    (add-no-seventh-cst (first (h-intervals counterpoint)) (first (is-cf-bass-arr counterpoint)) (first (is-4th-species-arr counterpoint))) ; 4th species
+    (add-no-seventh-cst (first (h-intervals counterpoint)) (first (is-cf-lower-arr counterpoint)) (first (is-4th-species-arr counterpoint))) ; 4th species
 
 
     ;======================================== MELODIC CONSTRAINTS =============================
@@ -309,7 +309,7 @@
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
     (add-no-battuta-cst
-        (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-bass-arr counterpoint)) (fourth (is-3rd-species-arr counterpoint))
+        (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint)) (fourth (is-3rd-species-arr counterpoint))
     ) ; 3rd species
 
     ; dissonant notes must be followed by the consonant note below
@@ -319,7 +319,7 @@
     ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
     (add-no-second-cst
-        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (first (is-cf-bass-arr counterpoint)))
+        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (first (is-cf-lower-arr counterpoint)))
         (rest (first (is-4th-species-arr counterpoint)))
     ) ; TODO 4th species
 

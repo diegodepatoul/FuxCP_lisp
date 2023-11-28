@@ -78,8 +78,8 @@
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (fourth (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-bass-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-bass-arr counterpoint)))
+    (setf (fourth (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
 
     ; creating boolean are five consecutive notes by joint degree array
     (print "Creating are five consecutive notes by joint degree array...")
@@ -129,7 +129,7 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (add-penult-cons-cst (lastone (fourth (is-cf-bass-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
+    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
     ; the third note of the penultimate measure must be below the fourth one.
     (gil::g-rel *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1)
     ; the second note and the third note of the penultimate measure must be distant by greater than 1 semi-tone from the fourth note
@@ -172,7 +172,7 @@
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    (add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-bass-arr counterpoint))) ; TODO 
+    (add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint))) ; TODO 
 
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances

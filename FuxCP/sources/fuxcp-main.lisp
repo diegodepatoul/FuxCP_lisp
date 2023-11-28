@@ -135,7 +135,11 @@
         ))
     )
 )
-
+; @completely new or reworked
+(defclass bass-notes-class () (
+    (cp :accessor cp :initarg :cp :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
+    (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
+))
 ; @completely new or reworked
 (defclass counterpoint-class () (
     ; species
@@ -160,7 +164,7 @@
     (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
     (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
-    (is-cf-bass-arr :accessor is-cf-bass-arr :initarg :is-cf-bass-arr :initform (list nil nil nil nil))
+    (is-cf-lower-arr :accessor is-cf-lower-arr :initarg :is-cf-lower-arr :initform (list nil nil nil nil))
     (m2-intervals-brut :accessor m2-intervals-brut :initarg :m2-intervals-brut :initform nil)
     (m2-intervals :accessor m2-intervals :initarg :m2-intervals :initform nil)
     (cf-brut-m-intervals :accessor cf-brut-m-intervals :initarg :cf-brut-m-intervals :initform nil)
@@ -217,6 +221,7 @@
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
     ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
     (is-cp-bass :accessor is-cp-bass :initarg :is-cp-bass :initform (list nil nil nil nil))
+    (h-intervals-to-bass :accessor h-intervals-to-bass :initarg :h-intervals-to-bass :initform (list nil nil nil nil))
 ))
 
 ; @completely new or reworked
@@ -298,7 +303,7 @@
     |#
     ;(setq *cost-indexes (make-instance 'cost-indexes-class))
     (setq *is-cf-bass (list nil nil nil nil))
-    (setq *bass-notes (list nil nil nil nil))
+    (setq *bass-notes (make-instance 'bass-notes-class))
     (create-is-voice-bass-arr *cf counterpoints)
     (case (length species-list)
         (1 (case (first species-list) ; if only two voices
@@ -380,7 +385,7 @@
         ;; Reorder the costs
         (reorder-costs species)
 
-        (setf linear-combination 1)
+        (setf linear-combination nil)
         ;; COST
         (if linear-combination 
             ; do a linear combination
@@ -486,6 +491,9 @@
 
         ; print the solution from GiL
         (print "Solution: ")
+        (handler-case (print (list "h-intervals-to-bass-cp-1 = " (gil::g-values sol (first (h-intervals-to-bass (first counterpoint)))))) (error (c)  (print "error with h-intervals1")))
+        (handler-case (print (list "h-intervals-to-bass-cp-2 = " (gil::g-values sol (first (h-intervals-to-bass (second counterpoint)))))) (error (c)  (print "error with h-intervals2")))
+        (handler-case (print (list "h-intervals-to-bass-cf   = " (gil::g-values sol (first (h-intervals *bass-notes))))) (error (c)  (print "error with h-intervals-bass")))
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
         (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
@@ -493,7 +501,7 @@
         (handler-case (print (list "is-cp1-bass = " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
         (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
-        (handler-case (print (list "bass-notes = " (gil::g-values sol (first *bass-notes)))) (error (c) (print "error with bass-notes")))
+        (handler-case (print (list "bass-notes = " (gil::g-values sol (first (cp *bass-notes))))) (error (c) (print "error with bass-notes")))
         (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
