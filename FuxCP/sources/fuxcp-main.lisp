@@ -375,7 +375,7 @@
     (dotimes (i *N-VOICES) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
     (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
     (setq *bass-notes (make-instance 'bass-notes-class))
-    (setq *upper-voice (make-instance 'bass-notes-class))
+    ;(setq *upper-voice (make-instance 'bass-notes-class))
     (setq *cantus-firmus (make-instance 'counterpoint-class))
     (setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
     (dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
@@ -427,9 +427,9 @@
                                 'h-triad-3rd-species-cost
                                 'h-triad-cost                 
                                 'm-degrees-cost
-                                'motions-cost
                                 'variety-cost
                                 'off-key-cost
+                                'motions-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -581,7 +581,8 @@
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
         (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
-        (print (list "motions-costs = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
+        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
+        (print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         (print (list "direct   = " (gil::g-values sol *direct)))
         (print (list "oblique  = " (gil::g-values sol *oblique)))
         (print (list "contrary = " (gil::g-values sol *contrary)))

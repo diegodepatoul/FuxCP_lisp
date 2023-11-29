@@ -26,71 +26,17 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
         
-        #|
-    (create-h-intervals (first (cp *bass-notes)) *cf (first (h-intervals *bass-notes)))
-    (dolist (counterpoint counterpoints)
-        (case (species counterpoint)
-            ((1 2 3) (progn
-                (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-                (create-h-intervals (first (cp *bass-notes)) (first (cp counterpoint)) (first (h-intervals-to-bass counterpoint)))
-            ))
-            (2 (progn
-                (setf (third (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-                (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
-                (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals-to-bass counterpoint)) (is-ta-dim-arr counterpoint))
-            ))
-        
-            (3 (progn
-                (loop for i from 1 to 3 do
-                    (setf (nth i (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-                    (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass-notes))) (nth i (h-intervals-to-bass counterpoint)))
-                )
-                ; creating boolean is consonant array
-                (print "Creating is consonant array...")
-                (loop for i from 0 to 3 do
-                    ; array of BoolVar representing if the interval is consonant
-                    (if (eq i 0)
-                        ; then
-                        (setf (nth i (is-cons-to-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-                        ; else
-                        (setf (nth i (is-cons-to-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-                    )
-                    (create-is-member-arr (nth i (h-intervals-to-bass counterpoint)) (nth i (is-cons-to-bass-arr counterpoint)))
-                )
-            ))
-            
-            (4 (progn
-                (setf (third (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-                (setf (first (h-intervals-to-bass counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-                (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass-notes))) (third (h-intervals-to-bass counterpoint)))
-                (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass-notes))) (first (h-intervals-to-bass counterpoint)))
-                (add-no-sync-h-cons (first (h-intervals-to-bass counterpoint)) (is-no-syncope-arr counterpoint))
-            ))
-        )
-    )
- |#
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
     ; all voices must be consonant with the lowest one
-    #|
-    (dolist (h (first (h-intervals *bass-notes))) (gil::g-member *sp* ALL_CONS_VAR h))
-    (dolist (counterpoint counterpoints)
-        (if (eq (species counterpoint) 4)
-            (dolist (h (third (h-intervals-to-bass counterpoint))) (gil::g-member *sp* ALL_CONS_VAR h))
-            (dolist (h (first (h-intervals-to-bass counterpoint))) (gil::g-member *sp* ALL_CONS_VAR h))
-        )
-    )
-    |#
+    ; implemented in the first species
     
-    ;(dolist (counterpoint counterpoints) (add-penult-cons-cst-3v (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
-    ;(dolist (counterpoint counterpoints) (add-penult-cons-cst (penult (first *is-cf-bass)) (penult (first (h-intervals counterpoint)))))
-
     (print "no unisson between cp1 and cp2")
     (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)))
 
     (print "all voices can't go in the same direction")
-    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
+    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)) (first (motions *cantus-firmus)))
 
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
@@ -99,6 +45,20 @@
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
+
+    (setq h-intervals-cp1-cf (list nil nil nil nil))
+    (setf (first h-intervals-cp1-cf) (gil::add-int-var-array *sp* *cf-len 0 11))
+    (create-h-intervals (first (cp counterpoint-1)) (first (cp *cantus-firmus)) (first h-intervals-cp1-cf))
+    (setf are-cp1-cf-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-p-cons-arr (first h-intervals-cp1-cf) are-cp1-cf-cons-arr)
+    (add-no-successive-p-cons-cst are-cp1-cf-cons-arr)
+
+    (setq h-intervals-cp2-cf (list nil nil nil nil))
+    (setf (first h-intervals-cp2-cf) (gil::add-int-var-array *sp* *cf-len 0 11))
+    (create-h-intervals (first (cp counterpoint-2)) (first (cp *cantus-firmus)) (first h-intervals-cp2-cf))
+    (setf are-cp2-cf-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-p-cons-arr (first h-intervals-cp2-cf) are-cp2-cf-cons-arr)
+    (add-no-successive-p-cons-cst are-cp2-cf-cons-arr)
 
 
     ; THIS CLASHES WITH THE PENULT RULES WHEN USED ACROSS TWO DIFFERENT SPECIES
@@ -110,8 +70,6 @@
         ;)
     ;)
     
-    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
-    ; 0 for being the bass, 1 for being above
 
     (print "Last chord cannot be minor")
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
@@ -141,7 +99,7 @@
 
             (print "Ascending sixths sound harsh")
             (dolist (counterpoint counterpoints) 
-                ;(add-no-ascending-sixths-cst (first (h-intervals-to-bass counterpoint)) (first (cp counterpoint)))
+                (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
             )
         )
     )

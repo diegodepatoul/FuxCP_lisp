@@ -93,7 +93,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species ;todo
-        ;((1 ) (add-penult-cons-cst (penult (first (is-cf-lower-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
+        ((1 6) (add-penult-cons-cst (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================
@@ -126,16 +126,6 @@
             (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cp-bass counterpoint)))
         )
     ))
-
-    ; @completely new or reworked
-    ; ========= 2 counterpoints specific
-    (if (eq *N-VOICES 2)
-        (progn
-            (print "No successive perfect consonances (counterpoint to cantus firmus)")
-            (add-no-successive-p-cons-cst (is-p-cons-arr *upper-voice))
-        )
-    )
-    ; =========
     
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")

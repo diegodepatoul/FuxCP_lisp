@@ -935,17 +935,22 @@
 ; i.e. that there are no two direct motions
 ; i.e. that either motions1 is direct or motions 2 is direct, but not both
 ; @completely new or reworked
-(defun add-no-together-move-cst (motions1 motions2)
+(defun add-no-together-move-cst (motions-1 motions-2 motions-3)
     (loop 
-        for m1 in motions1
-        for m2 in motions2
+        for m1 in motions-1
+        for m2 in motions-2
+        for m3 in motions-3
         do (let (
-            (m1-eq-two (gil::add-bool-var *sp* 0 1))
-            (m2-eq-two (gil::add-bool-var *sp* 0 1))
+            (m1-dir (gil::add-bool-var *sp* 0 1))
+            (m2-dir (gil::add-bool-var *sp* 0 1))
+            (m3-dir (gil::add-bool-var *sp* 0 1))
+            (m1-and-m2-dir (gil::add-bool-var *sp* 0 1))
         )
-            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-eq-two) ; m1-eq-two := (motion1 == 2)
-            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-eq-two) ; m2-eq-two := (motion2 == 2)
-            (gil::g-op *sp* m1-eq-two gil::BOT_AND m2-eq-two 0) ; NOT (motion1-equals-two AND motion2-equals-two) (not both at the same time)
+            (gil::g-rel-reify *sp* m1 gil::IRT_EQ DIRECT m1-dir)      ; m1-dir        := (motion1 == 2)
+            (gil::g-rel-reify *sp* m2 gil::IRT_EQ DIRECT m2-dir)      ; m2-dir        := (motion2 == 2)
+            (gil::g-rel-reify *sp* m3 gil::IRT_EQ DIRECT m3-dir)      ; m3-dir        := (motion3 == 2)
+            (gil::g-op *sp* m1-dir gil::BOT_AND m2-dir m1-and-m2-dir) ; m1-and-m2-dir := (m1-dir AND m2-dir)
+            (gil::g-op *sp* m1-and-m2-dir gil::BOT_AND m3-dir 0)      ; NOT (motion1-is-direct AND motion2-is-direct) (not both at the same time)
         )
     )
 )
@@ -1091,18 +1096,16 @@
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* b-bass NINE THREE h-interval)
+            (gil::g-ite *sp* b-bass ZERO NINE h-interval)
             (and-ite b-bass NINE THREE h-interval and-cond)
         )  
     )
 )
 
-; WIP, THIS FUNCTION IS NOT USING YET
-; @completely new or reworked
-(defun add-penult-cons-cst-3v (is-cp-bass h-interval &optional (and-cond nil))
+(defun add-penult-cons-cst-for-cf (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* is-cp-bass THREE NINE h-interval)
+            (gil::g-ite *sp* b-bass ZERO THREE h-interval)
             (and-ite b-bass NINE THREE h-interval and-cond)
         )  
     )

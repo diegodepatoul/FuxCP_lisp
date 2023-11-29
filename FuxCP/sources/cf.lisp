@@ -45,7 +45,7 @@
     (setf (first (motions-cost cantus-firmus)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     ;(create-motions (first (m-intervals-brut cantus-firmus)) *cf-brut-m-intervals (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
     (create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *bass-notes)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
-    ;(set-motions-cost (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (rest (first (is-cp-bass cantus-firmus))))
+    (set-motions-cost (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (rest (first (is-cp-bass cantus-firmus))))
     
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
@@ -78,9 +78,7 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (case species ;todo
-        ;((1 ) (add-penult-cons-cst (penult (first (is-cf-lower-arr cantus-firmus))) (penult (first (h-intervals cantus-firmus)))))
-    )
+    (add-penult-cons-cst-for-cf (penult (first (is-cp-bass cantus-firmus))) (penult (first (h-intervals cantus-firmus))))  
 
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
@@ -113,4 +111,7 @@
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
     (add-p-cons-cost-cst (h-intervals cantus-firmus))
+    ; 3) motion costs
+    (print "add motion costs")
+    ;(add-cost-to-factors (first (motions-cost counterpoint)) 'motions-cost)    
 )
