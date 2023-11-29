@@ -6,3 +6,4 @@
 
 ### QUESTIONS TO ASK
 * The penultimate rule: what should I do?
+* Motions costs not working anymore

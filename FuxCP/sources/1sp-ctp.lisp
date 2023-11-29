@@ -68,7 +68,7 @@
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
     (case species
-        ((1 ) (progn
+        ((1 6) (progn
             (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) (first (is-cp-bass counterpoint)))
         ))
         ((2 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
@@ -150,7 +150,7 @@
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
-            (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
+            (add-p-cons-cost-cst (h-intervals counterpoint))
 
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")

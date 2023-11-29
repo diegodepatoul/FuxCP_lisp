@@ -446,7 +446,7 @@
             (setf counterpoint-2 (second counterpoints))
             (setf (first (is-cp-bass counterpoint-1)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (setf (first (is-cp-bass counterpoint-2)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (setf (first *is-cf-bass) (gil::add-bool-var-array *sp* *cf-len 0 1))
+            (setf (first (is-cp-bass *cantus-firmus)) (gil::add-bool-var-array *sp* *cf-len 0 1))
             (loop
                 for i from 0 below *cf-len
                 for cp-1 in (first (cp counterpoint-1))
@@ -454,7 +454,7 @@
                 for cf in cantus-firmus
                 for cp-1-is-bass in (first (is-cp-bass counterpoint-1))        
                 for cp-2-is-bass in (first (is-cp-bass counterpoint-2))        
-                for cf-is-bass in (first *is-cf-bass)    
+                for cf-is-bass in (first (is-cp-bass *cantus-firmus))   
                 for bass in (first (cp *bass-notes))    
                 do (let (
                     (cp-1<cp-2 (gil::add-bool-var *sp* 0 1))
@@ -482,7 +482,7 @@
                     (gil::g-ite *sp* cp-2-is-bass cp-2 bass bass)
                 )
             )
-            (setq *is-cf-bass-print (bool-var-arr-printable (first *is-cf-bass)))
+            (setq *is-cf-bass-print  (bool-var-arr-printable (first (is-cp-bass *cantus-firmus))))
             (setq *is-cp1-bass-print (bool-var-arr-printable (first (is-cp-bass counterpoint-1))))
             (setq *is-cp2-bass-print (bool-var-arr-printable (first (is-cp-bass counterpoint-2))))
         ))
@@ -1272,14 +1272,30 @@
         for is-bass in is-bass-arr
         do (let (
                 ; costs variables
+                (is-direct (gil::add-bool-var *sp* 0 1))
+                (is-oblique (gil::add-bool-var *sp* 0 1))
+                (is-contrary (gil::add-bool-var *sp* 0 1))
+
                 (do-set-direct-cost (gil::add-bool-var *sp* 0 1))
                 (do-set-oblique-cost (gil::add-bool-var *sp* 0 1))
                 (do-set-contrary-cost (gil::add-bool-var *sp* 0 1))
+
                 (is-not-bass (gil::add-bool-var *sp* 0 1))
             )
             (gil::g-op *sp* is-bass gil::BOT_XOR is-not-bass 1)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-bass)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 2 is-not-bass)
+            (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct)
+            (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE is-oblique)
+            (gil::g-rel-reify *sp* m gil::IRT_EQ CONTRARY is-contrary)
+
+            (gil::g-op *sp* is-not-bass gil::BOT_AND is-direct do-set-direct-cost)
+            (gil::g-op *sp* is-not-bass gil::BOT_AND is-oblique do-set-oblique-cost)
+            (gil::g-op *sp* is-not-bass gil::BOT_AND is-contrary do-set-contrary-cost)
+
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-bass)
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-bass)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* is-contrary)
         )
     )
 )

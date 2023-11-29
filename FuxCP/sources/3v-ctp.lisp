@@ -26,6 +26,7 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
         
+        #|
     (create-h-intervals (first (cp *bass-notes)) *cf (first (h-intervals *bass-notes)))
     (dolist (counterpoint counterpoints)
         (case (species counterpoint)
@@ -67,11 +68,12 @@
             ))
         )
     )
-
+ |#
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
     ; all voices must be consonant with the lowest one
+    #|
     (dolist (h (first (h-intervals *bass-notes))) (gil::g-member *sp* ALL_CONS_VAR h))
     (dolist (counterpoint counterpoints)
         (if (eq (species counterpoint) 4)
@@ -79,6 +81,7 @@
             (dolist (h (first (h-intervals-to-bass counterpoint))) (gil::g-member *sp* ALL_CONS_VAR h))
         )
     )
+    |#
     
     ;(dolist (counterpoint counterpoints) (add-penult-cons-cst-3v (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
     ;(dolist (counterpoint counterpoints) (add-penult-cons-cst (penult (first *is-cf-bass)) (penult (first (h-intervals counterpoint)))))
@@ -138,7 +141,7 @@
 
             (print "Ascending sixths sound harsh")
             (dolist (counterpoint counterpoints) 
-                (add-no-ascending-sixths-cst (first (h-intervals-to-bass counterpoint)) (first (cp counterpoint)))
+                ;(add-no-ascending-sixths-cst (first (h-intervals-to-bass counterpoint)) (first (cp counterpoint)))
             )
         )
     )
@@ -217,7 +220,7 @@
     )
 
     (dolist (counterpoint counterpoints)
-        (case (species counterpoint) ((1 2 3) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint))))
+       ; (case (species counterpoint) ((1 2 3) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint))))
         (case (species counterpoint) ((4) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint) t)))
     )
     
