@@ -45,7 +45,7 @@
     (setf (first (motions-cost cantus-firmus)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     ;(create-motions (first (m-intervals-brut cantus-firmus)) *cf-brut-m-intervals (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
     (create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *bass-notes)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
-    (set-motions-cost (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (rest (first (is-cp-bass cantus-firmus))))
+    ;(set-motions-cost (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (rest (first (is-cp-bass cantus-firmus))))
     
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")

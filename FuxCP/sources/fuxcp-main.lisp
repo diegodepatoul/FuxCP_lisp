@@ -582,6 +582,11 @@
         (print (list "cf         = " *cf))
         (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
         (print (list "motions-costs = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
+        (print (list "direct   = " (gil::g-values sol *direct)))
+        (print (list "oblique  = " (gil::g-values sol *oblique)))
+        (print (list "contrary = " (gil::g-values sol *contrary)))
+        (print (list "not bass = " (gil::g-values sol *not-bass)))
+        (print (list "    bass = " (gil::g-values sol *bass)))
         (handler-case
             (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))

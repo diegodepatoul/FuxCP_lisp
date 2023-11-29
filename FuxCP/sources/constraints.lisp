@@ -1266,10 +1266,17 @@
 )
 
 (defun set-motions-cost (motions costs is-bass-arr)
+    (setf *direct (make-list *cf-last-index :initial-element nil))
+    (setf *oblique (make-list *cf-last-index :initial-element nil))
+    (setf *contrary (make-list *cf-last-index :initial-element nil))
+    (setf *not-bass (make-list *cf-last-index :initial-element nil))
+    (setf *bass (make-list *cf-last-index :initial-element nil))
+    
     (loop
         for m in motions
         for c in costs
         for is-bass in is-bass-arr
+        for i from 0 below *cf-len
         do (let (
                 ; costs variables
                 (is-direct (gil::add-bool-var *sp* 0 1))
@@ -1291,13 +1298,26 @@
             (gil::g-op *sp* is-not-bass gil::BOT_AND is-oblique do-set-oblique-cost)
             (gil::g-op *sp* is-not-bass gil::BOT_AND is-contrary do-set-contrary-cost)
 
-            ;(gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-bass)
-            ;(gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-bass)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* is-contrary)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-bass gil::RM_IMP)
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-bass gil::RM_IMP)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* do-set-direct-cost   gil::RM_IMP)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* do-set-oblique-cost  gil::RM_IMP)
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* do-set-contrary-cost gil::RM_IMP)
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct)
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique)
+            ;(gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* is-contrary)
+            (setf (nth i *direct) do-set-direct-cost)
+            (setf (nth i *oblique) do-set-oblique-cost)
+            (setf (nth i *contrary) do-set-contrary-cost)
+            (setf (nth i *not-bass) is-not-bass)
+            (setf (nth i *bass) is-bass)
         )
     )
+    (setf *direct (bool-var-arr-printable *direct))
+    (setf *oblique (bool-var-arr-printable *oblique))
+    (setf *contrary (bool-var-arr-printable *contrary))
+    (setf *not-bass (bool-var-arr-printable *not-bass))
+    (setf *bass (bool-var-arr-printable *bass))
 )
 
 ; create the motions array based on the melodic intervals of the melodic intervals it is given
@@ -1306,7 +1326,7 @@
         for p in m-intervals-brut
         for q in cf-brut-m-intervals
         for m in motions
-        for c in costs
+       ; for c in costs
         do
             (let (
                 ; boolean variables

@@ -22,9 +22,6 @@
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint)) (first (cp *bass-notes)) (first (h-intervals counterpoint)))
 
-    ;(create-h-intervals (first (cp *upper-voice)) (first (cp *bass-notes)) (first (h-intervals *upper-voice)))
-    ;(create-h-intervals (first (cp *bass-notes))  *cf                      (first (h-intervals *bass-notes )))
-
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
@@ -57,7 +54,6 @@
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    ;(create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) (first (motions-cost counterpoint)))
     (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass-notes)) (first (motions counterpoint)) (first (motions-cost counterpoint)))
     (set-motions-cost (first (motions counterpoint)) (first (motions-cost counterpoint)) (rest (first (is-cp-bass counterpoint))))
 
