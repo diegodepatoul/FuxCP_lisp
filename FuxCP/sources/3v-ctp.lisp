@@ -25,10 +25,7 @@
     ))
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
-    
-
-    (create-is-voice-bass-arr *cf counterpoints)
-    
+        
     (create-h-intervals (first (cp *bass-notes)) *cf (first (h-intervals *bass-notes)))
     (dolist (counterpoint counterpoints)
         (case (species counterpoint)
