@@ -428,10 +428,9 @@
         )
         (gil::g-sorted *sp* voices (nth i sorted-voices))
         (gil::g-rel *sp* (nth i *bass) gil::IRT_EQ (first (nth i sorted-voices)))
-        ;(dotimes (j *N-VOICES) ; the jth voice
-        (gil::g-rel *sp* (nth i (first *upper)) gil::IRT_EQ (second (nth i sorted-voices)))
-        (gil::g-rel *sp* (nth i (second *upper)) gil::IRT_EQ (third (nth i sorted-voices)))
-
+        (dotimes (j *N-VOICES) ; the jth voice
+            (gil::g-rel *sp* (nth i (nth j *upper)) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+        )
     )
 )
 
