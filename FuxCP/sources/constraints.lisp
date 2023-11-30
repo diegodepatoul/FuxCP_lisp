@@ -418,7 +418,6 @@
 (defun create-voice-arrays (cantus-firmus counterpoints)
     (setf counterpoint-1 (first counterpoints))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
-    (dotimes (i *N-VOICES) (setf (first (cp (nth i *upper))) (gil::add-int-var-array *sp* *cf-len 0 120)))
     (dotimes (i *cf-len) ; the ith measure
         (setf voices (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
