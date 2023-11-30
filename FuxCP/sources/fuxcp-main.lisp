@@ -385,8 +385,9 @@
     (setq *upper (make-list *N-VOICES :initial-element nil))
     (setq *bass (gil::add-int-var-array *sp* *cf-len 0 120))
     (create-voice-arrays *cf counterpoints)
-
-    ;(create-m-intervals-self (first (cp *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
+    (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
+    (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
+    (create-m-intervals-self *bass *m-intervals-bass *m-intervals-brut-bass)
     ;(fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
@@ -588,6 +589,7 @@
         (handler-case (print (list "upper-2    = " (gil::g-values sol (second *upper)))) (error (c) (print "error with upper-2")))
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first *upper)))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol *bass))) (error (c) (print "error with bass")))
+        (handler-case (print (list "bass itvls = " (gil::g-values sol *m-intervals-brut-bass))) (error (c) (print "error with *m-intervals-brut-bass")))
         (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
         (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
 
