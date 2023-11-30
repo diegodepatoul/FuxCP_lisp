@@ -415,8 +415,25 @@
     )
 )
 
-; @completely new or reworked
 (defun create-is-voice-bass-arr (cantus-firmus counterpoints)
+    (setf counterpoint-1 (first counterpoints))
+    (setq sorted-voices (make-list *cf-len :initial-element nil))
+    (case *N-VOICES
+        (1 (progn
+            (loop 
+                for cf in cantus-firmus
+                for cp in (first (cp counterpoint-1))
+                for sorted in sorted-voices
+                do 
+                    (setf sorted (gil::add-int-var-array *sp* *cf-len 0 120))
+                    (gil::sorted *sp* (list cf cp) sorted)
+            )
+        ))
+    )
+)
+
+; @completely new or reworked
+(defun create-is-voice-bass-arr-2 (cantus-firmus counterpoints)
     (setf counterpoint-1 (first counterpoints))
     (case *N-VOICES
         (1 (progn
@@ -428,7 +445,7 @@
                 for cf in cantus-firmus
                 for cp-is-bass in (first (is-cp-bass counterpoint-1))        
                 for cf-is-bass in (first *is-cf-bass)   
-                for bass in (first (cp *bass-notes)) 
+                for bass in (first (cp *bass)) 
                 do 
                     (gil::g-rel-reify *sp* cp gil::IRT_LE cf cp-is-bass)
                     (gil::g-rel-reify *sp* cp gil::IRT_GQ cf cf-is-bass)
@@ -454,7 +471,7 @@
                 for cp-1-is-bass in (first (is-cp-bass counterpoint-1))        
                 for cp-2-is-bass in (first (is-cp-bass counterpoint-2))        
                 for cf-is-bass in (first (is-cp-bass *cantus-firmus))   
-                for bass in (first (cp *bass-notes))    
+                for bass in (first (cp *bass))    
                 do (let (
                     (cp-1<cp-2 (gil::add-bool-var *sp* 0 1))
                     (cp-1<cf (gil::add-bool-var *sp* 0 1))

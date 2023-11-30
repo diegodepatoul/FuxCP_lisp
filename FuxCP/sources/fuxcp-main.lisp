@@ -139,7 +139,7 @@
     )
 )
 ; @completely new or reworked
-(defclass bass-notes-class () (
+(defclass range-class () (
     (cp :accessor cp :initarg :cp :initform 
         (list 
             (gil::add-int-var-array *sp* *cf-len 0 120)
@@ -377,14 +377,15 @@
     (setq counterpoints (make-list *N-VOICES :initial-element nil))
     (dotimes (i *N-VOICES) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
     (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
-    (setq *bass-notes (make-instance 'bass-notes-class))
-    ;(setq *upper-voice (make-instance 'bass-notes-class))
+    (setq *bass (make-instance 'range-class))
+    (setq *upper-1 (make-instance 'range-class))
+    (setq *upper-2 (make-instance 'range-class))
     ;(setq *cantus-firmus (make-instance 'counterpoint-class))
     ;(setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
     ;(dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
     (setf *is-cf-bass (list nil nil nil nil))
     (create-is-voice-bass-arr *cf counterpoints)
-    ;(create-m-intervals-self (first (cp *bass-notes)) (first (m-intervals *bass-notes)) (first (m-intervals-brut *bass-notes)))
+    ;(create-m-intervals-self (first (cp *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
     ;(fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
@@ -580,7 +581,7 @@
         (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
         (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
         (handler-case (print (list "upper-notes = " (gil::g-values sol (first (cp *upper-notes))))) (error (c) (print "error with upper-notes")))
-        (handler-case (print (list "bass-notes = " (gil::g-values sol (first (cp *bass-notes))))) (error (c) (print "error with bass-notes")))
+        (handler-case (print (list "bass = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
         (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
