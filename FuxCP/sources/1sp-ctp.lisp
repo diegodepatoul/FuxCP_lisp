@@ -14,13 +14,29 @@
     ;============================================ CREATING GIL ARRAYS =============================
     ;; initialize the variables
     (print "Initializing variables...")
-        
+    
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint)) (first (cp *bass-notes)) (first (h-intervals counterpoint)))
+    (create-h-intervals (first (cp counterpoint)) *cf (first (h-intervals counterpoint)))
+
+    ; @completely new or reworked
+    ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
+    (if (eq *N-VOICES 2) (progn
+        (if (eq species 9) (progn 
+                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
+                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
+                (create-intervals (rest *cf) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+            ) (progn
+                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
+                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
+                (create-intervals *cf (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+            ) 
+        )
+    ))
+    ; =======
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
@@ -28,6 +44,7 @@
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
+
     
     (case species ((1 6) ; only for the first species
         ; then
@@ -49,13 +66,20 @@
     ; array of BoolVar representing if the interval between the cantus firmus and the counterpoint is a perfect consonance
     (setf (is-p-cons-arr counterpoint) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first (h-intervals counterpoint)) (is-p-cons-arr counterpoint))
+    
+
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
+    (print "Creating order of pitch array...")
+    (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-cf-bass-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
+
 
     ; creating motion array
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass-notes)) (first (motions counterpoint)) (first (motions-cost counterpoint)))
-    (set-motions-cost (first (motions counterpoint)) (first (motions-cost counterpoint)) (rest (first (is-cp-bass counterpoint))))
+    (create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) (first (motions-cost counterpoint)))
 
     
     ;============================================ HARMONIC CONSTRAINTS ============================
@@ -64,11 +88,9 @@
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
     (case species
-        ((1 6) (progn
-            (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) (first (is-cp-bass counterpoint)))
-        ))
-        ((2 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
-        ((3 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
+        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
+        ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
+        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
 
@@ -92,8 +114,8 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (case species ;todo
-        ((1 6) (add-penult-cons-cst (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
+    (case species
+        ((1 6) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================
@@ -117,15 +139,28 @@
             ; no direct motion to reach a perfect consonance
                 (progn
                     (print "No direct motion to reach a perfect consonance...")
-                    (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint) (first (is-cp-bass counterpoint)))
+                    (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint))
                 )
             )
             ; no battuta kind of motion
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
-            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cp-bass counterpoint)))
+            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-bass-arr counterpoint)))
         )
     ))
+
+    ; @completely new or reworked
+    ; ========= 2 counterpoints specific
+    (if (eq *N-VOICES 2)
+        (progn
+            (print "No successive perfect consonances (counterpoint to cantus firmus)")
+            (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
+
+            (print "Ascending sixths sound harsh")
+            (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
+        )
+    )
+    ; =========
     
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")

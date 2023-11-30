@@ -163,6 +163,9 @@
 
 ; @completely new or reworked
 (defclass counterpoint-class () (
+    ; to remove (deprecated)
+    (is-cf-bass-arr :accessor is-cf-bass-arr :initarg :is-cf-bass-arr :initform (list nil nil nil nil))
+
     ; species
     (species :accessor species :initarg :species :initform nil)
 
@@ -376,12 +379,13 @@
     (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
     (setq *bass-notes (make-instance 'bass-notes-class))
     ;(setq *upper-voice (make-instance 'bass-notes-class))
-    (setq *cantus-firmus (make-instance 'counterpoint-class))
-    (setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
-    (dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
+    ;(setq *cantus-firmus (make-instance 'counterpoint-class))
+    ;(setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
+    ;(dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
+    (setf *is-cf-bass (list nil nil nil nil))
     (create-is-voice-bass-arr *cf counterpoints)
-    (create-m-intervals-self (first (cp *bass-notes)) (first (m-intervals *bass-notes)) (first (m-intervals-brut *bass-notes)))
-    (fux-cp-cf *cantus-firmus 1)
+    ;(create-m-intervals-self (first (cp *bass-notes)) (first (m-intervals *bass-notes)) (first (m-intervals-brut *bass-notes)))
+    ;(fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -567,7 +571,7 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        (print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
+        ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
         (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
@@ -582,12 +586,12 @@
         (print (list "cf         = " *cf))
         (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
         (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
-        (print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
-        (print (list "direct   = " (gil::g-values sol *direct)))
-        (print (list "oblique  = " (gil::g-values sol *oblique)))
-        (print (list "contrary = " (gil::g-values sol *contrary)))
-        (print (list "not bass = " (gil::g-values sol *not-bass)))
-        (print (list "    bass = " (gil::g-values sol *bass)))
+        ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
+        ;(print (list "direct   = " (gil::g-values sol *direct)))
+        ;(print (list "oblique  = " (gil::g-values sol *oblique)))
+        ;(print (list "contrary = " (gil::g-values sol *contrary)))
+        ;(print (list "not bass = " (gil::g-values sol *not-bass)))
+        ;(print (list "    bass = " (gil::g-values sol *bass)))
         (handler-case
             (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
