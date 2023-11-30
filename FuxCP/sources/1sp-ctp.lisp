@@ -7,6 +7,10 @@
 ;;==========================#
 ;; FIRST SPECIES            #
 ;;==========================#
+(defun fux-cp-1st-harmonic (voice &optional (species 1))
+    
+)
+
 (defun fux-cp-1st (counterpoint &optional (species 1))
     (print "########## FIRST SPECIES ##########")
     "Create the CSP for the first species of Fux's counterpoint."
@@ -164,7 +168,6 @@
     
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
-
     (case species ((1 6)
         ; then
         (progn
