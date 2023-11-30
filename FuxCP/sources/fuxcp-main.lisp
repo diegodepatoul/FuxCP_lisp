@@ -395,6 +395,7 @@
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
+                (fux-cp-1st-harmonic (first *upper))
                 (fux-cp-1st (first counterpoints))
             ))
             (2 (progn

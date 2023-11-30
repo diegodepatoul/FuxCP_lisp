@@ -7,3 +7,4 @@
 
 ### QUESTIONS TO ASK
 * The penultimate rule: what should I do?
+* add-penult : comment on fait à 3 voix??
