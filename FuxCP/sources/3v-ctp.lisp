@@ -11,7 +11,11 @@
     (print "########## SIXTH SPECIES ##########")
     (setf counterpoint-1 (first counterpoints))
     (setf counterpoint-2 (second counterpoints))
-    (print (list "species list = " species-list))   
+    (print (list "species list = " species-list))
+
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
+    ;(create-is-voice-bass-arr counterpoint-1 counterpoint-2 cf)
 
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
@@ -25,18 +29,15 @@
     ))
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
-        
+
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
-    ; all voices must be consonant with the lowest one
-    ; implemented in the first species
-    
     (print "no unisson between cp1 and cp2")
     (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)))
 
     (print "all voices can't go in the same direction")
-    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)) (first (motions *cantus-firmus)))
+    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
@@ -45,20 +46,6 @@
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
-
-    (setq h-intervals-cp1-cf (list nil nil nil nil))
-    (setf (first h-intervals-cp1-cf) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint-1)) (first (cp *cantus-firmus)) (first h-intervals-cp1-cf))
-    (setf are-cp1-cf-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr (first h-intervals-cp1-cf) are-cp1-cf-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cf-cons-arr)
-
-    (setq h-intervals-cp2-cf (list nil nil nil nil))
-    (setf (first h-intervals-cp2-cf) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint-2)) (first (cp *cantus-firmus)) (first h-intervals-cp2-cf))
-    (setf are-cp2-cf-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr (first h-intervals-cp2-cf) are-cp2-cf-cons-arr)
-    (add-no-successive-p-cons-cst are-cp2-cf-cons-arr)
 
 
     ; THIS CLASHES WITH THE PENULT RULES WHEN USED ACROSS TWO DIFFERENT SPECIES
@@ -69,22 +56,34 @@
     ;         (gil::g-member *sp* ALL_CONS_VAR (nth i (first h-intervals-1-2)))
         ;)
     ;)
-    
+
+
+    #| TO BE CORRECTED 
+    (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
+    (case *nth-voice-is-bass
+        (-1 (progn
+            (add-penult-cons-cst-3v (list 
+                (first (h-intervals counterpoint-1)) 
+                (first (h-intervals counterpoint-2))
+            ))
+        ))
+        (1 (progn
+            (add-penult-cons-cst-3v (list
+                (first (h-intervals counterpoint-1))
+                (first h-intervals-1-2)
+            ))
+        ))
+        (2 (progn
+            (add-penult-cons-cst-3v (list
+                (first (h-intervals counterpoint-2))
+                (first h-intervals-1-2)
+            ))
+        ))
+    )
+    |#
 
     (print "Last chord cannot be minor")
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
-    (dolist (counterpoint counterpoints)
-        (if (eq (species counterpoint) 4) (progn 
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest *cf) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) (progn
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals *cf (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) 
-        )
-    )
     (if (or (member 4 species-list) (member 5 species-list))
         nil ; debug
         (progn 
@@ -93,18 +92,11 @@
                 (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2))
                 (h-intervals-brut counterpoint-1) (h-intervals-brut counterpoint-2)
             ) 
-            
-            (print "Last chord must be a perfect chord") 
-            (add-last-chord-h-triad-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
-
-            (print "Ascending sixths sound harsh")
-            (dolist (counterpoint counterpoints) 
-                (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
-            )
         )
     )
 
-
+    (print "Last chord must be a perfect chord") 
+    (add-last-chord-h-triad-cst (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)))
 
     ;================================================================================;
     ;                                    COSTS                                       ;
@@ -175,11 +167,6 @@
             ))
             (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
-    )
-
-    (dolist (counterpoint counterpoints)
-       ; (case (species counterpoint) ((1 2 3) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint))))
-        (case (species counterpoint) ((4) (add-p-cons-cost-cst (h-intervals-to-bass counterpoint) t)))
     )
     
     
