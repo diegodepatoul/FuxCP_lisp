@@ -418,7 +418,7 @@
 (defun create-voice-arrays (cantus-firmus counterpoints)
     (setf counterpoint-1 (first counterpoints))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
-    (dotimes (i *N-VOICES) (setf (nth i *upper) (gil::add-int-var-array *sp* *cf-len 0 120)))
+    (dotimes (i *N-VOICES) (setf (first (cp (nth i *upper))) (gil::add-int-var-array *sp* *cf-len 0 120)))
     (dotimes (i *cf-len) ; the ith measure
         (setf voices (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
@@ -427,9 +427,9 @@
             (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))))   
         )
         (gil::g-sorted *sp* voices (nth i sorted-voices))
-        (gil::g-rel *sp* (nth i *bass) gil::IRT_EQ (first (nth i sorted-voices)))
+        (gil::g-rel *sp* (nth i (first (cp *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
         (dotimes (j *N-VOICES) ; the jth voice
-            (gil::g-rel *sp* (nth i (nth j *upper)) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+            (gil::g-rel *sp* (nth i (first (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
     )
 )
