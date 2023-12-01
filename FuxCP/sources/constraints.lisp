@@ -418,19 +418,64 @@
 (defun create-voice-arrays (cantus-firmus counterpoints)
     (setf counterpoint-1 (first counterpoints))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
+    (setf (first (is-cp-bass *cantus-firmus)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (setf *which-one-is-bass (gil::add-int-var-array *sp* *cf-len 0 2))
+    (dotimes (i *N-VOICES) (setf (first (is-cp-bass (nth i counterpoints))) (gil::add-bool-var-array *sp* *cf-len 0 1)))
+
     (dotimes (i *cf-len) ; the ith measure
         (setf voices (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
-        (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (gil::g-rel *sp* (first voices) gil::IRT_EQ (nth i cantus-firmus))
         (dotimes (j *N-VOICES) ; the jth counterpoint
             (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))))   
         )
-        (gil::g-sorted *sp* voices (nth i sorted-voices))
+
+        (setf order (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 *N-VOICES))
+        ;(gil::g-distinct *sp* order)
+
+        (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
+        (gil::g-sorted *sp* voices (nth i sorted-voices) order)
+        
         (gil::g-rel *sp* (nth i (first (cp *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
         (dotimes (j *N-VOICES) ; the jth voice
             (gil::g-rel *sp* (nth i (first (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
+        (let (
+            (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
+            (cp1-equals-bass (gil::add-bool-var *sp* 0 1))
+            (cp1-is-not-bass (gil::add-bool-var *sp* 0 1))
+            (cp2-equals-bass (gil::add-bool-var *sp* 0 1))
+        ))
+
+        (setf bass-voice (gil::add-int-var *sp* 0 *N-VOICES))
+        (gil::g-min-value *sp* (first order) (nth i *which-one-is-bass))
+        ;(gil::g-argmin *sp* (first order) bass-voice)
+        (gil::g-rel-reify *sp* bass-voice gil::IRT_EQ 0 (nth i (first (is-cp-bass *cantus-firmus))))
+        ;(gil::g-rel-reify *sp* (first order) gil::IRT_EQ 0 (nth i (first (is-cp-bass *cantus-firmus))) gil::RM_IMP)
+        ;(gil::g-rel-reify *sp* (first order) gil::IRT_EQ 0 (nth i (first (is-cp-bass *cantus-firmus))) gil::RM_IMP)
+        ;(gil::g-op *sp* (nth i (first (is-cp-bass *cantus-firmus))) gil::BOT_AND (nth i (first (is-cp-bass *cantus-firmus))) 0)
+        
+
+        ;(dotimes (j *N-VOICES)
+        ;    (gil::g-rel-reify *sp* (first order) gil::IRT_EQ (+ j 1) (nth i (first (is-cp-bass (nth j counterpoints)))))
+        ;)
+        ;(gil::g-op *sp* (nth i (first (is-cp-bass *cantus-firmus))) gil::BOT_XOR (nth i (first (is-cp-bass (first counterpoints)))) 1)
+        ;(setf order-bis (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 *N-VOICES))
+        ;(dotimes (j *N-VOICES) (gil::g-rel *sp* (nth j order) gil::IRT_EQ (nth j order-bis)))
+        ;(gil::g-distinct *sp* order-bis)
+        ;(dotimes (j (+ *N-VOICES 1))
+        ;    (gil::g-rel)
+        ;)
+
+
+        ;(gil::g-rel-reify *sp* (first (nth i sorted-voices)) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) (nth i (first (is-cp-bass *cantus-firmus))))
+        ;(dotimes (j *N-VOICES)
+        ;    (gil::g-rel-reify *sp* (first (nth i sorted-voices)) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))) (nth i (first (is-cp-bass (nth j counterpoints)))))
+        ;)
+        ;(gil::g-rel *sp* (nth i *which-one-is-bass) gil::IRT_EQ (first order))
     )
+    (setq *is-cp1-bass-print (bool-var-arr-printable (first (is-cp-bass (first counterpoints)))))
+    ;(setq *is-cp2-bass-print (bool-var-arr-printable (first (is-cp-bass (second counterpoints)))))
+    (setq *is-cf-bass-print (bool-var-arr-printable (first (is-cp-bass *cantus-firmus))))
 )
 
 
@@ -621,12 +666,12 @@
 ; @cf-penult-index: the index of penultimate note in the counterpoint
 ; @h-intervals: the array of harmonic intervals
 ; @penult-dom-var: the domain of the penultimate note
-(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR))
+(defun add-h-cons-cst (len cf-penult-index h-intervals is-cp-bass &optional (penult-dom-var PENULT_CONS_VAR))
     (loop for i from 0 below len do
         (setq h-interval (nth i h-intervals))
         (if (eq i cf-penult-index) ; if it is the penultimate note
             ; then add major sixth + minor third by default
-            (add-penult-dom-cst h-interval penult-dom-var)
+            (add-penult-dom-cst h-interval (nth i is-cp-bass) penult-dom-var)
             ; else add all consonances
             (if (not (null h-interval))
                 (gil::g-member *sp* ALL_CONS_VAR h-interval)
@@ -692,9 +737,12 @@
 )
 
 ; add the constraint such that the penultimate note belongs to the domain @penult-dom-var
-(defun add-penult-dom-cst (h-interval penult-dom-var)
+(defun add-penult-dom-cst (h-interval is-cp-bass penult-dom-var)
     (if (getparam 'penult-rule-check)
-        (gil::g-member *sp* penult-dom-var h-interval)
+        (let ((constrained-h (gil::add-int-var *sp* 0 12)))
+            (gil::g-member *sp* penult-dom-var constrained-h)
+            (gil::g-ite *sp* is-cp-bass h-interval constrained-h h-interval)
+        )
     )
 )
 
@@ -1004,8 +1052,8 @@
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* b-bass NINE THREE h-interval)
-            (and-ite b-bass NINE THREE h-interval and-cond)
+            (gil::g-ite *sp* b-bass h-interval NINE h-interval)
+            (and-ite b-bass NINE THREE h-interval and-cond) ; TODO CHANGE THIS ONE
         )  
     )
 )
@@ -1272,12 +1320,24 @@
 )
 
 ; add the constraint such that there is no perfect consonance in thesis that is reached by direct motion
-(defun add-no-direct-move-to-p-cons-cst (motions is-p-cons-arr &optional (r t))
+(defun add-no-direct-move-to-p-cons-cst (motions is-p-cons-arr is-bass-arr &optional (r t))
     (loop
         for m in motions
-        for b in (rest-if is-p-cons-arr r)
-        do 
-            (gil::g-rel-reify *sp* m gil::IRT_NQ DIRECT b gil::RM_IMP)
+        for is-p-cons in (rest-if is-p-cons-arr r)
+        for is-bass in (rest-if is-bass-arr r)
+        do (let (
+                (is-not-bass (gil::add-bool-var *sp* 0 1))
+                (is-direct (gil::add-bool-var *sp* 0 1))
+                (direct-and-not-bass (gil::add-bool-var *sp* 0 1))
+                (p-cons-and-direct-and-not-bass (gil::add-bool-var *sp* 0 1))
+                (p-cons-and-not-bass (gil::add-bool-var *sp* 0 1))
+                (not-p-cons (gil::add-bool-var *sp* 0 1))
+                (no-p-cons-or-bass (gil::add-bool-var *sp* 0 1))
+            )
+            (gil::g-op *sp* is-not-bass gil::BOT_XOR is-bass 1)
+            (gil::g-op *sp* is-not-bass gil::BOT_AND is-p-cons p-cons-and-not-bass)
+            (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT p-cons-and-not-bass)
+        )
     )
 )
 

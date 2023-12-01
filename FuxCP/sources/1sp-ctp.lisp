@@ -7,55 +7,6 @@
 ;;==========================#
 ;; FIRST SPECIES            #
 ;;==========================#
-(defun fux-cp-1st-harmonic (voice &optional (species 1))
-    (setf upper (first *upper))
-    (create-h-intervals (first (cp upper)) (first (cp *bass)) (first (h-intervals upper)))
-    ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
-    (print "Harmonic consonances...")
-    (case species
-        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals upper))))
-        ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals upper)) PENULT_THESIS_VAR))
-        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals upper)) PENULT_1Q_VAR))
-        ;(otherwise (error "Species not supported"))
-    )
-
-    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
-    ; 0 for being the bass, 1 for being above
-    (print "Creating order of pitch array...")
-    (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-cf-bass-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
-
-    ;============================================ HARMONIC CONSTRAINTS ============================
-    (print "Posting constraints...")
-    ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
-    (print "No unisson...")
-    (add-no-unisson-cst (first (cp upper)) (first (cp *bass)))
-
-    (case species ((1 2) 
-        ; then
-        (progn
-        ; must start with a perfect consonance
-        (print "Perfect consonance at the beginning...")
-        (add-p-cons-start-cst (first (h-intervals upper)))
-
-        ; must end with a perfect consonance
-        (print "Perfect consonance at the end...")
-        (add-p-cons-end-cst (first (h-intervals upper)))
-        )
-    ))
-
-    ;============================================ COST FACTORS ====================================
-    (print "Cost function...")
-    (case species ((1 6)
-        ; then
-        (progn
-            ; 1, 2) imperfect consonances are preferred to perfect consonances
-            (print "Imperfect consonances are preferred to perfect consonances...")
-            (add-p-cons-cost-cst (h-intervals upper))
-        )
-    ))
-)
-
 (defun fux-cp-1st (counterpoint &optional (species 1))
     (print "########## FIRST SPECIES ##########")
     "Create the CSP for the first species of Fux's counterpoint."
@@ -69,7 +20,7 @@
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint)) *cf (first (h-intervals counterpoint)))
+    (create-h-intervals (first (cp counterpoint)) (first (cp *bass)) (first (h-intervals counterpoint)))
 
     ; @completely new or reworked
     ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
@@ -117,22 +68,56 @@
     (create-is-p-cons-arr (first (h-intervals counterpoint)) (is-p-cons-arr counterpoint))
     
 
+    ; creating order/role of pitch array (if cantus firmus is higher or lower than counterpoint)
+    ; 0 for being the bass, 1 for being above
+    (print "Creating order of pitch array...")
+    (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
+    (create-is-cf-bass-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
+
+
     ; creating motion array
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) (first (motions-cost counterpoint)))
+    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (first (motions counterpoint)) (first (motions-cost counterpoint)))
+
     
-    ;(setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
-    ;(setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    ;(create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (first (motions counterpoint)) (first (motions-cost counterpoint)))
-    
+    ;============================================ HARMONIC CONSTRAINTS ============================
+    (print "Posting constraints...")
+
+    ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
+    (print "Harmonic consonances...")
+    (case species
+        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) (first (is-cp-bass counterpoint))))
+        ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
+        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
+        ;(otherwise (error "Species not supported"))
+    )
+
+    ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
+    (print "No unisson...")
+    (add-no-unisson-cst (first (cp counterpoint)) *cf)
+
+    (case species ((1 2) 
+        ; then
+        (progn
+        ; must start with a perfect consonance
+        (print "Perfect consonance at the beginning...")
+        (add-p-cons-start-cst (first (h-intervals counterpoint)))
+
+        ; must end with a perfect consonance
+        (print "Perfect consonance at the end...")
+        (add-p-cons-end-cst (first (h-intervals counterpoint)))
+        )
+    ))
+
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ((1 6) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
+        ((1 6) (add-penult-cons-cst (penult (first (is-cp-bass counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
+
     ;============================================ MELODIC CONSTRAINTS =============================
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
     (print "Melodic constraints...")
@@ -154,7 +139,7 @@
             ; no direct motion to reach a perfect consonance
                 (progn
                     (print "No direct motion to reach a perfect consonance...")
-                    (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint))
+                   ; (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint) (first (is-cp-bass counterpoint)))
                 )
             )
             ; no battuta kind of motion
@@ -183,6 +168,10 @@
         ; then
         (progn
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
+            ; 1, 2) imperfect consonances are preferred to perfect consonances
+            (print "Imperfect consonances are preferred to perfect consonances...")
+            (add-p-cons-cost-cst (h-intervals counterpoint))
+
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
             (set-general-costs-cst counterpoint *cf-len)

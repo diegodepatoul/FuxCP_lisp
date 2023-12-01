@@ -19,7 +19,10 @@
 
     (loop for i from 0 below *N-VOICES do (progn
         (case (nth i species-list)
-            (1 (fux-cp-1st (nth i counterpoints) 6))
+            (1 (progn
+                (fux-cp-1st-harmonic (nth i ))
+                (fux-cp-1st (nth i counterpoints) 6)
+            ))
             (2 (fux-cp-2nd (nth i counterpoints) 7))
             (3 (fux-cp-3rd (nth i counterpoints) 8))
             (4 (fux-cp-4th (nth i counterpoints) 9))

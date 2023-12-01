@@ -383,19 +383,19 @@
     (setq *bass (make-instance 'range-class))
     (setf (first (cp *bass)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
-    ;(setq *cantus-firmus (make-instance 'counterpoint-class))
-    ;(setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
-    ;(dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
+    (setq *cantus-firmus (make-instance 'counterpoint-class))
+    (setf (first (cp *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
+    (dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (cp *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
 
     (create-voice-arrays *cf counterpoints)
     (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
     (create-m-intervals-self (first (cp *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
-    ;(fux-cp-cf *cantus-firmus 1)
+    (fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
-                (fux-cp-1st-harmonic (first *upper))
+                ;(fux-cp-1st-harmonic (first *upper))
                 (fux-cp-1st (first counterpoints))
             ))
             (2 (progn
@@ -583,10 +583,11 @@
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
         (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
-;        (handler-case (print (list "is-cp1-bass = " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
-;        (handler-case (print (list "is-cp2-bass = " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
-;        (handler-case (print (list "is-cf-bass  = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
-;        (handler-case (print (list "bass = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
+        ;(print (list "last order = " (gil::g-values sol order)))
+        (handler-case (print (list "which one  = " (gil::g-values sol *which-one-is-bass))) (error (c)  (print "error with which-one-is-bass")))
+        (handler-case (print (list "is-cp1-bass= " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
+        (handler-case (print (list "is-cp2-bass= " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
+        (handler-case (print (list "is-cf-bass = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
         (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
