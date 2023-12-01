@@ -43,6 +43,17 @@
         (add-p-cons-end-cst (first (h-intervals upper)))
         )
     ))
+
+    ;============================================ COST FACTORS ====================================
+    (print "Cost function...")
+    (case species ((1 6)
+        ; then
+        (progn
+            ; 1, 2) imperfect consonances are preferred to perfect consonances
+            (print "Imperfect consonances are preferred to perfect consonances...")
+            (add-p-cons-cost-cst (h-intervals upper))
+        )
+    ))
 )
 
 (defun fux-cp-1st (counterpoint &optional (species 1))
@@ -112,6 +123,10 @@
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (create-motions (first (m-intervals-brut counterpoint)) *cf-brut-m-intervals (first (motions counterpoint)) (first (motions-cost counterpoint)))
     
+    ;(setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
+    ;(setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
+    ;(create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (first (motions counterpoint)) (first (motions-cost counterpoint)))
+    
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
@@ -168,10 +183,6 @@
         ; then
         (progn
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
-            ; 1, 2) imperfect consonances are preferred to perfect consonances
-            (print "Imperfect consonances are preferred to perfect consonances...")
-            (add-p-cons-cost-cst (h-intervals counterpoint))
-
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
             (set-general-costs-cst counterpoint *cf-len)
