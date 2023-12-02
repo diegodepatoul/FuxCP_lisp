@@ -224,7 +224,7 @@
             (5 (setq *N-COST-FACTORS 8))
         ))
         (2 (progn
-            (setq *N-COST-FACTORS 5)
+            (setq *N-COST-FACTORS 6)
             (dolist (species *species-list)
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
@@ -1363,6 +1363,17 @@
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
     do (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) 0) ; NOT (is-curr-consonant AND is-next-consonant))
+    )
+)
+
+(defun compute-no-successive-p-cons-cost (is-p-cons-array cost-array j)
+    (print  "")
+    (dotimes (i *cf-last-index)
+        (let ((successive-p-cons (gil::add-bool-var *sp* 0 1)))
+            (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons)
+            (print (+ i j))
+            (gil::g-rel-reify *sp* (nth (+ i j) cost-array) gil::IRT_EQ 1 successive-p-cons)
+        )
     )
 )
 

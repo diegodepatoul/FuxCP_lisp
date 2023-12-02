@@ -44,31 +44,36 @@
     (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
     
-#|
+
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
     (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp upper-1)) (first (cp upper-2)) (first h-intervals-1-2))
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
+    ;(add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
 
-    (dolist (p-cons-arr (list (is-p-cons-arr upper-1) (is-p-cons-arr upper-1) are-cp1-cp2-cons-arr))
-        (let  
-            (
-            successive-p-cons-cost (gil::add-int-var-array *sp* *cf-last-index 0 1)
-            )
-            (compute-no-successive-p-cons-cost)
+    (setq *successive-p-cons-print nil)
+    (let (
+        (successive-p-cons-cost (gil::add-int-var-array *sp* (* 3 *cf-last-index) 0 1))
+        (i 0)
         )
+        (print (* 3 *cf-last-index))
+        (dolist (p-cons-arr (list (is-p-cons-arr upper-1) (is-p-cons-arr upper-1) are-cp1-cp2-cons-arr))
+            (compute-no-successive-p-cons-cost p-cons-arr successive-p-cons-cost i)
+            (incf i *cf-last-index)
+        )
+        (add-cost-to-factors successive-p-cons-cost 'successive-p-cons-cost)
+        (setq *successive-p-cons-print successive-p-cons-cost)
     )
 
     (print "No successive perfect consonances (counterpoint to cantus firmus)")
-    (add-no-successive-p-cons-cst (is-p-cons-arr upper))
+    ;(add-no-successive-p-cons-cst (is-p-cons-arr upper))
 
 
     (print "Ascending sixths sound harsh")
-    (add-no-ascending-sixths-cst (first (h-intervals upper)) (first (cp upper)))
-     |#
+    ;(add-no-ascending-sixths-cst (first (h-intervals upper)) (first (cp upper)))
+     
      
 
     ; THIS CLASHES WITH THE PENULT RULES WHEN USED ACROSS TWO DIFFERENT SPECIES
@@ -211,7 +216,7 @@
      |#
     
     ; TO DELETE LINE
-    ;(setq *h-intervals-1-2 h-intervals-1-2)
+    (setq *h-intervals-1-2 h-intervals-1-2)
 
     ;================================================================================;
     ;                                    RETURN                                      ;

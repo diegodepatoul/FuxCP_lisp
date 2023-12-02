@@ -471,6 +471,7 @@
                                 'variety-cost
                                 'motions-cost
                                 'off-key-cost
+                                'successive-p-cons-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -612,7 +613,7 @@
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
         (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
-        (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
+        (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         ;(print (list "last order = " (gil::g-values sol order)))
         (handler-case (print (list "which one  = " (gil::g-values sol *which-one-is-bass))) (error (c)  (print "error with which-one-is-bass")))
@@ -628,6 +629,7 @@
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
         (print (list "motions       = " (gil::g-values sol (first (motions (first *upper))))))
         (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first *upper))))))
+        (print (list "succ-p-cost   = " (gil::g-values sol *successive-p-cons-print)))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))
