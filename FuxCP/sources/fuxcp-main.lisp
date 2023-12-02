@@ -73,6 +73,10 @@
     (defparameter IMP_CONS (list 3 4 8 9))
     ; all consonances intervals
     (defparameter ALL_CONS (union P_CONS IMP_CONS))
+    ; harmonic triad intervals
+    (defparameter H_TRIAD (list 0 3 4 7))
+    ; major harmonic triad intervals
+    (defparameter MAJ_H_TRIAD (list 0 4 7))
     ; dissonances intervals
     (defparameter DIS (list 1 2 5 6 10 11))
     ; penultimate intervals, i.e. minor third and major sixth
@@ -90,6 +94,10 @@
     (defparameter IMP_CONS_VAR (gil::add-int-var-const-array *sp* IMP_CONS))
     ; ALL_CONS in IntVar
     (defparameter ALL_CONS_VAR (gil::add-int-var-const-array *sp* ALL_CONS))
+    ; H_TRIAD in IntVar
+    (defparameter H_TRIAD_VAR (gil::add-int-var-const-array *sp* H_TRIAD))
+    ; MAJ_H_TRIAD in IntVar
+    (defparameter MAJ_H_TRIAD_VAR (gil::add-int-var-const-array *sp* MAJ_H_TRIAD))
     ; PENULT_CONS in IntVar
     (defparameter PENULT_CONS_VAR (gil::add-int-var-const-array *sp* PENULT_CONS))
     ; PENULT_THESIS in IntVar
@@ -178,6 +186,9 @@
     (m-degrees-type :accessor m-degrees-type :initarg :m-degrees-type :initform nil)
     (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
     (m-all-intervals :accessor m-all-intervals :initarg :m-all-intervals :initform nil)
+
+    (h-intervals-abs :accessor h-intervals-abs :initarg :h-intervals-abs :initform (list nil nil nil nil))
+    (h-intervals-brut :accessor h-intervals-brut :initarg :h-intervals-brut :initform (list nil nil nil nil))
 ))
 
 ; @completely new or reworked
@@ -313,7 +324,7 @@
                             )))
                         )
                         ; =======
-                        (if (is-borrow-allowed) (case species ((1 6)
+                        (if (is-borrow-allowed) (case species ((1)
                             ; then add to the penultimate note more possibilities
                             (setf (nth *cf-penult-index (first (cp counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
                         )))
@@ -415,7 +426,7 @@
         (1 (case (first species-list) ; if only two voices
             (1 (progn
                 ;(fux-cp-1st-harmonic (first *upper))
-                (fux-cp-1st (first counterpoints))
+                (fux-cp-1st (first counterpoints) (first *upper))
             ))
             (2 (progn
                 (fux-cp-2nd (first counterpoints))
@@ -458,8 +469,8 @@
                                 'h-triad-cost                 
                                 'm-degrees-cost
                                 'variety-cost
-                                'off-key-cost
                                 'motions-cost
+                                'off-key-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -599,8 +610,8 @@
         ; print the solution from GiL
         (print "Solution: ")
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
-        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
-        (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second counterpoints)))))) (error (c)  (print "error with h-intervals2")))
+        (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
+        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
         (handler-case  (print (list "h-intervals1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         ;(print (list "last order = " (gil::g-values sol order)))

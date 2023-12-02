@@ -7,10 +7,9 @@
 ;;==========================#
 ;; FIRST SPECIES            #
 ;;==========================#
-(defun fux-cp-1st (counterpoint &optional (species 1))
+(defun fux-cp-1st (counterpoint upper &optional (species 1))
     (print "########## FIRST SPECIES ##########")
     "Create the CSP for the first species of Fux's counterpoint."
-    (setf upper (first *upper))
 
     ;============================================ CREATING GIL ARRAYS =============================
     ;; initialize the variables
@@ -25,18 +24,20 @@
     (create-h-intervals (first (cp upper)) (first (cp *bass)) (first (h-intervals upper)))
     ; @completely new or reworked
     ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
+    
     (if (eq *N-VOICES 2) (progn
         (if (eq species 9) (progn 
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest *cf) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (setf (h-intervals-abs upper) (gil::add-int-var-array *sp* *cf-last-index -127 127))
+                (setf (h-intervals-brut upper) (gil::add-int-var-array *sp* *cf-last-index -127 127))
+                (create-intervals (rest (first (cp *bass))) (third (cp upper)) (h-intervals-abs upper) (h-intervals-brut upper))
             ) (progn
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals *cf (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (setf (h-intervals-abs upper) (gil::add-int-var-array *sp* *cf-len -127 127))
+                (setf (h-intervals-brut upper) (gil::add-int-var-array *sp* *cf-len -127 127))
+                (create-intervals (first (cp *bass)) (first (cp upper)) (h-intervals-abs upper) (h-intervals-brut upper))
             ) 
         )
-    ))
+    )) 
+    
     ; =======
 
     ; creating melodic intervals array
@@ -98,6 +99,7 @@
         ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals upper)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
+    ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_CONS_VAR)
 
     ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unisson...")
@@ -120,7 +122,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ((1 6) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
+        ((1) (add-penult-cons-cst (penult (first (is-cf-bass-arr counterpoint))) (penult (first (h-intervals counterpoint)))))
     )
 
     ;============================================ MELODIC CONSTRAINTS =============================
@@ -153,19 +155,6 @@
             (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (first (is-cf-bass-arr counterpoint)))
         )
     ))
-
-    ; @completely new or reworked
-    ; ========= 2 counterpoints specific
-    (if (eq *N-VOICES 2)
-        (progn
-            (print "No successive perfect consonances (counterpoint to cantus firmus)")
-            (add-no-successive-p-cons-cst (is-p-cons-arr counterpoint))
-
-            (print "Ascending sixths sound harsh")
-            (add-no-ascending-sixths-cst (first (h-intervals counterpoint)) (first (cp counterpoint)))
-        )
-    )
-    ; =========
     
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")

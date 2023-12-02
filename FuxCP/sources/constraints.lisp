@@ -669,9 +669,9 @@
 (defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR))
     (loop for i from 0 below len do
         (setq h-interval (nth i h-intervals))
-        (if (eq i cf-penult-index) ; if it is the penultimate note
-            ; then add major sixth + minor third by default
-            (add-penult-dom-cst h-interval penult-dom-var)
+        (if (eq i *cf-last-index) ; if it is the last note
+            ; then add only harmonic triad options
+            (gil::g-member *sp* MAJ_H_TRIAD_VAR h-interval)
             ; else add all consonances
             (if (not (null h-interval))
                 (gil::g-member *sp* ALL_CONS_VAR h-interval)
@@ -928,36 +928,16 @@
 
 ; add the constraint that there cannot be a tenth in the last chord
 ; @completely new or reworked
-(defun add-no-tenth-in-last-chord-cst (h-intervals-1 h-intervals-2 h-intervals-brut-1 h-intervals-brut-2)
+(defun add-no-tenth-in-last-chord-cst (h-intervals h-intervals-brut)
     (let (
-        (h1 (lastone h-intervals-1))
-        (h2 (lastone h-intervals-2))
-        (hbrut1 (lastone h-intervals-brut-1))
-        (hbrut2 (lastone h-intervals-brut-2))
-        (is-hbrut1-3 (gil::add-bool-var *sp* 0 1))
-        (is-hbrut1-4 (gil::add-bool-var *sp* 0 1))
-        (is-hbrut1-third (gil::add-bool-var *sp* 0 1))
-        (is-hbrut1-not-third (gil::add-bool-var *sp* 0 1))
-        (is-hbrut2-3 (gil::add-bool-var *sp* 0 1))
-        (is-hbrut2-4 (gil::add-bool-var *sp* 0 1))
-        (is-hbrut2-third (gil::add-bool-var *sp* 0 1))
-        (is-hbrut2-not-third (gil::add-bool-var *sp* 0 1))
+        (h (lastone h-intervals))
+        (hbrut (lastone h-intervals-brut))
+        (is-hbrut-third (gil::add-bool-var *sp* 0 1))
+        (is-hbrut-not-third (gil::add-bool-var *sp* 0 1))
         ) 
-        (gil::g-rel-reify *sp* hbrut1 gil::IRT_EQ 3 is-hbrut1-3)
-        (gil::g-rel-reify *sp* hbrut1 gil::IRT_EQ 4 is-hbrut1-4)
-        (gil::g-rel-reify *sp* hbrut2 gil::IRT_EQ 3 is-hbrut2-3)
-        (gil::g-rel-reify *sp* hbrut2 gil::IRT_EQ 4 is-hbrut2-4)
-
-        (gil::g-op *sp* is-hbrut1-3 gil::BOT_OR is-hbrut1-4 is-hbrut1-third)
-        (gil::g-op *sp* is-hbrut2-3 gil::BOT_OR is-hbrut2-4 is-hbrut2-third)
-
-        (gil::g-op *sp* is-hbrut1-third gil::BOT_XOR is-hbrut1-not-third 1)
-        (gil::g-op *sp* is-hbrut2-third gil::BOT_XOR is-hbrut2-not-third 1)
-
-        (gil::g-rel-reify *sp* h1 gil::IRT_NQ 3 is-hbrut1-not-third)
-        (gil::g-rel-reify *sp* h1 gil::IRT_NQ 4 is-hbrut1-not-third)
-        (gil::g-rel-reify *sp* h2 gil::IRT_NQ 3 is-hbrut2-not-third)
-        (gil::g-rel-reify *sp* h2 gil::IRT_NQ 4 is-hbrut2-not-third)
+        (gil::g-rel-reify *sp* hbrut gil::IRT_EQ 3 is-hbrut-third)
+        (gil::g-op *sp* is-hbrut-third gil::BOT_XOR is-hbrut-not-third 1)
+        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-not-third)
     )
 )
 
