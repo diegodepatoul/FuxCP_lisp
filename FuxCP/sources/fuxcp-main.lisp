@@ -140,6 +140,9 @@
 )
 ; @completely new or reworked
 (defclass range-class () (
+    (solution-array :accessor solution-array :initarg :solution-array :initform nil)
+    (solution-len :accessor solution-len :initarg :solution-len :initform nil)
+
     (cp :accessor cp :initarg :cp :initform 
         (list 
             (gil::add-int-var-array *sp* *cf-len 0 120)
@@ -159,6 +162,22 @@
     (is-p-cons-arr :accessor is-p-cons-arr :initarg :is-p-cons-arr :initform nil)
     (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list (gil::add-int-var-array *sp* *cf-last-index 0 12) nil nil nil))
     (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list (gil::add-int-var-array *sp* *cf-last-index -12 12) nil nil nil))
+    ;(m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list nil nil nil nil))
+    ;(m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
+    (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
+    (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
+    (is-cf-lower-arr :accessor is-cf-lower-arr :initarg :is-cf-lower-arr :initform (list nil nil nil nil))
+    (m2-intervals-brut :accessor m2-intervals-brut :initarg :m2-intervals-brut :initform nil)
+    (m2-intervals :accessor m2-intervals :initarg :m2-intervals :initform nil)
+    (cf-brut-m-intervals :accessor cf-brut-m-intervals :initarg :cf-brut-m-intervals :initform nil)
+    (is-cp-off-key-arr :accessor is-cp-off-key-arr :initarg :is-cp-off-key-arr :initform nil)
+    (p-cons-cost :accessor p-cons-cost :initarg :p-cons-cost :initform nil)
+    (fifth-cost :accessor fifth-cost :initarg :fifth-cost :initform nil)
+    (octave-cost :accessor octave-cost :initarg :octave-cost :initform nil)
+    (m-degrees-cost :accessor m-degrees-cost :initarg :m-degrees-cost :initform nil)
+    (m-degrees-type :accessor m-degrees-type :initarg :m-degrees-type :initform nil)
+    (off-key-cost :accessor off-key-cost :initarg :off-key-cost :initform nil)
+    (m-all-intervals :accessor m-all-intervals :initarg :m-all-intervals :initform nil)
 ))
 
 ; @completely new or reworked
@@ -391,7 +410,7 @@
     (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
     (create-m-intervals-self (first (cp *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
-    (fux-cp-cf *cantus-firmus 1)
+    ; (fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -451,6 +470,7 @@
                     (loop for index in (gethash cost *cost-indexes) do (progn
                         (assert index () "index should not be nil")
                         (setf (nth i reordered-costs) (nth index *cost-factors))
+                        (print (list i "th cost = " cost))
                         (incf i)
                     ))
                     )
@@ -595,8 +615,8 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (cp (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
-        (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
-        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
+        (print (list "motions       = " (gil::g-values sol (first (motions (first *upper))))))
+        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first *upper))))))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))

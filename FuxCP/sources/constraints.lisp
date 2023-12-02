@@ -666,12 +666,12 @@
 ; @cf-penult-index: the index of penultimate note in the counterpoint
 ; @h-intervals: the array of harmonic intervals
 ; @penult-dom-var: the domain of the penultimate note
-(defun add-h-cons-cst (len cf-penult-index h-intervals is-cp-bass &optional (penult-dom-var PENULT_CONS_VAR))
+(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR))
     (loop for i from 0 below len do
         (setq h-interval (nth i h-intervals))
         (if (eq i cf-penult-index) ; if it is the penultimate note
             ; then add major sixth + minor third by default
-            (add-penult-dom-cst h-interval (nth i is-cp-bass) penult-dom-var)
+            (add-penult-dom-cst h-interval penult-dom-var)
             ; else add all consonances
             (if (not (null h-interval))
                 (gil::g-member *sp* ALL_CONS_VAR h-interval)
@@ -737,14 +737,12 @@
 )
 
 ; add the constraint such that the penultimate note belongs to the domain @penult-dom-var
-(defun add-penult-dom-cst (h-interval is-cp-bass penult-dom-var)
+(defun add-penult-dom-cst (h-interval penult-dom-var)
     (if (getparam 'penult-rule-check)
-        (let ((constrained-h (gil::add-int-var *sp* 0 12)))
-            (gil::g-member *sp* penult-dom-var constrained-h)
-            (gil::g-ite *sp* is-cp-bass h-interval constrained-h h-interval)
-        )
+        (gil::g-member *sp* penult-dom-var h-interval)
     )
 )
+
 
 ; add the constraint such that is-cst-arr[i] => is-cons-arr[i] is true
 ; -is-cons-arr: array of BoolVar, 1 -> the harmonic interval is a consonance
@@ -1052,8 +1050,8 @@
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* b-bass h-interval NINE h-interval)
-            (and-ite b-bass NINE THREE h-interval and-cond) ; TODO CHANGE THIS ONE
+            (gil::g-ite *sp* b-bass NINE THREE h-interval)
+            (and-ite b-bass NINE THREE h-interval and-cond)
         )  
     )
 )
@@ -1320,26 +1318,15 @@
 )
 
 ; add the constraint such that there is no perfect consonance in thesis that is reached by direct motion
-(defun add-no-direct-move-to-p-cons-cst (motions is-p-cons-arr is-bass-arr &optional (r t))
+(defun add-no-direct-move-to-p-cons-cst (motions is-p-cons-arr &optional (r t))
     (loop
         for m in motions
-        for is-p-cons in (rest-if is-p-cons-arr r)
-        for is-bass in (rest-if is-bass-arr r)
-        do (let (
-                (is-not-bass (gil::add-bool-var *sp* 0 1))
-                (is-direct (gil::add-bool-var *sp* 0 1))
-                (direct-and-not-bass (gil::add-bool-var *sp* 0 1))
-                (p-cons-and-direct-and-not-bass (gil::add-bool-var *sp* 0 1))
-                (p-cons-and-not-bass (gil::add-bool-var *sp* 0 1))
-                (not-p-cons (gil::add-bool-var *sp* 0 1))
-                (no-p-cons-or-bass (gil::add-bool-var *sp* 0 1))
-            )
-            (gil::g-op *sp* is-not-bass gil::BOT_XOR is-bass 1)
-            (gil::g-op *sp* is-not-bass gil::BOT_AND is-p-cons p-cons-and-not-bass)
-            (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT p-cons-and-not-bass)
-        )
+        for b in (rest-if is-p-cons-arr r)
+        do 
+            (gil::g-rel-reify *sp* m gil::IRT_NQ DIRECT b gil::RM_IMP)
     )
 )
+
 
 ; add the costs such that there is perfect consonance are costly to reach by direct motion
 ; @completely new or reworked
