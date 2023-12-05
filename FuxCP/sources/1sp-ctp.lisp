@@ -78,7 +78,7 @@
     ; 0 for being the bass, 1 for being above
     (print "Creating order of pitch array...")
     (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-cf-bass-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
+    (create-is-cf-lower-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
 
 
     ; creating motion array

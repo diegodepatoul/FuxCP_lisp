@@ -429,7 +429,7 @@
                 (fux-cp-1st (first counterpoints) (first *upper))
             ))
             (2 (progn
-                (fux-cp-2nd (first counterpoints))
+                (fux-cp-2nd (first counterpoints) (first *upper))
             ))
             (3 (progn
                 (fux-cp-3rd (first counterpoints))
@@ -629,7 +629,7 @@
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
         (print (list "motions       = " (gil::g-values sol (first (motions (first *upper))))))
         (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first *upper))))))
-        (print (list "succ-p-cost   = " (gil::g-values sol *successive-p-cons-print)))
+        (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))

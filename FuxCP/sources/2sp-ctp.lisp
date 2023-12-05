@@ -10,12 +10,12 @@
 ;; Note: fux-cp-2nd execute the first species algorithm without some constraints.
 ;; In this function, all the variable names without the arsis-suffix refers to thesis notes AKA the first species notes.
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
-(defun fux-cp-2nd (counterpoint &optional (species 2))
+(defun fux-cp-2nd (counterpoint upper &optional (species 2))
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## SECOND SPECIES ##########")
 
     ;; ADD FIRST SPECIES CONSTRAINTS
-    (fux-cp-1st counterpoint species)
+    (fux-cp-1st counterpoint upper species)
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
 
@@ -29,7 +29,7 @@
     (print "Creating harmonic intervals array...")
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (cp counterpoint)) (butlast *cf) (third (h-intervals counterpoint)))
+    (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass))) (third (h-intervals counterpoint)))
     ; array of IntVar representing the absolute intervals (not % 12) and brut (just p - q)
     ; between the cantus firmus and the counterpoint (thesis notes)
     (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len 0 127))
@@ -68,8 +68,8 @@
     (setf (third (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index 0 2))
     (setf (real-motions-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (third (m-intervals-brut counterpoint)) *cf-brut-m-intervals (third (motions counterpoint)) (third (motions-cost counterpoint)))
-    (create-real-motions (first (m-succ-intervals counterpoint)) (first (motions counterpoint)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
+    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (third (motions counterpoint)) (third (motions-cost counterpoint)))
+    ;(create-real-motions (first (m-succ-intervals counterpoint)) (first (motions upper)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
 
     ; creating boolean diminution array
     (print "Creating diminution array...")
@@ -104,7 +104,8 @@
     ; for all harmonic intervals between the cantus firmus and the arsis notes, the interval must be a consonance
     ; unless the arsis note is a diminution
     (print "No dissonance unless diminution for arsis notes...")
-    (if (eq *N-VOICES 1) (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint)))
+    #|(if (eq *N-VOICES 1) |#(add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint))
+    ;)
 
     ; Fux does not follow this rule so deactivate ?
     ; no unisson between the cantus firmus and the arsis counterpoint
@@ -115,7 +116,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this
-    (if (eq species 2) (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))))
+    (if (eq *N-VOICES 1) (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))))
 
 
     ;======================================== MELODIC CONSTRAINTS =============================
@@ -163,7 +164,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (real-motions counterpoint) (is-p-cons-arr counterpoint)))
+    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (first (motions upper)) (is-p-cons-arr upper)))
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
@@ -175,13 +176,14 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
+    (add-p-cons-cost-cst (h-intervals upper))
     
     ; 3, 4) add off-key cost, m-degrees cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (real-motions-cost counterpoint) 'motions-cost)
+    ; (add-cost-to-factors (motions-cost counterpoint) 'motions-cost)
+    (add-cost-to-factors (first (motions-cost upper)) 'motions-cost)    
     
     ; 6) the penultimate thesis note is not a fifth
     (print "Penultimate thesis note is not a fifth...")

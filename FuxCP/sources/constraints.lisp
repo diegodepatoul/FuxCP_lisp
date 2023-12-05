@@ -438,6 +438,7 @@
         (gil::g-rel *sp* (nth i (first (cp *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
         (dotimes (j *N-VOICES) ; the jth voice
             (gil::g-rel *sp* (nth i (first (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+            (gil::g-rel *sp* (nth i (third (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
         (let (
             (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
@@ -480,7 +481,7 @@
 
 
 ; create the boolean array @is-cf-bass-arr indicating if the cantus firmus is the bass or not
-(defun create-is-cf-bass-arr (cp cf is-cf-bass-arr)
+(defun create-is-cf-lower-arr (cp cf is-cf-bass-arr)
     (loop
         for p in cp
         for q in cf

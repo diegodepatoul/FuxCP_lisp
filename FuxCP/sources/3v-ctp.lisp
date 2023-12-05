@@ -24,7 +24,7 @@
             (1 (progn
                 (fux-cp-1st (nth i counterpoints) (nth i *upper) 6)
             ))
-            (2 (fux-cp-2nd (nth i counterpoints) 7))
+            (2 (fux-cp-2nd (nth i counterpoints) (nth i *upper) 7))
             (3 (fux-cp-3rd (nth i counterpoints) 8))
             (4 (fux-cp-4th (nth i counterpoints) 9))
             (5 (fux-cp-5th (nth i counterpoints) 10))
@@ -85,30 +85,6 @@
         ;)
     ;)
 
-
-    #| TO BE CORRECTED 
-    (add-h-cons-cst-2v PENULT_CONS_VAR counterpoint-1 counterpoint-2 h-intervals-1-2) 
-    (case *nth-voice-is-bass
-        (-1 (progn
-            (add-penult-cons-cst-3v (list 
-                (first (h-intervals counterpoint-1)) 
-                (first (h-intervals counterpoint-2))
-            ))
-        ))
-        (1 (progn
-            (add-penult-cons-cst-3v (list
-                (first (h-intervals counterpoint-1))
-                (first h-intervals-1-2)
-            ))
-        ))
-        (2 (progn
-            (add-penult-cons-cst-3v (list
-                (first (h-intervals counterpoint-2))
-                (first h-intervals-1-2)
-            ))
-        ))
-    )
-    |#
 
     (print "Last chord cannot be minor")
     ; next line covered by the refactor of h-cons-cst
@@ -193,9 +169,9 @@
         (progn
             (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
             (compute-h-triad-cost (first (h-intervals upper-1)) (first (h-intervals upper-2)) h-triad-cost)
+            (add-cost-to-factors h-triad-cost 'h-triad-cost)
         )
     ;)
-    (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
     #|
     ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the other beats
