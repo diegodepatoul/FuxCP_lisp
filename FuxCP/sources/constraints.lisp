@@ -176,7 +176,7 @@
     (setq octave-cost (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (if is-sync
         ; then 4th species
-        (add-h-inter-cost-cst (rest (third h-intervals)) fifth-cost octave-cost)
+        (add-h-inter-cost-cst (rest (third h-intervals)) fifth-cost octave-cost (rest is-not-bass))
         ; else
         (add-h-inter-cost-cst (restbutlast (first h-intervals)) fifth-cost octave-cost (restbutlast is-not-bass))
     )
@@ -421,19 +421,28 @@
     (setq sorted-voices (make-list *cf-len :initial-element nil))
     (setf (first (is-cp-bass *cantus-firmus)) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (setf (is-not-bass *cantus-firmus) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (setf *which-one-is-bass (gil::add-int-var-array *sp* *cf-len 0 2))
-    (dotimes (i *N-VOICES) (setf (first (is-cp-bass (nth i counterpoints))) (gil::add-bool-var-array *sp* *cf-len 0 1)))
     (dotimes (i *N-VOICES) (setf (is-not-bass (nth i counterpoints)) (gil::add-bool-var-array *sp* *cf-len 0 1)))
 
     (dotimes (i *cf-len) ; the ith measure
         (setf voices (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (gil::g-rel *sp* (first voices) gil::IRT_EQ (nth i cantus-firmus))
         (dotimes (j *N-VOICES) ; the jth counterpoint
-            (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))))   
+            (if (eq (species (nth j counterpoints)) 4) 
+                (if (< i *cf-last-index)
+                    (progn (print "case1")
+                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (third (cp (nth j counterpoints)))))   
+                    )
+                    (progn (print "case2")
+                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth *cf-penult-index (first (cp (nth j counterpoints)))))   
+                    )
+                )
+                (progn (print "case3")
+                (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))))   
+                )
+            )
         )
 
         (setf order (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 *N-VOICES))
-        ;(gil::g-distinct *sp* order)
 
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (gil::g-sorted *sp* voices (nth i sorted-voices) order)
@@ -452,13 +461,25 @@
             (cp1-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp2-is-not-bass (gil::add-bool-var *sp* 0 1))
             )
+            (print "ok")
             (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) cf-is-bass)
+            (print "ok")
             (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_NQ (nth i (first (cp *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
-            
-            (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp (first counterpoints)))) cp1-equals-bass)
-            (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (first counterpoints))))
+            (print "ok")
+            (if (eq (species (first counterpoints)) 4) 
+                (if (< i *cf-last-index)
+                    (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (third (cp (first counterpoints)))) cp1-equals-bass)
+                    (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth *cf-penult-index (first (cp (first counterpoints)))) cp1-equals-bass)
+                )
+                (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp (first counterpoints)))) cp1-equals-bass)
+            )
+            (print "ok")
+
+            (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (first counterpoints))))       
+            (print "ok")
             
             (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-bass *cantus-firmus)) gil::BOT_XOR (nth i (is-not-bass (first counterpoints))) (nth i (is-not-bass (second counterpoints)))))
+            (print "          ")
         )
     )
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-bass (first counterpoints))))
@@ -662,9 +683,7 @@
             ; then add only harmonic triad options
             (gil::g-member *sp* MAJ_H_TRIAD_VAR h-interval)
             ; else add all consonances
-            (if (not (null h-interval))
-                (gil::g-member *sp* ALL_CONS_VAR h-interval)
-            )
+            (gil::g-member *sp* ALL_CONS_VAR h-interval)
         )
     )
 )

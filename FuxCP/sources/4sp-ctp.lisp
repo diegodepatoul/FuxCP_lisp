@@ -28,8 +28,8 @@
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (cp counterpoint)) (butlast *cf) (third (h-intervals counterpoint)))
-    (create-h-intervals (first (cp counterpoint)) (rest *cf) (first (h-intervals counterpoint)))
+    (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass))) (third (h-intervals counterpoint)))
+    (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass))) (first (h-intervals counterpoint)))
     
 
     ; creating melodic intervals array
@@ -94,11 +94,15 @@
     ; for all harmonic intervals between the cantus firmus and the thesis notes, the interval must be a consonance
     (print "Harmonic consonances...")
     ; here the penultimate thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
-    (if (eq *N-VOICES 1) (progn 
-        (add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_SYNCOPE_VAR)
-        (add-h-cons-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)))
-        (add-no-sync-h-cons (first (h-intervals counterpoint)) (is-no-syncope-arr counterpoint))
+    (add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_SYNCOPE_VAR)
+    (add-h-cons-cst *cf-last-index *cf-penult-index (third (h-intervals counterpoint)))
+    (add-no-sync-h-cons (first (h-intervals counterpoint)) (is-no-syncope-arr counterpoint))
 
+    ; no seventh dissonance if the cantus firmus is at the top
+    (print "No seventh dissonance if the cantus firmus is at the top...")
+    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-bass counterpoint))
+
+    (if (eq *N-VOICES 1) (progn 
         ; must start with a perfect consonance
         (print "Perfect consonance at the beginning...")
         (add-p-cons-start-cst (third (h-intervals counterpoint)))
@@ -107,14 +111,10 @@
         (print "Perfect consonance at the end...")
         (add-p-cons-end-cst (first (h-intervals counterpoint)))
 
-        ; no seventh dissonance if the cantus firmus is at the top
-        (print "No seventh dissonance if the cantus firmus is at the top...")
-        (add-no-seventh-cst (first (h-intervals counterpoint)) (first (is-cf-lower-arr counterpoint)))
-
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+        ;(add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
     ))
 
 
@@ -135,19 +135,18 @@
 
     ; dissonant notes must be followed by the consonant note below
     (print "Dissonant notes must be followed by the consonant note below...")
-    (add-h-dis-imp-cons-below-cst (first (m-succ-intervals-brut counterpoint)) (first (is-cons-arr counterpoint)))
+    ;todo
+    ;(add-h-dis-imp-cons-below-cst (first (m-succ-intervals-brut counterpoint)) (first (is-cons-arr counterpoint)))
 
     ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
-    (add-no-second-cst (third (h-intervals counterpoint)) (first (h-intervals counterpoint)) (first (is-cf-lower-arr counterpoint)))
+    (add-no-second-cst (third (h-intervals counterpoint)) (first (h-intervals counterpoint)) (is-not-bass counterpoint))
 
 
     ;======================================== COST FACTORS ====================================
     (print "Cost factors...")    
-    (if (eq *N-VOICES 1) 
-        ; 1, 2) imperfect consonances are preferred to perfect consonances
-        (add-p-cons-cost-cst (h-intervals counterpoint) t)
-    )
+    ; 1, 2) imperfect consonances are preferred to perfect consonances
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint) t)
     
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

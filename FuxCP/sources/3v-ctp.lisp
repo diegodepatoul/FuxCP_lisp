@@ -64,7 +64,7 @@
     (print "Last chord cannot be minor")
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     
-    (if (or (member 4 species-list) (member 5 species-list))
+    (if (member 5 species-list)
         nil ; debug
         (progn 
             (print "Last chord cannot include a tenth")
@@ -74,7 +74,7 @@
         )
     )
 
-    (print "Last chord must be a perfect chord") 
+    (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
 
     ;================================================================================;
