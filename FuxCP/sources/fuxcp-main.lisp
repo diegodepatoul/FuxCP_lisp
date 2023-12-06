@@ -502,7 +502,7 @@
     (let (se tstop sopts)
         (print (list "Starting fux-search-engine with species = " species))
         ;; Reorder the costs
-        ;(reorder-costs species)
+        (reorder-costs species)
 
         (setf linear-combination 1)
         ;; COST
@@ -618,12 +618,8 @@
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         ;(print (list "last order = " (gil::g-values sol order)))
-        (handler-case (print (list "which one  = " (gil::g-values sol *which-one-is-bass))) (error (c)  (print "error with which-one-is-bass")))
-        (handler-case (print (list "is-cp1-bass= " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
-        (handler-case (print (list "is-cp2-bass= " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
-        (handler-case (print (list "is-cf-bass = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
         (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
-        (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2-bass")))
+        (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2Nbass")))
         (handler-case (print (list "is-cfNbass = " (gil::g-values sol *is-cf-not-bass-print))) (error (c) (print "error with is-cf-bass")))
         (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))

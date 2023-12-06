@@ -225,7 +225,7 @@
             (5 (incf *N-COST-FACTORS 8))
         ))
         (2 (progn
-            (setq *N-COST-FACTORS 6)
+            (incf *N-COST-FACTORS 5)
             (dolist (species *species-list)
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
@@ -447,53 +447,22 @@
             (cf-is-bass (gil::add-bool-var *sp* 0 1))
             (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp1-equals-bass (gil::add-bool-var *sp* 0 1))
+            (cp2-equals-bass (gil::add-bool-var *sp* 0 1))
             (cp1-might-be-bass (gil::add-bool-var *sp* 0 1))
             (cp1-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp2-is-not-bass (gil::add-bool-var *sp* 0 1))
             )
             (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) cf-is-bass)
             (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_NQ (nth i (first (cp *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
+            
             (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp (first counterpoints)))) cp1-equals-bass)
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (first counterpoints))))
-
-            (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) (nth i (first (is-cp-bass *cantus-firmus))))
-            (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp (first counterpoints)))) cp1-might-be-bass)
-            (gil::g-op *sp* cp1-might-be-bass gil::BOT_IMP (nth i (first (is-cp-bass *cantus-firmus))) cp1-is-not-bass)
-            (gil::g-op *sp* cp1-is-not-bass gil::BOT_XOR (nth i (first (is-cp-bass (first counterpoints)))) 1)
-
-            (gil::g-op *sp* (nth i (first (is-cp-bass *cantus-firmus))) gil::BOT_OR (nth i (first (is-cp-bass (first counterpoints)))) cp2-is-not-bass)
-            (if (eq *N-VOICES 2) (gil::g-op *sp* cp2-is-not-bass gil::BOT_XOR (nth i (first (is-cp-bass (second counterpoints)))) 1))
-        )
-
-        ;(gil::g-min-value *sp* (first order) (nth i *which-one-is-bass))
-        ;(gil::g-argmin *sp* (first order) bass-voice)
-        ;(gil::g-rel-reify *sp* (first order) gil::IRT_EQ 0 (nth i (first (is-cp-bass *cantus-firmus))) gil::RM_IMP)
-        ;(gil::g-rel-reify *sp* (first order) gil::IRT_EQ 0 (nth i (first (is-cp-bass *cantus-firmus))) gil::RM_IMP)
-        ;(gil::g-op *sp* (nth i (first (is-cp-bass *cantus-firmus))) gil::BOT_AND (nth i (first (is-cp-bass *cantus-firmus))) 0)
-        
-
-        ;(dotimes (j *N-VOICES)
-        ;    (gil::g-rel-reify *sp* (first order) gil::IRT_EQ (+ j 1) (nth i (first (is-cp-bass (nth j counterpoints)))))
-        ;)
-        ;(gil::g-op *sp* (nth i (first (is-cp-bass *cantus-firmus))) gil::BOT_XOR (nth i (first (is-cp-bass (first counterpoints)))) 1)
-        ;(setf order-bis (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 *N-VOICES))
-        ;(dotimes (j *N-VOICES) (gil::g-rel *sp* (nth j order) gil::IRT_EQ (nth j order-bis)))
-        ;(gil::g-distinct *sp* order-bis)
-        ;(dotimes (j (+ *N-VOICES 1))
-        ;    (gil::g-rel)
-        ;)
-
-
-        ;(gil::g-rel-reify *sp* (first (nth i sorted-voices)) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) (nth i (first (is-cp-bass *cantus-firmus))))
-        ;(dotimes (j *N-VOICES)
-        ;    (gil::g-rel-reify *sp* (first (nth i sorted-voices)) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))) (nth i (first (is-cp-bass (nth j counterpoints)))))
-        ;)
-        ;(gil::g-rel *sp* (nth i *which-one-is-bass) gil::IRT_EQ (first order))
+            
+            (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-bass *cantus-firmus)) gil::BOT_XOR (nth i (is-not-bass (first counterpoints))) (nth i (is-not-bass (second counterpoints)))))
+                    )
     )
-    (setq *is-cp1-bass-print (bool-var-arr-printable (first (is-cp-bass (first counterpoints)))))
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-bass (first counterpoints))))
-    ;(setq *is-cp2-bass-print (bool-var-arr-printable (first (is-cp-bass (second counterpoints)))))
-    (setq *is-cf-bass-print (bool-var-arr-printable (first (is-cp-bass *cantus-firmus))))
+    (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-bass (second counterpoints))))
     (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-bass *cantus-firmus)))
 
 )
