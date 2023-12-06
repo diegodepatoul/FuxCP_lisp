@@ -10,15 +10,14 @@
 ;; Note: fux-cp-2nd execute the first species algorithm without some constraints.
 ;; In this function, all the variable names without the arsis-suffix refers to thesis notes AKA the first species notes.
 ;; All the variable names with the arsis-suffix refers to arsis notes AKA notes on the upbeat.
-(defun fux-cp-2nd (counterpoint upper &optional (species 2))
+(defun fux-cp-2nd (counterpoint &optional (species 2))
     "Create the CSP for the 2nd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## SECOND SPECIES ##########")
 
     ;; ADD FIRST SPECIES CONSTRAINTS
-    (fux-cp-1st counterpoint upper species)
+    (fux-cp-1st counterpoint species)
     ;======================================== CREATION OF GIL ARRAYS ==========================
     (print "Initializing variables...")
-
     
     ; merging cp and cp-arsis into one array
     (setf (solution-len counterpoint) (+ *cf-len *cf-last-index))
@@ -34,7 +33,7 @@
     ; between the cantus firmus and the counterpoint (thesis notes)
     (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len 0 127))
     (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-    (create-intervals *cf (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+    (create-intervals (first (cp *bass)) (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
     
 
     ; creating melodic intervals array
@@ -64,12 +63,13 @@
     ; creating motion array
     ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (print "Creating motion array...")
-    (setf (third (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2))
+    (setf (third (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (third (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index 0 2))
+    (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (real-motions-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (third (motions counterpoint)) (third (motions-cost counterpoint)))
-    ;(create-real-motions (first (m-succ-intervals counterpoint)) (first (motions upper)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
+    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-bass counterpoint))
+    ;(create-motions (third (m-intervals-brut counterpoint)) *cf-brut-m-intervals             (third (motions counterpoint)) (third (motions-cost counterpoint)))
+    (create-real-motions (first (m-succ-intervals counterpoint)) (first (motions counterpoint)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
 
     ; creating boolean diminution array
     (print "Creating diminution array...")
@@ -78,17 +78,10 @@
     (setf (is-ta-dim-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
     (create-is-ta-dim-arr (first (m-succ-intervals counterpoint)) (first (m-intervals counterpoint)) (third (m-intervals counterpoint)) (is-ta-dim-arr counterpoint))
 
-
-    ; creating boolean is cantus firmus bass array
-    (print "Creating is cantus firmus bass array...")
-    ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-lower-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
-
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
     (setf (is-nbour-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-nbour-arr (h-intervals-abs counterpoint) (first (is-cf-lower-arr counterpoint)) *cf-brut-m-intervals (is-nbour-arr counterpoint))
+    (create-is-nbour-arr (h-intervals-abs counterpoint) (is-not-bass counterpoint) (first (m-intervals-brut *bass)) (is-nbour-arr counterpoint))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
@@ -104,8 +97,7 @@
     ; for all harmonic intervals between the cantus firmus and the arsis notes, the interval must be a consonance
     ; unless the arsis note is a diminution
     (print "No dissonance unless diminution for arsis notes...")
-    #|(if (eq *N-VOICES 1) |#(add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint))
-    ;)
+    (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint))
 
     ; Fux does not follow this rule so deactivate ?
     ; no unisson between the cantus firmus and the arsis counterpoint
@@ -115,9 +107,10 @@
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this
-    (if (eq *N-VOICES 1) (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))))
+    ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this <- this was written by Thibault
 
+    ; TODO deal with penult
+    ;(add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
 
     ;======================================== MELODIC CONSTRAINTS =============================
     (print "Melodic constraints...")
@@ -161,37 +154,35 @@
 
     ;======================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
-
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (first (motions upper)) (is-p-cons-arr upper)))
-
+    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (real-motions counterpoint) (is-p-cons-arr counterpoint) (is-not-bass counterpoint)))
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-lower-arr counterpoint)))
+    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-bass-arr counterpoint)))
 
 
 
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals upper))
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
     
     ; 3, 4) add off-key cost, m-degrees cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))
     
     ; 5) contrary motion is preferred
-    ; (add-cost-to-factors (motions-cost counterpoint) 'motions-cost)
-    (add-cost-to-factors (first (motions-cost upper)) 'motions-cost)    
+    (add-cost-to-factors (real-motions-cost counterpoint) 'motions-cost)
     
+
     ; 6) the penultimate thesis note is not a fifth
     (print "Penultimate thesis note is not a fifth...")
     ; *penult-thesis-cost = *cf-len (big cost) if penultimate *h-interval /= 7
     (setf (penult-thesis-cost counterpoint) (gil::add-int-var-dom *sp* (getparam-dom 'penult-sixth-cost)))
     (add-single-cost-cst (penult (first (h-intervals counterpoint))) gil::IRT_NQ 7 (penult-thesis-cost counterpoint) *penult-sixth-cost*)
     (add-cost-to-factors (penult-thesis-cost counterpoint) 'penult-thesis-cost nil)
-    
+     
     ;======================================== COST FUNCTION ===================================
     (print "Cost function...")
 

@@ -8,7 +8,7 @@
 ;; FIRST SPECIES            #
 ;;==========================#
 (defun fux-cp-cf (cantus-firmus &optional (species 1))
-    (print "########## FIRST SPECIES ##########")
+    (print "########## CANTUS FIRMUS RULES ##########")
     "Create the CSP for the first species of Fux's cantus-firmus."
 
     ;============================================ CREATING GIL ARRAYS =============================

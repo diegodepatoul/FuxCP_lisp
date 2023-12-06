@@ -429,7 +429,7 @@
                 (fux-cp-1st (first counterpoints))
             ))
             (2 (progn
-                (fux-cp-2nd (first counterpoints) (first *upper))
+                (fux-cp-2nd (first counterpoints))
             ))
             (3 (progn
                 (fux-cp-3rd (first counterpoints))

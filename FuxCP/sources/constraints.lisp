@@ -1062,13 +1062,6 @@
     )
 )
 
-; WIP, THIS FUNCTION IS NOT USING YET
-; @completely new or reworked
-(defun add-penult-cons-cst-3v (h-intervals-to-bass)
-    (dolist (h h-intervals-to-bass)
-        (gil::g-rel *sp* (penult h) gil::IRT_EQ NINE)
-    )
-)
 
 (defun factorial (n)
   (if (zerop n)
