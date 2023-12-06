@@ -54,42 +54,32 @@
     (print "Harmonic consonances...")
     (case species
         ((1 ) (progn
-            (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)) (first (is-cp-bass cantus-firmus)))
+            (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)))
         ))
         ((2 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)) PENULT_THESIS_VAR))
         ((3 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
 
+    ; must start with a perfect consonance
+    (print "Perfect consonance at the beginning...")
+    (add-p-cons-start-cst (first (h-intervals cantus-firmus)))
+
+    ; must end with a perfect consonance
+    (print "Perfect consonance at the end...")
+    (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
+
 #|
-    (case species ((1 2) 
-        ; then
-        (progn
-        ; must start with a perfect consonance
-        (print "Perfect consonance at the beginning...")
-        (add-p-cons-start-cst (first (h-intervals cantus-firmus)))
-
-        ; must end with a perfect consonance
-        (print "Perfect consonance at the end...")
-        (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
-        )
-    ))
-
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (add-penult-cons-cst-for-cf (penult (first (is-cp-bass cantus-firmus))) (penult (first (h-intervals cantus-firmus))))  
-
+|#
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
 
-    (if (eq species 1) ; for the 6th species, it isn't a constraint but a cost
-    ; no direct motion to reach a perfect consonance
-        (progn
-            (print "No direct motion to reach a perfect consonance...")
-            (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (first (is-cp-bass cantus-firmus)))
-        )
-    )
+    (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-bass cantus-firmus))
+#|
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, cantus-firmus melodic interval < -4
     (print "No battuta kind of motion...")

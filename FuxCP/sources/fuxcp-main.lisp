@@ -275,6 +275,7 @@
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
     ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
     (is-cp-bass :accessor is-cp-bass :initarg :is-cp-bass :initform (list nil nil nil nil))
+    (is-not-bass :accessor is-not-bass :initarg :is-not-bass :initform nil)
     (h-intervals-to-bass :accessor h-intervals-to-bass :initarg :h-intervals-to-bass :initform (list nil nil nil nil))
     (is-cons-to-bass-arr :accessor is-cons-to-bass-arr :initarg :is-cons-to-bass-arr :initform (list nil nil nil nil))
 ))
@@ -421,7 +422,7 @@
     (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
     (create-m-intervals-self (first (cp *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
-    ; (fux-cp-cf *cantus-firmus 1)
+    (fux-cp-cf *cantus-firmus 1)
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
@@ -612,7 +613,8 @@
         (print "Solution: ")
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
-        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         ;(print (list "last order = " (gil::g-values sol order)))
@@ -620,6 +622,9 @@
         (handler-case (print (list "is-cp1-bass= " (gil::g-values sol *is-cp1-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2-bass= " (gil::g-values sol *is-cp2-bass-print))) (error (c)  (print "error with is-cp2-bass")))
         (handler-case (print (list "is-cf-bass = " (gil::g-values sol *is-cf-bass-print))) (error (c) (print "error with is-cf-bass")))
+        (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
+        (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2-bass")))
+        (handler-case (print (list "is-cfNbass = " (gil::g-values sol *is-cf-not-bass-print))) (error (c) (print "error with is-cf-bass")))
         (print (list "cp1        = " (gil::g-values sol (first (cp (first counterpoints))))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (first (cp (second counterpoints)))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
@@ -627,8 +632,9 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (cp (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
-        (print (list "motions       = " (gil::g-values sol (first (motions (first *upper))))))
-        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first *upper))))))
+        (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
+        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
+        (print (gil::g-values sol *debug))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))

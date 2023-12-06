@@ -9,7 +9,7 @@
 ;;==========================#
 ;; Note: fux-cp-3rd execute the first species algorithm without some constraints.
 ;; In this function, 4 quarter notes by measure are assumed.
-(defun fux-cp-3rd (counterpoint &optional (species 3))
+(defun fux-cp-3rd (counterpoint upper &optional (species 3))
     "Create the CSP for the 3rd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## THIRD SPECIES ##########")
     (print "Creating the CSP for the 3rd species of Fux's counterpoint...")
