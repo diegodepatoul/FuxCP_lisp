@@ -67,12 +67,13 @@
     (print "Perfect consonance at the end...")
     (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
 
-#|
+
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (add-penult-cons-cst-for-cf (penult (first (is-cp-bass cantus-firmus))) (penult (first (h-intervals cantus-firmus))))  
-|#
+    (add-penult-cons-cf-cst (penult (is-not-bass cantus-firmus)) (penult (first (h-intervals cantus-firmus))))  
+    ;(gil::g-rel *sp* (penult (first (h-intervals cantus-firmus))) gil::IRT_EQ 3)
+
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
 

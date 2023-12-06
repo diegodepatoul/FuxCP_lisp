@@ -1050,9 +1050,15 @@
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* b-bass NINE THREE h-interval)
-            (and-ite b-bass NINE THREE h-interval and-cond)
+            (gil::g-ite *sp* b-bass NINE h-interval h-interval)
+            (and-ite b-bass NINE h-interval h-interval and-cond)
         )  
+    )
+)
+
+(defun add-penult-cons-cf-cst (b-bass h-interval)
+    (if (getparam 'penult-rule-check)
+        (gil::g-ite *sp* b-bass THREE h-interval h-interval)
     )
 )
 
