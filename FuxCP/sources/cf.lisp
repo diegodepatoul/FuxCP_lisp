@@ -21,7 +21,6 @@
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the cantus-firmus
     (setf (first (h-intervals cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp cantus-firmus)) (first (cp *bass)) (first (h-intervals cantus-firmus)))
-#|
     ;(create-h-intervals (first (cp *upper-voice)) (first (cp *bass-notes)) (first (h-intervals *upper-voice)))
     ;(create-h-intervals (first (cp *bass-notes))  *cf                      (first (h-intervals *bass-notes )))
 
@@ -41,12 +40,11 @@
 
     ; creating motion array
     (print "Creating motion array...")
-    (setf (first (motions cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index 0 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
+    (setf (first (motions cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index -1 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost cantus-firmus)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     ;(create-motions (first (m-intervals-brut cantus-firmus)) *cf-brut-m-intervals (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
-    (create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *bass)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
-    (set-motions-cost (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (rest (first (is-cp-bass cantus-firmus))))
-     |#
+    ;(create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *bass)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (is-not-bass cantus-firmus))
+    (create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *bass)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (is-not-bass cantus-firmus))
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
 
@@ -101,8 +99,8 @@
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
     (add-p-cons-cost-cst (h-intervals cantus-firmus))
+     |#
     ; 3) motion costs
     (print "add motion costs")
-    ;(add-cost-to-factors (first (motions-cost counterpoint)) 'motions-cost)    
-     |#
+    (add-cost-to-factors (first (motions-cost cantus-firmus)) 'motions-cost)    
 )

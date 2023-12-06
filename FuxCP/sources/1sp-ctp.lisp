@@ -173,11 +173,11 @@
 
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
-            (set-general-costs-cst counterpoint *cf-len)
+            ;(set-general-costs-cst counterpoint *cf-len)
 
             ; 5) motion costs
             (print "add motion costs")
-            ;(add-cost-to-factors (first (motions-cost counterpoint)) 'motions-cost)    
+            (add-cost-to-factors (first (motions-cost counterpoint)) 'motions-cost)    
         )
     ))
 

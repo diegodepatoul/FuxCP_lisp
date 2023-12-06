@@ -503,7 +503,7 @@
     (let (se tstop sopts)
         (print (list "Starting fux-search-engine with species = " species))
         ;; Reorder the costs
-        (reorder-costs species)
+        ;(reorder-costs species)
 
         (setf linear-combination nil)
         ;; COST
@@ -632,9 +632,10 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (cp (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
-        (print (list "motions       = " (gil::g-values sol (first (motions (first counterpoints))))))
-        (print (list "motions-costs-cp-1 = " (gil::g-values sol (first (motions-cost (first counterpoints))))))
-        (print (gil::g-values sol *debug))
+        (handler-case (print (list "motions-cp1= " (gil::g-values sol (first (motions (first counterpoints)))))) (error (c) (print "error with motions cp1")))
+        (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
+        (handler-case (print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus))))) (error (c) (print "error with motions cf")))
+        (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))

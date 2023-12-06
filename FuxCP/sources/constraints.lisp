@@ -215,13 +215,14 @@
 ; Initializes the cost factors, accordingly to the species and the number of voices
 ; @completely new or reworked
 (defun set-cost-factors ()
+    (setq *N-COST-FACTORS 1)
     (case *N-VOICES
         (1 (case (first *species-list)
-            (1 (setq *N-COST-FACTORS 2))
-            (2 (setq *N-COST-FACTORS 6))
-            (3 (setq *N-COST-FACTORS 7))
-            (4 (setq *N-COST-FACTORS 6))
-            (5 (setq *N-COST-FACTORS 8))
+            (1 (incf *N-COST-FACTORS 1))
+            (2 (incf *N-COST-FACTORS 6))
+            (3 (incf *N-COST-FACTORS 7))
+            (4 (incf *N-COST-FACTORS 6))
+            (5 (incf *N-COST-FACTORS 8))
         ))
         (2 (progn
             (setq *N-COST-FACTORS 6)
@@ -1222,7 +1223,6 @@
 
 ; create the motions array based on the melodic intervals of the melodic intervals it is given
 (defun create-motions (m-intervals-brut cf-brut-m-intervals motions costs is-not-bass-arr)
-    (setf *debug (gil::add-int-var-array *sp* *cf-last-index -1 1))
     (loop
         for p in m-intervals-brut
         for q in cf-brut-m-intervals
@@ -1259,6 +1259,7 @@
                 (b-pu-qd (gil::add-bool-var *sp* 0 1)) ; boolean p up and q down
                 (b-pd-qu (gil::add-bool-var *sp* 0 1)) ; boolean p down and q up
                 (cm-or1 (gil::add-bool-var *sp* 0 1)) ; temporary boolean
+                (is-contrary (gil::add-bool-var *sp* 0 1)) ; temporary boolean
                 ; is bass
                 (is-bass (gil::add-bool-var *sp* 0 1))
             )
@@ -1275,8 +1276,8 @@
                 (gil::g-op *sp* b-both-up gil::BOT_OR b-both-stays dm-or1) ; dm-or1 = (b-both-up or b-both-stays)
                 (gil::g-op *sp* dm-or1 gil::BOT_OR b-both-down dm-or2) ; dm-or2 = (dm-or1 or b-both-down)
                 (gil::g-op *sp* dm-or2 gil::BOT_AND is-not-bass is-direct)
-                ;(gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct) ; m = 1 if dm-or2
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct gil::RM_IMP) ; add the cost of direct motion
+                (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct) ; m = 1 if dm-or2
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct) ; add the cost of direct motion
                 ; oblique motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qs b-pu-qs) ; b-pu-qs = (b-pu and b-qs)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qs b-pd-qs) ; b-pd-qs = (b-pd and b-qs)
@@ -1286,19 +1287,18 @@
                 (gil::g-op *sp* om-or1 gil::BOT_OR b-ps-qu om-or2) ; om-or2 = (om-or1 or b-ps-qu)
                 (gil::g-op *sp* om-or2 gil::BOT_OR b-ps-qd om-or3) ; om-or3 = (om-or2 or b-ps-qd)
                 (gil::g-op *sp* om-or3 gil::BOT_AND is-not-bass is-oblique)
-                (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE om-or3) ; m = 0 if om-or3
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* om-or3 gil::RM_IMP) ; add the cost of oblique motion
+                (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE is-oblique) ; m = 0 if om-or3
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique ) ; add the cost of oblique motion
                 ; contrary motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qd b-pu-qd) ; b-pu-qd = (b-pu and b-qd)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qu b-pd-qu) ; b-pd-qu = (b-pd and b-qu)
                 (gil::g-op *sp* b-pu-qd gil::BOT_OR b-pd-qu cm-or1) ; cm-or1 = (b-pu-qd or b-pd-qu)
-                (gil::g-rel-reify *sp* m gil::IRT_EQ CONTRARY cm-or1) ; m = -1 if cm-or1
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* cm-or1 gil::RM_IMP) ; add the cost of contrary motion
+                (gil::g-op *sp* cm-or1 gil::BOT_AND is-contrary is-contrary)
+                (gil::g-rel-reify *sp* m gil::IRT_EQ CONTRARY is-contrary) ; m = -1 if cm-or1
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *con-motion-cost* is-contrary gil::RM_IMP) ; add the cost of contrary motion
                 ; is bass (no motion)
                 (gil::g-op *sp* is-not-bass gil::BOT_XOR is-bass 1)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ -1 is-bass) ;
-                (gil::g-rel-reify *sp* db gil::IRT_EQ 1 is-bass) ;
-                (gil::g-rel-reify *sp* db gil::IRT_EQ -1 is-not-bass) ; 
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-bass gil::RM_IMP) ;
             )
     )
