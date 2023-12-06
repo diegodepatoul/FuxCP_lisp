@@ -56,12 +56,12 @@
                 (print "Creating harmonic intervals array...")
                 ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-                (create-h-intervals (nth i (cp counterpoint)) *cf (nth i (h-intervals counterpoint)))
+                (create-h-intervals (nth i (cp counterpoint)) (first (cp (*bass))) (nth i (h-intervals counterpoint)))
             )
             (progn
                 ; same as above but 1 note shorter
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-                (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals counterpoint)))
+                (create-h-intervals (nth i (cp counterpoint)) (butlast (cp (*bass))) (nth i (h-intervals counterpoint)))
             )
         )
     )
@@ -116,9 +116,9 @@
     ; creating motion array
     ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (print "Creating motion array...")
-    (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2))
+    (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) *cf-brut-m-intervals (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)))
 
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
@@ -293,7 +293,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) nil)) ; 3rd species
+    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-bass counterpoint))) ; 3rd species
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4

@@ -38,7 +38,6 @@
     (setf (solution-len counterpoint) (+ *cf-len (* *cf-last-index 3))) ; total length of the counterpoint array
     (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
     (merge-cp (cp counterpoint) (solution-array counterpoint)) ; merge the four counterpoint arrays into one
-
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals
@@ -58,13 +57,18 @@
     (setf (m-all-intervals counterpoint) (gil::add-int-var-array *sp* (total-m-len counterpoint) 0 12))
     (setf (m-all-intervals-brut counterpoint) (gil::add-int-var-array *sp* (total-m-len counterpoint) -12 12))
     (create-m-intervals-self (solution-array counterpoint) (m-all-intervals counterpoint) (m-all-intervals-brut counterpoint))
-
     ; creating motion array
     ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (print "Creating motion array...")
-    (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2))
+    (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
+
+    ; creating boolean is cantus firmus bass array
+    (print "Creating is cantus firmus bass array...")
+    ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
+    (setf (fourth (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
 
     ; creating boolean are five consecutive notes by joint degree array
     (print "Creating are five consecutive notes by joint degree array...")
@@ -158,8 +162,7 @@
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    (add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint))) ; TODO 
-
+    ;(add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint))) ; TODO 
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")

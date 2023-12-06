@@ -135,8 +135,8 @@
 
     ; dissonant notes must be followed by the consonant note below
     (print "Dissonant notes must be followed by the consonant note below...")
-    ;todo
-    ;(add-h-dis-imp-cons-below-cst (first (m-succ-intervals-brut counterpoint)) (first (is-cons-arr counterpoint)))
+
+    (add-h-dis-imp-cons-below-cst (first (m-succ-intervals-brut counterpoint)) (first (is-cons-arr counterpoint)))
 
     ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
