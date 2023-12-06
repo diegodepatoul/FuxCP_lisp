@@ -459,10 +459,10 @@
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (first counterpoints))))
             
             (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-bass *cantus-firmus)) gil::BOT_XOR (nth i (is-not-bass (first counterpoints))) (nth i (is-not-bass (second counterpoints)))))
-                    )
+        )
     )
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-bass (first counterpoints))))
-    (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-bass (second counterpoints))))
+    (if (eq *N-VOICES 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-bass (second counterpoints)))))
     (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-bass *cantus-firmus)))
 
 )

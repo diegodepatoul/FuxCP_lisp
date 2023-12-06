@@ -174,7 +174,6 @@
     ;(m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
     (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
-    (is-cf-lower-arr :accessor is-cf-lower-arr :initarg :is-cf-lower-arr :initform (list nil nil nil nil))
     (m2-intervals-brut :accessor m2-intervals-brut :initarg :m2-intervals-brut :initform nil)
     (m2-intervals :accessor m2-intervals :initarg :m2-intervals :initform nil)
     (cf-brut-m-intervals :accessor cf-brut-m-intervals :initarg :cf-brut-m-intervals :initform nil)

@@ -9,7 +9,7 @@
 ;;==========================#
 ;; Note: fux-cp-3rd execute the first species algorithm without some constraints.
 ;; In this function, 4 quarter notes by measure are assumed.
-(defun fux-cp-3rd (counterpoint upper &optional (species 3))
+(defun fux-cp-3rd (counterpoint &optional (species 3))
     "Create the CSP for the 3rd species of Fux's counterpoint, with the cantus firmus as input"
     (print "########## THIRD SPECIES ##########")
     (print "Creating the CSP for the 3rd species of Fux's counterpoint...")
@@ -25,7 +25,7 @@
         ; creating harmonic intervals array
         ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
         (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-        (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals counterpoint)))
+        (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass))) (nth i (h-intervals counterpoint)))
 
         ; array of IntVar representing the absolute intervals between a thesis and an arsis note of the same measure the counterpoint
         (setf (nth i-1 (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 1 12))
@@ -64,13 +64,7 @@
     (print "Creating motion array...")
     (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) *cf-brut-m-intervals (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)))
-
-    ; creating boolean is cantus firmus bass array
-    (print "Creating is cantus firmus bass array...")
-    ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (fourth (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-lower-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
 
     ; creating boolean are five consecutive notes by joint degree array
     (print "Creating are five consecutive notes by joint degree array...")
@@ -122,7 +116,7 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
+        ;(add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
     ))
     ; the third note of the penultimate measure must be below the fourth one.
     (gil::g-rel *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1)
@@ -137,7 +131,6 @@
     ; any dissonant note implies that it is surrounded by consonant notes
     (print "Any dissonant note...")
     (add-h-dis-or-cons-3rd-cst (second (is-cons-arr counterpoint)) (third (is-cons-arr counterpoint)) (fourth (is-cons-arr counterpoint)) (is-ta-dim-arr counterpoint))
-
 
     ;======================================== MELODIC CONSTRAINTS =============================
     (print "Melodic constraints...")
@@ -161,8 +154,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint)))
-
+    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-bass counterpoint)))
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
@@ -171,7 +163,7 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint)))
+    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint)))
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))
