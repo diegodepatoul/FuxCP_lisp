@@ -92,14 +92,14 @@
         )
     )
     ; =========
+     |#
     
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals cantus-firmus))
-     |#
+    (add-p-cons-cost-cst (h-intervals cantus-firmus) (is-not-bass cantus-firmus))
     ; 3) motion costs
     (print "add motion costs")
     (add-cost-to-factors (first (motions-cost cantus-firmus)) 'motions-cost)    

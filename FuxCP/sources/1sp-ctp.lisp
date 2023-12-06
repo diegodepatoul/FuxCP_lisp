@@ -7,7 +7,7 @@
 ;;==========================#
 ;; FIRST SPECIES            #
 ;;==========================#
-(defun fux-cp-1st (counterpoint upper &optional (species 1))
+(defun fux-cp-1st (counterpoint &optional (species 1))
     (print "########## FIRST SPECIES ##########")
     "Create the CSP for the first species of Fux's counterpoint."
 
@@ -21,9 +21,6 @@
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint)) (first (cp *bass)) (first (h-intervals counterpoint)))
-
-    (setf (first (h-intervals upper)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp upper)) (first (cp *bass)) (first (h-intervals upper)))
 
     ; (create-h-intervals (first (cp counterpoint)) (first (cp *bass)) (first (h-intervals counterpoint)))
     ; @completely new or reworked
@@ -50,11 +47,6 @@
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
-    
-    (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-    (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
-
     
     (case species ((1 6) ; only for the first species
         ; then
@@ -153,13 +145,10 @@
             ; no battuta kind of motion
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
-            ;(add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (is-not-bass counterpoint))
+            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (is-not-bass counterpoint))
          )
     ))
 
-    ;(gil::g-rel *sp* (nth 4 (first (cp counterpoint))) gil::IRT_EQ 64)
-    ;(gil::g-rel *sp* (last (first (cp counterpoint))) gil::IRT_EQ 60)
-    
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
@@ -169,11 +158,11 @@
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
-            ;(add-p-cons-cost-cst (h-intervals counterpoint))
+            (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
 
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")
-            ;(set-general-costs-cst counterpoint *cf-len)
+            (set-general-costs-cst counterpoint *cf-len)
 
             ; 5) motion costs
             (print "add motion costs")

@@ -171,23 +171,23 @@
 ; add cost constraints such that a cost is added when a fifth or an octave is present in the 1st beat
 ; except for the 4th species where it is the 3rd beat
 ; @is-sync: true means it is the 4th species
-(defun add-p-cons-cost-cst (h-intervals &optional (is-sync nil))
+(defun add-p-cons-cost-cst (h-intervals is-not-bass &optional (is-sync nil))
     (setq fifth-cost  (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setq octave-cost (gil::add-int-var-array-dom *sp* *cf-penult-index (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (if is-sync
         ; then 4th species
         (add-h-inter-cost-cst (rest (third h-intervals)) fifth-cost octave-cost)
         ; else
-        (add-h-inter-cost-cst (restbutlast (first h-intervals)) fifth-cost octave-cost)
+        (add-h-inter-cost-cst (restbutlast (first h-intervals)) fifth-cost octave-cost (restbutlast is-not-bass))
     )
     (add-cost-to-factors fifth-cost 'fifth-cost)
     (add-cost-to-factors octave-cost 'octave-cost)
 )
 
 ; add cost constraints such that a cost is added when a fifth or an octave is present in @h-intervals
-(defun add-h-inter-cost-cst (h-intervals fifth-cost octave-cost)
+(defun add-h-inter-cost-cst (h-intervals fifth-cost octave-cost is-not-bass)
         (add-cost-cst h-intervals gil::IRT_EQ 7 fifth-cost *h-fifth-cost*) ; *fifth-cost = 1 if *h-interval == 7
-        (add-cost-cst h-intervals gil::IRT_EQ 0 octave-cost *h-octave-cost*) ; *octave-cost = 1 if *h-interval == 0
+        (add-cost-cst-if h-intervals gil::IRT_EQ 0 is-not-bass octave-cost *h-octave-cost*) ; *octave-cost = 1 if *h-interval == 0
 )
 
 ; Get the minimum cost possible for a counterpoint depending on the costs of the melodic intervals
@@ -215,10 +215,10 @@
 ; Initializes the cost factors, accordingly to the species and the number of voices
 ; @completely new or reworked
 (defun set-cost-factors ()
-    (setq *N-COST-FACTORS 1)
+    (setq *N-COST-FACTORS 3)
     (case *N-VOICES
         (1 (case (first *species-list)
-            (1 (incf *N-COST-FACTORS 1))
+            (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 6))

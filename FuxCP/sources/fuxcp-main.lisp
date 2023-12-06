@@ -426,8 +426,7 @@
     (case *N-VOICES
         (1 (case (first species-list) ; if only two voices
             (1 (progn
-                ;(fux-cp-1st-harmonic (first *upper))
-                (fux-cp-1st (first counterpoints) (first *upper))
+                (fux-cp-1st (first counterpoints))
             ))
             (2 (progn
                 (fux-cp-2nd (first counterpoints) (first *upper))
@@ -505,7 +504,7 @@
         ;; Reorder the costs
         ;(reorder-costs species)
 
-        (setf linear-combination nil)
+        (setf linear-combination 1)
         ;; COST
         (if linear-combination 
             ; do a linear combination
@@ -636,6 +635,7 @@
         (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
         (handler-case (print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus))))) (error (c) (print "error with motions cf")))
         (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
+        (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
 
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
