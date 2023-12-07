@@ -166,7 +166,7 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (if (eq *N-VOICES 1) (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint)))
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

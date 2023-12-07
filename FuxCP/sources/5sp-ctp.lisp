@@ -56,12 +56,12 @@
                 (print "Creating harmonic intervals array...")
                 ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-                (create-h-intervals (nth i (cp counterpoint)) (first (cp (*bass))) (nth i (h-intervals counterpoint)))
+                (create-h-intervals (nth i (cp counterpoint)) (first (cp *bass)) (nth i (h-intervals counterpoint)))
             )
             (progn
                 ; same as above but 1 note shorter
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-                (create-h-intervals (nth i (cp counterpoint)) (butlast (cp (*bass))) (nth i (h-intervals counterpoint)))
+                (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass))) (nth i (h-intervals counterpoint)))
             )
         )
     )
@@ -80,7 +80,7 @@
 
     
     ; merging all cp arrays into one
-    (print "Mergin cps...")
+    (print "Merging cps...")
     (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
     (merge-cp (cp counterpoint) (solution-array counterpoint)) ; merge the four counterpoint arrays into one
 
@@ -118,7 +118,7 @@
     (print "Creating motion array...")
     (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
 
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
@@ -199,15 +199,19 @@
     (print "One possible value for non-constrained notes...")
     (add-one-possible-value-cst (solution-array counterpoint) (nth 0 (is-nth-species-arr counterpoint)))
 
-    ; perfect consonances should be used at the start and at the end of the piece
-    (print "Perfect consonances at the start and at the end...")
-    ; if first note is constrained then it must be a perfect consonance
-    (add-p-cons-cst-if (first (first (h-intervals counterpoint))) (first (is-constrained-arr counterpoint)))
-    ; if first note is not constrained then the third note must be a perfect consonance
-    (add-p-cons-cst-if (first (third (h-intervals counterpoint))) (first (nth 0 (is-nth-species-arr counterpoint))))
-    ; no matter what species it is, the last harmonic interval must be a perfect consonance
-    (add-p-cons-end-cst (first (h-intervals counterpoint)))
-    
+    (if (eq *N-VOICES 1) (progn
+        ; perfect consonances should be used at the start and at the end of the piece
+        (print "Perfect consonances at the start and at the end...")
+        ; if first note is constrained then it must be a perfect consonance
+        (add-p-cons-cst-if (first (first (h-intervals counterpoint))) (first (is-constrained-arr counterpoint)))
+        ; if first note is not constrained then the third note must be a perfect consonance
+        (add-p-cons-cst-if (first (third (h-intervals counterpoint))) (first (nth 0 (is-nth-species-arr counterpoint))))
+        ; no matter what species it is, the last harmonic interval must be a perfect consonance
+        (add-p-cons-end-cst (first (h-intervals counterpoint)))
+    ))
+
+    #|    
+    ; TODO correct this now that everything changed
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
@@ -223,7 +227,7 @@
     (gil::g-rel-reify *sp* (penult (m2-intervals counterpoint)) gil::IRT_NQ 1
         (nth (total-index *cf-penult-index 1) (nth 3 (is-nth-species-arr counterpoint))) gil::RM_IMP
     ) ; 3rd species
-    
+
     ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
     ; major sixth or minor third
     (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))
@@ -232,6 +236,7 @@
     ; seventh or second
     ; (note: a => !b <=> !(a ^ b)), so here we use the negation of the conjunction
     (gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND (penult (first (is-cons-arr counterpoint))) 0) ; 4th species
+    |#
 
     ; every thesis note should be consonant if it does not belong to the fourth species (or not constrained at all)
     (print "Every thesis note should be consonant...")
@@ -256,7 +261,7 @@
 
     ; no seventh dissonance if the cantus firmus is at the top
     (print "No seventh dissonance if the cantus firmus is at the top...")
-    (add-no-seventh-cst (first (h-intervals counterpoint)) (first (is-cf-lower-arr counterpoint)) (first (is-4th-species-arr counterpoint))) ; 4th species
+    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-bass counterpoint) (first (is-4th-species-arr counterpoint))) ; 4th species
 
 
     ;======================================== MELODIC CONSTRAINTS =============================
@@ -295,12 +300,15 @@
     (print "No direct motion to reach a perfect consonance...")
     (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-bass counterpoint))) ; 3rd species
 
+    #|
+    ; TODO deal with the battuta
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
     (add-no-battuta-cst
         (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint)) (fourth (is-3rd-species-arr counterpoint))
     ) ; 3rd species
+    |#
 
     ; dissonant notes must be followed by the consonant note below
     (print "Dissonant notes must be followed by the consonant note below...")
@@ -309,7 +317,7 @@
     ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
     (add-no-second-cst
-        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (first (is-cf-lower-arr counterpoint)))
+        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (is-not-bass counterpoint))
         (rest (first (is-4th-species-arr counterpoint)))
     ) ; TODO 4th species
 
@@ -322,6 +330,8 @@
     (setf (fifth-cost counterpoint)  (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setf (octave-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 7 (first (is-cst-arr counterpoint)) (fifth-cost counterpoint) *h-fifth-cost*) ; (fifth-cost counterpoint) = 1 if *h-interval == 7
+    ; todo 
+    ; not if cp = bass
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 0 (first (is-cst-arr counterpoint)) (octave-cost counterpoint) *h-octave-cost*) ; (octave-cost counterpoint) = 1 if *h-interval == 0
     (add-cost-to-factors (fifth-cost counterpoint) 'fifth-cost)
     (add-cost-to-factors (octave-cost counterpoint) 'octave-cost)
@@ -330,7 +340,7 @@
     (set-general-costs-cst counterpoint (solution-len counterpoint) (is-constrained-arr counterpoint) (collect-bot-array (butlast (is-constrained-arr counterpoint)) (rest (is-constrained-arr counterpoint))))
     
     ; 5) contrary motion is preferred
-    (add-cost-to-factors (fourth (motions counterpoint)) 'motions-cost)
+    (add-cost-to-factors (fourth (motions-cost counterpoint)) 'motions-cost)
 
     ; 6) cambiata notes are preferred (cons - dis - cons > cons - cons - cons)
     (print "Cambiata notes are preferred...")

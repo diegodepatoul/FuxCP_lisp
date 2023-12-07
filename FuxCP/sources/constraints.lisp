@@ -1204,7 +1204,6 @@
         for m in motions
         for c in costs
         for is-not-bass in (rest is-not-bass-arr)
-        for db in *debug
         do
             (let (
                 ; boolean variables

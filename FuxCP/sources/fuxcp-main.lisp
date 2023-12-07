@@ -459,7 +459,6 @@
         (costs-names-by-order (list ; from least to most important
                                 'm2-eq-zero-cost
                                 'direct-move-to-p-cons-cost
-                                'no-syncope-cost
                                 'not-cambiata-cost
                                 'penult-thesis-cost
                                 'fifth-cost
@@ -471,6 +470,7 @@
                                 'motions-cost
                                 'off-key-cost
                                 'successive-p-cons-cost
+                                'no-syncope-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -503,7 +503,7 @@
         ;; Reorder the costs
         (reorder-costs species)
 
-        (setf linear-combination 1)
+        (setf linear-combination nil)
         ;; COST
         (if linear-combination 
             ; do a linear combination
@@ -527,7 +527,9 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-
+        (gil::g-branch *sp* (first (cp *bass)) var-branch-type val-branch-type)
+        (gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
+        (gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dotimes (i *N-VOICES) (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array
@@ -627,19 +629,21 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (cp (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (cp *bass))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
+        (handler-case (print (list "motions-cp1= " (first (motions (first counterpoints))))) (error (c) (print "error with motions cp1")))
         (handler-case (print (list "motions-cp1= " (gil::g-values sol (first (motions (first counterpoints)))))) (error (c) (print "error with motions cp1")))
         (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
         (handler-case (print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus))))) (error (c) (print "error with motions cf")))
         (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
         (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
-
+        ;(print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus)))))
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))
         ;(print (list "oblique  = " (gil::g-values sol *oblique)))
         ;(print (list "contrary = " (gil::g-values sol *contrary)))
         ;(print (list "not bass = " (gil::g-values sol *not-bass)))
         ;(print (list "    bass = " (gil::g-values sol *bass)))
+        
         (handler-case
             (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
@@ -652,6 +656,7 @@
                 (error "All costs are not set correctly. Correct this problem before trying to find a solution.")
             )
         )
+        
         (print (list "species = " species-list))
         
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
