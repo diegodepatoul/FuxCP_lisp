@@ -57,11 +57,18 @@
                 ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
                 (create-h-intervals (nth i (cp counterpoint)) (first (cp *bass)) (nth i (h-intervals counterpoint)))
+    
+                (setf (nth i (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
+                (create-h-intervals (nth i (cp counterpoint)) *cf (nth i (h-intervals-to-cf counterpoint)))
             )
             (progn
                 ; same as above but 1 note shorter
                 (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
                 (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass))) (nth i (h-intervals counterpoint)))
+
+                (setf (nth i (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
+                (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals-to-cf counterpoint)))
+
             )
         )
     )
@@ -210,14 +217,14 @@
         (add-p-cons-end-cst (first (h-intervals counterpoint)))
     ))
 
-    #|    
-    ; TODO correct this now that everything changed
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
-    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint)))
+    #|
+    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint)))
         (penult (nth 3 (is-nth-species-arr counterpoint)))
     ) ; 3rd species
+     |#
     ; the third note of the penultimate measure must be below the fourth one. (3rd species)
     (gil::g-rel-reify *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1
         (penult (nth 3 (is-nth-species-arr counterpoint))) gil::RM_IMP
@@ -227,16 +234,19 @@
     (gil::g-rel-reify *sp* (penult (m2-intervals counterpoint)) gil::IRT_NQ 1
         (nth (total-index *cf-penult-index 1) (nth 3 (is-nth-species-arr counterpoint))) gil::RM_IMP
     ) ; 3rd species
-
+    
     ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
     ; major sixth or minor third
-    (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint)))
+    #|
+    (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint)))
         (penult (butlast (nth 4 (is-nth-species-arr counterpoint))))
     ) ; 4th species
+     |#
     ; seventh or second
     ; (note: a => !b <=> !(a ^ b)), so here we use the negation of the conjunction
-    (gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND (penult (first (is-cons-arr counterpoint))) 0) ; 4th species
-    |#
+    (setf is-penult-cons-to-cf (gil::add-bool-var *sp* 0 1))
+    (add-is-member-cst (penult (first (h-intervals-to-cf counterpoint))) ALL_CONS_VAR is-penult-cons-to-cf)
+    ;(gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND is-penult-cons-to-cf 0) ; 4th species
 
     ; every thesis note should be consonant if it does not belong to the fourth species (or not constrained at all)
     (print "Every thesis note should be consonant...")
@@ -298,17 +308,14 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-bass counterpoint))) ; 3rd species
+    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-bass counterpoint) nil)) ; 3rd species
 
-    #|
-    ; TODO deal with the battuta
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
     (add-no-battuta-cst
         (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint)) (fourth (is-3rd-species-arr counterpoint))
     ) ; 3rd species
-    |#
 
     ; dissonant notes must be followed by the consonant note below
     (print "Dissonant notes must be followed by the consonant note below...")
@@ -330,9 +337,12 @@
     (setf (fifth-cost counterpoint)  (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-fifth-cost))) ; IntVar array representing the cost to have fifths
     (setf (octave-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-len (getparam-dom 'h-octave-cost))) ; IntVar array representing the cost to have octaves
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 7 (first (is-cst-arr counterpoint)) (fifth-cost counterpoint) *h-fifth-cost*) ; (fifth-cost counterpoint) = 1 if *h-interval == 7
-    ; todo 
-    ; not if cp = bass
-    (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 0 (first (is-cst-arr counterpoint)) (octave-cost counterpoint) *h-octave-cost*) ; (octave-cost counterpoint) = 1 if *h-interval == 0
+    (let ((is-cst-and-not-bass-arr (gil::add-bool-var-array *sp* *cf-len 0 1)))
+        (dotimes (i *cf-len)
+            (gil::g-op *sp* (nth i (first (is-cst-arr counterpoint))) gil::BOT_AND (nth i (is-not-bass counterpoint)) (nth i is-cst-and-not-bass-arr))
+        )
+        (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 0 is-cst-and-not-bass-arr (octave-cost counterpoint) *h-octave-cost*) ; (octave-cost counterpoint) = 1 if *h-interval == 0
+    )
     (add-cost-to-factors (fifth-cost counterpoint) 'fifth-cost)
     (add-cost-to-factors (octave-cost counterpoint) 'octave-cost)
 

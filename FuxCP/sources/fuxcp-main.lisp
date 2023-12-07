@@ -80,13 +80,13 @@
     ; dissonances intervals
     (defparameter DIS (list 1 2 5 6 10 11))
     ; penultimate intervals, i.e. minor third and major sixth
-    (defparameter PENULT_CONS (list 3 9))
+    (defparameter PENULT_CONS (list 0 3 9))
     ; penultimate thesis intervals, i.e. perfect fifth and sixth
-    (defparameter PENULT_THESIS (list 7 8 9))
+    (defparameter PENULT_THESIS (list 0 7 8 9))
     ; penultimate 1st quarter note intervals, i.e. minor third, major sixth and octave/unisson
     (defparameter PENULT_1Q (list 0 3 8))
     ; penultimate syncope intervals, i.e. seconds and sevenths
-    (defparameter PENULT_SYNCOPE (list 1 2 10 11))
+    (defparameter PENULT_SYNCOPE (list 0 1 2 10 11))
 
     ; P_CONS in IntVar
     (defparameter P_CONS_VAR (gil::add-int-var-const-array *sp* P_CONS))
@@ -272,11 +272,8 @@
 
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
-    ;(is-voice-bass :accessor is-voice-bass :initarg :is-voice-bass :initform 0)
-    (is-cp-bass :accessor is-cp-bass :initarg :is-cp-bass :initform (list nil nil nil nil))
     (is-not-bass :accessor is-not-bass :initarg :is-not-bass :initform nil)
-    (h-intervals-to-bass :accessor h-intervals-to-bass :initarg :h-intervals-to-bass :initform (list nil nil nil nil))
-    (is-cons-to-bass-arr :accessor is-cons-to-bass-arr :initarg :is-cons-to-bass-arr :initform (list nil nil nil nil))
+    (h-intervals-to-cf :accessor h-intervals-to-cf :initarg :h-intervals-to-cf :initform (list nil nil nil nil))
 ))
 
 ; @completely new or reworked
@@ -528,8 +525,8 @@
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
         (gil::g-branch *sp* (first (cp *bass)) var-branch-type val-branch-type)
-        (gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
-        (gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
+        ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
+        ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dotimes (i *N-VOICES) (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array

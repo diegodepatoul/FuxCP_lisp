@@ -27,6 +27,9 @@
         (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
         (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass))) (nth i (h-intervals counterpoint)))
 
+        (setf (nth i (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
+        (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals-to-cf counterpoint)))
+
         ; array of IntVar representing the absolute intervals between a thesis and an arsis note of the same measure the counterpoint
         (setf (nth i-1 (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 1 12))
         (setf (nth i-1 (m-succ-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
@@ -120,7 +123,9 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        ;(add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals counterpoint))))
+        ;(if (eq *N-VOICES 1)
+        ;    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint))))
+        ;)
     ))
     ; the third note of the penultimate measure must be below the fourth one.
     (gil::g-rel *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1)
@@ -162,7 +167,7 @@
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    ;(add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint))) ; TODO 
+    (add-no-battuta-cst (fourth (motions counterpoint)) (first (h-intervals-to-cf counterpoint)) (fourth (m-intervals-brut counterpoint)) (fourth (is-cf-lower-arr counterpoint)))  
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")

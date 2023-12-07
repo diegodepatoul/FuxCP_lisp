@@ -31,6 +31,9 @@
     (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass))) (third (h-intervals counterpoint)))
     (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass))) (first (h-intervals counterpoint)))
     
+    (setf (third (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
+    (create-h-intervals (third (cp counterpoint)) (butlast *cf) (third (h-intervals-to-cf counterpoint)))
+    
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
@@ -66,9 +69,7 @@
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
     (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (setf (first (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
     (create-is-cf-lower-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
-    (create-is-cf-lower-arr (first (cp counterpoint)) (rest *cf) (first (is-cf-lower-arr counterpoint)))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
@@ -114,7 +115,7 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        ;(add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+        ;(add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint))))
     ))
 
 

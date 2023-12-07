@@ -419,7 +419,6 @@
 (defun create-voice-arrays (cantus-firmus counterpoints)
     (setf counterpoint-1 (first counterpoints))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
-    (setf (first (is-cp-bass *cantus-firmus)) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (setf (is-not-bass *cantus-firmus) (gil::add-bool-var-array *sp* *cf-len 0 1))
     (dotimes (i *N-VOICES) (setf (is-not-bass (nth i counterpoints)) (gil::add-bool-var-array *sp* *cf-len 0 1)))
 
@@ -671,7 +670,10 @@
             ; then add only harmonic triad options
             (gil::g-member *sp* MAJ_H_TRIAD_VAR h-interval)
             ; else add all consonances
+            (if (eq i *cf-penult-index)
+                (gil::g-member *sp* PENULT_CONS_VAR h-interval)
             (gil::g-member *sp* ALL_CONS_VAR h-interval)
+            )
         )
     )
 )
@@ -1024,18 +1026,22 @@
 )
 
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
+    (print b-bass)
+    (print h-interval)
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
-            (gil::g-ite *sp* b-bass NINE h-interval h-interval)
-            (and-ite b-bass NINE h-interval h-interval and-cond)
+            (gil::g-ite *sp* b-bass NINE THREE h-interval)
+            (and-ite b-bass NINE THREE h-interval and-cond)
         )  
     )
 )
 
 (defun add-penult-cons-cf-cst (b-bass h-interval)
+    #|
     (if (getparam 'penult-rule-check)
         (gil::g-ite *sp* b-bass THREE h-interval h-interval)
     )
+     |#
 )
 
 
