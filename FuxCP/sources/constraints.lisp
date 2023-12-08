@@ -472,7 +472,14 @@
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-bass (first counterpoints))))
     (if (eq *N-VOICES 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-bass (second counterpoints)))))
     (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-bass *cantus-firmus)))
-
+    
+    ; todo do something with this (working) constraint (put it somewhere else to be cleaner)
+    (let (
+        (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
+        (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12))))
+        )
+        (gil::g-mod *sp* (lastone (first (cp *bass))) TWELVE CF-MODULO) 
+    )
 )
 
 

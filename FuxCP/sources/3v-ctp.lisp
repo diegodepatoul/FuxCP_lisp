@@ -45,14 +45,14 @@
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
-    #|
+    
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
     (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint-1)) (first (cp counterpoint-2)) (first h-intervals-1-2))
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) |#
+    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) 
 
     (print "Last chord cannot be minor")
     
