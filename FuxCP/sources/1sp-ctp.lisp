@@ -96,9 +96,9 @@
         ;(otherwise (error "Species not supported"))
     )
     ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_CONS_VAR)
-    ; no unisson between the cantus firmus and the counterpoint unless it is the first note or the last note
-    (print "No unisson...")
-    (add-no-unisson-cst (first (cp counterpoint)) *cf)
+    ; no unison between the cantus firmus and the counterpoint unless it is the first note or the last note
+    (print "No unison...")
+    (add-no-unison-cst (first (cp counterpoint)) *cf)
 
     (case species ((1 2) 
         ; then

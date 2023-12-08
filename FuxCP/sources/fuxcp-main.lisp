@@ -524,7 +524,7 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-        (gil::g-branch *sp* (first (cp *bass)) var-branch-type val-branch-type)
+        (gil::g-branch *sp* (first (cp *bass)) var-branch-type gil::INT_VAL_MIN)
         ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
         ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dotimes (i *N-VOICES) (progn
@@ -535,15 +535,19 @@
 
             ; 3rd and 5th species specific
             (if (or (eq (nth i species) 3) (eq (nth i species) 5)) (progn
-               ; (gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
-               ; (gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                ;(gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                ;(gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
             ))
 
             ; 5th species specific
-            (if (and (eq (nth i species) 5) (>= voice-type 0)) (progn ; otherwise there is no species array
-                    (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
-                    (gil::g-branch *sp* (not-cambiata-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            (if (eq (nth i species) 5) (progn ; otherwise there is no species array
+                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (not-cambiata-cost (nth i counterpoints)) var-branch-type val-branch-type)
             ))
+
+            (if (eq (nth i species) 4) 
+                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            )
 
             ; branching *total-cost
             ;(if (eq (nth i species) 2)
@@ -553,7 +557,7 @@
          
     
         ;; Solution variables branching
-        (gil::g-branch *sp* the-cp var-branch-type val-branch-type)
+        (gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object

@@ -872,19 +872,21 @@
 )
 
 ; add the constraint such that there cp is never equal to cf
-(defun add-no-unisson-at-all-cst (cp cf &optional (is-cst-arr nil))
+(defun add-no-unison-at-all-cst (cp cf &optional (is-cst-arr nil))
     (loop
         for p in cp
         for q in cf
         for i from 0 below (length cp)
         do
-            (rel-reify-if p gil::IRT_NQ q (nth i is-cst-arr))
+            (if (and p q)
+                (rel-reify-if p gil::IRT_NQ q (nth i is-cst-arr))            
+            )
     )
 )
 
-; add the constraint such that there is no unisson unless it is the first or last note
-(defun add-no-unisson-cst (cp cf)
-    (add-no-unisson-at-all-cst (restbutlast cp) (restbutlast cf))
+; add the constraint such that there is no unison unless it is the first or last note
+(defun add-no-unison-cst (cp cf)
+    (add-no-unison-at-all-cst (restbutlast cp) (restbutlast cf))
 )
 
 
@@ -1080,7 +1082,7 @@
 
 ; add a constraint such that there is no second harmonic interval if:
 ;   - cf is at the bass AND
-;   - octave/unisson harmonic interval precedes it
+;   - octave/unison harmonic interval precedes it
 (defun add-no-second-cst (h-intervals-arsis h-intervals-thesis is-cf-bass-arr &optional (is-cst-arr nil))
     (loop
     for ia in h-intervals-arsis

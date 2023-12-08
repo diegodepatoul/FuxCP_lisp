@@ -139,7 +139,7 @@
 
     (add-h-dis-imp-cons-below-cst (first (m-succ-intervals-brut counterpoint)) (first (is-cons-arr counterpoint)))
 
-    ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
+    ; no second dissonance if the cantus firmus is at the bass and a octave/unison precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
     (add-no-second-cst (third (h-intervals counterpoint)) (first (h-intervals counterpoint)) (is-not-bass counterpoint))
 

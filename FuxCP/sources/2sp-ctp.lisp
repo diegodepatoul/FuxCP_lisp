@@ -100,9 +100,9 @@
     (add-h-cons-arsis-cst *cf-len *cf-penult-index (third (h-intervals counterpoint)) (is-ta-dim-arr counterpoint))
 
     ; Fux does not follow this rule so deactivate ?
-    ; no unisson between the cantus firmus and the arsis counterpoint
-    ; (print "No unisson at all...")
-    ; (add-no-unisson-at-all-cst (third (cp counterpoint)) (butlast (cf counterpoint)))
+    ; no unison between the cantus firmus and the arsis counterpoint
+    ; (print "No unison at all...")
+    ; (add-no-unison-at-all-cst (third (cp counterpoint)) (butlast (cf counterpoint)))
 
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
@@ -129,23 +129,23 @@
     (print "No chromatic motion...")
     (add-no-chromatic-m-cst (m-all-intervals-brut counterpoint) (m2-intervals-brut counterpoint))
 
-    ; no unisson between two consecutive notes
-    (print "No unisson between two consecutive notes...")
+    ; no unison between two consecutive notes
+    (print "No unison between two consecutive notes...")
     (case species
-        (2 (add-no-unisson-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
+        (2 (add-no-unison-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
         ; @completely new or reworked
         ; ========= 2 counterpoints specific
         (7 (progn
             ; when there is more than one counterpoint, unison can occur between the fourth-to-last and third-to-last note
             (if (member 3 *species-list) (progn
                 ; when used in combination with a third species counterpoint, unison can also occurr between the third-to-last and the second-to-last
-                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
-                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 2) (rest (last (solution-array counterpoint) 2))) ; no unison in the two last ones
+                (add-no-unison-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
+                (add-no-unison-at-all-cst (last (solution-array counterpoint) 2) (rest (last (solution-array counterpoint) 2))) ; no unison in the two last ones
                 (gil::g-rel *sp* (first (last (solution-array counterpoint) 4)) gil::IRT_NQ (first (last (solution-array counterpoint) 2))) ; but the three of them cannot be a unison
             ) (progn 
                 ; when used in combination with another counterpoint (that is not of third species)
-                (add-no-unisson-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
-                (add-no-unisson-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3))) ; no unison in the three last ones
+                (add-no-unison-at-all-cst (butlast (solution-array counterpoint) 3) (rest (butlast (solution-array counterpoint) 3))) ; no unison until fourth-to-last
+                (add-no-unison-at-all-cst (last (solution-array counterpoint) 3) (rest (last (solution-array counterpoint) 3))) ; no unison in the three last ones
             ))
         ))
         ; ========= 

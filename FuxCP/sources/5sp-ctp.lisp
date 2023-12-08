@@ -238,7 +238,7 @@
     ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
     ; major sixth or minor third
     #|
-    (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint)))
+    (add-penult-cons-cst (lastone (third (  -arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint)))
         (penult (butlast (nth 4 (is-nth-species-arr counterpoint))))
     ) ; 4th species
      |#
@@ -280,15 +280,15 @@
     ; no melodic interval between 9 and 11
     (add-no-m-jump-extend-cst (m-all-intervals counterpoint) (collect-bot-array (butlast (is-constrained-arr counterpoint)) (rest (is-constrained-arr counterpoint))))
 
-    ; no unisson between two consecutive notes
+    ; no unison between two consecutive notes
     ; exept for in the second part or the fourth part of the measure
-    (print "No unisson between two consecutive notes...")
+    (print "No unison between two consecutive notes...")
     ; if 1st note and 2nd note exists (it means it belongs to a species)
-    (add-no-unisson-at-all-cst
+    (add-no-unison-at-all-cst
         (first (cp counterpoint)) (second (cp counterpoint))
         (collect-bot-array (first (is-cst-arr counterpoint)) (second (is-cst-arr counterpoint)))
     ) ; 5th
-    (add-no-unisson-at-all-cst
+    (add-no-unison-at-all-cst
         (third (cp counterpoint)) (fourth (cp counterpoint))
         (collect-bot-array (third (is-cst-arr counterpoint)) (fourth (is-cst-arr counterpoint)))
     ) ; 5th
@@ -321,7 +321,7 @@
     (print "Dissonant notes must be followed by the consonant note below...")
     (add-h-dis-imp-cons-below-cst (m-ta-intervals-brut counterpoint) (first (is-cons-arr counterpoint)) (first (is-4th-species-arr counterpoint))) ; TODO 4th species
 
-    ; no second dissonance if the cantus firmus is at the bass and a octave/unisson precedes it
+    ; no second dissonance if the cantus firmus is at the bass and a octave/unison precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
     (add-no-second-cst
         (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (is-not-bass counterpoint))

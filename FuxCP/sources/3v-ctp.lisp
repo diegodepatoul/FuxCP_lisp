@@ -37,45 +37,50 @@
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
-    (print "no unisson between cp1 and cp2")
-    (add-no-unisson-cst (first (cp counterpoint-1)) (first (cp counterpoint-2)))
+    (print "no unison between cp1 and cp2")
+    (dotimes (i 1 #|measures|#)
+        (add-no-unison-cst (nth i (cp counterpoint-1)) (nth i (cp counterpoint-2)))
+    )
 
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
+    #|
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
     (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (cp counterpoint-1)) (first (cp counterpoint-2)) (first h-intervals-1-2))
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr)
-
-
-    ; THIS CLASHES WITH THE PENULT RULES WHEN USED ACROSS TWO DIFFERENT SPECIES
-    ;(add-h-cons-cst *cf-len *cf-last-index (first h-intervals-1-2))
-    ;(dotimes (i *cf-len)
-        ;(if (eq i *cf-last-index)
-            ;(gil::g-member *sp* PENULT_THESIS_VAR (nth i (first h-intervals-1-2)))
-    ;         (gil::g-member *sp* ALL_CONS_VAR (nth i (first h-intervals-1-2)))
-        ;)
-    ;)
+    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) |#
 
     (print "Last chord cannot be minor")
+    
+    ; next line covered by creating the harmonic arrays
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     
-    (if (member 5 species-list)
-        nil ; debug
-        (progn 
-            (print "Last chord cannot include a tenth")
-            (dotimes (i *N-VOICES)
-                (add-no-tenth-in-last-chord-cst (first (h-intervals (nth i *upper))) (h-intervals-brut (nth i *upper)))
-            )
-        )
+    (print "Last chord cannot include a tenth")
+    (dotimes (i *N-VOICES)
+        (add-no-tenth-in-last-chord-cst (first (h-intervals (nth i *upper))) (h-intervals-brut (nth i *upper)))
     )
 
     (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
+
+    (if (equal species-list '(5 5))
+        (let (
+                (is-same-species (gil::add-bool-var-array *sp* (solution-len (first counterpoints)) 0 1))
+                (is-same-species-int (gil::add-int-var-array *sp* (solution-len (first counterpoints)) 0 1))
+                (percentage-same-species (gil::add-int-var *sp* 0 (solution-len (first counterpoints))))
+            )
+            (dotimes (i (solution-len (first counterpoints)))
+                (gil::g-rel-reify *sp* (nth i (species-arr (first counterpoints))) gil::IRT_EQ (nth i (species-arr (second counterpoints))) (nth i is-same-species))
+                (gil::g-rel-reify *sp* (nth i is-same-species-int) gil::IRT_EQ 1 (nth i is-same-species))
+            )
+            (gil::g-sum *sp* percentage-same-species is-same-species-int)
+            (gil::g-rel *sp* percentage-same-species gil::IRT_LE 15)
+        )
+    )
 
     ;================================================================================;
     ;                                    COSTS                                       ;
