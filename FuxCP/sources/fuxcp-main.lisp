@@ -530,23 +530,23 @@
         (dolist (counterpoint counterpoints) (progn
             ; 5th species specific
             (if (eq (species counterpoint) 5) ; otherwise there is no species array
-                (gil::g-branch *sp* (species-arr counterpoints) var-branch-type gil::INT_VAL_RND)
+                (gil::g-branch *sp* (species-arr counterpoint) var-branch-type gil::INT_VAL_RND)
             )
 
             ; 3rd and 5th species specific
             (if (or (eq (species counterpoint) 3) (eq (species counterpoint) 5)) (progn
-                ;(gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
-                ;(gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                ;(gil::g-branch *sp* (m-degrees-cost counterpoint) var-branch-type val-branch-type)
+                ;(gil::g-branch *sp* (off-key-cost counterpoint) var-branch-type val-branch-type)
             ))
 
             ; 5th species specific
             (if (eq (species counterpoint) 5) (progn ; otherwise there is no species array
-                (gil::g-branch *sp* (no-syncope-cost counterpoints) var-branch-type val-branch-type)
-                (gil::g-branch *sp* (not-cambiata-cost counterpoints) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (not-cambiata-cost counterpoint) var-branch-type val-branch-type)
             ))
 
             (if (eq (species counterpoint) 4) 
-                (gil::g-branch *sp* (no-syncope-cost counterpoints) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
             )
 
             ; branching *total-cost
