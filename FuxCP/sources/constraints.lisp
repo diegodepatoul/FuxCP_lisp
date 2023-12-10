@@ -428,10 +428,10 @@
         (dotimes (j *N-VOICES) ; the jth counterpoint
             (if (eq (species (nth j counterpoints)) 4) 
                 (if (< i *cf-last-index)
-                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (third (cp (nth j counterpoints)))))   
-                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth *cf-penult-index (first (cp (nth j counterpoints)))))   
+                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (third (notes (nth j counterpoints)))))   
+                    (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth *cf-penult-index (first (notes (nth j counterpoints)))))   
                 )
-                (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (cp (nth j counterpoints)))))   
+                (gil::g-rel *sp* (nth (+ j 1) voices) gil::IRT_EQ (nth i (first (notes (nth j counterpoints)))))   
             )
         )
 
@@ -440,10 +440,10 @@
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
         (gil::g-sorted *sp* voices (nth i sorted-voices) order)
         
-        (gil::g-rel *sp* (nth i (first (cp *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
+        (gil::g-rel *sp* (nth i (first (notes *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
         (dotimes (j *N-VOICES) ; the jth voice
-            (gil::g-rel *sp* (nth i (first (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
-            (gil::g-rel *sp* (nth i (third (cp (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+            (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+            (gil::g-rel *sp* (nth i (third (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
         (let (
             (cf-is-bass (gil::add-bool-var *sp* 0 1))
@@ -454,14 +454,14 @@
             (cp1-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp2-is-not-bass (gil::add-bool-var *sp* 0 1))
             )
-            (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp *cantus-firmus))) cf-is-bass)
-            (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_NQ (nth i (first (cp *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
+            (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (first (notes *cantus-firmus))) cf-is-bass)
+            (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_NQ (nth i (first (notes *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
             (if (eq (species (first counterpoints)) 4) 
                 (if (< i *cf-last-index)
-                    (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (third (cp (first counterpoints)))) cp1-equals-bass)
-                    (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth *cf-penult-index (first (cp (first counterpoints)))) cp1-equals-bass)
+                    (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (third (notes (first counterpoints)))) cp1-equals-bass)
+                    (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth *cf-penult-index (first (notes (first counterpoints)))) cp1-equals-bass)
                 )
-                (gil::g-rel-reify *sp* (nth i (first (cp *bass))) gil::IRT_EQ (nth i (first (cp (first counterpoints)))) cp1-equals-bass)
+                (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (first (notes (first counterpoints)))) cp1-equals-bass)
             )
 
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (first counterpoints))))       
@@ -478,7 +478,7 @@
         (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
         (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12))))
         )
-        (gil::g-mod *sp* (lastone (first (cp *bass))) TWELVE CF-MODULO) 
+        (gil::g-mod *sp* (lastone (first (notes *bass))) TWELVE CF-MODULO) 
     )
 )
 
@@ -2112,7 +2112,7 @@
                         (pitches (subseq sol-pitches 0 (- (* 2 len) 1)))
                         )
                         (if (eq (car (last pitches 4)) (car (last pitches 3))) (progn ; if the first note in the penult bar is the same as the last in the 2nd-to last
-                            ; then ligature them ; to test if it works : (gil::g-rel *sp* (first (last (third (cp counterpoint-1)) 2)) gil::IRT_EQ (first (last (first (cp counterpoint-1)) 2)))
+                            ; then ligature them ; to test if it works : (gil::g-rel *sp* (first (last (third (notes counterpoint-1)) 2)) gil::IRT_EQ (first (last (first (notes counterpoint-1)) 2)))
                             (setf rythmic (append (butlast rythmic 4) '(1) (last rythmic 2)))
                             (loop
                                 for i from (- (length pitches) 4) below (- (length pitches) 1)

@@ -20,16 +20,16 @@
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the cantus-firmus
     (setf (first (h-intervals cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp cantus-firmus)) (first (cp *bass)) (first (h-intervals cantus-firmus)))
-    ;(create-h-intervals (first (cp *upper-voice)) (first (cp *bass-notes)) (first (h-intervals *upper-voice)))
-    ;(create-h-intervals (first (cp *bass-notes))  *cf                      (first (h-intervals *bass-notes )))
+    (create-h-intervals (first (notes cantus-firmus)) (first (notes *bass)) (first (h-intervals cantus-firmus)))
+    ;(create-h-intervals (first (notes *upper-voice)) (first (notes *bass-notes)) (first (h-intervals *upper-voice)))
+    ;(create-h-intervals (first (notes *bass-notes))  *cf                      (first (h-intervals *bass-notes )))
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the cantus-firmus
     (setf (first (m-intervals cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-    (create-m-intervals-self (first (cp cantus-firmus)) (first (m-intervals cantus-firmus)) (first (m-intervals-brut cantus-firmus)))
+    (create-m-intervals-self (first (notes cantus-firmus)) (first (m-intervals cantus-firmus)) (first (m-intervals-brut cantus-firmus)))
     
     ; creating perfect consonances boolean array
     (print "Creating perfect consonances boolean array...")

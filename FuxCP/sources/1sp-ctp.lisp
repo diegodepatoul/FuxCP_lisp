@@ -20,9 +20,9 @@
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint)) (first (cp *bass)) (first (h-intervals counterpoint)))
+    (create-h-intervals (first (notes counterpoint)) (first (notes *bass)) (first (h-intervals counterpoint)))
 
-    ; (create-h-intervals (first (cp counterpoint)) (first (cp *bass)) (first (h-intervals counterpoint)))
+    ; (create-h-intervals (first (notes counterpoint)) (first (notes *bass)) (first (h-intervals counterpoint)))
     ; @completely new or reworked
     ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
     
@@ -30,11 +30,11 @@
         (if (eq species 9) (progn 
                 (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
                 (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest (first (cp *bass))) (third (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (create-intervals (rest (first (notes *bass))) (third (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
             ) (progn
                 (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
                 (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals (first (cp *bass)) (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (create-intervals (first (notes *bass)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
             ) 
         )
     )) 
@@ -46,7 +46,7 @@
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-    (create-m-intervals-self (first (cp counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
+    (create-m-intervals-self (first (notes counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
     
     (case species ((1 6) ; only for the first species
         ; then
@@ -54,12 +54,12 @@
             ; creating melodic intervals array between the note n and n+2
             (setf (m2-intervals counterpoint) (gil::add-int-var-array *sp* *cf-penult-index 0 12))
             (setf (m2-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-penult-index -12 12))
-            (create-m2-intervals (first (cp counterpoint)) (m2-intervals counterpoint) (m2-intervals-brut counterpoint))
+            (create-m2-intervals (first (notes counterpoint)) (m2-intervals counterpoint) (m2-intervals-brut counterpoint))
             
             ; creating boolean is counterpoint off key array
             (print "Creating is counterpoint off key array...")
             (setf (is-cp-off-key-arr counterpoint) (gil::add-bool-var-array *sp* *cf-len 0 1))
-            (create-is-member-arr (first (cp counterpoint)) (is-cp-off-key-arr counterpoint) (off-domain counterpoint))
+            (create-is-member-arr (first (notes counterpoint)) (is-cp-off-key-arr counterpoint) (off-domain counterpoint))
         )
     ))
 
@@ -74,7 +74,7 @@
     ; 0 for being the bass, 1 for being above
     (print "Creating order of pitch array...")
     (setf (first (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-cf-lower-arr (first (cp counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
+    (create-is-cf-lower-arr (first (notes counterpoint)) *cf (first (is-cf-bass-arr counterpoint)))
 
 
     ; creating motion array
@@ -98,7 +98,7 @@
     ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_CONS_VAR)
     ; no unison between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unison...")
-    (add-no-unison-cst (first (cp counterpoint)) *cf)
+    (add-no-unison-cst (first (notes counterpoint)) *cf)
 
     (case species ((1 2) 
         ; then
@@ -170,7 +170,7 @@
         )
     ))
 
-    (setf (solution-array counterpoint) (first (cp counterpoint)))
+    (setf (solution-array counterpoint) (first (notes counterpoint)))
     (setf (solution-len counterpoint) *cf-len)
 
     ; RETURN

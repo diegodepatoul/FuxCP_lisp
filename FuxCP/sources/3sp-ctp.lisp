@@ -25,29 +25,29 @@
         ; creating harmonic intervals array
         ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
         (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-        (create-h-intervals (nth i (cp counterpoint)) (butlast (first (cp *bass))) (nth i (h-intervals counterpoint)))
+        (create-h-intervals (nth i (notes counterpoint)) (butlast (first (notes *bass))) (nth i (h-intervals counterpoint)))
 
         (setf (nth i (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-        (create-h-intervals (nth i (cp counterpoint)) (butlast *cf) (nth i (h-intervals-to-cf counterpoint)))
+        (create-h-intervals (nth i (notes counterpoint)) (butlast *cf) (nth i (h-intervals-to-cf counterpoint)))
 
         ; array of IntVar representing the absolute intervals between a thesis and an arsis note of the same measure the counterpoint
         (setf (nth i-1 (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 1 12))
         (setf (nth i-1 (m-succ-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-        (create-intervals (nth i-1 (cp counterpoint)) (nth i (cp counterpoint)) (nth i-1 (m-succ-intervals counterpoint)) (nth i-1 (m-succ-intervals-brut counterpoint)))
+        (create-intervals (nth i-1 (notes counterpoint)) (nth i (notes counterpoint)) (nth i-1 (m-succ-intervals counterpoint)) (nth i-1 (m-succ-intervals-brut counterpoint)))
     )
     
     ; merging cp and cp-arsis into one array
     (print "Mergin cps...")
     (setf (solution-len counterpoint) (+ *cf-len (* *cf-last-index 3))) ; total length of the counterpoint array
     (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (merge-cp (cp counterpoint) (solution-array counterpoint)) ; merge the four counterpoint arrays into one
+    (merge-cp (notes counterpoint) (solution-array counterpoint)) ; merge the four counterpoint arrays into one
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals
     ; between the last note of measure m and the first note of measure m+1 of the counterpoint
     (setf (fourth (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 1 12))
     (setf (fourth (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
-    (create-m-intervals-next-meas (fourth (cp counterpoint)) (first (cp counterpoint)) (fourth (m-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)))
+    (create-m-intervals-next-meas (fourth (notes counterpoint)) (first (notes counterpoint)) (fourth (m-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)))
     
     ; creating melodic intervals array between the note n and n+2 for the whole counterpoint
     (setf (m2-len counterpoint) (- (* *cf-last-index 4) 1)) ; number of melodic intervals between n and n+2 for the total counterpoint
@@ -71,7 +71,7 @@
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
     (setf (fourth (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-lower-arr (fourth (cp counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
+    (create-is-cf-lower-arr (fourth (notes counterpoint)) (butlast *cf) (fourth (is-cf-lower-arr counterpoint)))
 
     ; creating boolean are five consecutive notes by joint degree array
     (print "Creating are five consecutive notes by joint degree array...")

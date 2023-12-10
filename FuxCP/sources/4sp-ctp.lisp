@@ -21,18 +21,18 @@
     ; merging cp and cp-arsis into one array
     (setf (solution-len counterpoint) (* *cf-last-index 2))
     (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (merge-cp-same-len (list (third (cp counterpoint)) (first (cp counterpoint))) (solution-array counterpoint)) ; merge the two counterpoint arrays into one
+    (merge-cp-same-len (list (third (notes counterpoint)) (first (notes counterpoint))) (solution-array counterpoint)) ; merge the two counterpoint arrays into one
     
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass))) (third (h-intervals counterpoint)))
-    (create-h-intervals (first (cp counterpoint)) (rest (first (cp *bass))) (first (h-intervals counterpoint)))
+    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *bass))) (third (h-intervals counterpoint)))
+    (create-h-intervals (first (notes counterpoint)) (rest (first (notes *bass))) (first (h-intervals counterpoint)))
     
     (setf (third (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (cp counterpoint)) (butlast *cf) (third (h-intervals-to-cf counterpoint)))
+    (create-h-intervals (third (notes counterpoint)) (butlast *cf) (third (h-intervals-to-cf counterpoint)))
     
 
     ; creating melodic intervals array
@@ -40,11 +40,11 @@
     ; array of IntVar representing the melodic intervals between arsis and next thesis note of the counterpoint
     (setf (third (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 8))
     (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
-    (create-intervals (third (cp counterpoint)) (first (cp counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
+    (create-intervals (third (notes counterpoint)) (first (notes counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
     ; array of IntVar representing the melodic intervals between a thesis and an arsis note of the same measure the counterpoint
     (setf (first (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-penult-index 1 12))
     (setf (first (m-succ-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-penult-index -12 12))
-    (create-m-intervals-in-meas (first (cp counterpoint)) (rest (third (cp counterpoint))) (first (m-succ-intervals counterpoint)) (first (m-succ-intervals-brut counterpoint)))
+    (create-m-intervals-in-meas (first (notes counterpoint)) (rest (third (notes counterpoint))) (first (m-succ-intervals counterpoint)) (first (m-succ-intervals-brut counterpoint)))
 
     
     ; creating melodic intervals array between the note n and n+2 for the whole counterpoint
@@ -69,7 +69,7 @@
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
     (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-lower-arr (third (cp counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
+    (create-is-cf-lower-arr (third (notes counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
@@ -161,7 +161,7 @@
     ; 6) add m2-intervals equal to 0 cost
     (print "Monotonia...")
     (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (- *cf-len 3) (getparam-dom 'two-bars-apart-cost)))
-    (add-cost-multi-cst (third (cp counterpoint)) gil::IRT_EQ (cddr (third (cp counterpoint))) (m2-eq-zero-cost counterpoint) *two-bars-apart-cost*)
+    (add-cost-multi-cst (third (notes counterpoint)) gil::IRT_EQ (cddr (third (notes counterpoint))) (m2-eq-zero-cost counterpoint) *two-bars-apart-cost*)
     (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
     ;======================================== COST FUNCTION ===================================

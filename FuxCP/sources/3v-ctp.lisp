@@ -28,10 +28,10 @@
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (dotimes (i *N-VOICES)
-        (create-h-intervals (first (cp (nth i *upper))) (first (cp *bass)) (first (h-intervals (nth i *upper))))
+        (create-h-intervals (first (notes (nth i *upper))) (first (notes *bass)) (first (h-intervals (nth i *upper))))
         (setf (h-intervals-abs (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
         (setf (h-intervals-brut (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
-        (create-intervals (first (cp *bass)) (first (cp (nth i *upper))) (h-intervals-abs (nth i *upper)) (h-intervals-brut (nth i *upper)))
+        (create-intervals (first (notes *bass)) (first (notes (nth i *upper))) (h-intervals-abs (nth i *upper)) (h-intervals-brut (nth i *upper)))
     )
 
     ;================================================================================;
@@ -39,7 +39,7 @@
     ;================================================================================;
     (print "no unison between cp1 and cp2")
     (dotimes (i 1 #|measures|#)
-        (add-no-unison-cst (nth i (cp counterpoint-1)) (nth i (cp counterpoint-2)))
+        (add-no-unison-cst (nth i (notes counterpoint-1)) (nth i (notes counterpoint-2)))
     )
 
     (print "all voices can't go in the same direction")
@@ -49,7 +49,7 @@
     (print "no successive perfect consonances (cp1 to cp2)")
     (setq h-intervals-1-2 (list nil nil nil nil))
     (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (cp counterpoint-1)) (first (cp counterpoint-2)) (first h-intervals-1-2))
+    (create-h-intervals (first (notes counterpoint-1)) (first (notes counterpoint-2)) (first h-intervals-1-2))
     (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
     (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
     (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) 
@@ -107,9 +107,9 @@
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
         (let (
-            (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (cp counterpoint))) 2)) 0 1))
+            (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes counterpoint))) 2)) 0 1))
             )
-            (compute-variety-cost (first (cp counterpoint)) variety-cost)
+            (compute-variety-cost (first (notes counterpoint)) variety-cost)
             (add-cost-to-factors variety-cost 'variety-cost)
         )
     ))

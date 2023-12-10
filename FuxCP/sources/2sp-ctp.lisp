@@ -22,18 +22,18 @@
     ; merging cp and cp-arsis into one array
     (setf (solution-len counterpoint) (+ *cf-len *cf-last-index))
     (setf (solution-array counterpoint) (gil::add-int-var-array *sp* (solution-len counterpoint) 0 127)) ; array of IntVar representing thesis and arsis notes combined
-    (merge-cp (list (first (cp counterpoint)) (third (cp counterpoint))) (solution-array counterpoint)) ; merge the two counterpoint arrays into one
+    (merge-cp (list (first (notes counterpoint)) (third (notes counterpoint))) (solution-array counterpoint)) ; merge the two counterpoint arrays into one
     
     ; creating harmonic intervals array
     (print "Creating harmonic intervals array...")
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (cp counterpoint)) (butlast (first (cp *bass))) (third (h-intervals counterpoint)))
+    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *bass))) (third (h-intervals counterpoint)))
     ; array of IntVar representing the absolute intervals (not % 12) and brut (just p - q)
     ; between the cantus firmus and the counterpoint (thesis notes)
     (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len 0 127))
     (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-    (create-intervals (first (cp *bass)) (first (cp counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+    (create-intervals (first (notes *bass)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
     
 
     ; creating melodic intervals array
@@ -41,11 +41,11 @@
     ; array of IntVar representing the melodic intervals between arsis note and next thesis note of the counterpoint
     (setf (third (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
-    (create-m-intervals-next-meas (third (cp counterpoint)) (first (cp counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
+    (create-m-intervals-next-meas (third (notes counterpoint)) (first (notes counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
     ; array of IntVar representing the melodic intervals between a thesis and an arsis note of the same measure the counterpoint
     (setf (first (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setf (first (m-succ-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
-    (create-m-intervals-in-meas (first (cp counterpoint)) (third (cp counterpoint)) (first (m-succ-intervals counterpoint)) (first (m-succ-intervals-brut counterpoint)))
+    (create-m-intervals-in-meas (first (notes counterpoint)) (third (notes counterpoint)) (first (m-succ-intervals counterpoint)) (first (m-succ-intervals-brut counterpoint)))
 
     
     ; creating melodic intervals array between the note n and n+2 for the whole counterpoint
@@ -102,7 +102,7 @@
     ; Fux does not follow this rule so deactivate ?
     ; no unison between the cantus firmus and the arsis counterpoint
     ; (print "No unison at all...")
-    ; (add-no-unison-at-all-cst (third (cp counterpoint)) (butlast (cf counterpoint)))
+    ; (add-no-unison-at-all-cst (third (notes counterpoint)) (butlast (cf counterpoint)))
 
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
