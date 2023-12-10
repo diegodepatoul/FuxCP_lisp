@@ -527,37 +527,42 @@
         (gil::g-branch *sp* (first (cp *bass)) var-branch-type gil::INT_VAL_MIN)
         ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
         ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
-        (dotimes (i *N-VOICES) (progn
+        (dolist (counterpoint counterpoints) (progn
             ; 5th species specific
-            (if (eq (nth i species) 5) ; otherwise there is no species array
-                (gil::g-branch *sp* (species-arr (nth i counterpoints)) var-branch-type gil::INT_VAL_RND)
+            (if (eq (species counterpoint) 5) ; otherwise there is no species array
+                (gil::g-branch *sp* (species-arr counterpoints) var-branch-type gil::INT_VAL_RND)
             )
 
             ; 3rd and 5th species specific
-            (if (or (eq (nth i species) 3) (eq (nth i species) 5)) (progn
+            (if (or (eq (species counterpoint) 3) (eq (species counterpoint) 5)) (progn
                 ;(gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
                 ;(gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
             ))
 
             ; 5th species specific
-            (if (eq (nth i species) 5) (progn ; otherwise there is no species array
-                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
-                (gil::g-branch *sp* (not-cambiata-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            (if (eq (species counterpoint) 5) (progn ; otherwise there is no species array
+                (gil::g-branch *sp* (no-syncope-cost counterpoints) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (not-cambiata-cost counterpoints) var-branch-type val-branch-type)
             ))
 
-            (if (eq (nth i species) 4) 
-                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            (if (eq (species counterpoint) 4) 
+                (gil::g-branch *sp* (no-syncope-cost counterpoints) var-branch-type val-branch-type)
             )
 
             ; branching *total-cost
-            ;(if (eq (nth i species) 2)
+            ;(if (eq (species counterpoint) 2)
                 ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
             ;)
+            
+            (if (< (voice-type counterpoint) 0)
+                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MIN)
+                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MAX)
+            )
+            (gil::g-branch *sp* (rest (solution-array counterpoint)) var-branch-type gil::INT_VAL_RND)
         ))
-         
-    
+        
         ;; Solution variables branching
-        (gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
+        ;(gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
