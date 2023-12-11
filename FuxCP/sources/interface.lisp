@@ -983,6 +983,7 @@
             )
         ))
         (setq *N-VOICES (length species-list))
+        (setq *N-PARTS (+ 1 (length species-list)))
         species-list
     )
 )

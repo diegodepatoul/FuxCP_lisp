@@ -38,6 +38,7 @@
 ; define all the constants that are going to be used
 (defun define-global-constants ()
     ;; CONSTANTS
+    ;(defparameter CANTUS-FIRMUS 0)
     ; Number of costs added
     (defparameter *n-cost-added 0)
     ; Motion types
@@ -278,6 +279,18 @@
     (h-intervals-to-cf :accessor h-intervals-to-cf :initarg :h-intervals-to-cf :initform (list nil nil nil nil))
 ))
 
+(defun init-cantus-firmus ()
+    (let (
+            (cantus-firmus-notes (gil::add-int-var-array *sp* *cf-len 0 120))
+        )
+        (dotimes (i *cf-len) (gil::g-rel *sp* (nth i cantus-firmus-notes) gil::IRT_EQ (nth i *cf)))
+        (make-instance 'counterpoint-class
+                    :species 0
+                    :notes (list cantus-firmus-notes nil nil nil)                        
+        )
+    )
+)
+
 ; @completely new or reworked
 (defun init-counterpoint (voice-type species)
     ; Lower bound and upper bound related to the cantus firmus pitch
@@ -412,11 +425,10 @@
     (setq *bass (make-instance 'range-class))
     (setf (first (notes *bass)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
-    (setq *cantus-firmus (make-instance 'counterpoint-class))
-    (setf (first (notes *cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 120))
-    (dotimes (i *cf-len) (gil::g-rel *sp* (nth i (first (notes *cantus-firmus))) gil::IRT_EQ (nth i *cf)))
+    (setq *cantus-firmus (init-cantus-firmus))
+    (setq parts (cons *cantus-firmus counterpoints))
 
-    (create-voice-arrays *cf counterpoints)
+    (create-voice-arrays parts)
     (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
     (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
     (create-m-intervals-self (first (notes *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))

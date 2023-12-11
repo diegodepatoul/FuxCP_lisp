@@ -26,7 +26,6 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
-    ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (dotimes (i *N-VOICES)
         (create-h-intervals (first (notes (nth i *upper))) (first (notes *bass)) (first (h-intervals (nth i *upper))))
         (setf (h-intervals-abs (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
@@ -38,9 +37,16 @@
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
     (print "no unison between cp1 and cp2")
+    #|
+    (loop for (v1 v2) on (append *cantus-firmus) by #'cddr
+    (if (member 4 species)
+        (add-no-unison-at-all-cst (first (notes counterpoint-1)) (first (notes counterpoint-2)))
+    ) |#
+    
     (dotimes (i 1 #|measures|#)
         (add-no-unison-cst (nth i (notes counterpoint-1)) (nth i (notes counterpoint-2)))
     )
+    
 
     (print "all voices can't go in the same direction")
     (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
