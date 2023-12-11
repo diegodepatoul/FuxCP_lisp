@@ -20,9 +20,9 @@
 
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (notes counterpoint)) (first (notes *bass)) (first (h-intervals counterpoint)))
+    (create-h-intervals (first (notes counterpoint)) (first (notes *lowest)) (first (h-intervals counterpoint)))
 
-    ; (create-h-intervals (first (notes counterpoint)) (first (notes *bass)) (first (h-intervals counterpoint)))
+    ; (create-h-intervals (first (notes counterpoint)) (first (notes *lowest)) (first (h-intervals counterpoint)))
     ; @completely new or reworked
     ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
     
@@ -30,11 +30,11 @@
         (if (eq species 9) (progn 
                 (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
                 (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest (first (notes *bass))) (third (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (create-intervals (rest (first (notes *lowest))) (third (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
             ) (progn
                 (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
                 (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals (first (notes *bass)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+                (create-intervals (first (notes *lowest)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
             ) 
         )
     )) 
@@ -81,7 +81,7 @@
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (first (motions counterpoint)) (first (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (first (motions counterpoint)) (first (motions-cost counterpoint)) (is-not-bass counterpoint))
 
     
     ;============================================ HARMONIC CONSTRAINTS ============================

@@ -28,12 +28,12 @@
     (print "Creating harmonic intervals array...")
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *bass))) (third (h-intervals counterpoint)))
+    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *lowest))) (third (h-intervals counterpoint)))
     ; array of IntVar representing the absolute intervals (not % 12) and brut (just p - q)
     ; between the cantus firmus and the counterpoint (thesis notes)
     (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len 0 127))
     (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-    (create-intervals (first (notes *bass)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
+    (create-intervals (first (notes *lowest)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
     
 
     ; creating melodic intervals array
@@ -67,7 +67,7 @@
     (setf (third (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (real-motions-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-bass counterpoint))
     ;(create-motions (third (m-intervals-brut counterpoint)) *cf-brut-m-intervals             (third (motions counterpoint)) (third (motions-cost counterpoint)))
     (create-real-motions (first (m-succ-intervals counterpoint)) (first (motions counterpoint)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
 
@@ -81,7 +81,7 @@
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
     (setf (is-nbour-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-nbour-arr (h-intervals-abs counterpoint) (is-not-bass counterpoint) (first (m-intervals-brut *bass)) (is-nbour-arr counterpoint))
+    (create-is-nbour-arr (h-intervals-abs counterpoint) (is-not-bass counterpoint) (first (m-intervals-brut *lowest)) (is-nbour-arr counterpoint))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")

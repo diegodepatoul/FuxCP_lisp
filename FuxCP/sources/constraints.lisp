@@ -230,7 +230,7 @@
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
                     (2 (incf *N-COST-FACTORS 6))
-                    (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
+                    (3 (incf *N-COST-FACTORS 7)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
                     (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
                     (5 (incf *N-COST-FACTORS 8))
                 (otherwise (error "Unexpected value in the species list (~A), when setting the costs." species))
@@ -437,11 +437,13 @@
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* *N-PARTS 0 120))
         (gil::g-sorted *sp* voices (nth i sorted-voices) order)
         
-        (gil::g-rel *sp* (nth i (first (notes *bass))) gil::IRT_EQ (first (nth i sorted-voices)))
+        (gil::g-rel *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (first (nth i sorted-voices)))
         (dotimes (j *N-VOICES) ; the jth voice
             (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
             (gil::g-rel *sp* (nth i (third (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
+        (create-m-intervals-self (first (notes *lowest)) (first (m-intervals *lowest)) (first (m-intervals-brut *lowest)))
+
         (let (
             (cf-is-bass (gil::add-bool-var *sp* 0 1))
             (cf-is-not-bass (gil::add-bool-var *sp* 0 1))
@@ -451,14 +453,14 @@
             (cp1-is-not-bass (gil::add-bool-var *sp* 0 1))
             (cp2-is-not-bass (gil::add-bool-var *sp* 0 1))
             )
-            (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (first (notes *cantus-firmus))) cf-is-bass)
-            (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_NQ (nth i (first (notes *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
+            (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (first (notes *cantus-firmus))) cf-is-bass)
+            (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_NQ (nth i (first (notes *cantus-firmus))) (nth i (is-not-bass *cantus-firmus)))
             (if (eq (species (second parts)) 4) 
                 (if (< i *cf-last-index)
-                    (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (third (notes (second parts)))) cp1-equals-bass)
-                    (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth *cf-penult-index (first (notes (second parts)))) cp1-equals-bass)
+                    (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (third (notes (second parts)))) cp1-equals-bass)
+                    (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth *cf-penult-index (first (notes (second parts)))) cp1-equals-bass)
                 )
-                (gil::g-rel-reify *sp* (nth i (first (notes *bass))) gil::IRT_EQ (nth i (first (notes (second parts)))) cp1-equals-bass)
+                (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (first (notes (second parts)))) cp1-equals-bass)
             )
 
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-bass (nth i (is-not-bass (second parts))))       
@@ -475,7 +477,7 @@
         (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
         (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12))))
         )
-        (gil::g-mod *sp* (lastone (first (notes *bass))) TWELVE CF-MODULO) 
+        (gil::g-mod *sp* (lastone (first (notes *lowest))) TWELVE CF-MODULO) 
     )
 )
 
@@ -692,8 +694,8 @@
                         (h-eq-dis (gil::add-int-var *sp* 0 11))
                         (h-eq-cons (gil::add-int-var *sp* 0 11))
                     )
-                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *bass))) gil::IRT_EQ 0 lower-stays)
-                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *bass))) gil::IRT_NQ 0 lower-not-stays)
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ 0 lower-stays)
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_NQ 0 lower-not-stays)
                     (gil::g-member *sp* DIS_VAR h-eq-dis)    
                     (gil::g-member *sp* ALL_CONS_VAR h-eq-cons)    
                     (gil::g-rel-reify *sp* h-eq-dis gil::IRT_EQ (nth i h-intervals) lower-stays)
@@ -708,7 +710,8 @@
 ; @completely new or reworked
 ; counterpoints: the list of all counterpoints
 ; i: the ith counterpoint that must be constrained
-(defun add-arsis-consonance-with-thesis-from-other-voices-cst (counterpoints i)
+(defun add-arsis-consonance-with-thesis-from-other-voices-cst (parts i)
+    (setf counterpoints (rest parts))
     (setf (h-intervals-to-cf (nth i counterpoints)) (list nil nil (gil::add-int-var-array *sp* *cf-len 0 11) nil))
     (let 
         (
@@ -2300,6 +2303,8 @@
 ; additionnally, keeps track of the index it was added to
 ; @completely new or reworked
 (defun add-cost-to-factors (factor-arr cost-name &optional (g-sum 1))
+    (print cost-name)
+    (print *n-cost-added)
     (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined (~A). Please increase the value of *N-COST-FACTORS." *N-COST-FACTORS)
     (if g-sum 
         (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)

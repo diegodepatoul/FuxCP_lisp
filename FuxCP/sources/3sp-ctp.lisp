@@ -25,7 +25,7 @@
         ; creating harmonic intervals array
         ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint
         (setf (nth i (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-        (create-h-intervals (nth i (notes counterpoint)) (butlast (first (notes *bass))) (nth i (h-intervals counterpoint)))
+        (create-h-intervals (nth i (notes counterpoint)) (butlast (first (notes *lowest))) (nth i (h-intervals counterpoint)))
 
         (setf (nth i (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
         (create-h-intervals (nth i (notes counterpoint)) (butlast *cf) (nth i (h-intervals-to-cf counterpoint)))
@@ -65,7 +65,7 @@
     (print "Creating motion array...")
     (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *bass)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
 
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")

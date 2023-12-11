@@ -38,7 +38,7 @@
 ; define all the constants that are going to be used
 (defun define-global-constants ()
     ;; CONSTANTS
-    ;(defparameter CANTUS-FIRMUS 0)
+    (defparameter CANTUS-FIRMUS 0)
     ; Number of costs added
     (defparameter *n-cost-added 0)
     ; Motion types
@@ -285,7 +285,7 @@
         )
         (dotimes (i *cf-len) (gil::g-rel *sp* (nth i cantus-firmus-notes) gil::IRT_EQ (nth i *cf)))
         (make-instance 'counterpoint-class
-                    :species 0
+                    :species CANTUS-FIRMUS
                     :notes (list cantus-firmus-notes nil nil nil)                        
         )
     )
@@ -422,40 +422,26 @@
     
     (setq *upper (make-list *N-VOICES :initial-element nil))
     (dotimes (i *N-VOICES) (setf (nth i *upper) (make-instance 'range-class)))
-    (setq *bass (make-instance 'range-class))
-    (setf (first (notes *bass)) (gil::add-int-var-array *sp* *cf-len 0 120))
+    (setq *lowest (make-instance 'range-class))
+    (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
     (setq *cantus-firmus (init-cantus-firmus))
-    (setq parts (cons *cantus-firmus counterpoints))
+    (setq *parts (cons *cantus-firmus counterpoints))
 
-    (create-voice-arrays parts)
-    (setq *m-intervals-bass (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setq *m-intervals-brut-bass (gil::add-int-var-array *sp* *cf-last-index -127 127))
-    (create-m-intervals-self (first (notes *bass)) (first (m-intervals *bass)) (first (m-intervals-brut *bass)))
-    (fux-cp-cf *cantus-firmus 1)
+    (create-voice-arrays *parts)
     (case *N-VOICES
-        (1 (case (first species-list) ; if only two voices
-            (1 (progn
-                (fux-cp-1st (first counterpoints))
-            ))
-            (2 (progn
-                (fux-cp-2nd (first counterpoints))
-            ))
-            (3 (progn
-                (fux-cp-3rd (first counterpoints))
-            ))
-            (4 (progn
-                (fux-cp-4th (first counterpoints))
-            ))
-            (5 (progn
-                (fux-cp-5th (first counterpoints))
-            ))
-            (otherwise (error "Species ~A not implemented" species))
+        (1 (progn 
+            (fux-cp-cf (first *parts))
+            (case (first species-list) ; if only two voices
+                (1 (fux-cp-1st (second *parts)))
+                (2 (fux-cp-2nd (second *parts)))
+                (3 (fux-cp-3rd (second *parts)))
+                (4 (fux-cp-4th (second *parts)))
+                (5 (fux-cp-5th (second *parts)))
+                (otherwise (error "Species ~A not implemented" species))
             )
-        )
-        (2 (progn
-            (fux-cp-3v species-list counterpoints)
         ))
+        (2 (fux-cp-3v species-list *parts))
         (otherwise (error "Only two additional voices are implemented up to now. You asked for ~A." (length species)))
     )
 )
@@ -538,7 +524,7 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-        (gil::g-branch *sp* (first (notes *bass)) var-branch-type gil::INT_VAL_MIN)
+        (gil::g-branch *sp* (first (notes *lowest)) var-branch-type gil::INT_VAL_MIN)
         ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
         ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dolist (counterpoint counterpoints) (progn
@@ -648,8 +634,8 @@
         (print (list "cf         = " *cf))
         (handler-case (print (list "upper-2    = " (gil::g-values sol (first (notes (second *upper)))))) (error (c) (print "error with upper-2")))
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
-        (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *bass))))) (error (c) (print "error with bass")))
-        (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *bass))))) (error (c) (print "error with *m-intervals-brut-bass")))
+        (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *lowest))))) (error (c) (print "error with bass")))
+        (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))
         (handler-case (print (list "motions-cp1= " (first (motions (first counterpoints))))) (error (c) (print "error with motions cp1")))
         (handler-case (print (list "motions-cp1= " (gil::g-values sol (first (motions (first counterpoints)))))) (error (c) (print "error with motions cp1")))
         (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
@@ -663,7 +649,7 @@
         ;(print (list "oblique  = " (gil::g-values sol *oblique)))
         ;(print (list "contrary = " (gil::g-values sol *contrary)))
         ;(print (list "not bass = " (gil::g-values sol *not-bass)))
-        ;(print (list "    bass = " (gil::g-values sol *bass)))
+        ;(print (list "    bass = " (gil::g-values sol *lowest)))
         
         (handler-case
             (progn 

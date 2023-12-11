@@ -28,8 +28,8 @@
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the counterpoint (arsis notes)
     (setf (third (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
-    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *bass))) (third (h-intervals counterpoint)))
-    (create-h-intervals (first (notes counterpoint)) (rest (first (notes *bass))) (first (h-intervals counterpoint)))
+    (create-h-intervals (third (notes counterpoint)) (butlast (first (notes *lowest))) (third (h-intervals counterpoint)))
+    (create-h-intervals (first (notes counterpoint)) (rest (first (notes *lowest))) (first (h-intervals counterpoint)))
     
     (setf (third (h-intervals-to-cf counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 11))
     (create-h-intervals (third (notes counterpoint)) (butlast *cf) (third (h-intervals-to-cf counterpoint)))

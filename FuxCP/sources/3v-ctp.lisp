@@ -7,19 +7,21 @@
 ;;===================================#
 ;; Three voices counterpoint handler #
 ;;===================================#
-(defun fux-cp-3v (species-list counterpoints)
+(defun fux-cp-3v (species-list parts)
     (print "########## SIXTH SPECIES ##########")
-    (setf counterpoint-1 (first counterpoints))
-    (setf counterpoint-2 (second counterpoints))
+    (setf cantus-firmus (first parts))
+    (setf counterpoint-1 (second parts))
+    (setf counterpoint-2 (third parts))
     (print (list "species list = " species-list))
 
-    (dotimes (i *N-VOICES)
-        (case (nth i species-list)
-            (1 (fux-cp-1st (nth i counterpoints) 6))
-            (2 (fux-cp-2nd (nth i counterpoints) 7))
-            (3 (fux-cp-3rd (nth i counterpoints) 8))
-            (4 (fux-cp-4th (nth i counterpoints) 9))
-            (5 (fux-cp-5th (nth i counterpoints) 10))
+    (dotimes (i *N-PARTS)
+        (case (species (nth i parts))
+            (0 (fux-cp-cf (nth i parts)))
+            (1 (fux-cp-1st (nth i parts) 6))
+            (2 (fux-cp-2nd (nth i parts) 7))
+            (3 (fux-cp-3rd (nth i parts) 8))
+            (4 (fux-cp-4th (nth i parts) 9))
+            (5 (fux-cp-5th (nth i parts) 10))
             (otherwise (error "Unexpected value in the species list, when calling fux-cp-3v."))
         )
     )
@@ -27,10 +29,10 @@
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
     (dotimes (i *N-VOICES)
-        (create-h-intervals (first (notes (nth i *upper))) (first (notes *bass)) (first (h-intervals (nth i *upper))))
+        (create-h-intervals (first (notes (nth i *upper))) (first (notes *lowest)) (first (h-intervals (nth i *upper))))
         (setf (h-intervals-abs (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
         (setf (h-intervals-brut (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
-        (create-intervals (first (notes *bass)) (first (notes (nth i *upper))) (h-intervals-abs (nth i *upper)) (h-intervals-brut (nth i *upper)))
+        (create-intervals (first (notes *lowest)) (first (notes (nth i *upper))) (h-intervals-abs (nth i *upper)) (h-intervals-brut (nth i *upper)))
     )
 
     ;================================================================================;
@@ -73,36 +75,36 @@
     (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
 
-    (dotimes (i *N-VOICES)
-        (if (eq (species (nth i counterpoints)) 2) 
-           (add-arsis-consonance-with-thesis-from-other-voices-cst counterpoints i)
+    (dotimes (i *N-PARTS)
+        (if (eq (species (nth i parts)) 2) 
+           (add-arsis-consonance-with-thesis-from-other-voices-cst parts (- i 1))
            nil
         )
     )
 
     (if (equal species-list '(5 5))
         (let (
-                (is-same-species (gil::add-bool-var-array *sp* (solution-len (first counterpoints)) 0 1))
-                (is-same-species-int (gil::add-int-var-array *sp* (solution-len (first counterpoints)) 0 1))
-                (percentage-same-species (gil::add-int-var *sp* 0 (solution-len (first counterpoints))))
+                (is-same-species (gil::add-bool-var-array *sp* (solution-len (second parts)) 0 1))
+                (is-same-species-int (gil::add-int-var-array *sp* (solution-len (second parts)) 0 1))
+                (percentage-same-species (gil::add-int-var *sp* 0 (solution-len (second parts))))
             )
-            (dotimes (i (solution-len (first counterpoints)))
-                (gil::g-rel-reify *sp* (nth i (species-arr (first counterpoints))) gil::IRT_EQ (nth i (species-arr (second counterpoints))) (nth i is-same-species))
+            (dotimes (i (solution-len (second parts)))
+                (gil::g-rel-reify *sp* (nth i (species-arr (second parts))) gil::IRT_EQ (nth i (species-arr (third parts))) (nth i is-same-species))
                 (gil::g-rel-reify *sp* (nth i is-same-species-int) gil::IRT_EQ 1 (nth i is-same-species))
             )
             (gil::g-sum *sp* percentage-same-species is-same-species-int)
-            (gil::g-rel *sp* percentage-same-species gil::IRT_LE 15)
+            (gil::g-rel *sp* percentage-same-species gil::IRT_LE (floor (/ (solution-len (second parts)) 2)))
         )
     )
 
     ;================================================================================;
     ;                                    COSTS                                       ;
     ;================================================================================;
-    (dolist (counterpoint counterpoints) (progn
+    (dolist (part parts) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #1: as few direct motion to reach a perfect consonance as possible
-        (if (eq (species counterpoint) 4)
-            nil ; pass, this cost doesn't apply to 4th species
+        (if (or (eq (species part) 4) (eq (species part) 0))
+            nil ; pass, this cost doesn't apply to 4th species nor to the cantus firmus
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
                 (case (species counterpoint)
                     (1 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
@@ -119,11 +121,14 @@
         
         ; Cost #2: as many different notes as possible
         (print "as many different notes as possible")
-        (let (
-            (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes counterpoint))) 2)) 0 1))
+        (if (eq (species part) 0)
+            nil ; this cost has no sense for the cantus firmus
+            (let (
+                (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes counterpoint))) 2)) 0 1))
+                )
+                (compute-variety-cost (first (notes counterpoint)) variety-cost)
+                (add-cost-to-factors variety-cost 'variety-cost)
             )
-            (compute-variety-cost (first (notes counterpoint)) variety-cost)
-            (add-cost-to-factors variety-cost 'variety-cost)
         )
     ))
 
@@ -150,27 +155,26 @@
     )
     (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
-    ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
-    (dotimes (i *N-VOICES) 
-        (if (eq (species (nth i counterpoints)) 3) (let
+    #| TO DO REWRITE THIS PART    (dotimes (i *N-PARTS)
+        ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
+        (if (eq (species (nth i parts)) 3) (let
             (
                 (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))
             )
             (dotimes (j 2) (progn 
                (compute-h-triad-cost 
-                    (nth (+ j 1) (h-intervals (nth i counterpoints))) ; this is the jth beat
-                    (first (h-intervals (nth (logxor i 1) counterpoints))) ; these are the intervals of the OTHER counterpoint
+                    (nth (+ j 1) (h-intervals (nth i parts))) ; this is the jth beat
+                    (first (h-intervals (nth (logxor i 1) parts))) ; these are the intervals of the OTHER counterpoint
                     (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index))) ; these are the costs corresponding to the jth beat
             ))
             (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
     )
-    
-    
+     |#
+
     ; TO DELETE LINE
     (setq *h-intervals-1-2 h-intervals-1-2)
     
-
     ;================================================================================;
     ;                                    RETURN                                      ;
     ;================================================================================;
