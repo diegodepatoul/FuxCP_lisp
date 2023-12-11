@@ -670,16 +670,38 @@
 ; @cf-penult-index: the index of penultimate note in the counterpoint
 ; @h-intervals: the array of harmonic intervals
 ; @penult-dom-var: the domain of the penultimate note
-(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR))
+(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR) (species 0))
     (loop for i from 0 below len do
-        (setq h-interval (nth i h-intervals))
-        (if (eq i *cf-last-index) ; if it is the last note
-            ; then add only harmonic triad options
-            (gil::g-member *sp* MAJ_H_TRIAD_VAR h-interval)
-            ; else add all consonances
-            (if (eq i *cf-penult-index)
-                (gil::g-member *sp* PENULT_CONS_VAR h-interval)
-            (gil::g-member *sp* ALL_CONS_VAR h-interval)
+        (if (/= species 4)
+            (if (eq i *cf-last-index) ; if it is the last note
+                    ; then add only harmonic triad options
+                    (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals))
+                    (if (eq i *cf-penult-index) ; if penult note
+                        ; add penult options
+                        (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
+                        ; else add all consonances
+                        (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
+                    )
+            )
+            ; if 4th species (things get complicated)
+            (case i
+                (0 (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals)))
+                (*cf-penult-index (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals)))
+                (*cf-last-index (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals)))
+                (otherwise (let
+                    (
+                        (lower-stays (gil::add-bool-var *sp* 0 1))
+                        (lower-not-stays (gil::add-bool-var *sp* 0 1))
+                        (h-eq-dis (gil::add-int-var *sp* 0 11))
+                        (h-eq-cons (gil::add-int-var *sp* 0 11))
+                    )
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *bass))) gil::IRT_EQ 0 lower-stays)
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *bass))) gil::IRT_NQ 0 lower-not-stays)
+                    (gil::g-member *sp* DIS_VAR h-eq-dis)    
+                    (gil::g-member *sp* ALL_CONS_VAR h-eq-cons)    
+                    (gil::g-rel-reify *sp* h-eq-dis gil::IRT_EQ (nth i h-intervals) lower-stays)
+                    (gil::g-rel-reify *sp* h-eq-cons gil::IRT_EQ (nth i h-intervals) lower-not-stays)
+                ))
             )
         )
     )

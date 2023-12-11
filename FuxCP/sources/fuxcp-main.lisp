@@ -98,6 +98,8 @@
     (defparameter H_TRIAD_VAR (gil::add-int-var-const-array *sp* H_TRIAD))
     ; MAJ_H_TRIAD in IntVar
     (defparameter MAJ_H_TRIAD_VAR (gil::add-int-var-const-array *sp* MAJ_H_TRIAD))
+    ; DIS in IntVar
+    (defparameter DIS_VAR (gil::add-int-var-const-array *sp* DIS))
     ; PENULT_CONS in IntVar
     (defparameter PENULT_CONS_VAR (gil::add-int-var-const-array *sp* PENULT_CONS))
     ; PENULT_THESIS in IntVar
@@ -620,6 +622,7 @@
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
         ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        (print (list "third hi cp1 = " (gil::g-values sol (third (h-intervals (first counterpoints))))))
         (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
@@ -701,7 +704,7 @@
 (defun stopped-or-ended (stopped-se stop-user)
     (print (list "stopped-se" stopped-se "stop-user" stop-user))
     (if (= stopped-se 0); if the search has not been stopped by the TimeStop object, there is no more solutions
-        (error "The search was stopped because the best solution was found.")
+        (error "The search was stopped because no more solution was found. Either the best solution was found or none exist.")
     )
     ;otherwise, check if the user wants to keep searching or not
     (if stop-user
