@@ -628,8 +628,8 @@
         (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2Nbass")))
         (handler-case (print (list "is-cfNbass = " (gil::g-values sol *is-cf-not-bass-print))) (error (c) (print "error with is-cf-bass")))
-        (print (list "cp1        = " (gil::g-values sol (first (notes (first counterpoints))))))
-        (handler-case (print (list "cp2        = " (gil::g-values sol (first (notes (second counterpoints)))))) (error (c) (print "error with cp2")))
+        (print (list "cp1        = " (gil::g-values sol (solution-array (first counterpoints)))))
+        (handler-case (print (list "cp2        = " (gil::g-values sol (solution-array (second counterpoints))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
         (handler-case (print (list "upper-2    = " (gil::g-values sol (first (notes (second *upper)))))) (error (c) (print "error with upper-2")))
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
@@ -701,10 +701,10 @@
 (defun stopped-or-ended (stopped-se stop-user)
     (print (list "stopped-se" stopped-se "stop-user" stop-user))
     (if (= stopped-se 0); if the search has not been stopped by the TimeStop object, there is no more solutions
-        (error "There are no more solutions.")
+        (error "The search was stopped because the best solution was found.")
     )
     ;otherwise, check if the user wants to keep searching or not
     (if stop-user
-        (error "The search has been stopped. Press next to continue the search.")
+        (error "The search was stopped. Press next to continue the search.")
     )
 )

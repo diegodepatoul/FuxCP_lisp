@@ -67,6 +67,13 @@
     (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
 
+    (dotimes (i *N-VOICES)
+        (if (eq (species (nth i counterpoints)) 2) 
+           (add-arsis-consonance-with-thesis-from-other-voices-cst counterpoints i)
+           nil
+        )
+    )
+
     (if (equal species-list '(5 5))
         (let (
                 (is-same-species (gil::add-bool-var-array *sp* (solution-len (first counterpoints)) 0 1))
@@ -137,13 +144,13 @@
     )
     (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
-    ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the other beats
+    ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
     (dotimes (i *N-VOICES) 
         (if (eq (species (nth i counterpoints)) 3) (let
             (
-                (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 3) (list 0 1)))
+                (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))
             )
-            (dotimes (j 3) (progn 
+            (dotimes (j 2) (progn 
                (compute-h-triad-cost 
                     (nth (+ j 1) (h-intervals (nth i counterpoints))) ; this is the jth beat
                     (first (h-intervals (nth (logxor i 1) counterpoints))) ; these are the intervals of the OTHER counterpoint

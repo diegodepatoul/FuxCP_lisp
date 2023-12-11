@@ -687,56 +687,20 @@
 
 ; THIS FUNCTION IS WIP AND DOESN'T WORK YET
 ; @completely new or reworked
-(defun add-h-cons-cst-2v (penult-dom-var counterpoint-1 counterpoint-2 h-intervals-1-2)
-    (let (
-        (harmonic-array-to-constrain-1 nil)
-        (harmonic-array-to-constrain-2 nil)
-        )
-        (if (eq (is-voice-bass counterpoint-1) 1)
-            (progn
-                (print "cp1 is bass")
-                (setf harmonic-array-to-constrain-1 h-intervals-1-2)
-                (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-1)))
-            )
-            (if (eq (is-voice-bass counterpoint-2) 1)
-                ; cp2 is the bass
-                (progn 
-                    (print "cp2 is bass")
-                    (setf harmonic-array-to-constrain-1 h-intervals-1-2)
-                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))   
-                )
-                ; cf is the bass
-                (progn
-                    (print "cf is bass")
-                    (setf harmonic-array-to-constrain-1 (first (h-intervals counterpoint-1)))
-                    (setf harmonic-array-to-constrain-2 (first (h-intervals counterpoint-2)))
-                )
-            )
-        )
-        (loop for i from 0 below *cf-len do
-            (let (
-                (h1 (nth i harmonic-array-to-constrain-1))
-                (h2 (nth i harmonic-array-to-constrain-2))
-                )
-                (if (eq i *cf-penult-index) ; if it is the penultimate note
-                    ; then add major sixth + minor third by default
-                    (progn 
-                        ;(add-penult-dom-cst h1 penult-dom-var)
-                        ;(add-penult-dom-cst h2 penult-dom-var)
-                    )
-                    ; else add all consonances
-                    (progn
-                        (if (not (null h1))
-                            (gil::g-member *sp* ALL_CONS_VAR h1)
-                            nil
-                        )
-                        (if (not (null h2))
-                            (gil::g-member *sp* ALL_CONS_VAR h2)
-                            nil
-                        )
-                    )
-                )
-            )
+; counterpoints: the list of all counterpoints
+; i: the ith counterpoint that must be constrained
+(defun add-arsis-consonance-with-thesis-from-other-voices-cst (counterpoints i)
+    (setf (h-intervals-to-cf (nth i counterpoints)) (list nil nil (gil::add-int-var-array *sp* *cf-len 0 11) nil))
+    (let 
+        (
+        (h-intervals-1-2-third (gil::add-int-var-array *sp* *cf-len 0 11)) ;  intervals between (third (notes ith cp)) and (first (notes the_other cp))
+        ) 
+        (create-h-intervals (third (notes (nth i counterpoints))) (first (notes (nth (logxor i 1) counterpoints))) h-intervals-1-2-third)
+        (create-h-intervals (third (notes (nth i counterpoints))) *cf (third (h-intervals-to-cf (nth i counterpoints))))
+        (print (third (h-intervals-to-cf (nth i counterpoints))))
+        (dotimes (j *cf-len)
+            (gil::g-member *sp* ALL_CONS_VAR (nth j h-intervals-1-2-third))
+            (gil::g-member *sp* ALL_CONS_VAR (nth j (third (h-intervals-to-cf (nth i counterpoints)))))
         )
     )
 )
