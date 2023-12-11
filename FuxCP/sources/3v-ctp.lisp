@@ -39,15 +39,24 @@
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
     (print "no unison between cp1 and cp2")
-    #|
-    (loop for (v1 v2) on (append *cantus-firmus) by #'cddr
-    (if (member 4 species)
-        (add-no-unison-at-all-cst (first (notes counterpoint-1)) (first (notes counterpoint-2)))
-    ) |#
     
-    (dotimes (i 1 #|measures|#)
-        (add-no-unison-cst (nth i (notes counterpoint-1)) (nth i (notes counterpoint-2)))
-    )
+    ;todo debug this doesn't work
+    (loop for v1 in parts
+        for i from 0
+        do (loop for v2 in (nthcdr (1+ i) parts) 
+        do (progn ; take each possible pair or parts    
+            (case (species v1)
+                (4 (case (species v2)
+                    (4 (add-no-unison-at-all-cst (third (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-at-all-cst (third (notes v1)) (first (notes v2))))
+                ))
+                (otherwise (case (species v2)
+                    (4 (add-no-unison-at-all-cst (first (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-at-all-cst (first (notes v1)) (first (notes v2))))
+                ))
+            )
+        )
+    ))
     
 
     (print "all voices can't go in the same direction")
@@ -77,7 +86,7 @@
 
     (dotimes (i *N-PARTS)
         (if (eq (species (nth i parts)) 2) 
-           (add-arsis-consonance-with-thesis-from-other-voices-cst parts (- i 1))
+           ;(add-arsis-consonance-with-thesis-from-other-voices-cst parts (- i 1))
            nil
         )
     )
