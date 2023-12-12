@@ -1,0 +1,175 @@
+% VARIABLES
+\subsection{Variables}\label{sec:variables}
+Variables are fully deduced by the Gecode solver and their values can be evaluated only after a solution has been found.
+
+Many variables have a general definition so that they can be used in all equations, this does not mean that all possible combinations have been defined in the Lisp code but only those that are actually used. For example, there is no need to have access to all possible melodic intervals in the solver, however the mathematical notation would allow it.
+
+If some letters are not defined, it means that they have already been defined in the constants or in the previous variables.
+\paragraph{Cp} \texttt{*cp} %%% COUNTERTPOINT %%%
+
+Array of size $s_{m}$ representing the MIDI notes of the counterpoint. This array is thus composed of four lists, each representing a beat on all the measures of the song. As explained above, this is how all the other arrays related to the countrepoint (i.e. the $Cp$ array) are constructed.
+
+For example, for a whole notes counterpoint: the relevant $Cp$ would be only the list $Cp[0]$. For a half notes counterpoint: it would be the merge of $Cp[0]$ and $Cp[2]$. For a quarter notes counterpoint: it would be the merge of $Cp[0]$, $Cp[1]$, $Cp[2]$ and $Cp[3]$.
+
+\begin{equation}
+    \forall i \in \B, \forall j \in [0, m): Cp[i, j]\in \N^{\R}
+\end{equation}
+
+Figure \ref{fig:solverdiagram} shows a popularization of the tool's logic vis-à-vis these arrays of variables.
+
+\begin{figure}
+    \centering
+    \includegraphics[height=1.7in]{Images/solver_diagram.png}
+    \caption{Popularization of the tool's logic vis-à-vis the arrays of variables.}
+    \label{fig:solverdiagram}
+\end{figure}
+
+\paragraph{H$_{(abs)}$} \texttt{*h-intervals, *h-intervals-abs.} %%% HARMONIC INTERVALS %%%
+
+Array of size $s_{m}$ representing each harmonic interval between the counterpoint and the \cfdot There are four lists of harmonic intervals, each representing a beat along the whole counterpoint. The harmonic intervals are calculated so that they represent the absolute difference between the pitch of the counterpoint and the pitch of the \cfdot Since the values are absolute, it does not matter if the \cf is lower or upper, the intervals will always be calculated according to the lowest note. Any harmonic interval is calculated according to the notes played at the same time in the \cf and the counterpoint. Therefore, up to four notes in the counterpoint can be calculated with respect to the same note in the \cfdot
+
+Two versions of that array-variable exist: the main one $H$ which is modulo 12 and $H_{abs}$ which is not. It is always true that $H = H_{abs}\ mod\ 12$. Unless mentioned, when talking about "harmonic intervals" or "harmonies", it refers to the variables of the array $H$.
+
+\begin{equation}
+    \begin{gathered}
+        \forall i \in \B, \forall j \in [0, m)\\
+        H_{abs}[i, j] = \left|Cp[i, j] - Cf[j]\right|\\
+        H[i, j] = H_{abs}[i, j]\ mod\ 12\\
+        \text{where } H_{abs}[i, j] \in [0, 127], H[i, j] \in [0, 11]
+    \end{gathered}
+\end{equation}
+
+$12$ representing the number of semitones in an octave. This allows the interval between a note and any note higher at different octaves to always be the same. This implies that $H \in$ table \ref{tab:intervalsvalues} values. For example, for the gap between $C_4$ (60) and $G_4$ (67) and the gap between $C_4$ (60) and $G_5$ (79), the $H_{abs}$ values will be 7 and 19 while the $H$ values will be 7 and 7.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=2.5in]{Images/harmonic_intervals_variables.png}
+    \caption{Traditionally written harmonies between the ctp. and the \cfdot}
+    \label{fig:harmonicintervals}
+\end{figure}
+
+Beware that the numbers noted on figure \ref{fig:harmonicintervals} are those used on scores. They refer to the names of the intervals and not to the relative MIDI values. By contrast, table \ref{tab:hjarrayvar} below shows the MIDI values of the intervals for this figure.
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c||c|c|c|c|}
+    \hline
+    measure $j$ & $H_{abs}[0, j]$ & $H_{abs}[1, j]$ & $H_{abs}[2, j]$ & $H_{abs}[3, j]$ \\ \hline
+    0 & 12 & 11 & 9 & 7 \\ \hline
+    1 & 4 & 7 & 12 & 10 \\ \hline
+    \end{tabular}
+    \caption{Relative MIDI values of figure \ref{fig:harmonicintervals}.}
+    \label{tab:hjarrayvar}
+\end{table}
+
+\paragraph{M$^{(x)}_{(brut)}$} %%% MELODIC INTERVALS %%%
+
+\texttt{*m-intervals, *m-intervals-brut, *m2-intervals, \dots}
+%  *m2-intervals-brut,\\
+% *m-succ-intervals, *m-succ-intervals-brut.}
+
+Arrays of size $s_{m-x}$ representing each melodic interval between a note of the counterpoint at a specific beat and another further note of the counterpoint at another specific beat. The melodic intervals are calculated so that they represent the difference between the two notes involved.
+
+The array is noted $M^x$ where $x$ is the number of $d$\footnote{Duration of a note in beat(s) depending on the chosen species (see $d$ in above section \ref{sec:constants}).} beat(s) that separates the initial note to the further one. $x$ represents the desired number of notes between the current note and the one of interest to calculate the melodic interval. In other words, $M^x[i, j]$ represents the melodic interval between the note at beat $i$ in measure $j$ and the note at beat $[(i+xd)\ mod\ 4]$ in measure $[j+nextm(i+xd)]$. If $x$ is not present then its default is 1. For example, with whole notes (i.e. $d=4$): $M[0, 5]$ represents the melodic interval between the note in the sixth measure ($j=5$) and the note in the seventh measure ($j=6$).
+
+There are two versions of that array-variable: the main one $M^x$ which is absolute and $M^x_{brut}$ which is not. It is always true that $M^x = \left|M^x_{brut}\right|$. Unless mentioned, when talking about "melodic intervals" or "melodies", it refers to the variables of the array $M^1$. See figure \ref{fig:threetypesofnotes} (the corresponding midi value is annotated below each note) and table \ref{tab:mxarrayvar} for clarity.
+\begin{equation}
+    \begin{gathered}
+        \forall x \in \{1, 2\}, \forall i \in \B, \forall j \in [0, m-x)\\
+        M^x_{brut}[i, j] = Cp[(i+xd)\ mod\ 4, j+nextm(i+xd)] - Cp[i, j]\\
+        M^x[i, j] = \left|M^x_{brut}[i, j]\right|\\
+        \text{where } M^x_{brut}[i, j] \in [-12, 12], M^x[i, j] \in [0, 12]
+    \end{gathered}
+\end{equation}
+
+The intervals are limited to $12$ because the octave leap is the maximum that can be reached.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[height=1in]{Images/melodic_intervals_variables.png}
+    \caption{The 3 types of notes that can be used in the counterpoint.}
+    \label{fig:threetypesofnotes}
+\end{figure}
+
+\begin{table}[h]
+    \centering
+    \begin{tabular}{|c|||c||c||c|}
+    \hline
+    $M^x_{(brut)}$      & Whole notes (a) & Half notes (b) & Quarter notes (c) \\ \hline \hline
+    $M[0, 0]$   & 1 (-1)        & 2 (2)          & 1 (-1)            \\ \hline
+    $M[1, 0]$   & $\emptyset$   & $\emptyset$    & 2 (-2)            \\ \hline
+    $M[2, 0]$   & $\emptyset$   & 2 (-2)         & 2 (-2)            \\ \hline
+    $M[3, 0]$   & $\emptyset$   & $\emptyset$    & 2 (-2)            \\ \hline
+    $M[0, 1]$   & 1 (1)         & 3 (-3)         & 12 (12)            \\ \hline
+    $M^2[0, 0]$ & (0)           & 0 (0)          & 3 (-3)            \\ \hline
+    $M^2[2, 0]$ & $\emptyset$   & 5 (-5)         & 4 (-4)            \\ \hline
+    \end{tabular}
+    \caption{Some relative MIDI values of figure \ref{fig:threetypesofnotes} with $x=\{1, 2\}$.}
+    \label{tab:mxarrayvar}
+\end{table}
+
+In the solver, melodic intervals used are stored in several lists by beat pair, e.g. one list for all the intervals between the first and second beats of all measures. The constraints to represent these calculations are done separately from one table to another with the same function. From example, all the melodic intervals between the fourth beat note and the next first beat note in the thrid species are computed like in equation \ref{eq:melo30example}:
+
+\begin{equation}
+    \begin{gathered}
+        \forj\\
+        M_{brut}[3, j] = Cp[0, j+1] - Cp[3, j]\\
+        M[3, j] = \left|M_{brut}[3, j]\right|\\
+    \end{gathered}
+    \label{eq:melo30example}
+\end{equation}
+
+\paragraph{P} \texttt{*motions} %%% MOTIONS %%%
+
+Array of size $4\times (m-1)$ representing each motion between two consecutive measures. The letter $P$ is for \textit{passage} since $M$ is already taken.
+% The motions are calculated in such a way that they directly represent the cost of themselves. By default, contrary motions are the most appreciated and have no cost. Oblique motions are not restricted and have a cost of 1. Direct motions are less appreciated and have a cost of 2.
+Contrary, oblique and direct motions are represented by 0, 1 and 2 respectively.
+
+\begin{equation}
+    \begin{gathered}
+        \forall x \in \{1, 2\}, \forall i \in \B, \forj, x := b-i\\
+        P[i, j] =
+        \begin{cases}
+            0 & \text{if } (M^{x}_{brut}[i, j] > 0 > M_{cf}[j]) \lor (M^{x}_{brut}[i, j] < 0 < M_{cf}[j]) \\
+            1 & \text{if } M^{x}_{brut}[i, j] = 0 \lor M_{cf}[j] = 0 \\
+            2 & \text{if } (M^{x}_{brut}[i, j] > 0 \land M_{cf}[j] > 0) \lor (M^{x}_{brut}[i, j] < 0 \land M_{cf}[j] < 0)
+        \end{cases}
+        % \text{where } P[i, j] \in \{0, 1, 2\}
+    \end{gathered}
+\end{equation}
+
+$x:=b-i$ represents the fact that the motion is obtained between the current note and the first note of the next measure. For example, with quarter notes, the gap between the third note and the first note of the next measure is defined as: $b=4$, $i=2$ and $x=4-2=2$. The first note of the next measure is therefore 2 notes away.
+
+The motions require relatively many constraints to be computed. Indeed, a boolean variable is needed for each type of direction of the counterpoint melody (3) as well as that of the \cf (3). This gives 3*3 different possibilities to be divided into 3 categories of motions for each measure. This is not a problem in itself but with GiL, any boolean operation must be computed via a constrained boolean variable. Ideally one should use argument variables provided by Gecode that are intended to be temporary variables. Implementing this in GiL would probably improve performance.
+
+\paragraph{IsCfB} \texttt{*is-cf-bass-arr}
+
+Boolean array of size $s_{m}$ representing if the \cf is below. Each list of this array represents a beat along the whole counterpoint and is calculated by comparing the pitch of the counterpoint with the pitch of the \cf at the same time.
+
+\begin{equation}
+    \begin{gathered}
+    \forall i \in \B, \forall j \in [0, m)\\
+    IsCfB[i, j] =
+    \begin{cases}
+        \top & \text{if } Cp[i, j] \geq Cf[j] \\
+        \bot & \text{otherwise}
+    \end{cases}
+    \end{gathered}
+\end{equation}
+
+By default, if both notes are the same then the \cf is considered as the bass.
+
+\paragraph{IsCons$_{(all,\ p,\ imp)}$} \texttt{*is-cons-arr}
+
+Boolean array of size $s_{m}$ representing if harmonic intervals are consonances, perfect consonantes or imperfect consonances. Each list of this array represents a beat along the whole counterpoint and is calculated by checking that harmonies belong to the corresponding set of consonances. By default, $IsCons \equiv IsCons_{all}$.
+
+\begin{equation}
+    \begin{gathered}
+    \forall i \in \B, \forall j \in [0, m)\\
+    IsCons[i, j]_{(all,\ p,\ imp)} =
+    \begin{cases}
+        \top & \text{if } H[i, j] \in Cons_{(all,\ p,\ imp)}\\
+        \bot & \text{otherwise}
+    \end{cases}
+    \end{gathered}
+\end{equation}
