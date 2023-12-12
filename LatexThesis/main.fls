@@ -279,12 +279,6 @@ INPUT /usr/share/texmf/tex/latex/tex-gyre/ts1qpl.fd
 INPUT /usr/share/texmf/tex/latex/tex-gyre/ts1qpl.fd
 INPUT /usr/share/texmf/fonts/tfm/public/tex-gyre/ts1-qplr.tfm
 INPUT /usr/share/texmf/fonts/tfm/public/tex-gyre/ts1-qplb.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmr12.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmmi12.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmsy10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/cm/cmex10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msam10.tfm
-INPUT /usr/share/texlive/texmf-dist/fonts/tfm/public/amsfonts/symbols/msbm10.tfm
 INPUT /home/anton/Documents/Mémoire/FuxCP3/LatexThesis/main.aux
 INPUT /home/anton/Documents/Mémoire/FuxCP3/LatexThesis/main.out
 INPUT /home/anton/Documents/Mémoire/FuxCP3/LatexThesis/main.out
@@ -295,7 +289,6 @@ INPUT /usr/share/texlive/texmf-dist/fonts/enc/dvips/base/8r.enc
 INPUT /usr/share/texmf/fonts/enc/dvips/tex-gyre/q-ec.enc
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb
-INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi12.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb
 INPUT /usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb

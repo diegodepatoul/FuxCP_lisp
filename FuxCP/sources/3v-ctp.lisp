@@ -40,39 +40,54 @@
     ;================================================================================;
     (print "no unison between cp1 and cp2")
     
-    ;todo debug this doesn't work
-    (loop for v1 in parts
-        for i from 0
+    (loop for v1 in parts ; for each possible pair or parts
+        for i from 0 ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
         do (loop for v2 in (nthcdr (1+ i) parts) 
-        do (progn ; take each possible pair or parts    
+        do (progn 
+            ; no unison between the voices
+            (print "No unison between the voices")
             (case (species v1)
                 (4 (case (species v2)
-                    (4 (add-no-unison-at-all-cst (third (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-at-all-cst (third (notes v1)) (first (notes v2))))
+                    (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
                 ))
                 (otherwise (case (species v2)
-                    (4 (add-no-unison-at-all-cst (first (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-at-all-cst (first (notes v1)) (first (notes v2))))
+                    (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                 ))
+            )
+            
+            (print "No successive perfect consonances")
+            (let (
+                (h-intervals-1-2(gil::add-int-var-array *sp* *cf-len 0 11))
+                (are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+                )
+                (case (species v1)
+                    (4 (case (species v2)
+                        (4 (create-h-intervals (third (notes v1)) (third (notes v2)) h-intervals-1-2))
+                        (otherwise (create-h-intervals (third (notes v1)) (first (notes v2))h-intervals-1-2))
+                    ))
+                    (otherwise (case (species v2)
+                        (4 (create-h-intervals (first (notes v1)) (third (notes v2)) h-intervals-1-2))
+                        (otherwise (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2))
+                    ))
+                )
+                (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) ; for all species, the last note is in the first beat
+                (if (and (/= 4 (species v1)) (/= 4 (species v2))) 
+                    (add-no-successive-fifths-cst h-intervals-1-2) ; this rule doesn't apply to the fourth species
+                    nil
+                )
+                (add-no-successive-octaves-cst h-intervals-1-2)
             )
         )
     ))
     
 
-    (print "all voices can't go in the same direction")
-    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
 
     
-    (print "no successive perfect consonances (cp1 to cp2)")
-    (setq h-intervals-1-2 (list nil nil nil nil))
-    (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (notes counterpoint-1)) (first (notes counterpoint-2)) (first h-intervals-1-2))
-    (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) 
+
 
     (print "Last chord cannot be minor")
-    
     ; next line covered by creating the harmonic arrays
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     

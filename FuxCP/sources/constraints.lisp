@@ -1375,6 +1375,34 @@
 
 ; add the constraint that there cannot be two successive perfect consonances between two voices
 ; @completely new or reworked
+(defun add-no-successive-octaves-cst (h-intervals)
+    (dotimes (i (- (length h-intervals) 1))
+        (let (
+            (first-is-octave (gil::add-bool-var *sp* 0 1))
+            (second-is-octave (gil::add-bool-var *sp* 0 1))
+            )
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 0 first-is-octave)
+        (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 0 second-is-octave)
+        )
+    )
+)
+
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
+(defun add-no-successive-fifths-cst (h-intervals)
+    (dotimes (i (- (length h-intervals) 1))
+        (let (
+            (first-is-fifth (gil::add-bool-var *sp* 0 1))
+            (second-is-fifth (gil::add-bool-var *sp* 0 1))
+            )
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
+        (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
+        )
+    )
+)
+
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
 (defun add-no-successive-p-cons-cst (is-p-cons-array)
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
