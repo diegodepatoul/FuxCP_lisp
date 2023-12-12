@@ -65,7 +65,7 @@
     (print "Creating motion array...")
     (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-lowest counterpoint))
 
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
@@ -163,7 +163,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-bass counterpoint)))
+    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-lowest counterpoint)))
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
@@ -171,7 +171,7 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-lowest counterpoint))
 
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

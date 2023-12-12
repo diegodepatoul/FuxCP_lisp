@@ -81,7 +81,7 @@
     (print "Creating motion array...")
     (setf (first (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (first (motions counterpoint)) (first (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (first (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (first (motions counterpoint)) (first (motions-cost counterpoint)) (is-not-lowest counterpoint))
 
     
     ;============================================ HARMONIC CONSTRAINTS ============================
@@ -117,7 +117,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ;((1) (add-penult-cons-cst (penult (is-not-bass counterpoint)) (penult (first (h-intervals counterpoint)))))
+        ;((1) (add-penult-cons-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint)))))
     )
     ;============================================ MELODIC CONSTRAINTS =============================
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
@@ -139,13 +139,13 @@
             ; no direct motion to reach a perfect consonance
                 (progn
                     (print "No direct motion to reach a perfect consonance...")
-                    (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-bass counterpoint))
+                    (add-no-direct-move-to-p-cons-cst (first (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-lowest counterpoint))
                 )
             )
             ; no battuta kind of motion
             ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
             (print "No battuta kind of motion...")
-            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (is-not-bass counterpoint))
+            (add-no-battuta-cst (first (motions counterpoint)) (first (h-intervals counterpoint)) (first (m-intervals-brut counterpoint)) (is-not-lowest counterpoint))
          )
     ))
 
@@ -158,7 +158,7 @@
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))
             ; 1, 2) imperfect consonances are preferred to perfect consonances
             (print "Imperfect consonances are preferred to perfect consonances...")
-            (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
+            (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-lowest counterpoint))
 
             ; 3, 4) add off-key cost, m-degrees cost and tritons cost
             (print "add off-key cost, m-degrees cost and tritons cost")

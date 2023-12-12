@@ -67,7 +67,7 @@
     (setf (third (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (real-motions-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-lowest counterpoint))
     ;(create-motions (third (m-intervals-brut counterpoint)) *cf-brut-m-intervals             (third (motions counterpoint)) (third (motions-cost counterpoint)))
     (create-real-motions (first (m-succ-intervals counterpoint)) (first (motions counterpoint)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
 
@@ -81,7 +81,7 @@
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
     (setf (is-nbour-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-nbour-arr (h-intervals-abs counterpoint) (is-not-bass counterpoint) (first (m-intervals-brut *lowest)) (is-nbour-arr counterpoint))
+    (create-is-nbour-arr (h-intervals-abs counterpoint) (is-not-lowest counterpoint) (first (m-intervals-brut *lowest)) (is-nbour-arr counterpoint))
 
     ; creating boolean is counterpoint off key array
     (print "Creating is counterpoint off key array...")
@@ -156,7 +156,7 @@
     (print "Motion constraints...")
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (real-motions counterpoint) (is-p-cons-arr counterpoint) (is-not-bass counterpoint)))
+    (if (eq species 2) (add-no-direct-move-to-p-cons-cst (real-motions counterpoint) (is-p-cons-arr counterpoint) (is-not-lowest counterpoint)))
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
@@ -167,7 +167,7 @@
     ;======================================== COST FACTORS ====================================
     ; 1, 2) imperfect consonances are preferred to perfect consonances
     (print "Imperfect consonances are preferred to perfect consonances...")
-    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint))
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-lowest counterpoint))
     
     ; 3, 4) add off-key cost, m-degrees cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

@@ -47,19 +47,12 @@
         do (progn 
             ; no unison between the voices
             (print "No unison between the voices")
-        do (progn 
-            ; no unison between the voices
-            (print "No unison between the voices")
             (case (species v1)
                 (4 (case (species v2)
                     (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
                     (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
-                    (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
                 ))
                 (otherwise (case (species v2)
-                    (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                     (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
                     (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                 ))
@@ -68,7 +61,7 @@
             (print "No successive perfect consonances")
             (let (
                 (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
-                (are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+                (is-cons-arr-1-2 (gil::add-bool-var-array *sp* *cf-len 0 1))
                 )
                 (case (species v1)
                     (4 (case (species v2)
@@ -81,20 +74,21 @@
                     ))
                 )
                 (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) ; for all species, the last note is in the first beat
+                (create-is-p-cons-arr h-intervals-1-2 is-cons-arr-1-2)
                 (cond 
                     ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species
-                        (add-no-successive-fifths-cst h-intervals-1-2) ; this rule doesn't apply to the fourth species and applies to the second under some conditions
+                        (add-no-successive-p-cons-cst is-cons-arr-1-2) ; for all species except the fourth and the second, successive perfect consonances are prohibited
                     )
                     ((= 2 (species v1))
-                        (add-no-successive-fifths-cst h-intervals-1-2 (first (m-succ-intervals v1)))
-                        nil
+                        (add-no-successive-p-cons-except-fifths-if-cst h-intervals-1-2 (first (m-succ-intervals v1))) ; for the second species, successive fifths are allowed if there is a third in between
                     )
                     ((= 2 (species v2))
-                        (add-no-successive-fifths-cst h-intervals-1-2 (first (m-succ-intervals v2)))
-                        nil
+                        (add-no-successive-p-cons-except-fifths-if-cst h-intervals-1-2 (first (m-succ-intervals v2))) ; for the second species, successive fifths are allowed if there is a third in between
+                    )
+                    ((or (= 4 (species v1)) (= 4 (species v2)))
+                        (add-no-successive-p-cons-except-fifths-cst h-intervals-1-2) ; for the fourth species, successive fifths are allowed, but no other successive perfect consonances
                     )
                 )
-                (add-no-successive-octaves-cst h-intervals-1-2)
                 (if (and (eq (species v1) 0) (eq (species v2) 2)) (setq *h-intervals-1-2 h-intervals-1-2))
             )
         )

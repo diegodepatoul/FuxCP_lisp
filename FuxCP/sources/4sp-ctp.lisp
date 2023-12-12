@@ -101,7 +101,7 @@
 
     ; no seventh dissonance if the cantus firmus is at the top
     (print "No seventh dissonance if the cantus firmus is at the top...")
-    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-bass counterpoint))
+    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-lowest counterpoint))
 
     (if (eq *N-VOICES 1) (progn 
         ; must start with a perfect consonance
@@ -141,13 +141,13 @@
 
     ; no second dissonance if the cantus firmus is at the bass and a octave/unison precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
-    (add-no-second-cst (third (h-intervals counterpoint)) (first (h-intervals counterpoint)) (is-not-bass counterpoint))
+    (add-no-second-cst (third (h-intervals counterpoint)) (first (h-intervals counterpoint)) (is-not-lowest counterpoint))
 
 
     ;======================================== COST FACTORS ====================================
     (print "Cost factors...")    
     ; 1, 2) imperfect consonances are preferred to perfect consonances
-    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-bass counterpoint) t)
+    (add-p-cons-cost-cst (h-intervals counterpoint) (is-not-lowest counterpoint) t)
     
     ; 3, 4) add off-key cost, m-degrees cost and tritons cost
     (set-general-costs-cst counterpoint (solution-len counterpoint))

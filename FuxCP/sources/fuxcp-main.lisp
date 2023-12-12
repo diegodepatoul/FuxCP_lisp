@@ -275,7 +275,7 @@
 
     ; 6st species variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
-    (is-not-bass :accessor is-not-bass :initarg :is-not-bass :initform nil)
+    (is-not-lowest :accessor is-not-lowest :initarg :is-not-lowest :initform nil)
     (h-intervals-to-cf :accessor h-intervals-to-cf :initarg :h-intervals-to-cf :initform (list nil nil nil nil))
 ))
 

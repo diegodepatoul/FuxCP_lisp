@@ -125,7 +125,7 @@
     (print "Creating motion array...")
     (setf (fourth (motions counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (fourth (motions-cost counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-bass counterpoint))
+    (create-motions (fourth (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (fourth (motions counterpoint)) (fourth (motions-cost counterpoint)) (is-not-lowest counterpoint))
 
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
@@ -271,7 +271,7 @@
 
     ; no seventh dissonance if the cantus firmus is at the top
     (print "No seventh dissonance if the cantus firmus is at the top...")
-    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-bass counterpoint) (first (is-4th-species-arr counterpoint))) ; 4th species
+    (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-lowest counterpoint) (first (is-4th-species-arr counterpoint))) ; 4th species
 
 
     ;======================================== MELODIC CONSTRAINTS =============================
@@ -308,7 +308,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-bass counterpoint) nil)) ; 3rd species
+    (if (eq species 5) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) (is-not-lowest counterpoint) nil)) ; 3rd species
 
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
@@ -324,7 +324,7 @@
     ; no second dissonance if the cantus firmus is at the bass and a octave/unison precedes it
     (print "No second dissonance if the cantus firmus is at the bass...")
     (add-no-second-cst
-        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (is-not-bass counterpoint))
+        (third (h-intervals counterpoint)) (rest (first (h-intervals counterpoint))) (rest (is-not-lowest counterpoint))
         (rest (first (is-4th-species-arr counterpoint)))
     ) ; TODO 4th species
 
@@ -339,7 +339,7 @@
     (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 7 (first (is-cst-arr counterpoint)) (fifth-cost counterpoint) *h-fifth-cost*) ; (fifth-cost counterpoint) = 1 if *h-interval == 7
     (let ((is-cst-and-not-bass-arr (gil::add-bool-var-array *sp* *cf-len 0 1)))
         (dotimes (i *cf-len)
-            (gil::g-op *sp* (nth i (first (is-cst-arr counterpoint))) gil::BOT_AND (nth i (is-not-bass counterpoint)) (nth i is-cst-and-not-bass-arr))
+            (gil::g-op *sp* (nth i (first (is-cst-arr counterpoint))) gil::BOT_AND (nth i (is-not-lowest counterpoint)) (nth i is-cst-and-not-bass-arr))
         )
         (add-cost-cst-if (first (h-intervals counterpoint)) gil::IRT_EQ 0 is-cst-and-not-bass-arr (octave-cost counterpoint) *h-octave-cost*) ; (octave-cost counterpoint) = 1 if *h-interval == 0
     )
