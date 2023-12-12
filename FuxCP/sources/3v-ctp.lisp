@@ -40,39 +40,61 @@
     ;================================================================================;
     (print "no unison between cp1 and cp2")
     
-    ;todo debug this doesn't work
-    (loop for v1 in parts
-        for i from 0
+    
+    (loop for v1 in parts ; for each possible pair or parts
+        for i from 0 ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
         do (loop for v2 in (nthcdr (1+ i) parts) 
-        do (progn ; take each possible pair or parts    
+        do (progn 
+            ; no unison between the voices
+            (print "No unison between the voices")
             (case (species v1)
                 (4 (case (species v2)
-                    (4 (add-no-unison-at-all-cst (third (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-at-all-cst (third (notes v1)) (first (notes v2))))
+                    (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
                 ))
                 (otherwise (case (species v2)
-                    (4 (add-no-unison-at-all-cst (first (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-at-all-cst (first (notes v1)) (first (notes v2))))
+                    (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                 ))
+            )
+            
+            (print "No successive perfect consonances")
+            (let (
+                (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+                (are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
+                )
+                (case (species v1)
+                    (4 (case (species v2)
+                        (4 (create-h-intervals (third (notes v1)) (third (notes v2)) h-intervals-1-2))
+                        (otherwise (create-h-intervals (third (notes v1)) (first (notes v2))h-intervals-1-2))
+                    ))
+                    (otherwise (case (species v2)
+                        (4 (create-h-intervals (first (notes v1)) (third (notes v2)) h-intervals-1-2))
+                        (otherwise (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2))
+                    ))
+                )
+                (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) ; for all species, the last note is in the first beat
+                (cond 
+                    ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species
+                        (add-no-successive-fifths-cst h-intervals-1-2) ; this rule doesn't apply to the fourth species and applies to the second under some conditions
+                    )
+                    ((= 2 (species v1))
+                        (add-no-successive-fifths-cst h-intervals-1-2 (first (m-succ-intervals v1)))
+                        nil
+                    )
+                    ((= 2 (species v2))
+                        (add-no-successive-fifths-cst h-intervals-1-2 (first (m-succ-intervals v2)))
+                        nil
+                    )
+                )
+                (add-no-successive-octaves-cst h-intervals-1-2)
+                (if (and (eq (species v1) 0) (eq (species v2) 2)) (setq *h-intervals-1-2 h-intervals-1-2))
             )
         )
     ))
-    
-
-    (print "all voices can't go in the same direction")
-    (add-no-together-move-cst (first (motions counterpoint-1)) (first (motions counterpoint-2)))
-
-    
-    (print "no successive perfect consonances (cp1 to cp2)")
-    (setq h-intervals-1-2 (list nil nil nil nil))
-    (setf (first h-intervals-1-2) (gil::add-int-var-array *sp* *cf-len 0 11))
-    (create-h-intervals (first (notes counterpoint-1)) (first (notes counterpoint-2)) (first h-intervals-1-2))
-    (setf are-cp1-cp2-cons-arr (gil::add-bool-var-array *sp* *cf-len 0 1))
-    (create-is-p-cons-arr (first h-intervals-1-2) are-cp1-cp2-cons-arr)
-    (add-no-successive-p-cons-cst are-cp1-cp2-cons-arr) 
+ 
 
     (print "Last chord cannot be minor")
-    
     ; next line covered by creating the harmonic arrays
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
     
@@ -112,15 +134,16 @@
     (dolist (part parts) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #1: as few direct motion to reach a perfect consonance as possible
-        (if (or (eq (species part) 4) (eq (species part) 0))
+        (if (or (eq (species part) 4))
             nil ; pass, this cost doesn't apply to 4th species nor to the cantus firmus
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
-                (case (species counterpoint)
-                    (1 (compute-no-direct-move-to-p-cons-costs-cst (first (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
-                    (2 (compute-no-direct-move-to-p-cons-costs-cst (real-motions counterpoint) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
-                    (3 (compute-no-direct-move-to-p-cons-costs-cst (fourth (motions counterpoint)) direct-move-to-p-cons-cost (is-p-cons-arr counterpoint)))
+                (print (list "species = " (species part)))
+                (case (species part)
+                    ((0 1) (compute-no-direct-move-to-p-cons-costs-cst (first (motions part)) direct-move-to-p-cons-cost (is-p-cons-arr part)))
+                    (2 (compute-no-direct-move-to-p-cons-costs-cst (real-motions part) direct-move-to-p-cons-cost (is-p-cons-arr part)))
+                    (3 (compute-no-direct-move-to-p-cons-costs-cst (fourth (motions part)) direct-move-to-p-cons-cost (is-p-cons-arr part)))
                     (5 (compute-no-direct-move-to-p-cons-costs-cst 
-                        (fourth (motions counterpoint)) direct-move-to-p-cons-cost (collect-bot-array (is-p-cons-arr counterpoint) (fourth (is-3rd-species-arr counterpoint))) nil
+                        (fourth (motions part)) direct-move-to-p-cons-cost (collect-bot-array (is-p-cons-arr part) (fourth (is-3rd-species-arr part))) nil
                     ))
                     (otherwise (error "Unexpected species when computing the cost for no-direct-move-to-p-cons"))
                 )
@@ -133,9 +156,9 @@
         (if (eq (species part) 0)
             nil ; this cost has no sense for the cantus firmus
             (let (
-                (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes counterpoint))) 2)) 0 1))
+                (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes part))) 2)) 0 1))
                 )
-                (compute-variety-cost (first (notes counterpoint)) variety-cost)
+                (compute-variety-cost (first (notes part)) variety-cost)
                 (add-cost-to-factors variety-cost 'variety-cost)
             )
         )
@@ -180,9 +203,6 @@
         ))
     )
      |#
-
-    ; TO DELETE LINE
-    (setq *h-intervals-1-2 h-intervals-1-2)
     
     ;================================================================================;
     ;                                    RETURN                                      ;

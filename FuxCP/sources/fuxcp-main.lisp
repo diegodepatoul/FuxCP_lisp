@@ -617,13 +617,14 @@
 
         ; print the solution from GiL
         (print "Solution: ")
+        ;(print (list "successive fifths= " (gil::g-values sol successive-fifths-print)))
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
         ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
         (print (list "third hi cp1 = " (gil::g-values sol (third (h-intervals (first counterpoints))))))
         (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
-        (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol (first *h-intervals-1-2)))) (error (c)  (print "error with h-intervals12")))
+        (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol *h-intervals-1-2))) (error (c)  (print "error with h-intervals12")))
         (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
         ;(print (list "last order = " (gil::g-values sol order)))
         (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
@@ -636,7 +637,11 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *lowest))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))
-        (handler-case (print (list "motions-cp1= " (first (motions (first counterpoints))))) (error (c) (print "error with motions cp1")))
+        (handler-case (print (list "rel-moticp1= " (gil::g-values sol (real-motions (first counterpoints))))) (error (c) (print "error with rel-moticp1")))
+
+        (print (list "m-succ-intervals = " (gil::g-values sol (first (m-succ-intervals (first counterpoints))))))
+        (handler-case (print (list "succ-intcp1= " (gil::g-values sol ((first m-succ-intervals (first counterpoints)))))) (error (c) (print "error with m-succ-intervals cp1")))
+        (handler-case (print (list "p-cons-cp1 = " (gil::g-values sol (is-p-cons-arr (first counterpoints))))) (error (c) (print "error with p-cons-cp1")))
         (handler-case (print (list "motions-cp1= " (gil::g-values sol (first (motions (first counterpoints)))))) (error (c) (print "error with motions cp1")))
         (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
         (handler-case (print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus))))) (error (c) (print "error with motions cf")))

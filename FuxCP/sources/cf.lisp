@@ -59,13 +59,15 @@
         ;(otherwise (error "Species not supported"))
     )
 
-    ; must start with a perfect consonance
-    (print "Perfect consonance at the beginning...")
-    (add-p-cons-start-cst (first (h-intervals cantus-firmus)))
+    (if (= *N-PARTS 2) (progn 
+        ; must start with a perfect consonance
+        (print "Perfect consonance at the beginning...")
+        (add-p-cons-start-cst (first (h-intervals cantus-firmus)))
 
-    ; must end with a perfect consonance
-    (print "Perfect consonance at the end...")
-    (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
+        ; must end with a perfect consonance
+        (print "Perfect consonance at the end...")
+        (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
+    ))
 
 
     ; if penultimate measure, a major sixth or a minor third must be used
@@ -76,8 +78,9 @@
 
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
-
-    (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-bass cantus-firmus))
+    (if (= *N-PARTS 2) 
+        (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-bass cantus-firmus))
+    )
 #|
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, cantus-firmus melodic interval < -4

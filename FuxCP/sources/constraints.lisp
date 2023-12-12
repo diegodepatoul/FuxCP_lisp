@@ -225,7 +225,7 @@
             (5 (incf *N-COST-FACTORS 8))
         ))
         (2 (progn
-            (incf *N-COST-FACTORS 5)
+            (incf *N-COST-FACTORS 6)
             (dolist (species *species-list)
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
@@ -1369,6 +1369,63 @@
         (gil::g-op *sp* first-is-sixth gil::BOT_AND second-is-sixth both-h-are-sixths)
         (gil::g-rel-reify *sp* (nth i cp) gil::IRT_LE (nth (+ i 1) cp) is-ascending)
         (gil::g-op *sp* both-h-are-sixths gil::BOT_AND is-ascending 0) ; prohibit that we have ascending sixths
+        )
+    )
+)
+
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
+(defun add-no-successive-octaves-cst (h-intervals)
+    (dotimes (i (- (length h-intervals) 1))
+        (let (
+            (first-is-octave (gil::add-bool-var *sp* 0 1))
+            (second-is-octave (gil::add-bool-var *sp* 0 1))
+            )
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 0 first-is-octave)
+        (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 0 second-is-octave)
+        (gil::g-op *sp* first-is-octave gil::BOT_AND second-is-octave 0)
+        )
+    )
+)
+
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
+(defun add-no-successive-fifths-cst (h-intervals &optional (m-succ-intervals nil))
+    (if m-succ-intervals
+        (progn ; if 2nd species, successive fifths are allowed only if there is a third in between
+            (setf *successive-fifths (gil::add-bool-var-array *sp* (length h-intervals) 0 1))
+            (dotimes (i (- (length h-intervals) 1))
+                (let (
+                    (first-is-fifth (gil::add-bool-var *sp* 0 1))
+                    (second-is-fifth (gil::add-bool-var *sp* 0 1))
+                    (is-successive-fifths (gil::add-bool-var *sp* 0 1))
+                    (m-is-third-1 (gil::add-bool-var *sp* 0 1))
+                    (m-is-third-2 (gil::add-bool-var *sp* 0 1))
+                    (m-is-third (gil::add-bool-var *sp* 0 1))
+                    )
+                (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
+                (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
+                (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-fifth is-successive-fifths)
+
+                (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_EQ 3 m-is-third-1)
+                (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_EQ 4 m-is-third-2)
+                (gil::g-op *sp* m-is-third-1 gil::BOT_OR m-is-third-2 m-is-third)
+
+                (gil::g-op *sp* is-successive-fifths gil::BOT_IMP m-is-third 1)
+                )
+            )
+        )
+        (progn ; if not 2nd species
+            (dotimes (i (- (length h-intervals) 1))
+                (let (
+                    (first-is-fifth (gil::add-bool-var *sp* 0 1))
+                    (second-is-fifth (gil::add-bool-var *sp* 0 1))
+                    )
+                (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
+                (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
+                (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-fifth 0)
+                )
+            )
         )
     )
 )
