@@ -885,6 +885,7 @@ File: ts1qpl.fd 2009/09/25 v1.2 font definition file for TS1/qpl
 ) [6
 
 ] [7] [8] [9] [10] [11])
+] [7] [8] [9] [10] [11])
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 214.
  [12]
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 214.
@@ -902,6 +903,8 @@ Here is how much of TeX's memory you used:
  20014 strings out of 481239
  332312 string characters out of 5920376
  1004761 words of memory out of 5000000
+ 34879 multiletter control sequences out of 15000+600000
+ 573924 words of font info for 60 fonts, out of 8000000 for 9000
  34879 multiletter control sequences out of 15000+600000
  573924 words of font info for 60 fonts, out of 8000000 for 9000
  1141 hyphenation exceptions out of 8191

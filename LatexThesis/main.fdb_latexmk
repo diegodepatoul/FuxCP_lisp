@@ -3,6 +3,7 @@
   "main.bcf" 1702382654 100333 c42fc5537feab4a4b3206089541da07f "pdflatex"
   (generated)
   "main.blg"
+  "main.blg"
   "main.bbl"
 ["pdflatex"] 1702382653 "/home/anton/Documents/Mémoire/FuxCP3/LatexThesis/main.tex" "/home/anton/Documents/Mémoire/FuxCP3/LatexThesis/main.pdf" "main" 1702382655
   "/etc/texmf/web2c/texmf.cnf" 1702223472 475 c0e671620eb5563b2130f56340a5fde8 ""

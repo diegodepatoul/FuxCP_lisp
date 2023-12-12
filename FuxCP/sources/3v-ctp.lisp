@@ -47,12 +47,19 @@
         do (progn 
             ; no unison between the voices
             (print "No unison between the voices")
+        do (progn 
+            ; no unison between the voices
+            (print "No unison between the voices")
             (case (species v1)
                 (4 (case (species v2)
                     (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
                     (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
+                    (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
                 ))
                 (otherwise (case (species v2)
+                    (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
+                    (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                     (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
                     (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                 ))
