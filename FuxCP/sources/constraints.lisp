@@ -464,10 +464,26 @@
             (gil::g-op *sp* cp1-is-lowest gil::BOT_XOR (nth i (is-not-lowest (second parts))) 1)
             (if (eq *N-VOICES 2) (gil::g-op *sp* cp2-is-lowest gil::BOT_XOR (nth i (is-not-lowest (third parts))) 1))
 
-            (if (> i 0) (progn 
-                (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut cantus-firmus))) cf-is-lowest)
-                (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut (second parts)))) cp1-is-lowest)
-                (if (eq *N-VOICES 2) (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut (third parts)))) cp2-is-lowest))
+            (if (> i 0) (let 
+                (
+                    (corresponding-m-intervals (make-list *N-PARTS :initial-element nil))
+                )
+                (dotimes (i *N-PARTS)
+                    (case (species (nth i parts))
+                        (0 (setf (nth i corresponding-m-intervals) (first  (m-intervals-brut (nth i parts)))))
+                        (1 (setf (nth i corresponding-m-intervals) (first  (m-intervals-brut (nth i parts)))))
+                        (2 (setf (nth i corresponding-m-intervals) (third  (m-intervals-brut (nth i parts)))))
+                        (3 (setf (nth i corresponding-m-intervals) (fourth (m-intervals-brut (nth i parts)))))
+                        (4 (setf (nth i corresponding-m-intervals) (third  (m-intervals-brut (nth i parts)))))
+                        (5 (setf (nth i corresponding-m-intervals) (fourth (m-intervals-brut (nth i parts)))))
+                    )
+                )
+                
+                (gil::g-rel-reify *sp* (nth (- i 1) (nth 0 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cf-is-lowest)
+                (print 2)
+                (gil::g-rel-reify *sp* (nth (- i 1) (nth 1 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp1-is-lowest)
+                (print 3)
+                (if (eq *N-VOICES 2) (gil::g-rel-reify *sp* (nth (- i 1) (nth 2 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp2-is-lowest))
             ))
         )
     )
