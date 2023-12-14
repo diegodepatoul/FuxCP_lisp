@@ -40,7 +40,8 @@
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the melodic intervals between arsis note and next thesis note of the counterpoint
     (setf (third (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
+    #| next line defined in init-counterpoint |#
+    ;(setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
     (create-m-intervals-next-meas (third (notes counterpoint)) (first (notes counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
     ; array of IntVar representing the melodic intervals between a thesis and an arsis note of the same measure the counterpoint
     (setf (first (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
@@ -68,7 +69,6 @@
     (setf (real-motions counterpoint) (gil::add-int-var-array *sp* *cf-last-index -1 2))
     (setf (real-motions-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
     (create-motions (third (m-intervals-brut counterpoint)) (first (m-intervals-brut *lowest)) (third (motions counterpoint)) (third (motions-cost counterpoint)) (is-not-lowest counterpoint))
-    ;(create-motions (third (m-intervals-brut counterpoint)) *cf-brut-m-intervals             (third (motions counterpoint)) (third (motions-cost counterpoint)))
     (create-real-motions (first (m-succ-intervals counterpoint)) (first (motions counterpoint)) (third (motions counterpoint)) (real-motions counterpoint) (first (motions-cost counterpoint)) (third (motions-cost counterpoint)) (real-motions-cost counterpoint))
 
     ; creating boolean diminution array

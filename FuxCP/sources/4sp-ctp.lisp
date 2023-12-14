@@ -39,7 +39,9 @@
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the melodic intervals between arsis and next thesis note of the counterpoint
     (setf (third (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 8))
-    (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
+
+    #| next line defined in init-counterpoint |#
+    ; (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
     (create-intervals (third (notes counterpoint)) (first (notes counterpoint)) (third (m-intervals counterpoint)) (third (m-intervals-brut counterpoint)))
     ; array of IntVar representing the melodic intervals between a thesis and an arsis note of the same measure the counterpoint
     (setf (first (m-succ-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-penult-index 1 12))

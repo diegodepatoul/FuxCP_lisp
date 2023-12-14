@@ -46,7 +46,8 @@
     ; array of IntVar representing the absolute intervals
     ; between the last note of measure m and the first note of measure m+1 of the counterpoint
     (setf (fourth (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 1 12))
-    (setf (fourth (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
+    #| next line defined in init-counterpoint |#
+    ; (setf (fourth (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12)) ; same without absolute reduction
     (create-m-intervals-next-meas (fourth (notes counterpoint)) (first (notes counterpoint)) (fourth (m-intervals counterpoint)) (fourth (m-intervals-brut counterpoint)))
     
     ; creating melodic intervals array between the note n and n+2 for the whole counterpoint

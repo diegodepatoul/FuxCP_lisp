@@ -150,7 +150,7 @@
     )
 )
 ; @completely new or reworked
-(defclass range-class () (
+(defclass stratum-class () (
     (solution-array :accessor solution-array :initarg :solution-array :initform nil)
     (solution-len :accessor solution-len :initarg :solution-len :initform nil)
 
@@ -216,7 +216,7 @@
     ; 1st species variables
     (notes :accessor notes :initarg :notes :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
     (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
-    (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list nil nil nil nil))
+    (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12)))
     (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
     (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
@@ -421,14 +421,14 @@
     (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
     
     (setq *upper (make-list *N-VOICES :initial-element nil))
-    (dotimes (i *N-VOICES) (setf (nth i *upper) (make-instance 'range-class)))
-    (setq *lowest (make-instance 'range-class))
+    (dotimes (i *N-VOICES) (setf (nth i *upper) (make-instance 'stratum-class)))
+    (setq *lowest (make-instance 'stratum-class))
     (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
     (setq *cantus-firmus (init-cantus-firmus))
     (setq *parts (cons *cantus-firmus counterpoints))
 
-    (create-voice-arrays *parts)
+    (create-strata-arrays *parts)
     (case *N-VOICES
         (1 (progn 
             (fux-cp-cf (first *parts))
@@ -637,6 +637,9 @@
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *lowest))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))
+        (handler-case (print (list "cf   itvls = " (gil::g-values sol (first (m-intervals-brut (first *parts)))))) (error (c) (print "error with *m-intervals-brut-cf")))
+        (handler-case (print (list "cp1  itvls = " (gil::g-values sol (first (m-intervals-brut (second *parts)))))) (error (c) (print "error with *m-intervals-brut-cp1")))
+        (handler-case (print (list "cp2  itvls = " (gil::g-values sol (first (m-intervals-brut (third *parts)))))) (error (c) (print "error with *m-intervals-brut-cp2")))
         (handler-case (print (list "rel-moticp1= " (gil::g-values sol (real-motions (first counterpoints))))) (error (c) (print "error with rel-moticp1")))
 
         (print (list "m-succ-intervals = " (gil::g-values sol (first (m-succ-intervals (first counterpoints))))))

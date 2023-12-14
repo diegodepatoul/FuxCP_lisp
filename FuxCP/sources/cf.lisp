@@ -28,7 +28,7 @@
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the cantus-firmus
     (setf (first (m-intervals cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setf (first (m-intervals-brut cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
+    ;(setf (first (m-intervals-brut cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (notes cantus-firmus)) (first (m-intervals cantus-firmus)) (first (m-intervals-brut cantus-firmus)))
     
     ; creating perfect consonances boolean array

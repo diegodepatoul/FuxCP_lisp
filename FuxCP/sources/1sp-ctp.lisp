@@ -45,7 +45,9 @@
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint
     (setf (first (m-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-last-index 0 12))
-    (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
+    
+    #| next line defined in init-counterpoint |#
+    ; (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (notes counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
     
     (case species ((1 6) ; only for the first species

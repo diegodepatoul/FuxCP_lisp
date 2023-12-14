@@ -416,9 +416,8 @@
     )
 )
 
-(defun create-voice-arrays (parts)
+(defun create-strata-arrays (parts)
     (setf cantus-firmus (first parts))
-    (setf counterpoint-1 (second parts))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
     (dotimes (i *N-PARTS) (setf (is-not-lowest (nth i parts)) (gil::add-bool-var-array *sp* *cf-len 0 1)))
     (dotimes (i *cf-len) ; the ith measure
@@ -442,19 +441,14 @@
             (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
             (gil::g-rel *sp* (nth i (third (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
-        (create-m-intervals-self (first (notes *lowest)) (first (m-intervals *lowest)) (first (m-intervals-brut *lowest)))
 
         (let (
             (cf-is-lowest (gil::add-bool-var *sp* 0 1))
-            (cf-is-not-lowest (gil::add-bool-var *sp* 0 1))
+            (cp1-is-lowest (gil::add-bool-var *sp* 0 1))
+            (cp2-is-lowest (gil::add-bool-var *sp* 0 1))
             (cp1-equals-bass (gil::add-bool-var *sp* 0 1))
-            (cp2-equals-bass (gil::add-bool-var *sp* 0 1))
-            (cp1-might-be-bass (gil::add-bool-var *sp* 0 1))
-            (cp1-is-not-lowest (gil::add-bool-var *sp* 0 1))
-            (cp2-is-not-lowest (gil::add-bool-var *sp* 0 1))
             )
-            (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (first (notes *cantus-firmus))) cf-is-lowest)
-            (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_NQ (nth i (first (notes *cantus-firmus))) (nth i (is-not-lowest *cantus-firmus)))
+            (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_NQ (nth i (first (notes cantus-firmus))) (nth i (is-not-lowest cantus-firmus)))
             (if (eq (species (second parts)) 4) 
                 (if (< i *cf-last-index)
                     (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (third (notes (second parts)))) cp1-equals-bass)
@@ -464,15 +458,25 @@
             )
 
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-lowest (nth i (is-not-lowest (second parts))))       
-            
-            (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-lowest *cantus-firmus)) gil::BOT_XOR (nth i (is-not-lowest (second parts))) (nth i (is-not-lowest (third parts)))))
+            (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-lowest cantus-firmus)) gil::BOT_XOR (nth i (is-not-lowest (second parts))) (nth i (is-not-lowest (third parts)))))
+
+            (gil::g-op *sp* cf-is-lowest gil::BOT_XOR (nth i (is-not-lowest cantus-firmus)) 1)
+            (gil::g-op *sp* cp1-is-lowest gil::BOT_XOR (nth i (is-not-lowest (second parts))) 1)
+            (if (eq *N-VOICES 2) (gil::g-op *sp* cp2-is-lowest gil::BOT_XOR (nth i (is-not-lowest (third parts))) 1))
+
+            (if (> i 0) (progn 
+                (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut cantus-firmus))) cf-is-lowest)
+                (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut (second parts)))) cp1-is-lowest)
+                (if (eq *N-VOICES 2) (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut (third parts)))) cp2-is-lowest))
+            ))
         )
     )
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-lowest (second parts))))
     (if (eq *N-VOICES 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-lowest (third parts)))))
-    (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-lowest *cantus-firmus)))
+    (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-lowest cantus-firmus)))
     
     ; todo do something with this (working) constraint (put it somewhere else to be cleaner)
+    ; it is that the last bass must be the same as the first cf
     (let (
         (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
         (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12))))
