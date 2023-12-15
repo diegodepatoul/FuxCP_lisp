@@ -70,7 +70,9 @@ To know which part gets to be the lowest stratum in such situations, an arbitrar
 
 \section{Exploring the interaction of the parts with the lowest stratum}
 
-One of the major differences between the composition of two voices (i.e., one \cfs and one counterpoint) and the generalisation to three voices (i.e., one \cfs and two counterpoints) is that the rules no longer necessarily apply between the counterpoints and the \cf. If we go back to the rules for two voices, we see that each of them applied between the single counterpoint and the \cf. For example, when it was stated that each interval must be consonant, this referred to the interval between the counterpoint and the \cf.
+One of the major differences between the composition of two voices (i.e., one \cfs and one counterpoint) and the generalisation to three voices (i.e., one \cfs and two counterpoints) is that the rules no longer necessarily apply between the counterpoints and the \cf, but instead of this are mostly applied \textbf{between the different parts and the lowest stratum}. 
+
+If we go back to the rules for two voices, we see that each of them applied between the single counterpoint and the \cf. For example, when it was stated that each interval must be consonant, this referred to the interval between the counterpoint and the \cf.
 On the other hand, in his second part (where he describes the rules for composing in three voices), Fux explains that the rules are not necessarily to be observed between each of the counterpoints and the \cf, but rather between "each of the voices and the lowest voice" (i.e. the lowest stratum). Again, if we take the example of the need for consonance between the voices, consonance will be required in the intervals between the notes of any voice and those of the lowest voice (whether or not the latter is the \cf).
 Fux approaches the concept of lowest stratum without ever stating it clearly, mentioning for example that the lowest voice can change (sometimes the bass is the lowest voice, sometimes the tenor, ...), and that at any given moment the lowest voice should be considered. In other words, Fux says that the rules apply between the parts and the lowest stratum.
 
@@ -122,7 +124,6 @@ A second point to bear in mind, and not the least, is that all this does not mea
 
 \section{Changes induced in the variables} \label{section:changes induced}
 
-
 Many changes have been induced as a result of the three part generalisation. In two part composition, it was obvious that the harmonic intervals array was describing the intervals between the \cfs and the only counterpoint, it was obvious that the motions were those of the only counterpoint, and so it goes for all the variables. When writing a three part composition, we are dealing with many possibilities when speaking about intervals or motions. Intervals between which voices? Motions of which counterpoint? To tackle this, each variable is now related to a voice.
 
 This relationship between a variable and a voice is expressed as function. $X(v)$ represents the variable $X$ of the voice $v$. The arguments of the function can either be:
@@ -170,6 +171,8 @@ The costs are also affected by the change, except for $\mathcal{C}$ (the cost fa
 
 
 To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(cf)$ are the notes of the \cf. The species of the second counterpoint is written $species(c)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible part (not necessary stratum). That is, the relationship $N < 60$ would mean: the pitches \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
+
+\paragraph{Nota bene} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as a downbeat, and its downbeat as an upbeat. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and vice versa). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
 
 \subsection{Added constants}
 Here are described some added constants, that are useful throughout the whole work.
@@ -234,14 +237,12 @@ It still works exactly the same. It is an array of size $s_m$ representing the p
 
 
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
-%todo must be reworked
-
-The way in which this variable works remains much the same, i.e. it represents the interval between one voice and another. This definition has been extended to include intervals other than that between the counterpoint and the \cf. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) := H(v_1,a)$.
+This variable keeps being an array of size $s_m$ and the way in which it works remains pretty much the same, i.e. it represents the harmonic interval between one voice and another. The previous definition of this array was that it represented the harmonic intervals between a given voice and the \cf. This definition has been extended to include intervals other than that between the counterpoint and the \cf. In order to do so, H accepts two arguments, and it represents the interval between those two arguments. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) := H(v_1,a)$. This default value for $v_2$ was chosen since it is the most frequently used, and for a good reason: most relevant harmonic intervals are those between the parts and the lowest stratum.
 
 Here is the generalisation explained above, matching to the current definition of the harmonic intervals array:
 \begin{equation}
 \begin{aligned}
-    &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad \forall i \in \mathcal{B}(v_1), \quad \forall j \in [0, m):\\
+    &\forall v_1, v_2 \in \{cf, cp_1, cp_2, a, b, c\}, \quad \forall i \in \mathcal{B}(v_1), \quad \forall j \in [0, m):\\
     &H_{abs}(v_1,v_2)[i, j] = \left|N(v_1)[i, j] - N(v_2)[0,j]\right|\\
     &H(v_1-v_2)[i, j] = H_{abs}[i, j]\ \text{mod}\ 12\\
     &\text{where } H_{abs}[i, j] \in [0, 127], H[i, j] \in [0, 11]
@@ -251,7 +252,31 @@ Here is the generalisation explained above, matching to the current definition o
 \vspace{.5cm}
 \noindent \textbf{M}$_{\text{brut}}$(s) \hspace*{.2cm} \texttt{m-intervals-brut}
 
-The variable M(p) (i.e. when related to a part) keeps representing the melodic intervals of the voice v and its way of working remains intact. What is described here is its working when related to a stratum, and more specifically, to the lowest stratum. Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about their melodic intervals. Thus, the melodic intervals of the lowest stratum are defined like this: the melodic interval in measure $j$ of the lowest stratum is equal to the last melodic interval in measure $j$ of the part that is the lowest stratum in measure $j+1$. This complex definition is needed in order for the computation of the motions to work fine. The motions of the lowest stratum are an abstract notion that serves only in formulas and constraints and \textit{does not intend to represent any concrete motion really happening in the composition, nor does it correspond to the melodic intervals between the pitches of the lowest stratum}.
+The variable M keeps representing the melodic intervals of a voice. It can either be evaluated on a part or on a stratum, each of those situations leading to different behaviours. M(p) (i.e. when related to a part) keeps representing the melodic intervals of the voice v and its way of working remains intact as in T. Wafflard's thesis. M(s) (i.e. when related to a stratum) has it own way of working, that is defined in the next paragraph. We are going to focus specifically on M(a), that is, the melodic intervals of the lowest stratum. 
+
+Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that they are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
+
+In order to do so, one must recall that the lowest stratum is just the assemblage of all the lowest sounding notes in the composition. It is thus very logical to consider the melodic intervals of the lowest stratum as the melodic intervals that lead to all those lowest sounding notes. If the lowest stratum is constituted of the notes [C$_{cp_1}$, E$_{cf}$, G$_{cp_2}$], with C$_{cp_1}$ indicating that the C belongs to the first \cp, and  and that in the \cfs the interval that lead to the E was a +0 (i.e. staying on the same note) and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation \ref{eq:defining-m-intervals-bass} to make it easier to understand:
+
+
+
+\begin{equation}
+    \begin{aligned}        
+    N(cf) &= [64,\quad  \textcolor{darkred}{\textbf{64}},\quad  71] \quad 
+    &M_{brut}(cf) &= [\textcolor{darkred}{\textbf{+0}}, \quad +7]\\
+    N(cp_1) &= [\textcolor{darkred}{\textbf{60}},\quad  67,\quad  74] \quad 
+    &M_{brut}(cp_2) &= [+7, \quad +7]\\
+    N(cp_2) &= [72,\quad  71,\quad  \textcolor{darkred}{\textbf{67}}] \quad 
+    &M_{brut}(cp_2) &= [-1, \quad \textcolor{darkred}{\textbf{-4}}]\\
+    \\
+    N(a) &= [\textcolor{darkred}{\textbf{60}},\quad  \textcolor{darkred}{\textbf{64}},\quad  \textcolor{darkred}{\textbf{67}}] \quad 
+    &M_{brut}(a) &= [\textcolor{darkred}{\textbf{+0}}, \quad \textcolor{darkred}{\textbf{-4}}]\\
+\end{aligned}
+\label{eq:defining-m-intervals-bass}
+\end{equation}
+
+
+The formal definition of the melodic intervals of the lowest stratum is hence as follows: the melodic interval in measure $j$ of the lowest stratum is equal to the last melodic interval in measure $j$ of the part that is the lowest stratum in measure $j+1$. Remember that this complex definition is needed in order for the computation of the motions to work fine, and that the motions of the lowest stratum are an abstract notion that serves only in formulas and constraints and \textit{does not intend to represent any concrete motion really happening in the composition, nor does it correspond to the melodic intervals between the pitches of the lowest stratum}.
 
 \begin{equation}
     \begin{aligned}
@@ -281,32 +306,27 @@ The variable M(p) (i.e. when related to a part) keeps representing the melodic i
       \captionof{figure}{Understanding the melodic intervals of the lowest stratum with a second species counterpoint}
       \label{fig:stratum-m-intervals-2}
 \end{minipage}
-\vspace{.5cm}
-
-\section{Exploring the interaction of the parts with the lowest stratum}
-
 
 
 \vspace{.5cm}
-\noindent \textbf{P}(v) \hspace*{.2cm} \texttt{motions}
+\noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
-The motions array was redefined to compute the motions of a voice v with respect to the lowest stratum, instead of computing them with respect to the \cf. 
-
-Motions are now calculated according to the movements of the lowest stratum. This might be counterintuitive because strata have no  The problem here is that if a part is also the lowest stratum, we end up calculating the motion between a part and itself. This inevitably leads to direct motions being calculated, because a part is always moving in the same direction as itself. To solve this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (denoted A, see section \ref{is-lowest}). 
+The motions array was redefined to compute the motions of a voice v with respect to the lowest stratum, instead of computing them with respect to the \cf, since Fux considers that the motions should be considered between each voice and the lowest voice. Dealing with the melodic intervals of the lowest stratum is not a problem anymore, since we defined what it exactly means in the section about melodic intervals.
+However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section \ref{is-lowest}). 
 \begin{equation}
 \begin{aligned}
-&\forall v \in \{cf, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
-    motions(v)[i,j]& = \,  
+&\forall p \in \{cf, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
+    &motion(p)[i,j] = \,  
     \begin{cases}
-        0 & \land (M_{brut}^{x}(v)[i, j] > 0 > M(a)_{brut}[j]) \vee\, (M_{brut}^{x}(v)[i, j] < 0 < M(a)_{brut}[j]) \\
-        1 & M_{brut}^{x}(v)[i, j] = 0  \oplus M(a)_{brut}[j]=0 \\
-        2 & (M_{brut}^{x}(v)[i, j] > 0 \land M(a)_{brut}[j] > 0) \vee\, (M_{brut}^{x}(v)[i, j] < 0 \land M(a)_{brut}[j] <0)
+        0 & \land (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \vee\, (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\
+        1 & M_{brut}^{x}(p)[i, j] = 0  \oplus M(a)_{brut}[j]=0 \\
+        2 & (M_{brut}^{x}(p)[i, j] > 0 \land M(a)_{brut}[j] > 0) \vee\, (M_{brut}^{x}(p)[i, j] < 0 \land M(a)_{brut}[j] <0)
     \end{cases} 
     \\
-    P(v)[i,j]& = \,  
+    &P(p)[i,j] = \,  
     \begin{cases}
-        -1 & \text{if } A(v)[j] \\
-        motions(v)[i,j] & \text{if } \neg A(v)[j]
+        -1 & \text{if } A(p)[j] \\
+        motion(p)[i,j] & \text{if } \neg A(p)[j]
     \end{cases}
 \end{aligned}
 \end{equation}

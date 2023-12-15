@@ -1,135 +1,316 @@
-\chapter{Formalizing Fux rules into English}
+\chapter{Formalising Fux rules}
 This section will be all about extracting all the rules Fux mentions in his work and making sure they are unambiguous.
-It will consist of six subsections: one for each species plus one for all species, because even though Fux doesn't clearly mentions rules for all species, some of his rules for the first species are more than certainly meant to be observed for all of them. 
+It will consist of six subsections: one for each species plus one for all species, because even though Fux doesn't clearly mention rules for all species, some of his rules for the first species are more than certainly meant to be observed for all of them. 
+\section{Implicit rules}
+\subsection{Formalisation in English} \label{sec:generalenglish}
+\begin{enumerate}[wide, label=\bfseries G\arabic*]
+    \setcounter{enumi}{7} % Start from 8
+    \item \textit{First and last notes have not to be perfect consonances anymore.} \label{rule:last-chord-not-perfect-anymore}    
+    
+    Fux doesn't state this in his text, but in many of his examples, we see that when he composes with three voices (and more), not all voices must be perfect consonances in the first and last measure.
+
+    \item \textit{The last chord must be composed only of the notes of the harmonic triad.} \label{rule:last-chord-h-triad}
+
+    Again, this isn't stated explicitly but we see that all of his examples end with a chord containing exclusively the notes of the harmonic triad.
+    
+    \item \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{rule:same-fundamental}
+
+    This rule emanates from an observation of Fux's examples throughout the chapter. The last chord of all his compositions always have the same fundamental as the fundamental of the scale used throughout the composition.
+    When the \textit{cantus firmus} is the lowest stratum, this is not a problem, as the \textit{cantus firmi} always end with the fundamental note of the scale. But when not, it has to be imposed by a constraint, or we may end up with surprising results.
+\end{enumerate}
+
+\subsection{Formalisation into constraints} \label{sec:generalconstraints}
+\begin{enumerate}[wide, label=\bfseries G\arabic*]
+    \setcounter{enumi}{9} % Start from 8
+    \item \textit{The last chord must be composed only of the notes of the harmonic triad.} \label{constraint:last-chord-h-triad}
+    
+    \begin{equation} \begin{aligned}
+    \forall s \in \{u_1, u_2\} \colon H^{s}[0, m-1] \in \{0, 3, 4, 7\}
+    \end{aligned} \end{equation}
+
+    \item \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
+
+    Since the fundamental of the scale is defined by being the first note of the \textit{cantus firmus}, we impose that the last note of the lowest stratum must be equal to the first one of the \textit{cantus firmus} (taking the modulos into account).
+    
+    
+    \begin{equation} \begin{aligned}
+    \lambda[0, m-1] \mod 12 = N^{cf}[0, 0] \mod 12
+    \end{aligned} \end{equation}
+\end{enumerate}
 
 \section{First species}
-All rules described in this subsection marked with a red dot (\reddot) apply not only to the first species but to all of them. When described in this section applies to all species, it means that it applies to the first beat of every species, unless mentioned otherwise, and excepted for the fourth species, where it applies to the the beat.
+All rules described in this subsection marked with a red dot ( \reddot) apply not only to the first species but to all of them. When a constraint described in this section applies to all species, it means that it applies to the first beat of every species, unless mentioned otherwise, and excepted for the fourth species, where it applies to the third beat.
 
-\subsection{This species consists of three whole notes in each instance (p.71)}
-This pretty straightforward rule is the very definition of the firsts species. It adds nothing in comparison with the rules for the two part comparison. It is hence already implemented by the first species for two voices and does not need any consideration. 
+\subsection{Formalisation into English}
+\subsubsection{Structural constraints}
+\begin{enumerate}[wide, label=\bfseries 1.S\arabic*]
+    \item\label{rule:allwhole} \textit{All notes are whole notes.}
+     
+    \begin{quotation}
+       "This species consists of three whole notes in each instance."
+       \textcite[p.71]{GaPEng}
+   \end{quotation}
 
-\subsection{\reddot This species consists of three notes, the upper two being consonant with the lowest (p.71)} \label{rule:consonant}
-This rule is a new one, and it implicitly overrides the rule 1.H1 (from T. Wafflard) saying that \textit{all} intervals must be consonants. Here Fux states that only the upper voices and the lowest one are.
+   This pretty straightforward rule is the very definition of the first species. It adds nothing in comparison with the rules for the two part comparison. It is hence already implemented by the first species for two voices and does not need any consideration. 
+\end{enumerate}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 1.H\arabic*]
+    \item\label{rule:consonant} \textit{All notes on the downbeat are consonant with the notes of the lowest stratum}
+     
+    \begin{quotation}
+       "This species consists of three notes, the upper two being consonant with the lowest."
+       \textcite[p.71]{GaPEng}
+   \end{quotation}
 
-This rule was already enforced in the two parts composition, but as discussed in section \ref{section:parts-and-strata}, the big change here is that Fux mentions that it should not be applied between the counterpoints and the \textit{cantus firmus}, but between the voices and the lowest one. Therefore, we are changing the constraint %todo write nb of constraint
-a little bit to adapt to this new rule:
+   This rule is a restatement of 1.H1 (that previously was saying that \textit{all} intervals must be consonants). Fux states that only the upper voices and the lowest one are consonant, and not all voices together. 
+    
+    \setcounter{enumi}{7} % Start from 8
 
-\subsection {\reddot The harmonic triad should be employed in every measure if there is no special reason against it (p.71)}
-As the footnote on page 71 states it, Fux refers to the "harmonic triad" as being a chord in this position: 1-3-5 (contrary to what is today understood as a harmonic triad).
-The rule says it is not obligated, but it is preferred, to use the 1-3-5 chord, considering that 1 is the lowest voice. As this is a preference and not an absolute rule, it has been implemented as a cost. If harmonic triad is used, then the cost is 0. Else, it is 1.
-% todo should not be 1 absolutely, should depend on the user
-\begin{equation}
-\begin{aligned}
-\forall j \in [0, m-1) \colon &\\
-(\neg (H_{u_1}[0, j] = 3 \lor H_{u_1}[0, j] = 4) &\lor \neg (H_{u_2}[0, j] = 7)) \\
-\iff cost_{prefer-harmonic-triad}&[j] = 1
-\end{aligned}
-\end{equation}
+    %start template
+    \item\label{rule:harmonic-triad} \reddot \textit{The harmonic triad should be used as much as possible.}
 
-This rule is considered to be true also for the other species.
+    \begin{quotation}
+    "The harmonic triad should be employed in every measure if there is no special reason against it."
+    \textcite[p.71]{GaPEng}
+    \end{quotation}
 
-\subsection{\reddot Occasionally, one uses a consonance not properly belonging to the triad, namely, a sixth or an octave (p.72)}
-Here, Fux explains that when it is not possible to have a harmonic triad, you can use sixths or octaves instead. Remember that the sixths or the octaves are calculated from the lowest stratum. Since the rule \ref{rule:consonant} obligates the use of a perfect consonance (i.e. a third, a fifth, a sixth or an octave), when the harmonic triad cannot be used, it is already naturally replaced by a third or a sixth, because no other intervals are allowed. It is thus not a new rule but a restatement of rule \ref{rule:consonant}.
+    As the footnote on page 71 states it, Fux refers to the "harmonic triad" as being a chord in this position: 1-3-5 (contrary to what is today understood as a harmonic triad).
+    The rule says it is not obligated, but it is preferred, to use the 1-3-5 chord, considering that 1 is the lowest voice.
+    
 
-\subsection{\reddot The necessity of avoiding  the succession of two perfect consonances [...] (p.72)} \label{rule:succ-p-cons}
-Fux here implies that there should be no two successive perfect consonances. He does not specify whether this rule applies to all three parts at once (i.e. if there was a consonance at bar X between part 1 and part 2, there cannot be one between part 2 and 3 at bar X+1), or whether it applies to each pair of parts separately. That said, in his example (Fig. 91 of the English version), we can clearly see that there is perfect consonance in every bar (parts 1-3, then 1-2, then 1-3, then 2-3, then 1-2). From this we can deduce that for each pair of parts it is forbidden for two perfect consonances to follow each other.
+    \item\label{rule:sixth-or-octaves} \reddot \textit{One might use sixths or octaves.}
 
-\begin{equation} \begin{aligned}
-\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2 \quad \\
-\forall j \in [0, m-2) \colon H^{v_1-v_2}[0, j] \in Cons_p \\
-\implies H^{v_1-v_2}[0, j+1] \notin Cons_p
-\end{aligned} \end{equation}
+    \begin{quotation}
+    "Occasionally, one uses a consonance not properly belonging to the triad, namely, a sixth or an octave."
+    \textcite[p.72]{GaPEng}
+    \end{quotation}
 
-Which means a harmonic interval and the following one cannot be consonant at the same time.
+    Here, Fux explains that when it is not possible to have a harmonic triad, you can use sixths or octaves instead. Remember that the sixths or the octaves are calculated from the lowest stratum. Since the rule \ref{rule:consonant} obligates the use of a perfect consonance (i.e. a third, a fifth, a sixth or an octave), when the harmonic triad cannot be used, it is already naturally replaced by a third or a sixth, because no other intervals are allowed. It is thus not a new rule but a restatement of rule \ref{rule:consonant}.    
 
-\textbf{N.B.} This being said, Fux doesn't seem to follow this rule strictly. Maybe it should be converted as a cost.
+    \item\label{rule:tenth-is-last-chord} \reddot \textit{Tenths are prohibited in last chord.}
 
-\subsection{\reddot [Each part] follows the natural order closely (p.73)}
-As this is not really clear, Fux later complements his explication by saying the counterpoints should be "moving gracefully, stepwise without any skip". This is clearly a preference, and has already been covered when implementing the first species for two voices. It can thus be ignored in the scope of this thesis.
+    \begin{quotation}
+    "One feels that the degree of perfection and repose which is required of the final chord does not become sufficiently positive with this imperfect consonance [(speaking about a tenth)]."
+    \textcite[p.77]{GaPEng}
+    \end{quotation}
 
-\subsection{\reddot [Each part] follows the principle of variety (p.73)}
-Fux never defines clearly what he means by "principle of variety". Nevertheless, the examples he provides are of a great help as he corrects his student not following the principle, by augmenting the variety of different notes in a single voice. This means, the principle of variety can be understood as having as many different notes in a single voice. As it is not explained either if this has to be true for the whole partition or only for two following notes, it has been chosen as an arbitrary split in two of the debate to use the principle of variety over 4 following notes. This means that the solution is penalized if a note in measure X was already present in measures [X-3, X+3].
+    When Fux says this, he takes a tenth as an example, but it here understood that the final chord cannot include a tenth (third + octave), nor an eight-teenth (third + two octaves), etc. Nevertheless, "simple" third are considered completely valid.
 
-\begin{equation} \begin{aligned}
-\forall cp \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1), \quad \forall k \in [j+1, min(j+3, m-1)] :\\ cp[0, j] = cp[0, j+k]\iff cost_{diversity}[j+m*k]= 1
-\end{aligned} \end{equation}
+    \item\label{rule:unison-vs-octave} \reddot \textit{Octaves should be used over unisons.}
 
-\subsection{\reddot To allow enough space for the voices to move toward each other by contrary motion, the upper voices begin distant from the bass (p.75)}
-This is not a strict rule but an indication to make easier for the composer to have contrary motions. It is not an obligation, nor a preference, so it was simply added as a heuristic for the solver.
+    \begin{quotation}
+    "Unison is less harmonious than the octave."
+    \textcite[p.79]{GaPEng}
+    \end{quotation}
 
-\subsection{\reddot All voices ascend[ing] [is] a progression which can hardly be managed without awkwardness resulting (p.76)}
-What Fux says here is that the three parts cannot be moving in the same direction. 
-To prohibit this, we just have to look at the motions between the parts and the bass. If one of their motion is contrary, then it is ensured that the three voices are not going in the same direction (as at least one is contrary). Same goes if one motion is oblique. The problem occurs if both motions are direct, as it would mean that the three voices are going in the same direction. So, we have a prohibit this, by constraining that the two motions can't be direct at the same time. 
-\begin{equation} \begin{aligned}
- \forall j \in [0, m-2) \colon \neg (M_{cp_1}[0, j] = 2) \lor \neg (M_{cp_2}[0, j] = 2)
-\end{aligned} \end{equation}
+    This rule is not bringing anything new, as there is already a rule stating that two parts cannot blend in unison. If no unison is possible, then the octaves will always be preferred over the unison.
 
-\subsection{\reddot [Your may reach] a perfect consonance by direct motion [if] there is no other possibility (p.77)}
-This is a relaxation of the 1st species for two voices constraint saying that you cannot reach a perfect consonance by direct motion. Because it is sometimes mandatory with three voices to break this rule (as there are no other possibilities), you may derogate from this rule. Since there is no way in constraint programming to implement a rule that must not be obeyed only if possible other 
-than by using a cost, the initial constraint (1.P1-W)  was rewritten to use one :
+    \item\label{rule:minor-third} \reddot \textit{Last chord cannot include a minor third.}
 
-\begin{equation} \begin{aligned}
-\forall v \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1) : H^{v}[0, j+1] \in Cons_{p} \land P^{v}[0, j] = 2 \\
-\iff \text{{Cost}}_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
-\end{aligned} \end{equation}
+    \begin{quotation}
+    "The minor third is not capable of giving a sense of conclusion."
+    \textcite[p.80]{GaPEng}
+    \end{quotation}
 
-\subsection{\reddot One feels that the degree of perfection and repose which is required of the final chord does not become sufficiently positive with this imperfect consonance [(speaking about a tenth)] (p.77)}
-When Fux says this, he takes a tenth as an example, but it here understood that the final chord cannot include a tenth (third + octave), nor an eight-teenth (third + two octaves), etc. Third are accepted though. The rule then becomes: 
+    Fux later states that minor modes should not include a third altogether, but that sometimes it is impossible to do without it, so the major third \textit{is} allowed in minor modes.
 
-\begin{equation} \begin{aligned}
-&\forall v \in \{u_1, u_2\} \quad \\
-&\forall h \in \{4 + (12 \times k) \mid k \in \mathbb{N} \setminus \{1\}\} \colon \\
-&H_{brut}^{v}[0, m-1] \neq h
-\end{aligned} \end{equation}
+\end{enumerate}
+
+\subsubsection{Melodic constraints}
+\begin{enumerate}[wide, label=\bfseries 1.M\arabic*]
+\setcounter{enumi}{2} % Start from 3
+    \item\label{rule:steps-prefered} \textit{Steps are preferred to skips.}
+
+    \begin{quotation}
+    "[Each part] follows the natural order closely."
+    \textcite[p.73]{GaPEng}
+    \end{quotation}
+
+    After having said this, Fux complements his explication by saying the counterpoints should be "moving gracefully, stepwise without any skip". This is clearly a preference, and has already been covered when implementing the first species for two voices. It can thus be ignored in the scope of this thesis.
+
+    \item\label{rule:variety} \reddot \textit{The notes of each part should be as diverse as possible.}
+
+    \begin{quotation}
+    "[Each part] follows the principle of variety."
+    \textcite[p.73]{GaPEng}
+    \end{quotation}
+
+    Fux never defines clearly what he means by "principle of variety". Nevertheless, the examples he provides are of a great help as he corrects his student for not following the principle by augmenting the variety of different notes in a single voice. This means, the principle of variety can be understood as having as many different notes in a single voice. 
+
+    \item\label{rule:template} \reddot \textit{Each part should stay in its voice range.}
+
+    \begin{quotation}
+    "One should not exceed the limits of the five lines without grave necessity."
+    \textcite[p.79]{GaPEng}
+    \end{quotation}
+
+    Fux says here that each part should stay on the musical staff (Fux's "five lines"). Since every staff can be represented differently according to the clef that is used, this rule could be always true. Obviously, Fux meant the staff corresponding to the voice range (treble clef for a soprano, bass clef for a bass, ...). 
+    
+    This is actually something that is already handled when declaring the $N(p)$ arrays, as they are declared with an upper and lower bound ($ub(p)$ and $lb(p)$), corresponding to their voice range.
+
+    \item\label{rule:template} \reddot \textit{Melodic intervals cannot be greater or equal to a sixth.}
+
+    \begin{quotation}
+    "The skip of a major sixth is prohibited."
+    \textcite[p.79]{GaPEng}
+    \end{quotation}
+
+    This rule is only a restatement of rule 1.M2, saying that melodic intervals cannot exceed a minor sixth interval.
+\end{enumerate}
+
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 1.P\arabic*]
+    \item\label{rule:direct-to-p-cons} \reddot \textit{Reaching a perfect consonance by direct motion should be avoided.}
+
+    \begin{quotation}
+    "[Your may reach] a perfect consonance by direct motion [if] there is no other possibility."
+    \textcite[p.77]{GaPEng}
+    \end{quotation}
+
+    This is a reformulation of the previous \ref{rule:direct-to-p-cons} rule. It is actually a relaxation of it, as it was saying that you cannot reach a perfect consonance by direct motion. Because it is sometimes mandatory with three voices to break this rule (as there are no other possibilities), you may derogate from this rule. 
+
+\setcounter{enumi}{3} % Start from 4
+    \item\label{rule:succ-p-cons} \reddot  \textit{Successive perfect consonances are prohibited.}
+
+    \begin{quotation}
+    "The necessity of avoiding the succession of two perfect consonances [...]."
+    \textcite[p.72]{GaPEng}
+    \end{quotation}
+
+    Fux here implies that there should be no two successive perfect consonances. He does not specify whether this rule applies to all three parts at once (i.e. if there was a consonance at bar X between part 1 and part 2, there cannot be one between part 2 and 3 at bar X+1), or whether it applies to each pair of parts separately. That said, in his example (Fig. 91 of the English version), we can clearly see that there is perfect consonance in every bar (parts 1-3, then 1-2, then 1-3, then 2-3, then 1-2). From this we can deduce that \textit{for each pair of parts} it is forbidden for two perfect consonances to follow each other.
+
+    \textbf{N.B.} This being said, Fux doesn't seem to follow this rule strictly. Maybe it should be converted as a cost. 
+    
+    \item\label{rule:start-distant} \reddot \textit{Each part starts distant from the lowest stratum.}
+
+    \begin{quotation}
+    "To allow enough space for the voices to move toward each other by contrary motion, the upper voices begin distant from the bass."
+    \textcite[p.75]{GaPEng}
+    \end{quotation}
+
+    This preference cannot be made clearer: the voices start distant from the lowest stratum.
+
+    \item\label{rule:same-movement} \reddot \textit{It is prohibited that all parts move in the same direction.}
+
+    \begin{quotation}
+    "All voices ascend[ing] [is] a progression which can hardly be managed without awkwardness resulting."
+    \textcite[p.76]{GaPEng}
+    \end{quotation}
+
+    What Fux says here is just that the three parts cannot be moving in the same direction. 
+
+    \item\label{rule:ascending-sixths} \reddot \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
+
+    \begin{quotation}
+    "Ascending sixths on the downbeat sound harsh."
+    \textcite[p.77]{GaPEng}
+    \end{quotation}
+
+    This rule is pretty straightforward and states that if an interval is a sixth, the next one cannot be one.
+\end{enumerate}
+
+\subsection{Formalisation into constraints}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 1.H\arabic*]        
+    \item\label{constraint:consonant} \textit{All notes on the downbeat are consonant with the notes of the lowest stratum}
+   \begin{equation}
+    \begin{aligned}
+        \forall p \in {cf, cp_1, cp_2}, \quad \forall j \in [0, m) : H(p)[0, j] \in Cons
+    \end{aligned}
+   \end{equation}
+    
+    \setcounter{enumi}{7} % Start from 8
+
+    \item\label{constraint:harmonic-triad} \reddot \textit{The harmonic triad should be used as much as possible.}
+    
+    As this rule is actually a preference and not a mandatory rule, it has been implemented as a cost. If the harmonic triad is used, then the cost is 0. Else, it is 1.
+    % todo should not be 1 absolutely, should depend on the user
+    \begin{equation}
+    \begin{aligned}
+    &\forall j \in [0, m-1) \colon \\
+    &(\neg (H_{u_1}[0, j] = 3 \lor H_{u_1}[0, j] = 4) \lor \neg (H_{u_2}[0, j] = 7)) \\
+    &\iff cost_{prefer-harmonic-triad}[j] = 1
+    \end{aligned}
+    \end{equation}
+    
+    \setcounter{enumi}{9} % Start from 10
+    % todo this is hardcoded but should not
 
 
-\subsection{\reddot Ascending sixths on the downbeat sound harsh (p.77)}
-This rule is pretty straightforward and states that if an interval is a sixth, the next one cannot be one.
-\begin{equation} \begin{aligned}
-&\forall j \in [0, m-2)   \quad \forall v_1 \in \{cf, cp_1, cp_2\} \quad \forall v_2 \in \{cf, cp_1, cp_2\} \quad (v_1 \neq v_2) \colon\\
-&\neg (H^{v_1-v_2}[0, j] \in \{8, 9\} ) \lor \neg (H^{v_1-v_2}[0, j+1] \in \{8, 9\})\\
-&\lor \neg (v_1[0,j] < v_1[0,j+1]) \lor \neg (v_2[0,j] < v_2[0,j+1]))
-\end{aligned} \end{equation}
+    \item\label{constraint:tenth-is-last-chord} \reddot \textit{Tenths are prohibited in last chord.}
+
+    \begin{equation} \begin{aligned}
+    &\forall v \in \{u_1, u_2\} \quad \\
+    &\forall h \in \{4 + (12 \times k) \mid k \in \mathbb{N} \setminus \{1\}\} \colon \\
+    &H_{brut}^{v}[0, m-1] \neq h
+    \end{aligned} \end{equation}
+
+    \setcounter{enumi}{11} % Start from 10
+    % todo this is hardcoded but should not
+
+    \item\label{constraint:minor-third} \reddot \textit{Last chord cannot include a minor third.}
+
+    \begin{equation} \begin{aligned}
+    \forall v \in \{u_1, u_2\} \colon H^{v}[0, m-1] \neq 3
+    \end{aligned} \end{equation}
+\end{enumerate}
+
+\subsubsection{Melodic constraints}
+\begin{enumerate}[wide, label=\bfseries 1.M\arabic*]
+\setcounter{enumi}{3} % Start from 4
+    \item\label{constraint:variety} \reddot \textit{The notes of each part should be as diverse as possible.}
+
+    As it is not explained either if this has to be true for the whole partition or only for two following notes, it has been chosen as an arbitrary seven successive notes to apply the rule on. This means that the solution is penalized if a note in measure X was already present in measures [X-3, X+3]. This amount was chosen because it represents the number of flat notes that exist, pushing for the solver to find a solution that contain all of them.
+
+    \begin{equation} \begin{aligned}
+    &\forall cp \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1), \quad \forall k \in [j+1, min(j+3, m-1)] :\\ 
+    &cp[0, j] = cp[0, j+k]\iff cost_{variety}[j+m*k]= 1
+    \end{aligned} \end{equation}
+\end{enumerate}
+
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 1.P\arabic*]
+    \item\label{constraint:direct-to-p-cons} \reddot \textit{Reaching a perfect consonance by direct motion should be avoided.}
+    Since there is no way in constraint programming to implement a rule that must be obeyed only if possible other than by using a cost, the initial constraint was rewritten to a new one.
+
+    \begin{equation} \begin{aligned}
+    \forall v \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1) : H^{v}[0, j+1] \in Cons_{p} \land P^{v}[0, j] = 2 \\
+    \iff \text{{Cost}}_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
+    \end{aligned} \end{equation}
+    
+\setcounter{enumi}{3} % Start from 4
+    \item\label{constraint:succ-p-cons} \reddot  \textit{Successive perfect consonances are prohibited.}
+
+    \begin{equation} \begin{aligned}
+    &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2 \quad \\
+    &\forall j \in [0, m-2) \colon H^{v_1-v_2}[0, j] \in Cons_p \\
+    &\implies H^{v_1-v_2}[0, j+1] \notin Cons_p
+    \end{aligned} \end{equation}
+
+    The meaning of this equation is that a harmonic interval and the following one cannot be consonant at the same time.
+    
+    \item\label{constraint:start-distant} \reddot \textit{Each part starts distant from the lowest stratum.}
+
+    This is not a strict rule but an indication to make easier for the composer to have contrary motions. Given that is not an obligation, nor a preference, it was simply added as a heuristic for the solver.
+
+    % todo mention the heuristic?
 
 
-\subsection{\reddot Unison is less harmonious than the octave (p.79)}
-This rule is already covered by the no-unison constraint in the first species for two voices.
+    \item\label{constraint:same-movement} \reddot \textit{It is prohibited that all parts move in the same direction.}
 
-\subsection{\reddot One should not exceed the limits of the five lines without grave necessity (p.79)}
-This rule is already covered by the melodic costs in first species for two voices.
+    To prohibit this, we just have to look at the motions between the parts and the lowest stratum. If one of their motion is contrary, then it is ensured that the three voices are not going in the same direction (as at least one is contrary). Same goes if one motion is oblique. The problem occurs if both motions are direct, as it would mean that the three voices are going in the same direction. So, we have a prohibit this, by constraining that the two motions can't be direct at the same time. 
+    \begin{equation} \begin{aligned}
+    &\forall j \in [0, m-2) \colon \neg (M_{cp_1}[0, j] = 2) \lor \neg (M_{cp_2}[0, j] = 2)
+    \end{aligned} \end{equation}
 
-\subsection{\reddot Skip of a major sixth is prohibited (p.79)}
-Fux then explains that not only are the skips of a major sixth prohibited, but all bigger skips. This rule is already covered by the constraints of the first species for two voices. 
+    \item\label{constraint:ascending-sixths} \reddot \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
 
-\subsection{\reddot The minor third is not capable of giving a sense of conclusion (p.80)}
-Actually, Fux later states that minor modes should not include a third altogether, but that sometimes it is impossible to do without it, so you can use major third in a minor mode.
-\begin{equation} \begin{aligned}
-\forall v \in \{u_1, u_2\} \colon H^{v}[0, m-1] \neq 3
-\end{aligned} \end{equation}
-
-
-\subsection{\reddot First and last notes have not to be perfect consonances anymore*} \label{rule:last-chord-not-perfect-anymore}
-\footnote{As a reminder, an asterisk at the end of a rule means that the rule is implicit.}
-
-Fux doesn't state this in his text, but in many of his examples, we see that when he composes with three voices (and more), not all voices must be perfect consonances in the first and last measure.
-
-\subsection{\reddot Last chord must be composed only of the notes of the a harmonic triad*} \label{rule:last-chord-h-triad}
-Again, this isn't stated explicitly but we see that all of his examples end with a chord containing exclusively the notes of the harmonic triad.
-
-\begin{equation} \begin{aligned}
-\forall v \in \{u_1, u_2\} \colon H^{v}[0, m-1] \in \{0, 3, 4, 7\}
-\end{aligned} \end{equation}
-
-
-\subsection{\reddot The last chord must have the same fundamental as the one of the scale used throughout the composition*}
-This rule emanates from an observation of Fux's examples throughout the chapter. The last chord of all his compositions always have the same fundamental as the fundamental of the scale used throughout the composition.
-When the \textit{cantus firmus} is the lowest stratum, this is not a problem, as the \textit{cantus firmi} always end with the fundamental note of the scale. But when not, it has to be imposed by a constraint, or we may end up with surprising results. Since the fundamental of the scale is defined by being the first note of the \textit{cantus firmus}, we impose that the last note of the lowest stratum must be equal to the first one of the \textit{cantus firmus} (taking the modulos into account).
-
-
-\begin{equation} \begin{aligned}
-\lambda[0, m-1] \mod 12 = N^{cf}[0, 0] \mod 12
-\end{aligned} \end{equation}
-
+    \begin{equation} \begin{aligned}
+    &\forall j \in [0, m-2)   \quad \forall v_1 \in \{cf, cp_1, cp_2\} \quad \forall v_2 \in \{cf, cp_1, cp_2\} \quad (v_1 \neq v_2) \colon\\
+    &\neg (H^{v_1-v_2}[0, j] \in \{8, 9\} ) \lor \neg (H^{v_1-v_2}[0, j+1] \in \{8, 9\})\\
+    &\lor \neg (v_1[0,j] < v_1[0,j+1]) \lor \neg (v_2[0,j] < v_2[0,j+1]))
+    \end{aligned} \end{equation}
+\end{enumerate}
 
 
 \section{Second species}
@@ -145,11 +326,7 @@ This is a relaxation of the two-voice constraint and is done quite easily by mod
 This is a consequence of now using three voices instead of two. Fux just made explicit here a rule we had already defined (\ref{rule:last-chord-not-perfect-anymore} and \ref{rule:last-chord-h-triad}). It has thus already been implemented in the first species for two voices.
 
 \subsection{The half notes are always concordant with the two whole notes (p.88)}
-If Fux meant "consonant" when he wrote "concordant", then this rule is pretty straightforward. The concern here is that he doesn't seem to follow his own rule. Anyway, here is the mathematical notation for this rule:
-\begin{equation} \begin{aligned}
-    &\forall v_1 \in \{cp_1, cp_2, cf\} \quad \forall v_1 \in \{cp_1, cp_2, cf\}, v_1 \neq v_2 \colon\\
-    &species^{v_1} = 2 \iff H^{v_1-v_2} \in Cons
-\end{aligned} \end{equation}
+One might ask what Fux meant when he wrote "concordant". Did he mean to say "consonant"? Our take on the question is that he meant that the half notes are written whilst taking the whole notes into account. This interpretation is aligned with the French translation, and even with the Latin original. In other words, Fux just says "there are constraints on the half notes". It is thus not a rule \textit{per se}
 
 \subsection{A whole note may occasionally be used in the next to last measure (p.93)}
 This rule about the second species is written in a footnote of the chapter about the third species, but it seems to apply not only to when the second species is used in combination with the third species, but also in other cases. (fig. 134, 173 and 174 of the English version)
