@@ -314,22 +314,100 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
 
 
 \section{Second species}
-\subsection{A half note may, for the sake of the harmonic triad, occasionally make a succession of two parallel fifth acceptable - which can be effected by the skip of a third (p.86)}
-Fux didn't speak about prohibiting two parallel (i.e. consecutive) fifths in the second species for two voices. That being said, it is indeed prohibited in three parts composition as you cannot have two successive perfect consonances (see constraint \ref{rule:succ-p-cons}). We thus have to relax this constraint in order to accept two successive consonances, when the two successive fifths flank a third.
+\subsection{Formalisation in English}\label{formalisation-en-2nd}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 2.H\arabic*]
+\setcounter{enumi}{3} % Start from 4
+    \item \textit{Major thirds are now allowed in the last chord.} \label{rule:major-third-last-chord}    
+    \begin{quotation}
+        "A major third [may] appear in the last chord."
+        \textcite[p.87]{GaPEng}
+    \end{quotation}
+    This is a consequence of now using three voices instead of two. Fux makes explicit two implicit rules we had already defined (\ref{rule:last-chord-not-perfect-anymore} and \ref{rule:last-chord-h-triad}). It has thus already been implemented in the first species for two voices.
 
+    \item \textit{The half notes must be coherent with respect to the whole notes.} \label{rule:coherent}    
+    \begin{quotation}
+        "The half notes are always concordant with the two whole notes."
+        \textcite[p.88]{GaPEng}
+    \end{quotation}
+    One might ask what Fux meant when he wrote "concordant". Did he mean to say "consonant"? Our take on the question is that he meant that the half notes are written whilst taking the whole notes into account. This interpretation is aligned with the French translation, and even with the Latin original. In other words, Fux just says "there are constraints on the half notes". It is thus not a rule \textit{per se}.
+\end{enumerate}
 
-\subsection{Ligatures have no place in this species [except] in the final cadence (p.87)}
-Fux explains that in some cases, you have no other option than ligaturing the fourth-to-last and the third-to-last notes. The reasons he gives for this are all part of the previous mentioned rules (no successive perfect consonances, no unison, ...).
-This is a relaxation of the two-voice constraint and is done quite easily by modifying the constraint that says "no unison between two consecutive notes". N[2, m-1] and N[0, m] are  not covered anymore by the scope of this rule. The reason why this has been implemented a constraint relaxation instead than as a cost is because Fux seems not to say that there is any counterpart at ligaturing the fourt-to-last and the third-to-last notes: he doesn't say it is bad, he just say it is a new option.
+\subsubsection{Melodic constraints}
+\begin{enumerate}[wide, label=\bfseries 2.M\arabic*]
+\setcounter{enumi}{1} % Start from 4
+    \item \textit{You might have a ligature from the third-to-last to the second-to-last measure or within the second-to-last measure.} \label{rule:2nd-species-ligatures}    
+    \begin{quotation}
+        "Ligatures have no place in this species [except] in the final cadence."
+        \textcite[p.87]{GaPEng}
+    \end{quotation}
+    Fux explains that in some cases, you have no other option than ligaturing the fourth-to-last and the third-to-last notes. The reasons he gives for this are all part of the previous mentioned rules (no successive perfect consonances, no unison, ...).
 
-\subsection{A major third [may] appear in the last chord. (p.87)}
-This is a consequence of now using three voices instead of two. Fux just made explicit here a rule we had already defined (\ref{rule:last-chord-not-perfect-anymore} and \ref{rule:last-chord-h-triad}). It has thus already been implemented in the first species for two voices.
+    Later on, he also says that the third-to-last and the second-to-last notes can be ligatured (hence producing a whole note).
+    \begin{quotation}
+        "A whole note may occasionally be used in the next to last measure."
+        \textcite[p.93]{GaPEng}
+    \end{quotation}
+    He says that in the chapter about third species, but it seems that this applies even in cases where the second species is not used in combination with the third (see figures 134, 173 and 174 of the English version).
 
-\subsection{The half notes are always concordant with the two whole notes (p.88)}
-One might ask what Fux meant when he wrote "concordant". Did he mean to say "consonant"? Our take on the question is that he meant that the half notes are written whilst taking the whole notes into account. This interpretation is aligned with the French translation, and even with the Latin original. In other words, Fux just says "there are constraints on the half notes". It is thus not a rule \textit{per se}
+    He doesn't state clearly if the three of them can get ligatured, but it seems quite obvious that this is not allowed, as it would introduce a lot of redundancy in the composition. It is hence decided that the rule is: a ligature may happen in one case or in the other, but not in both.
+\end{enumerate}
 
-\subsection{A whole note may occasionally be used in the next to last measure (p.93)}
-This rule about the second species is written in a footnote of the chapter about the third species, but it seems to apply not only to when the second species is used in combination with the third species, but also in other cases. (fig. 134, 173 and 174 of the English version)
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 2.P\arabic*]
+\setcounter{enumi}{1} % Start from 4
+    \item \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{rule:succ-fifths-flanking-third}    
+    \begin{quotation}
+        "A half note may, for the sake of the harmonic triad, occasionally make a succession of two parallel fifth acceptable - which can be effected by the skip of a third."
+        \textcite[p.86]{GaPEng}
+    \end{quotation}
+    Fux didn't speak about prohibiting two parallel (i.e. consecutive) fifths in the second species for two voices. That being said, it is indeed prohibited in three parts composition as you cannot have two successive perfect consonances (see constraint \ref{rule:succ-p-cons}). We thus have to relax constraint \ref{rule:succ-p-cons} in order to accept two successive consonances, when the two successive fifths flank a third.
+
+\vspace{.5cm}
+\begin{minipage}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Images/successive-fifths.png}
+    \captionof{figure}{Successive fifths - prohibited}
+    \label{fig:successive-fifths-2}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{Images/successive-fifths-flanking-a-third.png}
+      \captionof{figure}{Successive fifths separated by a third - valid}
+      \label{fig:successive-fifths-2}
+\end{minipage}
+\end{enumerate}
+
+\subsection{Formalisation into constraints}
+\subsubsection{Harmonic constraints}
+As discussed in \ref{formalisation-en-2nd}, no new harmonic rules were defined by Fux for the second species.
+
+\subsubsection{Melodic constraints}
+\begin{enumerate}[wide, label=\bfseries 2.M\arabic*]
+\setcounter{enumi}{1} % Start from 2
+    \item \textit{You might have a ligature from the third-to-last to the second-to-last measure or within the second-to-last measure.} \label{constraint:2nd-species-ligatures}    
+    This is a relaxation of the two-voice rule \textbf{2.M2} "two consecutive notes cannot be the same". N[2, m-3] and N[0, m-2] are not covered anymore by the scope of this rule. The reason why this has been implemented a constraint relaxation instead than as a cost is because Fux seems not to say that there is any counterpart at ligaturing the fourth-to-last and the third-to-last notes: he doesn't say it is bad, he just says it is a new option.
+
+    \begin{equation}
+        \begin{aligned}
+            &\forall j \in [1, m-1), \quad j \neq m-2:\\
+            &(N[2, j-1] \neq N[0, j]) \land (N[0, j] \neq \land N[2, j])\\
+            &\neg (N[2, m-3] = N[0, m-2]) \lor \neg(N[0, m-2] = N[2, m-2])
+        \end{aligned}
+    \end{equation}
+\end{enumerate}
+
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 2.P\arabic*]
+\setcounter{enumi}{1} % Start from 2
+    \item \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{constraint:succ-fifths-flanking-third}    
+    \begin{equation} \begin{aligned}
+    &\forall p_1, p_2 \in \{cf, cp_1, cp_2\}, \quad p_1 \neq p_2 \quad \forall j \in [0, m-2): species(p_1)=2 \implies \\
+    &(H^{p_1-p_2}[0, j] = 7) \land (H^{p_1-p_2}[0, j+1] = 7) \iff (H^{p_1-p_2}[2, j] = 3) \lor (H^{p_1-p_2}[2, j] = 4)
+    \end{aligned} \end{equation}
+\end{enumerate}
+
 
 \section{Third species}
 \subsection{The quarters have to concur with the whole notes of the other voices (p.91)}
@@ -345,9 +423,9 @@ This rule is clear, and states that we should use the harmonic triad in the seco
 In other words, $cp[n]$ should be associated to $cf[n-1]$ when performing calculations. This is already made by the computations of the two voices counterpoints. It is nevertheless useful to be well aware of this fact, since it will induce many special cases in the implementation.
 
 \subsection{If the ligatures were removed for the sake of the harmonic triad - which, however, would be impossible because of another consideration, the immediate succession of several fifths (p.95)}
-By stating the rule that prohibits the succession of fifths (which is a particular case of the rule saying that you cannot have two successive perfect consonances, see \ref{rule:succ-p-cons}) and by saying that this rule \textit{would} have been valid in the other species, Fux is telling us in a roundabout way that it is not valid in this species. he further complements by saying "there is great power in ligatures - the ability to avoid or improve incorrect passages". All this means that successions of fifths are allowed in the 4th species.
+By stating the rule that prohibits the succession of fifths (which is a particular case of the rule saying that you cannot have two successive perfect consonances, see \ref{rule:succ-p-cons}) and by saying that this rule \textit{would} have been valid in the other species, Fux is telling us in a roundabout way that it is not valid in this species. He further complements by saying "there is great power in ligatures - the ability to avoid or improve incorrect passages". All this means that successions of fifths are allowed in the 4th species.
 
-We shall then amend rule \ref{rule:succ-p-cons} and rewrite it as:
+We shall then amend rule \ref{rule:succ-p-cons} to only prohibit successive octaves, and rewrite it as:
 \begin{equation} \begin{aligned}
     &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2 \quad \forall n \in \{0, 1\} \\
     &i_n := \,  
@@ -355,7 +433,7 @@ We shall then amend rule \ref{rule:succ-p-cons} and rewrite it as:
         0 & \text{if } species^{v_n} \neq 4\\
         2 & \text{if } species^{v_n} = 4\\
     \end{cases}\\
-    &\forall j \in [0, m-2) \colon H^{v_1-v_2}[i_n, j] = 0 \iff H^{v_1-v_2}[i_n, j+1] = 0
+    &\forall j \in [0, m-2) \colon H^{v_1-v_2}[i_n, j] \neq 0 \iff H^{v_1-v_2}[i_n, j+1] \neq 0
 \end{aligned} \end{equation}
 
 \subsection{The fifth is a perfect consonance, the octave a more perfect one, and the unison the most perfect of all; and the more perfect a consonance, the less harmony it has (p.97)}
