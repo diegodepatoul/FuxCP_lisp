@@ -25,7 +25,7 @@ It will consist of six subsections: one for each species plus one for all specie
     \item \textit{The last chord must be composed only of the notes of the harmonic triad.} \label{constraint:last-chord-h-triad}
     
     \begin{equation} \begin{aligned}
-    \forall s \in \{u_1, u_2\} \colon H^{s}[0, m-1] \in \{0, 3, 4, 7\}
+    \forall s \in \{u_1, u_2\} \colon H(s)[0, m-1] \in Cons_{h\_triad}
     \end{aligned} \end{equation}
 
     \item \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
@@ -34,7 +34,7 @@ It will consist of six subsections: one for each species plus one for all specie
     
     
     \begin{equation} \begin{aligned}
-    \lambda[0, m-1] \mod 12 = N^{cf}[0, 0] \mod 12
+    N(a)[0, m-1] \mod 12 = N(cf)[0, 0] \mod 12
     \end{aligned} \end{equation}
 \end{enumerate}
 
@@ -74,7 +74,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \textcite[p.71]{GaPEng}
     \end{quotation}
 
-    As the footnote on page 71 states it, Fux refers to the "harmonic triad" as being a chord in this position: 1-3-5 (contrary to what is today understood as a harmonic triad).
+    As a footnote states it \cite[footnote, p.71]{GaPEng}, Fux refers to the "harmonic triad" as being a chord in this position: 1-3-5 (contrary to what is today understood as a harmonic triad).
     The rule says it is not obligated, but it is preferred, to use the 1-3-5 chord, considering that 1 is the lowest voice.
     
 
@@ -242,7 +242,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \begin{equation} \begin{aligned}
     &\forall v \in \{u_1, u_2\} \quad \\
     &\forall h \in \{4 + (12 \times k) \mid k \in \mathbb{N} \setminus \{1\}\} \colon \\
-    &H_{brut}^{v}[0, m-1] \neq h
+    &H_{brut}(v)[0, m-1] \neq h
     \end{aligned} \end{equation}
 
     \setcounter{enumi}{11} % Start from 10
@@ -251,7 +251,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \item\label{constraint:minor-third} \reddot \textit{Last chord cannot include a minor third.}
 
     \begin{equation} \begin{aligned}
-    \forall v \in \{u_1, u_2\} \colon H^{v}[0, m-1] \neq 3
+    \forall v \in \{u_1, u_2\} \colon H(v)[0, m-1] \neq 3
     \end{aligned} \end{equation}
 \end{enumerate}
 
@@ -274,7 +274,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     Since there is no way in constraint programming to implement a rule that must be obeyed only if possible other than by using a cost, the initial constraint was rewritten to a new one.
 
     \begin{equation} \begin{aligned}
-    \forall v \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1) : H^{v}[0, j+1] \in Cons_{p} \land P^{v}[0, j] = 2 \\
+    \forall v \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1) : H(v)[0, j+1] \in Cons_{p} \land P(v)[0, j] = 2 \\
     \iff \text{{Cost}}_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
     \end{aligned} \end{equation}
     
@@ -283,8 +283,8 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
 
     \begin{equation} \begin{aligned}
     &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2 \quad \\
-    &\forall j \in [0, m-2) \colon H^{v_1-v_2}[0, j] \in Cons_p \\
-    &\implies H^{v_1-v_2}[0, j+1] \notin Cons_p
+    &\forall j \in [0, m-2) \colon H(v_1,v_2)[0, j] \in Cons_p \\
+    &\implies H(v_1,v_2)[0, j+1] \notin Cons_p
     \end{aligned} \end{equation}
 
     The meaning of this equation is that a harmonic interval and the following one cannot be consonant at the same time.
@@ -307,8 +307,8 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
 
     \begin{equation} \begin{aligned}
     &\forall j \in [0, m-2)   \quad \forall v_1 \in \{cf, cp_1, cp_2\} \quad \forall v_2 \in \{cf, cp_1, cp_2\} \quad (v_1 \neq v_2) \colon\\
-    &\neg (H^{v_1-v_2}[0, j] \in \{8, 9\} ) \lor \neg (H^{v_1-v_2}[0, j+1] \in \{8, 9\})\\
-    &\lor \neg (v_1[0,j] < v_1[0,j+1]) \lor \neg (v_2[0,j] < v_2[0,j+1]))
+    &\neg (H(v_1,v_2)[0, j] \in \{8, 9\} ) \lor \neg (H(v_1,v_2)[0, j+1] \in \{8, 9\})\\
+    &\lor \neg (v_1[0,j] < v_1[0,j+1]) \lor \neg (v_2[0,j] < v_2[0,j+1])
     \end{aligned} \end{equation}
 \end{enumerate}
 
@@ -325,7 +325,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \end{quotation}
     This is a consequence of now using three voices instead of two. Fux makes explicit two implicit rules we had already defined (\ref{rule:last-chord-not-perfect-anymore} and \ref{rule:last-chord-h-triad}). It has thus already been implemented in the first species for two voices.
 
-    \item \textit{The half notes must be coherent with respect to the whole notes.} \label{rule:coherent}    
+    \item \textit{The half notes must be coherent with respect to the whole notes.} \label{rule:concur-2nd}    
     \begin{quotation}
         "The half notes are always concordant with the two whole notes."
         \textcite[p.88]{GaPEng}
@@ -404,62 +404,196 @@ As discussed in \ref{formalisation-en-2nd}, no new harmonic rules were defined b
     \item \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{constraint:succ-fifths-flanking-third}    
     \begin{equation} \begin{aligned}
     &\forall p_1, p_2 \in \{cf, cp_1, cp_2\}, \quad p_1 \neq p_2 \quad \forall j \in [0, m-2): species(p_1)=2 \implies \\
-    &(H^{p_1-p_2}[0, j] = 7) \land (H^{p_1-p_2}[0, j+1] = 7) \iff (H^{p_1-p_2}[2, j] = 3) \lor (H^{p_1-p_2}[2, j] = 4)
+    &(H(p_1,p_2)[0, j] = 7) \land (H(p_1,p_2)[0, j+1] = 7) \\
+    &\iff (H(p_1,p_2)[2, j] = 3) \lor (H(p_1,p_2)[2, j] = 4)
+    \end{aligned} \end{equation}
+\end{enumerate}
+
+\section{Third species}
+\subsection{Formalisation in English}\label{formalisation-en-3rd}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 3.H\arabic*]
+\setcounter{enumi}{4}
+    \item \textit{The quarter notes must be coherent with respect to the whole notes.} \label{rule:concur-3rd}    
+    \begin{quotation}
+        "The quarters have to concur with the whole notes of the other voices."
+        \textcite[p.91]{GaPEng}
+    \end{quotation}
+    When using the word "concur", Fux more than probably means "are put in relation", and not "are consonant". As for rule \ref{rule:concur-2nd} in the second species, where the half notes had to be \textit{concordant} with the \textit{cantus firmus}. It is not a rule by itself, Fux is only annunciating that some rules should be followed (i.e. the other constraints).
+
+    \item \textit{In case the harmonic triad could not be used in the downbeat, it should be used in the second or third beat.} \label{rule:coherent}    
+    \begin{quotation}
+        "Take care whenever you cannot use the harmonic triad on the first quarter occurring on the upbeat, to use it on the second or third quarters."
+        \textcite[p.91]{GaPEng}
+    \end{quotation}
+
+    This rule is quite clear and speaks for itself.
+\end{enumerate}
+
+\subsubsection{Melodic constraints}
+Fux introduces no new melodic constraints for the third species.
+\subsubsection{Motion constraints}
+Fux introduces no new motion constraints for the third species.
+
+\subsection{Formalisation into constraints}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 3.H\arabic*]
+\setcounter{enumi}{5}
+    \item \textit{In case the harmonic triad could not be used in the downbeat, it should be used in the second or third beat.} \label{constraint:coherent}    
+
+    This rule is quite clear and speaks for itself. Since this is not a strict rule but an advice, it was treated as a cost.
+
+    \begin{equation} \begin{aligned}
+            &\forall j \in [0, m-1) \colon \\
+            &(H[1, j] \notin Cons_{h\_triad}) \land  (H[2, j] \notin Cons_{h\_triad})\\
+            &\iff cost_{harmonic-triad-3rd-species}[j] = 1       
     \end{aligned} \end{equation}
 \end{enumerate}
 
 
-\section{Third species}
-\subsection{The quarters have to concur with the whole notes of the other voices (p.91)}
-When using the word "concur", it is plausible that Fux meant "are put in relation", and not "be consonant", as he said that the quarters \textit{concur} with the \textit{cantus firmus} in two voices composition. It is not a rule \textit{per se}, Fux is only annunciating that some rules are going to be introduced.
-
-\subsection{Take care whenever you cannot use the harmonic triad on the first quarter occurring on the upbeat, to use it on the second or third quarters (p.91)}
-This rule is clear, and states that we should use the harmonic triad in the second or third beat when we were not able to use it in the first one. This is not an absolute rule, but either an advice, and thus it was treated as a cost.
-
 
 
 \section{Fourth species}
-\subsection{The ligature is nothing but a delaying of the note following (p.95)}
-In other words, $cp[n]$ should be associated to $cf[n-1]$ when performing calculations. This is already made by the computations of the two voices counterpoints. It is nevertheless useful to be well aware of this fact, since it will induce many special cases in the implementation.
+\subsection{Formalisation in English}\label{formalisation-en-4th}
+\subsubsection{Structural constraints}
+\begin{enumerate}[wide, label=\bfseries 4.S\arabic*]
+\setcounter{enumi}{0}
+    \item \textit{The fourth species is staggered by two beats.} \label{rule:delaying}    
+    \begin{quotation}
+        "The ligature is nothing but a delaying of the note following."
+        \textcite[p.95]{GaPEng}
+    \end{quotation}
+    Fux here insists on the fact we have already discussed in \ref{nota-bene-4th-species}. The fourth species behaves as if its upbeat were the downbeat and its downbeat were the upbeat of the previous measure.
 
-\subsection{If the ligatures were removed for the sake of the harmonic triad - which, however, would be impossible because of another consideration, the immediate succession of several fifths (p.95)}
-By stating the rule that prohibits the succession of fifths (which is a particular case of the rule saying that you cannot have two successive perfect consonances, see \ref{rule:succ-p-cons}) and by saying that this rule \textit{would} have been valid in the other species, Fux is telling us in a roundabout way that it is not valid in this species. He further complements by saying "there is great power in ligatures - the ability to avoid or improve incorrect passages". All this means that successions of fifths are allowed in the 4th species.
+    \item \textit{All parts can become the lowest stratum somewhere in the composition.} \label{rule:tenor-might-take-place-of-bass}    
+    \begin{quotation}
+        "The tenor takes the place of the bass in the first measure - a thing that not only the tenor may do, but also the alto and even the soprano."
+        \textcite[p.100]{GaPEng}
+    \end{quotation}
+    Fux speaks here about our concept of strata. The tenor can become the lowest stratum, just like the alto and the soprano may do. This is a fundamental concept of the generalization of Fux counterpoint to three voices, and has already been extensively discussed before (see section \ref{section:parts-and-strata}).
+\end{enumerate}
 
-We shall then amend rule \ref{rule:succ-p-cons} to only prohibit successive octaves, and rewrite it as:
-\begin{equation} \begin{aligned}
-    &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2 \quad \forall n \in \{0, 1\} \\
-    &i_n := \,  
-    \begin{cases}
-        0 & \text{if } species^{v_n} \neq 4\\
-        2 & \text{if } species^{v_n} = 4\\
-    \end{cases}\\
-    &\forall j \in [0, m-2) \colon H^{v_1-v_2}[i_n, j] \neq 0 \iff H^{v_1-v_2}[i_n, j+1] \neq 0
-\end{aligned} \end{equation}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 4.H\arabic*]
+    \setcounter{enumi}{4}
+    \item \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{rule:prefer-fifths-over-octaves}    
+    \begin{quotation}
+        "The fifth is a perfect consonance, the octave a more perfect one, and the unison the most perfect of all; and the more perfect a consonance, the less harmony it has."
+        \textcite[p.97]{GaPEng}
+    \end{quotation}
+    This rule is as clear as it gets.
+\end{enumerate}
 
-\subsection{The fifth is a perfect consonance, the octave a more perfect one, and the unison the most perfect of all; and the more perfect a consonance, the less harmony it has (p.97)}
-This is almost covered by the existing costs, as a perfect consonance has a cost of 1, where an imperfect consonance has a cost of 0. This precision in the rule (fifth is better than octave) could be solved by either putting a cost of 2 to octaves and a cost of 1 to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs.
-\subsection{A dissonance that resolves to a fifth is more acceptable than a dissonance that resolves to an octave (p.98)}
-This is be covered by the previous cost, as the fifth is preferred to the octave.
+\subsubsection{Melodic constraints}
+Fux introduces no new melodic constraints for the third species.
 
-\subsection{If I said that the first note of the ligature must always be consonant, that applies only to the instances in which the bass remains on a pedal point, that is, in the same position. In such a case a ligature involving only dissonances is not only correct but even very beautiful (p.98)}
-The rule evoked here is changing a previous rule about consonance (4.H1W\footnote{E2.2W means "Equation 2.2 from T. Wafflard's thesis".
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 4.P\arabic*]
+\setcounter{enumi}{2}
+    \item \textit{Successive fifths are allowed when using ligatures.} \label{rule:successive-fifths-in-4th-species}    
+    \begin{quotation}
+        "[It would be impossible to remove] the ligatures because of another consideration, the immediate succession of several fifths."
+        \textcite[p.95]{GaPEng}
+    \end{quotation}
+    By saying that it exists a rule that prohibits the succession of fifths (which is actually just a particular case of rule \ref{rule:succ-p-cons}, stating that you cannot have two successive perfect consonances) when there is no ligature, Fux is telling us in an indirect way that this rule is not applicable when there are ligatures. He further complements by saying "there is great power in ligatures - the ability to avoid or improve incorrect passages". 
 
-S1.3W means "Section 1.3 from T. Wafflard's thesis".}). From now on, if the lowest stratum has a stationary movement, the corresponding note in the fourth species must be a dissonance, instead of a consonance.
+    \item \textit{Resolving to a fifth is preferred over resolving to an octave.} \label{rule:resolving-to-fifths-rather-than-octaves}    
+    \begin{quotation}
+        "A dissonance that resolves to a fifth is more acceptable than a dissonance that resolves to an octave."
+        \textcite[p.98]{GaPEng}
+    \end{quotation}
+    This rule could not be clearer.
+    
+    \item \textit{Stationary movement in the bass implies dissonance in the fourth species part.} \label{rule:dissonance-in-4th-species}
+    \begin{quotation}
+        "If I said that the first note of the ligature must always be consonant, that applies only to the instances in which the lower voice moves from bar to bar, but not the instances in which the bass remains on a pedal point, that is, in the same position. In such a case a ligature involving only dissonances is not only correct but even very beautiful."
+        \textcite[p.98]{GaPEng}
+    \end{quotation}
+    The rule evoked here cancels the previous rule \textbf{4.H1W} that stated that all notes should be consonant. From now on, if the lowest stratum has a stationary movement, the corresponding delayed note in the fourth species must be a dissonance, instead of a consonance.    
 
-\begin{equation}
-\begin{aligned}
-&\forall j \in [0, m-1):\\
-&M^\lambda \neq 0 \iff H[2, j] \in Cons\\
-&M^\lambda = 0 \iff H[2, j] \in Dis
-\end{aligned}
-    \label{eq:arsiscons} 
-\end{equation}
 
-\subsection{The tenor takes the place of the bass in the first measure - a thing that not only the tenor may do, but also the alto and even the soprano}
-Fux speaks here about our concept of strata. The tenor can become the lowest stratum, just like the alto and the soprano. This is a fundamental concept of the generalization of Fux counterpoint to three voices, and has already been extensively discussed before (see section \ref{section:parts-and-strata}).
+    \item \textit{A note provoking a hidden fifth gets replaced by a rest.} \label{rule:hidden-fifths}
+    \begin{quotation}
+        "Here a hidden succession of two fifths occurs, which is easily perceptible to the ear and should be avoided in three part composition. This may be managed by using a rest in the alto."
+        \textcite[p.98]{GaPEng}
+    \end{quotation}
+    Fux's uses the term 'hidden fifth' without any prior definition. It is therefore difficult to be sure of what he meant, since the traditional terms for such progressions are as vague and variable as the traditional rules that govern them. Nevertheless, most people seem to agree on the following definition of a 'hidden interval': a hidden fifth or hidden octave is when you approach a perfect fifth or perfect octave by direct motion. \cite[p.31]{piston1987harmony}. Looking closely at figures 137, 151 and 152 of the English version of \gap, this definition is consistent with Fux's interpretation.
 
-\subsection{To avoid hidden fifths, we may leave the first note of the second counterpoint void.}
-I am not sure to have understood the hidden fifths. This is the last constraint that needs to be implemented.
+    The point of the rule then is: if a solution leads to a hidden fifth, then the note that provokes the fifth is replaced by a rest. This rule is an \textit{a posteriori} rule: it applies after the solution has been found.
+    The current rule thus complements the rule \ref{rule:successive-fifths-in-4th-species} (about successive fifths in fourth species) and the rule \ref{rule:direct-to-p-cons} (about direct moves to perfect consonances) without changing them.
+    
+    See figures \ref{fig:hidden-fifths-1} and \ref{fig:hidden-fifths-2}:
+
+    \vspace{.5cm}
+    \begin{minipage}{0.46\textwidth}
+    \centering
+    \includegraphics[width=\textwidth]{Images/hidden-fifths-1.png}
+    \captionof{figure}{Invalid solution featuring hidden fifths}
+    \label{fig:hidden-fifths-1}
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.46\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{Images/hidden-fifths-2.png}
+      \captionof{figure}{Valid solution replacing the hidden fifth by a rest.}
+      \label{fig:hidden-fifths-2}
+    \end{minipage}
+
+\end{enumerate}
+
+\subsection{Formalisation into constraints}\label{formalisation-c-4th}
+\subsubsection{Harmonic constraints}
+\begin{enumerate}[wide, label=\bfseries 4.H\arabic*]
+    \setcounter{enumi}{4}
+    \item \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{constraint:prefer-fifths-over-octaves}   
+    \item  
+    This rule is almost covered by the existing costs, as a perfect consonance has a cost of 1, where an imperfect consonance has a cost of 0. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a cost of 2 to octaves and a cost of 1 to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see \ref{costs}).
+
+\end{enumerate}
+
+\subsubsection{Motion constraints}
+\begin{enumerate}[wide, label=\bfseries 4.P\arabic*]
+\setcounter{enumi}{2}
+    \item \textit{Successive fifths are allowed when using ligatures.} \label{rule:successive-fifths-in-4th-species}    
+
+    The point of this rule is that Fux introduces an exception to \ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species, thanks to the delaying it induces.
+
+    We shall then amend rule \ref{rule:succ-p-cons} to only prohibit successive octaves, and rewrite it as:
+    \begin{equation} \begin{aligned}
+        &\forall p_1, p_2 \in \{cf, cp_1, cp_2\}, \quad p_1 \neq p_2 \quad \forall n \in \{0, 1\} \\
+        &i_n := \,  
+        \begin{cases}
+            0 & \text{if } species(p_n) \neq 4\\
+            2 & \text{if } species(p_n) = 4\\
+        \end{cases}\\
+        &\forall j \in [0, m-2) \colon H(p_1,p_2)[i_n, j] \neq 0 \iff H(p_1,p_2)[i_n, j+1] \neq 0
+    \end{aligned} \end{equation}
+
+    \item \textit{Resolving to a fifth is preferred over resolving to an octave.} \label{constraint:resolving-to-fifths-rather-than-octaves}    
+    This is already treated by the rule \ref{rule:prefer-fifths-over-octaves}, as rule \ref{rule:prefer-fifths-over-octaves} implies the current rule (\ref{rule:resolving-to-fifths-rather-than-octaves}), as the fifth is preferred to the octave in any case.
+
+    \item \textit{Stationary movement in the bass implies dissonance in the fourth species part.} \label{constraint:dissonance-in-4th-species}
+
+    \begin{equation}
+        \begin{aligned}
+        &\forall j \in [0, m-1):\\
+        &M(a) \neq 0 \iff H[2, j] \in Cons\\
+        &M(a) = 0 \iff H[2, j] \in Dis
+        \end{aligned}
+        \label{eq:arsiscons} 
+    \end{equation}        
+
+
+    \item \textit{A note provoking a hidden fifth gets replaced by a rest.} \label{constraint:hidden-fifths}
+    \begin{equation}
+        \begin{aligned}
+            &\forall j \in [1, m-1):\\
+            &H[0, j] = 7 \land P[0,j] = 2 \iff N(0, j-1) = \emptyset  
+        \end{aligned}
+    \end{equation}
+
+
+\end{enumerate}
 
 \section{Fifth species}
 No supplementary rules have been observed by Fux for the fifth species.
@@ -467,6 +601,6 @@ No supplementary rules have been observed by Fux for the fifth species.
 However, in order to have variety when composing with two fifth species counterpoints, it was decided to impose a rule that Fux never mentioned: knowing that the fifth species is just all other combined, not more than 50\% of the composition of the parts can be made using the same species for the same measure. This translates as:
 \begin{equation}
 \begin{aligned}
-species^{cp_1} = 5 = species^{cp_2}  \iff \sum_{i=0}^{3} \sum_{j=0}^{m-1} (S^{cp_1}[i,j] = S^{cp_2}[i,j]) < \frac{s_m}{2}
+species(cp_1) = 5 = species(cp_2)  \iff \sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
 \end{aligned}
 \end{equation}

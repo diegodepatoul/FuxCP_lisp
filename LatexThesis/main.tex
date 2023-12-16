@@ -72,8 +72,9 @@
 \DeclareCaptionType{trans}[Transcription][List of transcriptions]
 % Bibliography package
 \usepackage[
-    backend=biber,
-    sorting=none
+    backend=bibtex,
+    %backend=biber,
+    %sorting=none
     % style=authoryear-icomp
 ]{biblatex}
 
@@ -202,17 +203,17 @@
 %\paragraph{It is thanks to} the energy and time of all these people that this thesis exceeded my expectations.
 %\restoregeometry
 
-%\tableofcontents
+\tableofcontents
 
 \input{Sections/sct_Redefinitions.tex}
 \input{Sections/sct_Species.tex}
 \input{Sections/sct_Search.tex}
-%\addcontentsline{toc}{chapter}{Bibliography}
-%\printbibliography
+\addcontentsline{toc}{chapter}{Bibliography}
+\printbibliography
 \appendix
 
-% \bibliographystyle{plain}
-% \bibliography{Bibliography/cite}
+%\bibliographystyle{plain}
+%\bibliography{Bibliography/cite}
 
 %\includepdf[pages=1]{BackPage.pdf}
 \end{document}

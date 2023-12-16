@@ -139,7 +139,7 @@ This relationship between a variable and a voice is expressed as function. $X(v)
 \noindent For example, $X(cf)$ refers to the variable $X$ of the \cf.
 
 \paragraph{}
-When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means $\forall v \in \{cf, cp_1, cp_2\}: X(v)$.
+When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means $X \equiv \forall v \in \{cf, cp_1, cp_2\}: X(v)$.
 
 \paragraph{}
 \noindent This change applies to all variables, namely:
@@ -172,7 +172,7 @@ The costs are also affected by the change, except for $\mathcal{C}$ (the cost fa
 
 To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(cf)$ are the notes of the \cf. The species of the second counterpoint is written $species(c)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible part (not necessary stratum). That is, the relationship $N < 60$ would mean: the pitches \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
 
-\paragraph{Nota bene} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as a downbeat, and its downbeat as an upbeat. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and vice versa). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
+\paragraph{Nota bene}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and H[0, j+1] becomes H[2, j]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
 
 \subsection{Added constants}
 Here are described some added constants, that are useful throughout the whole work.
@@ -181,8 +181,9 @@ Here are described some added constants, that are useful throughout the whole wo
 
 This integer describes as many parts there are in a given problem. At this stage, it can either be equal to two (two-part composition) or to three (three-part composition). It is mainly used in the loops of the program as an end condition (\texttt{(dotimes (i *N-PARTS))})
 
+\vspace{.5cm} \noindent \textbf{Cons$_{h\_triad}$} \hspace{.2cm} \texttt{H\_TRIAD\_CONS}
 
-
+Set representing all consonances that belong to the harmonic triad
 
 \subsection{Added variables}
 \vspace{.5cm} \noindent \textbf{A} \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
@@ -237,7 +238,7 @@ It still works exactly the same. It is an array of size $s_m$ representing the p
 
 
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
-This variable keeps being an array of size $s_m$ and the way in which it works remains pretty much the same, i.e. it represents the harmonic interval between one voice and another. The previous definition of this array was that it represented the harmonic intervals between a given voice and the \cf. This definition has been extended to include intervals other than that between the counterpoint and the \cf. In order to do so, H accepts two arguments, and it represents the interval between those two arguments. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) := H(v_1,a)$. This default value for $v_2$ was chosen since it is the most frequently used, and for a good reason: most relevant harmonic intervals are those between the parts and the lowest stratum.
+This variable keeps being an array of size $s_m$ and the way in which it works remains pretty much the same, i.e. it represents the harmonic interval between one voice and another. The previous definition of this array was that it represented the harmonic intervals between a given voice and the \cf. This definition has been extended to include intervals other than that between the counterpoint and the \cf. In order to do so, H accepts two arguments, and it represents the interval between those two arguments. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen since it is the most frequently used, and for a good reason: most relevant harmonic intervals are those between the parts and the lowest stratum.
 
 Here is the generalisation explained above, matching to the current definition of the harmonic intervals array:
 \begin{equation}
