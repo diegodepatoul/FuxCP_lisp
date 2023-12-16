@@ -945,12 +945,13 @@
     (let (
         (h (lastone h-intervals))
         (hbrut (lastone h-intervals-brut))
-        (is-hbrut-third (gil::add-bool-var *sp* 0 1))
+        (is-hbrut-gr-octave (gil::add-bool-var *sp* 0 1))
         (is-hbrut-not-third (gil::add-bool-var *sp* 0 1))
         ) 
-        (gil::g-rel-reify *sp* hbrut gil::IRT_EQ 3 is-hbrut-third)
-        (gil::g-op *sp* is-hbrut-third gil::BOT_XOR is-hbrut-not-third 1)
-        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-not-third)
+        (gil::g-rel-reify *sp* hbrut gil::IRT_GR 12 is-hbrut-gr-octave)
+        ;(gil::g-op *sp* is-hbrut-third gil::BOT_XOR is-hbrut-not-third 1)
+        (gil::g-rel-reify *sp* h gil::IRT_NQ 3 is-hbrut-gr-octave gil::RM_IMP)
+        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-gr-octave gil::RM_IMP)
     )
 )
 
