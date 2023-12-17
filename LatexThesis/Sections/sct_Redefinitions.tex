@@ -68,7 +68,7 @@ To know which part gets to be the lowest stratum in such situations, an arbitrar
     \label{fig:one-voice-max-can-be-a}
   \end{figure}
 
-\section{Exploring the interaction of the parts with the lowest stratum}
+\section{Exploring the interaction of the parts with the lowest stratum} \label{exploring-interaction-p-a}
 
 One of the major differences between the composition of two voices (i.e., one \cfs and one counterpoint) and the generalisation to three voices (i.e., one \cfs and two counterpoints) is that the rules no longer necessarily apply between the counterpoints and the \cf, but instead of this are mostly applied \textbf{between the different parts and the lowest stratum}. 
 
@@ -79,7 +79,7 @@ Fux approaches the concept of lowest stratum without ever stating it clearly, me
 \paragraph{}
 One might be tempted to conclude that three-part composition breaks completely with two-part composition, but that would be too hasty a conclusion. Indeed, on closer inspection, the way the rules worked in two-part composition (from counterpoint to \textit{cantus firmus}) is just one particular case of this new vision of things. In two-part composition, too, the rules apply between the parts and the lowest stratum. But of course, since there were only two voices, the lowest stratum was either counterpoint or cantus firmus. This means that when links were established between the upper part and the lowest stratum, links were also established between the counterpoint and the cantus firmus. Considering the rules as being established between the counterpoint and the \cfs was just a simplification of reality, although it was perfectly correct. We were therefore considering a convenient particular case, and not the general case. Please note that when we talk about "applying constraints from voice A to voice B", it is clear that the constraints are bidirectional and that they also apply from voice B to voice A. What is shown here is rather the philosophy behind the application of these constraints, and the reasons why they were imposed.
 
-The particular case happening when composing with two parts is illustrated in figures \ref{fig:cp2cf-2v} and \ref{fig:p2l-2v}. As we can see on those pseudo-compositions, it does not change anything to apply the constraints from the counterpoints to the \cfs or from the parts to the lowest stratum.
+The particular case happening when composing with two parts is illustrated in figures \ref{fig:cp2cf-2v} and \ref{fig:p2l-2v}. As we can see on those pseudo-compositions, it does not change anything to apply the constraints between the counterpoints and the \cfs or between the parts and the lowest stratum.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
@@ -117,8 +117,9 @@ However, when it comes to generalising the composition of counterpoint for three
 
 It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
 
+\paragraph{TODO} complement the following paragraph to make it clearer
 \paragraph{}
-A very important detail, and perhaps the biggest change brought about by this paradigm shift, is that the \cfs now becomes a counterpoint like any other, with the difference that its notes are already fixed. This means that we will treat the \cfs as a first species counterpoint (since it is always made up of whole notes), and that we will have to calculate its intervals, movements and costs, as we have already done with 'normal' counterpoints.
+A very important detail, and perhaps the biggest change brought about by this paradigm shift, is since we do not compute all voices with respect to the \cfs, but with respect to the lowest stratum, it is important that the relationship between the \cfs and the lowest stratum also get taken into account. This means, when applying the constraints over the parts, we are considering the \cfs too (as it is a part, like the counterpoints), unless explicitely mentioned otherwise (for example in the variety cost). 
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules will continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
@@ -222,13 +223,17 @@ In practice, there is only an \texttt{is-not-bass} array in the code (which is t
 \subsection{Modified constants} \label{subsection:modified_constants}
 \noindent \textbf{species} \hspace{.2cm} \texttt{species} 
 
-The species constant, which represents the species of a given part, can now take a value between zero and five (inclusive). The value zero is specific to the \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
+The species constant, which represents the species of a given part, can now take also take the value zero. The value zero is specific to the \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
 \begin{equation}
 species(v) = 0 \iff v = cf
 \end{equation}
 
-\subsection{Modified variables} \label{subsection:modified_variables}
-Given that the majority of the rules now apply between parts and the lowest stratum, the meaning of the variables has been modified to adapt to this reality. 
+\subsection{Redefined variables} \label{subsection:modified_variables}
+Given that the majority of the rules now apply between parts and the lowest stratum, the meaning of the variables has been modified to adapt to this reality.
+\paragraph{TODO} maybe mention also the variables that didn't change 
+
+\paragraph{Nota bene}
+Please take into consideration that all rules from T. Wafflard's thesis are compatible with the new definitions of the variables, as discussed in \ref{exploring-interaction-p-a}.
 
 \vspace{.5cm} \noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
 

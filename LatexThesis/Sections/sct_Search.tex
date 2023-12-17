@@ -1,6 +1,6 @@
 \chapter{Search method}
 Three parts composition brings in way more possibilities than two parts composition. As Fux says is %todo insert quote
-But more possibilities also mean a increased computation complexity. The search space has been extended a lot by adding a whole new set of variables, and the time taken for a solution to be found might to be too elevated if one does not think about optimizing the search. In addition to that, adding a third voice to a composition is not bringing many new constraints (which would help discarding some potential solutions faster), but instead comes with many preferences, which in constraint programming, are translated to costs.
+But more possibilities also mean an increased computation complexity. The search space has been extended a lot by adding a whole new set of variables, and the time taken for a solution to be found might to be too elevated if one does not think about optimizing the search. In addition to that, adding a third voice to a composition is not bringing many new constraints (which would help discarding some potential solutions faster), but instead comes with many preferences, which in constraint programming, are translated to costs.
 
 \section{Changing the search algorithm}
 
@@ -9,9 +9,80 @@ To handle this, it was decided to switch from the previous Depth First Search al
 Knowing that we are searching the solution whose cost must be the lowest possible raises the following question: how to compute the cost in order to best reflect the preferences expressed in \textit{Gradus ad Parnassum}?
 The way of translating each preference into a corresponding cost have of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to obtain the most accurate result in terms of what Fux tries to transmit?
 
-Three main ways of doing this have been identified:la première est la façon qui était utilisée dans la thèse de T. Wafflard, à savoir: il existait un coût total, $\tau$, qui était égal à la somme de tous les coûts individuels, $\mathcal{C}$. Il s'agissait ensuite de minimiser $\tau$. Chaque $\mathcal{C}_i$ étant lui même en général une somme de sous-coûts. Prenons par exemple le coût des motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. Ce coût est la somme de tous les sous-coûts des motions (un par motion): par défaut, une motion contraire a un sous-coût de 0, une motion oblique a un sous-coût de 1 et une motion directe a un sous-coût de 2. Étant donné que tous les sous-coûts ont été définis sur la base d'une échelle (allant de 0 à 64$m$), il existe déjà une façon de comparer ces sous-coûts entre eux. Il nous est par exemple possible que le motion en $j=2$ est moins coûteux que la motion en $j=3$, car $P_{costs}[2] < P_{costs}[2]$. Par exemple, par défaut, une motion directe est deux fois pire qu'une motion oblique. Il n'est en revanche pas possible de comparer deux coûts entre eux: nous ne pourrions pas dire que le coût des motions est plus faible que le coût. En effet, ,  Nos leviers d'action, en choisissant ce type d'agencement des coûts, est de définir à chaque coût 
+Three main ways of doing this have been identified: a linear combination between costs, a search minimising costs by lexicographic order, and a cost arrangement involving calculations of minima. We will first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
 
-La seconde façon de deal with les coûts est de les agencer dans un array, puis d'effectuer une minimisation lexicographique. En d'autres termes, les coûts seraient alors rangés par ordre d'importance: du plus important au moins important. Cette méthode a beaucoup de sens si on réfléchit un peu aux phrases de \gap. Fux dit par exemple que les consonances parfaites peuvent être atteintes par une motion directe, s'il n'y a plus d'autre possibilité. Cela signifie que toutes choses étant égales par ailleurs, on préférera atteindre une consonance parfaite par motion oblique ou contraire, mais qu'entre une mauvaise solution (ne respectant presque aucune préférence) dans laquelle aucune consonance parfaite n'est atteinte par motion directe et une bonne solution (respectant presque toutes les préférences) dans laquelle une consonance parfaite est atteinte par motion directe, on choisira la bonne solution. 
+
+
+\subsection*{Linear Combination}
+
+
+The first method of calculating our costs is a linear combination. This is the technique used in T. Wafflard's thesis. More precisely, it uses a linear combination in which all the weights are equal to one.
+
+
+
+To be more precise about the method used to calculate the total cost in T. Wafflard's thesis, here is a more detailed explanation: there was a total cost, $\tau$, which was equal to the sum of all individual costs, $\mathcal{C}$. The next step was to minimise $\tau$. Each $\mathcal{C}_i$ was usually itself a sum of sub-costs. Take, for example, the cost of motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. This cost is the sum of all sub-costs of the motions (one per motion): by default, a contrary motion has a sub-cost of 0, an oblique motion has a sub-cost of 1 and a direct motion has a sub-cost of 2. Since all the sub-costs have been defined on a scale (from 0 to 64$m$), there is already a way to compare these sub-costs with each other. For example, we can say the motion in $j=2$ is better than the motion to $j=3$ because $P_{costs}[2] < P_{costs}[3]$. For example, by default, a direct motion is twice as bad as an oblique motion. On the other hand, it is not possible to compare two $\mathcal{C}$ costs with each other: we could not say that the cost of $\mathcal{C}_{\text{motions}}$ motions is lower than the cost of $\mathcal{C}_{\text{fifths}}$ fifths. In fact, if we choose this type of cost arrangement, our levers for action are to define each cost in terms of $\mathcal{C}_{\text{fifths}}$. 
+
+
+\subsection*{Lexicographical Order}
+The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important sub-cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
+
+Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographically ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
+\begin{figure}[h]
+    \begin{equation}
+        \begin{aligned}
+            \tau = [\underset{\text{minimise this first}}{\underbrace{\mathcal{C}_\text{octaves}}}, \mathcal{C}_\text{fifths}]
+        \end{aligned}
+    \end{equation}
+    \caption{Array of costs demonstrating the practicality of a lexicographical order solving.}
+\end{figure}
+
+A second example, which ties in particularly well with the first, is that Fux tells us that the harmonic triad must be used in every measure unless a rule forbids it. In saying this, he places the preference for the harmonic triad above all other preferences, because the only reason that can prevent the use of a harmonic triad is a fixed constraint (and not a preference). You'll notice that the harmonic triad consists of a fifth (which is a perfect consonant), so Fux is telling us that we'd rather use a fifth in a harmonic triad than an imperfect consonant outside a harmonic triad. The lexicographic order search is the only one that allows this kind of concept to be taken into account, because in a linear combination these two preferences would be mutually "exclusive"\footnote{in the sense that their effects would work against each other.}: the first preference would add a cost where the second preference would not, and the second preference would add a cost where the first would not.
+
+\begin{figure}[h]
+    \begin{equation}
+        \begin{aligned}
+            \tau = [& \underset{\text{\fontsize{7}{11}\selectfont{minimize this first}}}{\underbrace{\mathcal{C}_\text{harmonic\_triad}}}, \underset{\text{\fontsize{7}{11}\selectfont\parbox{4cm}{and start minimizing this only if it is not possible anymore to minimize the harmonic triad cost}}}{\underbrace{\mathcal{C}_\text{octaves}}},\quad  \mathcal{C}_\text{fifths}]
+        \end{aligned}
+    \end{equation}
+    \caption{Array of costs demonstrating the practicality of a lexicographical order solving.}
+\end{figure}
+
+And in this way we can keep integrating the different costs until we get a full array $\tau$ with all the costs ordered in a lexicographical way.
+
+Taking into account all costs, as defined by Fux in \gap, this is the order we get:
+\begin{equation}
+    \begin{aligned}
+        \tau = [&\texttt{first cost},\\
+        &\mathcal{C}_\text{harmonic\_triad} \\
+        &\mathcal{C}_\text{harmonic\_triad\_third\_species} \\
+        &\mathcal{C}_\text{octaves} \\
+        &\mathcal{C}_\text{fifths} \\
+        &\texttt{last cost}] \\
+    \end{aligned}
+\end{equation}
+
+\subsection*{Comparison between the three types of costs.}
+
+\begin{table}[ht]
+    \centering
+    \makebox[\textwidth][c]{% Center the table
+        \begin{adjustbox}{width=1.2\textwidth} % Adjust width as needed
+            \begin{tabular}{lccc}
+                \toprule
+                \textbf{Comparison Criteria} & \textbf{Linear Combination} & \textbf{Lexicographical Order} & \textbf{Minimum Comparison} \\
+                \midrule
+                Criteria 1 & Value 1A & Value 1B & Value 1C \\
+                Criteria 2 & Value 2A & Value 2B & Value 2C \\
+                Criteria 3 & Value 3A & Value 3B & Value 3C \\
+                % Add more rows as needed
+                \bottomrule
+            \end{tabular}
+        \end{adjustbox}
+    }
+    \caption{Comparison of Options A, B, and C}
+    \label{tab:comparison}
+\end{table}
+
 
 \subsection{Heuristics}
 

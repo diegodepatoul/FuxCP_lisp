@@ -7,11 +7,11 @@ It will consist of six subsections: one for each species plus one for all specie
     \setcounter{enumi}{7} % Start from 8
     \item \textit{First and last notes have not to be perfect consonances anymore.} \label{rule:last-chord-not-perfect-anymore}    
     
-    Fux doesn't state this in his text, but in many of his examples, we see that when he composes with three voices (and more), not all voices must be perfect consonances in the first and last measure.
+    Fux doesn't state this in his text, but in many of his examples, we see that when he composes with three voices (and more), the first and last harmonic intervals between the parts and the lowest stratum are not necessary a perfect consonance anymore.
 
     \item \textit{The last chord must be composed only of the notes of the harmonic triad.} \label{rule:last-chord-h-triad}
 
-    Again, this isn't stated explicitly but we see that all of his examples end with a chord containing exclusively the notes of the harmonic triad.
+    Again, this isn't stated explicitly, but we see that all of his examples end with a chord containing exclusively the notes of the harmonic triad.
     
     \item \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{rule:same-fundamental}
 
@@ -20,15 +20,13 @@ It will consist of six subsections: one for each species plus one for all specie
 \end{enumerate}
 
 \subsection{Formalisation into constraints} \label{sec:generalconstraints}
-\begin{enumerate}[wide, label=\bfseries G\arabic*]
-    \setcounter{enumi}{9} % Start from 8
-    \item \textit{The last chord must be composed only of the notes of the harmonic triad.} \label{constraint:last-chord-h-triad}
+    \paragraph{\ref{rule:last-chord-h-triad}   } \textit{The last chord must be composed only of the notes of the harmonic triad.} 
     
     \begin{equation} \begin{aligned}
     \forall s \in \{b, c\} \colon H(s)[0, m-1] \in Cons_{h\_triad}
     \end{aligned} \end{equation}
 
-    \item \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
+    \paragraph{\ref{rule:same-fundamental}} \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
 
     Since the fundamental of the scale is defined by being the first note of the \textit{cantus firmus}, we impose that the last note of the lowest stratum must be equal to the first one of the \textit{cantus firmus} (taking the modulos into account).
     
@@ -36,7 +34,6 @@ It will consist of six subsections: one for each species plus one for all specie
     \begin{equation} \begin{aligned}
     N(a)[0, m-1] \mod 12 = N(cf)[0, 0] \mod 12
     \end{aligned} \end{equation}
-\end{enumerate}
 
 \section{First species}
 All rules described in this subsection marked with a red dot ( \reddot) apply not only to the first species but to all of them. When a constraint described in this section applies to all species, it means that it applies to the first beat of every species, unless mentioned otherwise, and excepted for the fourth species, where it applies to the third beat.
@@ -62,7 +59,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
        \textcite[p.71]{GaPEng}
    \end{quotation}
 
-   This rule is an update of previous \textbf{1.H1} (that previously was saying that \textit{all} intervals must be consonants). Fux states that only the upper voices and the lowest one are consonant, and not all voices together. 
+   This rule is an update of previous \textbf{1.H1} (that previously was saying that \textit{all} intervals must be consonants). Fux states that the upper voices and the lowest one are consonant, and not all voices together. 
     
     \setcounter{enumi}{7} % Start from 8
 
@@ -163,11 +160,11 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \item\label{rule:direct-to-p-cons} \reddot \textit{Reaching a perfect consonance by direct motion should be avoided.}
 
     \begin{quotation}
-    "[Your may reach] a perfect consonance by direct motion [if] there is no other possibility."
+    "[Reaching] perfect consonance by direct motion [is allowed if] there is no other possibility."
     \textcite[p.77]{GaPEng}
     \end{quotation}
 
-    This is a reformulation of the previous \ref{rule:direct-to-p-cons} rule. It is actually a relaxation of it, as it was saying that you cannot reach a perfect consonance by direct motion. Because it is sometimes mandatory with three voices to break this rule (as there are no other possibilities), you may derogate from this rule. 
+    This is a new rule as it only applies to three-part composition, but it cancels an already existing rule that used to be applied in two-part composition. The same rule in two-part composition states that it is prohibited to reach a perfect consonance using a direct motion. In three-part composition, this is not prohibited anymore, as not doing it is sometimes impossible, and you may thus derogate from this rule.
 
 \setcounter{enumi}{3} % Start from 4
     \item\label{rule:succ-p-cons} \reddot  \textit{Successive perfect consonances are prohibited.}
@@ -213,8 +210,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
 \subsubsection{Harmonic constraints}
 \begin{enumerate}[wide, label=\bfseries 1.H\arabic*]        
     \item\label{constraint:consonant} \textit{All notes on the downbeat are consonant with the notes of the lowest stratum}
-
-    The equation does not change from previous \textbf{1.H1} as the redefinition of variable H already captures the change of this rule.
+    The new definition of variable H already captures the change in the rule. This means that the equation of rule \ref{rule:consonant} stays the same.
 
    \setcounter{enumi}{7} 
 
@@ -354,6 +350,8 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     He says that in the chapter about third species, but it seems that this applies even in cases where the second species is not used in combination with the third (see figures 134, 173 and 174 of the English version).
 
     He doesn't state clearly if the three of them can get ligatured, but it seems quite obvious that this is not allowed, as it would introduce a lot of redundancy in the composition. It is hence decided that the rule is: a ligature may happen in one case or in the other, but not in both.
+
+    We thus have to relax the already existing constraint from two-part composition stating that no two consecutive notes can be the same, to accept it in some cases.
 \end{enumerate}
 
 \subsubsection{Motion constraints}
@@ -476,7 +474,7 @@ Fux introduces no new motion constraints for the third species.
         "The ligature is nothing but a delaying of the note following."
         \textcite[p.95]{GaPEng}
     \end{quotation}
-    Fux here insists on the fact we have already discussed in \ref{nota-bene-4th-species}. The fourth species behaves as if its upbeat were the downbeat and its downbeat were the upbeat of the previous measure.
+    Fux here insists on a fact that we have already discussed in \ref{nota-bene-4th-species}. The fourth species behaves as if its upbeat were the downbeat and its downbeat were the upbeat of the previous measure.
 
     \item \textit{All parts can become the lowest stratum somewhere in the composition.} \label{rule:tenor-might-take-place-of-bass}    
     \begin{quotation}
@@ -559,7 +557,7 @@ Fux introduces no new melodic constraints for the third species.
 \begin{enumerate}[wide, label=\bfseries 4.H\arabic*]
     \setcounter{enumi}{4}
     \item \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{constraint:prefer-fifths-over-octaves}   
-    \item  
+
     This rule is almost covered by the existing costs, as a perfect consonance has a cost of 1, where an imperfect consonance has a cost of 0. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a cost of 2 to octaves and a cost of 1 to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see \ref{costs}).
 
 \end{enumerate}
@@ -615,8 +613,11 @@ However, in order to have some melodic and rhythmic variety when composing with 
 
 
 To better understand this rule, please remember that the fifth species works by combining all the other species, and that it assigns a species to each beat (i.e. each of the beats of a fifth species counterpoint actually belongs to a given species). If we want to force the solver to find different solutions when searching for a solution of two fifth species counterpoints, a good trick is to enforce that as many notes as possible should belong to different species.
+
+The following equation holds true if both counterpoints are fifth species counterpoints.
+
 \begin{equation}
 \begin{aligned}
-species(cp_1) = 5 = species(cp_2)  \iff \sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
+\sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
 \end{aligned}
 \end{equation}
