@@ -1,11 +1,16 @@
 \chapter{Defining some concepts and redefining the variables} 
 \section{Voices, parts and strata}\label{section:parts-and-strata}
-Before we start this section, we need to look at some vocabulary to make sure we understand what we are discussing. The most important definition (and distinction) we will introduce is the definition of the terms \textit{part} and \textit{stratum}. The need for these definitions arises from the increasing complexity of the rules of counterpoint when it is generalised to three voices. Indeed, the rules are no longer (as we shall see later) concerned solely with counterpoint and its cantus firmus, but also with new concepts, such as that referred to by Fux as 'the lowest voice'. As the term 'voice' is too generic (it is used in Fux's text to describe notions as different as counterpoint, cantus firmus, voice range and the so called 'lowest voice'), we need to create a precise vocabulary that is different from the word 'voice' to talk about these new concepts. 
+Before we start this section, we need to look at some vocabulary to make sure we understand what we are discussing. The most important definition (and distinction) we will introduce is the definition of the terms \textit{part} and \textit{stratum}. The need for these definitions arises from the increasing complexity of the rules of counterpoint when it is generalised to three voices. Indeed, the rules are no longer (as we shall see later) concerned solely with the counterpoints and the \cf, but also with new concepts, such as that referred to by Fux as 'the lowest voice'. As the term 'voice' is too generic (it is used in Fux's text to describe notions as different as 'counterpoint', '\cf', voice range and the so called 'lowest voice'), we need to create a precise vocabulary that is different from the word 'voice' to talk about these new concepts. 
 
-With this in mind, let's explain what 'parts' and 'strata' are. Each of these two concepts is a type of voice, which means that in a composition with $n$ voices, there will also be $n$ parts and $n$ strata.
+
+With this in mind, let's explain what 'parts' and 'strata' are, and how they relate to the concept of 'voice'.
+
+\subsubsection{Voices} Again, voices are that vague and \textit{general} concept, whereas parts and strata are more precise and \textit{specific} concepts. The concept of 'voice' includes both 'parts' and 'strata'. In other words, each of these two concepts is a type of voice. When we talk about a voice, we could be talking about either a part or a stratum. To make a metaphor out of it, we could say that parts and strata are a type of voice.
+
+Since there are as many parts and layers as there are voices, in a composition with $n$ voices there will also be $n$ parts and $n$ layers.
 
 \subsubsection{Parts}
-The parts correspond to what a given individual sing. They correspond to a staff (each staff corresponds to one part). The term 'part' is the same as that used by Fux in his work. The three parts in a three voices composition are: the \cf, the first \cp and the second \cp. Fux differentiates them by calling them by the name of their voice range, that is: "bass", "tenor", "alto" or "soprano".
+Parts are an intuitive and concrete concept because each part corresponds to what a particular person sings or what a particular instrument plays. They correspond to a staff (each staff corresponds to a part). The term 'part' is the same as that used by Fux in his \gap. The three parts in a three-part composition are: the \cf, the first \cps and the second \cp. Fux distinguishes them by calling them by the name of their range, i.e. "bass", "tenor", "alto" or "soprano" (obviously you cannot have all four in a three-part composition).
 
 \subsubsection{Strata}
 As for the strata, they are defined like this: a stratum delineates discrete layers or levels of pitches at any given moment in the composition. It denotes a vertical alignment of simultaneous notes and organizes them into distinct strata. By definition, the lowest stratum encompasses the lowest sounding notes, the highest stratum comprises the highest sounding notes, and intermediary strata represent pitch levels in between.
@@ -41,17 +46,17 @@ Since a picture is worth a thousand words, Figure \ref{fig:lowest} illustrates t
 Here is also the mathematical representation for the notes of the lowest stratum (written $N(a)$, see section \ref{section:changes induced} for the notations):
 % todo a, b, c, et A
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{max} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{min} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 Of the first upper stratum, or medium stratum (written $N(b)$, see section \ref{section:changes induced} for the notations):
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{med} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(b)[i,j] = \text{med}\footnote{Where $\text{med}(X)$ means the median value of X.} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 And of the second upper stratum, or uppest stratum (written $N(c)$, see section \ref{section:changes induced} for the notations):
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{min} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(c)[i,j] = \text{max} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 \subsubsection{One part per stratum and one stratum per part} \label{subsubsection:one-part-per-stratum}
@@ -59,7 +64,7 @@ It is important to note that, for each musical measure, there is a bijection bet
 
 To illustrate this, consider a scenario in a two-voice composition (see figure \ref{fig:one-voice-max-can-be-a}), where part 'cf' and part 'cp1' in measure X both have a pitch value of 67 (representing a G). Despite having identical pitches at the same moment, one part is categorised as the lowest stratum, while the other is designated as the uppermost stratum. This distinction becomes crucial for subsequent analysis, especially when calculating aspects like motions.
 
-To know which part gets to be the lowest stratum in such situations, an arbitrary hierarchical rule is implemented. If the ambivalence is between the \cfs and another part, the \cfs is always prioritised and assigned the role of the lowest stratum, over any other part. In the case of a ambivalence between the first \cp and the second \cp, the first \cp is given the status of the lowest stratum. 
+To know which part gets to be the lowest stratum in such situations, an arbitrary hierarchical rule is implemented. If the ambivalence is between the \cfs and another part, the \cfs is always prioritised and assigned the role of the lowest stratum, over any other part. In the case of a ambivalence between the first \cp and the second \cp, the first \cps is given the status of the lowest stratum. 
 
 \begin{figure}[h]
     \centering
@@ -76,7 +81,7 @@ If we go back to the rules for two voices, we see that each of them applied betw
 On the other hand, in his second part (where he describes the rules for composing in three voices), Fux explains that the rules are not necessarily to be observed between each of the counterpoints and the \cf, but rather between "each of the voices and the lowest voice" (i.e. the lowest stratum). Again, if we take the example of the need for consonance between the voices, consonance will be required in the intervals between the notes of any voice and those of the lowest voice (whether or not the latter is the \cf).
 Fux approaches the concept of lowest stratum without ever stating it clearly, mentioning for example that the lowest voice can change (sometimes the bass is the lowest voice, sometimes the tenor, ...), and that at any given moment the lowest voice should be considered. In other words, Fux says that the rules apply between the parts and the lowest stratum.
 
-\paragraph{}
+\subsubsection{Generalisation of two-voice counterpoint}
 One might be tempted to conclude that three-part composition breaks completely with two-part composition, but that would be too hasty a conclusion. Indeed, on closer inspection, the way the rules worked in two-part composition (from counterpoint to \textit{cantus firmus}) is just one particular case of this new vision of things. In two-part composition, too, the rules apply between the parts and the lowest stratum. But of course, since there were only two voices, the lowest stratum was either counterpoint or cantus firmus. This means that when links were established between the upper part and the lowest stratum, links were also established between the counterpoint and the cantus firmus. Considering the rules as being established between the counterpoint and the \cfs was just a simplification of reality, although it was perfectly correct. We were therefore considering a convenient particular case, and not the general case. Please note that when we talk about "applying constraints from voice A to voice B", it is clear that the constraints are bidirectional and that they also apply from voice B to voice A. What is shown here is rather the philosophy behind the application of these constraints, and the reasons why they were imposed.
 
 The particular case happening when composing with two parts is illustrated in figures \ref{fig:cp2cf-2v} and \ref{fig:p2l-2v}. As we can see on those pseudo-compositions, it does not change anything to apply the constraints between the counterpoints and the \cfs or between the parts and the lowest stratum.
@@ -85,7 +90,7 @@ The particular case happening when composing with two parts is illustrated in fi
 \begin{minipage}{0.46\textwidth}
     \centering
     \includegraphics[width=\textwidth]{Images/cp2cf-2v.png}
-    \captionof{figure}{Applying the constraints from the ctp. to the \cf}
+    \captionof{figure}{Applying the constraints from the \cps to the \cf}
     \label{fig:cp2cf-2v}
     \end{minipage}
     \hfill
@@ -97,20 +102,20 @@ The particular case happening when composing with two parts is illustrated in fi
 \end{minipage}
 \vspace{.5cm}
 
-However, when it comes to generalising the composition of counterpoint for three voices, it is no longer possible to follow the same simplification. We are now forced to set our rules between the parts and the lowest stratum, and no longer between the counterpoints and the \cf. On figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v}, it is made clear that establishing the rules from the counterpoints to the \cfs is really different than applying them from the various parts to the lowest stratum. In those figures, the parts don't cross and therefore match perfectly with the strata, hence the constraints are always applied to the same counterpoint. This was made for the sake of intellegibility of the graphs, but it is obviously possible that the parts cross and that the "target" of the constraints is not always the same counterpoint.
+However, when it comes to generalising the composition of counterpoint for three voices, the same simplification is no longer possible. We are now forced to establish our rules between the parts and the lowest stratum, and no longer between the counterpoints and the \cf. In figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v} it becomes clear that establishing the rules between the counterpoints and the \cfs is really different from applying them between the various parts to the lowest stratum. In these figures, the parts don't intersect and therefore fit perfectly with the strata, so the constraints are always applied to the same counterpoint. This was done for the sake of intelligibility of the graphs, but it is of course possible for the parts to cross and for the "target" of the constraints not always to be the same counterpoint.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
     \centering
     \includegraphics[width=\textwidth]{Images/cp2cf-3v.png}
-    \captionof{figure}{Applying the constraints from the ctp. to the \cf}
+    \captionof{figure}{Wrong approach: applying the constraints between the \cps to the \cf.}
     \label{fig:cp2cf-3v}
     \end{minipage}
     \hfill
     \begin{minipage}{0.46\textwidth}
       \centering
       \includegraphics[width=\textwidth]{Images/p2l-3v.png}
-      \captionof{figure}{Applying the constraints from the parts to the lowest stratum}
+      \captionof{figure}{Correct approach: applying the constraints between the parts to the lowest stratum.}
       \label{fig:p2l-3v}
 \end{minipage}
 \vspace{.5cm}
@@ -129,7 +134,7 @@ Many changes have been induced as a result of the three part generalisation. In 
 
 This relationship between a variable and a voice is expressed as function. $X(v)$ represents the variable $X$ of the voice $v$. The arguments of the function can either be:
 \begin{itemize}
-    \item $cf$ - for linking the variable to the \cf.
+    \item $\mathit{cf}$ - for linking the variable to the \cf.
     \item $cp_1$ - for linking the variable to the second \cp.
     \item $cp_2$ - for linking the variable to the third \cp.
     \item $a$ - for linking the variable to the lowest stratum.
@@ -137,10 +142,10 @@ This relationship between a variable and a voice is expressed as function. $X(v)
     \item $c$ - for linking the variable to the uppermost stratum.
   \end{itemize}
 
-\noindent For example, $X(cf)$ refers to the variable $X$ of the \cf.
+\noindent For example, $X(\mathit{cf})$ refers to the variable $X$ of the \cf.
 
 \paragraph{}
-When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means $X \equiv \forall v \in \{cf, cp_1, cp_2\}: X(v)$.
+When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means $X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)$.
 
 \paragraph{}
 \noindent This change applies to all variables, namely:
@@ -153,7 +158,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item \textbf{IsCons}(v) - to the boolean array representing whether voice v is consonant or not.
 \end{itemize}
 
-\noindent It also applies to \textit{some} constants and arrays, namely:
+\noindent It also applies to \textit{some} constants, namely:
 \begin{itemize}
     \item \textbf{species}(p) - the species of part p,
     \item \textbf{n}(p) - the number of notes in part p,
@@ -171,7 +176,7 @@ Please note that the constants cannot be linked to a stratum, and only to a part
 The costs are also affected by the change, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter two remain global and are not duplicated.
 
 
-To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(cf)$ are the notes of the \cf. The species of the second counterpoint is written $species(c)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible part (not necessary stratum). That is, the relationship $N < 60$ would mean: the pitches \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
+To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(c)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible part (not necessary stratum). That is, the relationship $N < 60$ would mean: the pitches \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
 
 \paragraph{Nota bene}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and H[0, j+1] becomes H[2, j]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
 
