@@ -28,7 +28,7 @@ When Fux speaks about the lowest stratum, he often uses the word 'bass'. It was 
 \paragraph{}
 These new terms (parts and strata) are used where the distinction between the concepts is important. Whenever this distinction is not relevant, the more general term 'voice' is used to reduce the complexity of reading. In this case, the 'voice' could refer to both a stratum and a part.
 
-Since a picture is worth a thousand words, Figure \ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningfull stratum, and it will be particularly important later on.
+Since a picture is worth a thousand words, Figure \ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningful stratum, and it will be particularly important later on.
 
 \begin{figure}[h]
   \centering
@@ -156,7 +156,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \noindent It also applies to \textit{some} constants and arrays, namely:
 \begin{itemize}
     \item \textbf{species}(p) - the species of part p,
-    \item \textbf{n}(p) - the amount of notes in part p,
+    \item \textbf{n}(p) - the number of notes in part p,
     \item \textbf{lb}(p) - the lower bound of the range of part p,
     \item \textbf{ub}(p) - the upper bound of the range of part p,
     \item $\mathcal{R}$(p) - the range of part p,
@@ -178,7 +178,7 @@ To make sure that those notations are clear, here are some examples: the notatio
 \subsection{Added constants}
 Here are described some added constants, that are useful throughout the whole work.
 
-\vspace{.5cm} \noindent \textbf{\#parts} \hspace{.2cm} \texttt{*N-PARTS}
+\vspace{.5cm} \noindent \textbf{NumberOfParts} \hspace{.2cm} \texttt{*N-PARTS}
 
 This integer describes as many parts there are in a given problem. At this stage, it can either be equal to two (two-part composition) or to three (three-part composition). It is mainly used in the loops of the program as an end condition (\texttt{(dotimes (i *N-PARTS))})
 
@@ -243,6 +243,7 @@ It still works exactly the same. It is an array of size $s_m$ representing the p
 
 
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
+
 This variable keeps being an array of size $s_m$ and the way in which it works remains pretty much the same, i.e. it represents the harmonic interval between one voice and another. The previous definition of this array was that it represented the harmonic intervals between a given voice and the \cf. This definition has been extended to include intervals other than that between the counterpoint and the \cf. In order to do so, H accepts two arguments, and it represents the interval between those two arguments. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen since it is the most frequently used, and for a good reason: most relevant harmonic intervals are those between the parts and the lowest stratum.
 
 Here is the generalisation explained above, matching to the current definition of the harmonic intervals array:
