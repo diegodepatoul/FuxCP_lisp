@@ -54,14 +54,21 @@ Another drawback of linear combination is that the result is pretty and unpredic
 These two drawbacks make the linear combination solution for the costs hardly acceptable when it comes to representing the preferences.
 We will therefore examine the other two options for adjusting costs.
 
-\subsection {Minimum Comparison}
+\subsection {Minimising the maxima}
 In order to overcome the problem of outstanding costs that we encountered when considering the linear combination solution, one might consider using some minimums when calculating $\tau$, the total cost. For example, $\tau$ could be the maximum of all costs. By doing this, the solver would try to find a solution where the focus is on the worst cost and try to reduce it before trying to reduce the other costs.
 
-The problem of this method arises when one cost is significately higher than the others, because it was defined like this. Let's get back to our example of the compositor wanting as many oblique motions as possible. They are going to set the cost for direct motions and contrary motions to the highest cost possible, and will start the search. As we've already discussed it, it is not possible to have only oblique motions, as it would contradict the rule stating that not all voices can move in the same direction (\ref{rule:same-movement}). In consequence, there will always exist contrary motions, and since the cost for them was set really high, it would be impossible for the solver to converge on a good solution. This creates a bottleneck effect, in which when the solver reached the best potential value of the worst cost, it cannot go on finding better solutions. 
+The problem with this method arises when one cost is significantly higher than the others because it has been defined that way. Let's go back to our example of the composer wanting as many oblique motions as possible. You will set the cost for direct motion and contrary motion to the highest possible cost and start the search. As we've already discussed, it is not possible to have only oblique motions, since this would contradict the rule that not all voices can move in the same direction (\ref{rule:same-movement}). As a result, there will always be contrary motions, and since the cost for them has been set very high, it would be impossible for the solver to converge to a good solution. This creates a bottleneck effect, where once the solver has reached the best potential value of the worst cost, it cannot continue to find better solutions. 
 
-Furthermore, even when taking into account a less extreme case (for example the default setting), this method requires a normalisation of the costs: there exists $3\times (m-2)$ sub-costs of the variety cost, $3\times (m-1)$ sub-costs of the motions cost, but only $m$ sub-costs for the octave cost. This means that without a normalisation, the motions cost is going to be in average three times bigger than the octave cost, which consequently means the solver will put three times more effort in minimizing the motions cost than the octave cost, which is unfair and unpractical.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/minimising-maxima.png}
+    \caption{Example of two situations where one costs causes a bottleneck in the search as the solver cannot differn a situation where a solution with an outstanding cost is preferred to a solution with equivalent low costs when using a linear combination}
+    \label{fig:outstanding-cost}
+\end{figure}
 
-from a given solution to a better one. 
+
+Furthermore, even when considering a less extreme case (e.g. the default setting), this method requires a normalisation of the costs: there are $3\times (m-2)$ sub-costs for the variety cost, $3\times (m-1)$ sub-costs for the motion cost, but only $m$ sub-costs for the octave cost. This means that without normalisation, the motion cost will be on average three times larger than the octave cost, which means that the solver will put three times more effort into minimising the motion cost than the octave cost, which is unfair and unpractical.
+
 
 \subsection{Lexicographical Order}
 The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
@@ -76,7 +83,7 @@ Some costs are also more important than others in absolute terms. For example, w
     \caption{Array of costs demonstrating the practicality of a lexicographical order solving.}
 \end{figure}
 
-A second example, which ties in particularly well with the first, is that Fux tells us that the harmonic triad must be used in every measure unless a rule forbids it. In saying this, he places the preference for the harmonic triad above all other preferences, because the only reason that can prevent the use of a harmonic triad is a fixed constraint (and not a preference). You'll notice that the harmonic triad consists of a fifth (which is a perfect consonant), so Fux is telling us that we'd rather use a fifth in a harmonic triad than an imperfect consonant outside a harmonic triad. The lexicographic order search is the only one that allows this kind of concept to be taken into account, because in a linear combination these two preferences would be mutually "exclusive"\footnote{in the sense that their effects would work against each other.}: the first preference would add a cost where the second preference would not, and the second preference would add a cost where the first would not.
+A second example, which ties in particularly well with the first, is that Fux tells us that the harmonic triad must be used in every measure unless a rule forbids it. In saying this, he places the preference for the harmonic triad above all other preferences, because the only reason that can prevent the use of a harmonic triad is a fixed constraint (and not a preference). You'll notice that the harmonic triad consists of a fifth (which is a perfect consonant), so Fux is telling us that we'd rather use a fifth in a harmonic triad than an imperfect consonant outside a harmonic triad. The lexicographic order search is the only one that allows this kind of concept to be taken into account, because in a linear combination these two preferences would be mutually "exclusive"\footnote{In the sense that their effects would work against each other.}: the first preference would add a cost where the second preference would not, and the second preference would add a cost where the first would not.
 
 \begin{figure}[h]
     \begin{equation}
@@ -89,25 +96,30 @@ A second example, which ties in particularly well with the first, is that Fux te
 
 And in this way we can keep integrating the different costs until we get a full array $\tau$ with all the costs ordered in a lexicographical way.
 
-Taking into account all costs, as defined by Fux in \gap, this is the order we get $\tau =$
-\begin{multicols}{3}
+Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a drawback of this method, because we have to hierarchise the costs, even if the choice is hard. However, it is technically possible to make two costs as important as the other by adding them together before including them in the total cost array.
+
+
+Since the mentioned drawback can also be avoided by allowing the user to define their own preference order, it was decided to choose a default order (which would be as close as possible to Fux's preference order\footnote{Or at least to what we understood him to convey as his preference order in \gap.}). This default order is as follows:
+
+\begin{multicols}{2}
     \begin{enumerate}
-        \item $\mathcal{C}_\text{not-cambiata}$
-        \item $\mathcal{C}_\text{penult-thesis}$
-        \item $\mathcal{C}_\text{off-key}$
-        \item $\mathcal{C}_\text{successive-p-cons}$
-        \item $\mathcal{C}_\text{no-syncope}$
+        \item $\mathcal{C}_\text{no\_syncope}$\footnote{The cost of not using a syncope in the fourth species.}
         \item $\mathcal{C}_\text{harmonic\_triad}$
         \item $\mathcal{C}_\text{harmonic\_triad\_3rd\_species}$
         \item $\mathcal{C}_\text{octaves}$
         \item $\mathcal{C}_\text{fifths}$
+        \item $\mathcal{C}_\text{off\_key}$\footnote{The cost of using sharps or flats.}
         \item $\mathcal{C}_\text{variety}$
         \item $\mathcal{C}_\text{motions}$
         \item $\mathcal{C}_\text{m-degrees}$
         \item $\mathcal{C}_\text{m2-eq-zero}$
+        \item $\mathcal{C}_\text{not-cambiata}$
+        \item $\mathcal{C}_\text{penult-thesis}$\footnote{A specific cost for the second species, which applies when a penultimate thesis note does not make a fifth interval with the lowest stratum.}
         \item $\mathcal{C}_\text{direct-move-to-p-cons}$
     \end{enumerate}
 \end{multicols}
+
+
     
 
 \subsection*{Comparison between the three types of costs.}
@@ -119,7 +131,7 @@ Taking into account all costs, as defined by Fux in \gap, this is the order we g
     \label{tab:comparison}
     \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{4cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
         \hline
-        \textbf{Criteria} & \textbf{Linear Combination} & \textbf{Capping with minima} & \textbf{Lexicographic Search} \\
+        \textbf{Criteria} & \textbf{Linear Combination} & \textbf{Minimising the maximum} & \textbf{Lexicographic Search} \\
         \hline
         Outsanding costs & \cellcolor{red!25}Yes & \cellcolor{green!25}No & \cellcolor{green!25}Only for minor costs \\
         \hline
