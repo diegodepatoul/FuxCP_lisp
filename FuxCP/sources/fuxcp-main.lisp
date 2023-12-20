@@ -462,12 +462,12 @@
                                 'octave-cost               
                                 'h-triad-3rd-species-cost
                                 'h-triad-cost                 
+                                'successive-p-cons-cost
                                 'm-degrees-cost
                                 'variety-cost
-                                'motions-cost
                                 'off-key-cost
-                                'successive-p-cons-cost
                                 'no-syncope-cost
+                                'motions-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -524,45 +524,53 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-        (gil::g-branch *sp* (first (notes *lowest)) var-branch-type gil::INT_VAL_MIN)
-        ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
-        ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
+        ;(gil::g-branch *sp* (first (notes *lowest)) gil::INT_VAR_DEGREE_MAX gil::INT_VAL_SPLIT_MIN)
+
         (dolist (counterpoint counterpoints) (progn
+            (if (eq (species counterpoint) 4) 
+                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
+            )
             ; 5th species specific
             (if (eq (species counterpoint) 5) ; otherwise there is no species array
                 (gil::g-branch *sp* (species-arr counterpoint) var-branch-type gil::INT_VAL_RND)
             )
 
+            (gil::g-branch *sp* (is-not-lowest counterpoint) var-branch-type gil::INT_VAL_RND)
+            (gil::g-branch *sp* (first (variety-cost counterpoint)) var-branch-type gil::INT_VAL_MIN)
+
+            (if (< (voice-type counterpoint) 0)
+                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MIN)
+                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MAX)
+            )
+            (gil::g-branch *sp* (rest (solution-array counterpoint)) var-branch-type gil::INT_VAL_RND)
+
             ; 3rd and 5th species specific
             (if (or (eq (species counterpoint) 3) (eq (species counterpoint) 5)) (progn
-                ;(gil::g-branch *sp* (m-degrees-cost counterpoint) var-branch-type val-branch-type)
-                ;(gil::g-branch *sp* (off-key-cost counterpoint) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (m-degrees-cost counterpoint) var-branch-type gil::INT_VAL_MIN)
+                (gil::g-branch *sp* (off-key-cost counterpoint) var-branch-type gil::INT_VAL_MIN)
             ))
+
+
 
             ; 5th species specific
-            (if (eq (species counterpoint) 5) (progn ; otherwise there is no species array
+            ;(if (eq (species counterpoint) 5) (progn ; otherwise there is no species array
                 (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
                 (gil::g-branch *sp* (not-cambiata-cost counterpoint) var-branch-type val-branch-type)
-            ))
+            ;))
 
-            (if (eq (species counterpoint) 4) 
-                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
-            )
+
 
             ; branching *total-cost
             ;(if (eq (species counterpoint) 2)
                 ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
             ;)
             
-            (if (< (voice-type counterpoint) 0)
-                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MIN)
-                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MAX)
-            )
-            (gil::g-branch *sp* (rest (solution-array counterpoint)) var-branch-type gil::INT_VAL_RND)
+
+            
         ))
         
         ;; Solution variables branching
-        ;(gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
+        ;(gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_MIN)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
@@ -639,6 +647,7 @@
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))
         (handler-case (print (list "cf   itvls = " (gil::g-values sol (first (m-intervals-brut (first *parts)))))) (error (c) (print "error with *m-intervals-brut-cf")))
         (handler-case (print (list "cp1  itvls = " (gil::g-values sol (first (m-intervals-brut (second *parts)))))) (error (c) (print "error with *m-intervals-brut-cp1")))
+        (handler-case (print (list "cp2  titvl = " (gil::g-values sol (third (m-intervals-brut (third *parts)))))) (error (c) (print "error with *m-intervals-brut-cp2")))
         (handler-case (print (list "cp2  itvls = " (gil::g-values sol (first (m-intervals-brut (third *parts)))))) (error (c) (print "error with *m-intervals-brut-cp2")))
         (handler-case (print (list "rel-moticp1= " (gil::g-values sol (real-motions (first counterpoints))))) (error (c) (print "error with rel-moticp1")))
 

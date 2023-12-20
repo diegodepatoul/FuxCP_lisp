@@ -41,8 +41,11 @@
     (print "no unison between cp1 and cp2")
     
     
-    (loop for v1 in parts ; for each possible pair or parts
-        for i from 0 ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
+    (loop 
+        ; for each possible pair or parts
+        ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
+        for v1 in parts 
+        for i from 0 
         do (loop for v2 in (nthcdr (1+ i) parts) 
         do (progn 
             ; no unison between the voices
@@ -57,7 +60,6 @@
                     (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
                 ))
             )
-            
             (print "No successive perfect consonances")
             (let (
                 (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
@@ -93,6 +95,11 @@
             )
         )
     ))
+
+    ; it is not allowed to have two direct motions
+    ; WARNING: this implementation works only for three voices
+    (print "No together move")
+    (add-no-together-move-cst (list (first (motions counterpoint-1)) (first (motions counterpoint-2)) (first (motions cantus-firmus))))
  
 
     (print "Last chord cannot be minor")
@@ -114,6 +121,7 @@
         )
     )
 
+    ; fifth species only
     (if (equal species-list '(5 5))
         (let (
                 (is-same-species (gil::add-bool-var-array *sp* (solution-len (second parts)) 0 1))
@@ -126,6 +134,7 @@
             )
             (gil::g-sum *sp* percentage-same-species is-same-species-int)
             (gil::g-rel *sp* percentage-same-species gil::IRT_LE (floor (/ (solution-len (second parts)) 2)))
+            ;(gil::g-rel *sp* percentage-same-species gil::IRT_EQ (solution-len (second parts))) ; debug line
         )
     )
 

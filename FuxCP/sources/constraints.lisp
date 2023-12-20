@@ -907,21 +907,30 @@
 ; i.e. that there are no two direct motions
 ; i.e. that either motions1 is direct or motions 2 is direct, but not both
 ; @completely new or reworked
-(defun add-no-together-move-cst (motions1 motions2)
+;; WARNING : this implementation works onlly for 3 voices or less, it won't work for 4 voices!!
+(defun add-no-together-move-cst (motions)
     (loop 
-        for m1 in motions1
-        for m2 in motions2
-        do (let (
-            (m1-eq-two (gil::add-bool-var *sp* 0 1))
-            (m2-eq-two (gil::add-bool-var *sp* 0 1))
-        )
-            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-eq-two) ; m1-eq-two := (motion1 == 2)
-            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-eq-two) ; m2-eq-two := (motion2 == 2)
-            (gil::g-op *sp* m1-eq-two gil::BOT_AND m2-eq-two 0) ; NOT (motion1-equals-two AND motion2-equals-two) (not both at the same time)
+        ; for each possible pair or motions
+        ; for example if we have (m1, m2 and m3), take (m1 and m2), (m1 and m3) and (m2 and m3)
+        for motions1 in motions 
+        for i from 0 
+        do (loop for motions2 in (nthcdr (1+ i) motions) 
+        do 
+            (loop for m1 in motions1 for m2 in motions2 do
+                (let (
+                        (m1-direct (gil::add-bool-var *sp* 0 1))
+                        (m2-direct (gil::add-bool-var *sp* 0 1))
+                    )
+                    (print motions1)
+                    (print m1)
+                    (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
+                    (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
+                    (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
+                )
+            )
         )
     )
 )
-
 ; add the constraint such that the first harmonic interval is a perfect consonance
 (defun add-p-cons-start-cst (h-intervals)
     (gil::g-member *sp* P_CONS_VAR (first h-intervals))
@@ -1273,7 +1282,7 @@
                 (gil::g-op *sp* dm-or1 gil::BOT_OR b-both-down dm-or2) ; dm-or2 = (dm-or1 or b-both-down)
                 (gil::g-op *sp* dm-or2 gil::BOT_AND is-not-lowest is-direct)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct) ; m = 1 if dm-or2
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct) ; add the cost of direct motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct gil::RM_IMP) ; add the cost of direct motion
                 ; oblique motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qs b-pu-qs) ; b-pu-qs = (b-pu and b-qs)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qs b-pd-qs) ; b-pd-qs = (b-pd and b-qs)
@@ -1284,7 +1293,7 @@
                 (gil::g-op *sp* om-or2 gil::BOT_OR b-ps-qd om-or3) ; om-or3 = (om-or2 or b-ps-qd)
                 (gil::g-op *sp* om-or3 gil::BOT_AND is-not-lowest is-oblique)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE is-oblique) ; m = 0 if om-or3
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique ) ; add the cost of oblique motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique gil::RM_IMP) ; add the cost of oblique motion
                 ; contrary motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qd b-pu-qd) ; b-pu-qd = (b-pu and b-qd)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qu b-pd-qu) ; b-pd-qu = (b-pd and b-qu)
