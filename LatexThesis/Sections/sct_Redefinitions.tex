@@ -167,9 +167,9 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item $\mathcal{R}$(p) - the range of part p,
     \item \textbf{borrow}(p) - the borrowing scale of part p,
     \item $\mathcal{N}$(p) - the extended domain of part p,
-    \item $\mathcal{B}$(p) - the set of beats in a measure according to the species of part p,
-    \item b(p) - the number of beats in a measure according to the species of part p,
-    \item d(p) - the duration of a note according to the species of part p,
+    \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
+    \item b(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
+    \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, and so on. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p.
 \end{itemize}
 Please note that the constants cannot be linked to a stratum, and only to a part. Indeed, it would have no sense to speak about the species or about the extended domain of a stratum.
 
@@ -178,7 +178,7 @@ The costs are also affected by the change, except for $\mathcal{C}$ (the cost fa
 
 To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(c)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible part (not necessary stratum). That is, the relationship $N < 60$ would mean: the pitches \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
 
-\paragraph{Nota bene}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and H[0, j+1] becomes H[2, j]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
+\subsubsection{Note regarding the fourth species}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. Its beats are "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and H[0, j+1] becomes H[2, j]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit. Except, of course, when a rule concerns only the fourth species: in this case, the indexes are written as they are.
 
 \subsection{Added constants}
 Here are described some added constants, that are useful throughout the whole work.
@@ -233,7 +233,7 @@ The species constant, which represents the species of a given part, can now take
 species(v) = 0 \iff v = cf
 \end{equation}
 
-\subsection{Redefined variables} \label{subsection:modified_variables}
+\subsection{Redefined variables with respect to the definitions in T. Wafflard's thesis} \label{subsection:modified_variables}
 Given that the majority of the rules now apply between parts and the lowest stratum, the meaning of the variables has been modified to adapt to this reality.
 \paragraph{TODO} maybe mention also the variables that didn't change 
 
@@ -262,9 +262,9 @@ Here is the generalisation explained above, matching to the current definition o
 \end{equation}
 
 \vspace{.5cm}
-\noindent \textbf{M}$_{\text{brut}}$(s) \hspace*{.2cm} \texttt{m-intervals-brut}
+\noindent \textbf{M}$_{\text{brut}}$(v) \hspace*{.2cm} \texttt{m-intervals-brut}
 
-The variable M keeps representing the melodic intervals of a voice. It can either be evaluated on a part or on a stratum, each of those situations leading to different behaviours. M(p) (i.e. when related to a part) keeps representing the melodic intervals of the voice v and its way of working remains intact as in T. Wafflard's thesis. M(s) (i.e. when related to a stratum) has it own way of working, that is defined in the next paragraph. We are going to focus specifically on M(a), that is, the melodic intervals of the lowest stratum. 
+The variable M keeps representing the melodic intervals of a voice. It can either be evaluated on a part or on a stratum, each of those situations leading to different behaviours. M(p) (i.e. when related to a part) keeps representing the melodic intervals of the voice v and its way of working remains intact as in T. Wafflard's thesis. M(s) (i.e. when related to a stratum) has it own way of working, that is defined in the next paragraph. We are going to focus specifically on M(a), that is, the melodic intervals of the lowest stratum.
 
 Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that they are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
 
@@ -330,9 +330,9 @@ However, a problem arises when computing the motions of the part that is also th
 &\forall p \in \{cf, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
     &motion(p)[i,j] = \,  
     \begin{cases}
-        0 & \land (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \vee\, (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\
+        0 & \land (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad  \vee (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\
         1 & M_{brut}^{x}(p)[i, j] = 0  \oplus M(a)_{brut}[j]=0 \\
-        2 & (M_{brut}^{x}(p)[i, j] > 0 \land M(a)_{brut}[j] > 0) \vee\, (M_{brut}^{x}(p)[i, j] < 0 \land M(a)_{brut}[j] <0)
+        2 & (M_{brut}^{x}(p)[i, j] > 0 \land M(a)_{brut}[j] > 0) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad   \vee  (M_{brut}^{x}(p)[i, j] < 0 \land M(a)_{brut}[j] <0)
     \end{cases} 
     \\
     &P(p)[i,j] = \,  

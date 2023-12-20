@@ -1,30 +1,70 @@
-\chapter{Search method}
-Three parts composition brings in way more possibilities than two parts composition. As Fux says is %todo insert quote
+\chapter{Searching for the best existing solution}
+Three parts composition brings in way more possibilities than two parts composition. 
 But more possibilities also mean an increased computation complexity. The search space has been extended a lot by adding a whole new set of variables, and the time taken for a solution to be found might to be too elevated if one does not think about optimizing the search. In addition to that, adding a third voice to a composition is not bringing many new constraints (which would help discarding some potential solutions faster), but instead comes with many preferences, which in constraint programming, are translated to costs.
 
-\section{Changing the search algorithm}
+In addition, we need to find a way of arranging the costs in a way that comes as close as possible to what Fux was trying to express in his book. There are several ways to do this, which we will go through and discuss.  
 
-To handle this, it was decided to switch from the previous Depth First Search algorithm to a more efficient Branch and Bound (BAB). This allows us to properly handle the costs, and to find faster solutions. Moreover, the BAB algorithm can also yields results than are not optimal, which is really valuable since finding the best solution overall might be time consuming. When launching the search for a solution, it is now possible to ask for the next solution (i.e. a better solution than the one that was found previously, and if none was found previously, then just any valid solution) or for the best solution. In the second case, the solver starts searching until it finds the best solution or until it is stopped, and yields a better solution each time it finds one.
+This chapter will begin by explaining the search algorithm that is used to find a solution, continue by discussing the different ways of considering costs, and end by analysing the results that these different perspectives produce.
 
-Knowing that we are searching the solution whose cost must be the lowest possible raises the following question: how to compute the cost in order to best reflect the preferences expressed in \textit{Gradus ad Parnassum}?
-The way of translating each preference into a corresponding cost have of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to obtain the most accurate result in terms of what Fux tries to transmit?
+\section{Using Branch-And-Bound as a search algorithm}
 
-Three main ways of doing this have been identified: a linear combination between costs, a search minimising costs by lexicographic order, and a cost arrangement involving calculations of minima. We will first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
-
+To cope with the increased complexity brought about by the three-part composition, it was decided to switch from the Depth First Search algorithm (used in T. Wafflard's thesis) to a more efficient Branch and Bound (BAB). This allows us to handle costs properly and to find faster solutions. Moreover, the BAB algorithm can also produce non-optimal results, which is very valuable since finding the best overall solution can be time-consuming. When starting the search for a solution, it is now possible to ask for the next solution (i.e. a better solution than the one found previously, and if none was found previously, then just any valid solution), or for the best solution. In the latter case, the solver will continue to search until it finds the best solution or until it is stopped, returning a better solution each time it finds one.
 
 
-\subsection*{Linear Combination}
+\subsection{Heuristics}
+When it comes to finding a solution, we obviously need some heuristics to guide the search, as there are so many different possibilities for a three-part composition. 
+To know which heuristics we apply, we simply think about the most important variable to fix first. The most important 
+
+
+\section{Designing the costs to be as faithful as possible to \gap} \label{costs}
+
+Knowing that we are looking for the solution whose cost must be as low as possible, the question arises: how can we calculate the cost in order to best reflect the preferences expressed in \gap?
+
+The way to translate each preference into a corresponding cost has of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to get the most accurate result in terms of what Fux is trying to convey?
+
+Three main ways of doing this have been identified: a linear combination between costs, a search that minimises costs by lexicographic order, and a cost ordering that involves the calculation of minima. We will first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
+
+
+
+\subsection{Linear Combination}
 
 
 The first method of calculating our costs is a linear combination. This is the technique used in T. Wafflard's thesis. More precisely, it uses a linear combination in which all the weights are equal to one.
 
 
 
-To be more precise about the method used to calculate the total cost in T. Wafflard's thesis, here is a more detailed explanation: there was a total cost, $\tau$, which was equal to the sum of all individual costs, $\mathcal{C}$. The next step was to minimise $\tau$. Each $\mathcal{C}_i$ was usually itself a sum of sub-costs. Take, for example, the cost of motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. This cost is the sum of all sub-costs of the motions (one per motion): by default, a contrary motion has a sub-cost of 0, an oblique motion has a sub-cost of 1 and a direct motion has a sub-cost of 2. Since all the sub-costs have been defined on a scale (from 0 to 64$m$), there is already a way to compare these sub-costs with each other. For example, we can say the motion in $j=2$ is better than the motion to $j=3$ because $P_{costs}[2] < P_{costs}[3]$. For example, by default, a direct motion is twice as bad as an oblique motion. On the other hand, it is not possible to compare two $\mathcal{C}$ costs with each other: we could not say that the cost of $\mathcal{C}_{\text{motions}}$ motions is lower than the cost of $\mathcal{C}_{\text{fifths}}$ fifths. In fact, if we choose this type of cost arrangement, our levers for action are to define each cost in terms of $\mathcal{C}_{\text{fifths}}$. 
+To be more precise about the method used to calculate the total cost in T. Wafflard's thesis, here is a more detailed explanation: there exists a total cost, $\tau$, which is equal to the sum of all individual costs, $\mathcal{C}$. The next step is to minimise $\tau$. Each $\mathcal{C}_i$ is usually itself a sum of sub-costs. Take, for example, the cost of motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. This cost is the sum of all sub-costs of the motions (one per motion): by default, a contrary motion has a sub-cost of 0, an oblique motion has a sub-cost of 1 and a direct motion has a sub-cost of 2. These default values can be changed by the user to be set somewhere on a scale that ranges from $0$ to $64m$. For example, the user could set the oblique motion cost to be equal to $0$, and the cost for direct and contrary motion to be equal to $64m$, in order to get a composition filled with as many oblique motions as possible (always in accordance with the basic rules from \gap, i.e. all voices are never going to go in the same direction, see \ref{rule:same-movement}).
+
+As mentioned at the beginning of this subsection, this procedure can be understood as a linear combination with weights of one only. However, since the cost factors are given different values according to the user's choices, this method is actually more like a regular linear combination, except that the weights are not multiplied by the costs once the latter have been set, but the costs are themselves made larger or smaller before the linear combination is calculated.
+
+The linear combination has two major advantages: ease of implementation and high comprehensibility.
 
 
-\subsection*{Lexicographical Order}
-The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important sub-cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
+However, it has a major drawback: since the total cost $\tau$ we are minimising in a linear combination is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure \ref{fig:outstanding-cost}.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/outstanding-costs.png}
+    \caption{Example of a situation where a solution with an outstanding cost is preferred to a solution with equivalent low costs when using a linear combination}
+    \label{fig:outstanding-cost}
+\end{figure}
+
+Another drawback of linear combination is that the result is pretty and unpredictable: changing the value of the cost may or may not make a difference, and you may need to set huge values to see a real effect. For example, if a composer really wants oblique motion, they may be forced to set the cost of the other types of motion to a huge value, or they may not see the difference between the default solution and their personalised solution. This is due to the fact that all the costs are mixed together and form an indistinguishable soup that the solver considers as a whole, and a small increase in the cost of the direct and contrary motions is very likely to be absorbed into this soup without any change being noticed.
+
+These two drawbacks make the linear combination solution for the costs hardly acceptable when it comes to representing the preferences.
+We will therefore examine the other two options for adjusting costs.
+
+\subsection {Minimum Comparison}
+In order to overcome the problem of outstanding costs that we encountered when considering the linear combination solution, one might consider using some minimums when calculating $\tau$, the total cost. For example, $\tau$ could be the maximum of all costs. By doing this, the solver would try to find a solution where the focus is on the worst cost and try to reduce it before trying to reduce the other costs.
+
+The problem of this method arises when one cost is significately higher than the others, because it was defined like this. Let's get back to our example of the compositor wanting as many oblique motions as possible. They are going to set the cost for direct motions and contrary motions to the highest cost possible, and will start the search. As we've already discussed it, it is not possible to have only oblique motions, as it would contradict the rule stating that not all voices can move in the same direction (\ref{rule:same-movement}). In consequence, there will always exist contrary motions, and since the cost for them was set really high, it would be impossible for the solver to converge on a good solution. This creates a bottleneck effect, in which when the solver reached the best potential value of the worst cost, it cannot go on finding better solutions. 
+
+Furthermore, even when taking into account a less extreme case (for example the default setting), this method requires a normalisation of the costs: there exists $3\times (m-2)$ sub-costs of the variety cost, $3\times (m-1)$ sub-costs of the motions cost, but only $m$ sub-costs for the octave cost. This means that without a normalisation, the motions cost is going to be in average three times bigger than the octave cost, which consequently means the solver will put three times more effort in minimizing the motions cost than the octave cost, which is unfair and unpractical.
+
+from a given solution to a better one. 
+
+\subsection{Lexicographical Order}
+The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
 
 Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographically ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
 \begin{figure}[h]
@@ -72,27 +112,25 @@ Taking into account all costs, as defined by Fux in \gap, this is the order we g
 
 \subsection*{Comparison between the three types of costs.}
 
-\begin{table}[ht]
+
+\begin{center}
     \centering
-    \makebox[\textwidth][c]{% Center the table
-        \begin{adjustbox}{width=1.2\textwidth} % Adjust width as needed
-            \begin{tabular}{lccc}
-                \toprule
-                \textbf{Comparison Criteria} & \textbf{Linear Combination} & \textbf{Lexicographical Order} & \textbf{Minimum Comparison} \\
-                \midrule
-                Criteria 1 & Value 1A & Value 1B & Value 1C \\
-                Criteria 2 & Value 2A & Value 2B & Value 2C \\
-                Criteria 3 & Value 3A & Value 3B & Value 3C \\
-                % Add more rows as needed
-                \bottomrule
-            \end{tabular}
-        \end{adjustbox}
-    }
-    \caption{Comparison of Options A, B, and C}
+    \captionof{table}{Comparison of Three Methods According to Criteria}
     \label{tab:comparison}
-\end{table}
-
-
-\subsection{Heuristics}
-
-\subsection{Costs} \label{costs}
+    \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{4cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
+        \hline
+        \textbf{Criteria} & \textbf{Linear Combination} & \textbf{Capping with minima} & \textbf{Lexicographic Search} \\
+        \hline
+        Outsanding costs & \cellcolor{red!25}Yes & \cellcolor{green!25}No & \cellcolor{green!25}Only for minor costs \\
+        \hline
+        One cost might be a bottleneck & \cellcolor{green!25}No & \cellcolor{red!25}Yes & \cellcolor{green!25}No \\
+        \hline
+        Possibility to ensure a preference of one cost over another  & \cellcolor{red!25}No & \cellcolor{red!25}No & \cellcolor{green!25}Yes \\
+        \hline
+        Need for hierarchisation of costs & \cellcolor{green!25}No & \cellcolor{green!25}No & \cellcolor{red!25}Yes \\
+        \hline
+        Need to normalise costs& \cellcolor{green!25}No & \cellcolor{red!25}Yes & \cellcolor{green!25}No \\
+        \hline
+    \end{tabularx}
+\end{center}
+blabla
