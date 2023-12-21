@@ -454,9 +454,9 @@
 ; @completely new or reworked
 (defun reorder-costs (species-list)
     (print "########## REORDERING ##########")
-    (setf species-tag (reduce #'(lambda (x y) (+ (* x 10) y)) species-list))
     (let (
         (i 0)
+        (n-different-costs 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
         (costs-names-by-order (list ; from least to most important
                                 'm2-eq-zero-cost
@@ -480,19 +480,31 @@
             (let ((index (gethash cost *cost-indexes)))
                 (if index (progn
                     (assert (gethash cost *cost-indexes) () "The hash is nil, but should not be. Current cost name = ~A" (nth i costs-names-by-order))
-                    (loop for index in (gethash cost *cost-indexes) do (progn
-                        (assert index () "index should not be nil")
-                        (setf (nth i reordered-costs) (nth index *cost-factors))
-                        (print (list i "th cost = " cost))
-                        (incf i)
-                    ))
+                    (let
+                        (
+                            (current-cost-array nil)
+                            (current-cost-sum (gil::add-int-var *sp* 0 1000))
+                        )
+                        (loop for index in (gethash cost *cost-indexes) do (progn
+                            (assert index () "index should not be nil")
+                            (setf current-cost-array (append current-cost-array (list (nth index *cost-factors))))
+                            ;(setf (nth i reordered-costs) (nth index *cost-factors))
+                            ;(print (list i "th cost = " cost))
+                            ;(incf i)
+                        ))
+                        (gil::g-sum *sp* current-cost-sum current-cost-array)
+                        (setf (nth n-different-costs reordered-costs) current-cost-sum)
+                        (print (list n-different-costs "th cost = " cost))
+                    )
+                    (incf n-different-costs)
                     )
                     ; if index is nil (i.e. if this cost doesn't exist in this species)
                     (print (list "Cost " cost " was not found."))
                 )
             )
         )
-        (assert (eq i *N-COST-FACTORS) () "Some costs are missing in the reordering.")
+        (setf reordered-costs (subseq reordered-costs 0 n-different-costs))
+        ;(assert (eq i *N-COST-FACTORS) () "Some costs are missing in the reordering.")
         (dolist (cost reordered-costs) (assert cost () "A cost is nil. Ordered costs = ~A" reordered-costs))
         (setf *cost-factors reordered-costs)
     )

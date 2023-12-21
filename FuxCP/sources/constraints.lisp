@@ -924,8 +924,6 @@
                         (m1-direct (gil::add-bool-var *sp* 0 1))
                         (m2-direct (gil::add-bool-var *sp* 0 1))
                     )
-                    (print motions1)
-                    (print m1)
                     (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
                     (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
                     (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
