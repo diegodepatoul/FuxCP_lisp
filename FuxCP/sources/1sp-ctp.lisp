@@ -119,8 +119,9 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ;((1) (add-penult-cons-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint)))))
-    )
+        ((1) (add-penult-cons-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint)))))
+        ((6) (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (first (h-intervals counterpoint))))
+    ))
     ;============================================ MELODIC CONSTRAINTS =============================
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
     (print "Melodic constraints...")

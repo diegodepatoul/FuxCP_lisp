@@ -124,10 +124,14 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        ;(if (eq *N-VOICES 1)
-        ;    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint))))
-        ;)
+        (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint))))
     ))
+
+    (if (eq *N-PARTS 3) (progn
+        (print "Penultimate measure...")
+        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (fourth (h-intervals counterpoint))))
+    ))
+
     ; the third note of the penultimate measure must be below the fourth one.
     (gil::g-rel *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1)
     ; the second note and the third note of the penultimate measure must be distant by greater than 1 semi-tone from the fourth note

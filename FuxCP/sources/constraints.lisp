@@ -697,7 +697,10 @@
                     (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals))
                     (if (eq i *cf-penult-index) ; if penult note
                         ; add penult options
-                        (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
+                        (if (eq *N-PARTS 3)
+                            (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
+                            (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
+                        )
                         ; else add all consonances
                         (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
                     )

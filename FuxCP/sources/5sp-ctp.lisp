@@ -208,7 +208,7 @@
     (print "One possible value for non-constrained notes...")
     (add-one-possible-value-cst (solution-array counterpoint) (nth 0 (is-nth-species-arr counterpoint)))
 
-    (if (eq *N-VOICES 1) (progn
+    (if (eq *N-PARTS 2) (progn
         ; perfect consonances should be used at the start and at the end of the piece
         (print "Perfect consonances at the start and at the end...")
         ; if first note is constrained then it must be a perfect consonance
@@ -217,16 +217,15 @@
         (add-p-cons-cst-if (first (third (h-intervals counterpoint))) (first (nth 0 (is-nth-species-arr counterpoint))))
         ; no matter what species it is, the last harmonic interval must be a perfect consonance
         (add-p-cons-end-cst (first (h-intervals counterpoint)))
-    ))
 
-    ; if penultimate measure, a major sixth or a minor third must be used
-    ; depending if the cantus firmus is at the bass or on the top part
-    (print "Penultimate measure...")
-    #|
-    (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint)))
-        (penult (nth 3 (is-nth-species-arr counterpoint)))
-    ) ; 3rd species
-     |#
+        ; if penultimate measure, a major sixth or a minor third must be used
+        ; depending if the cantus firmus is at the bass or on the top part
+        (print "Penultimate measure...")
+        (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint)))
+            (penult (nth 3 (is-nth-species-arr counterpoint)))
+        ) ; 3rd species
+        
+    ))
     ; the third note of the penultimate measure must be below the fourth one. (3rd species)
     (gil::g-rel-reify *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1
         (penult (nth 3 (is-nth-species-arr counterpoint))) gil::RM_IMP
@@ -236,20 +235,26 @@
     (gil::g-rel-reify *sp* (penult (m2-intervals counterpoint)) gil::IRT_NQ 1
         (nth (total-index *cf-penult-index 1) (nth 3 (is-nth-species-arr counterpoint))) gil::RM_IMP
     ) ; 3rd species
-    
-    ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
-    ; major sixth or minor third
-    #|
-    (add-penult-cons-cst (lastone (third (  -arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint)))
-        (penult (butlast (nth 4 (is-nth-species-arr counterpoint))))
-    ) ; 4th species
-     |#
-    ; seventh or second
-    ; (note: a => !b <=> !(a ^ b)), so here we use the negation of the conjunction
+    (if (eq *N-PARTS 2) (progn
+        ; for the 4th species, the thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
+        ; major sixth or minor third
+        (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint)))
+            (penult (butlast (nth 4 (is-nth-species-arr counterpoint))))
+        ) ; 4th species
+        ; seventh or second
+        ; (note: a => !b <=> !(a ^ b)), so here we use the negation of the conjunction
+    ))
+
+    (if (eq *N-PARTS 3) (progn
+        (print "Penultimate measure...")
+        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
+        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (fourth (h-intervals counterpoint))))
+    ))
+
     (setf is-penult-cons-to-cf (gil::add-bool-var *sp* 0 1))
     (add-is-member-cst (penult (first (h-intervals-to-cf counterpoint))) ALL_CONS_VAR is-penult-cons-to-cf)
-    ;(gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND is-penult-cons-to-cf 0) ; 4th species
-
+    (gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND is-penult-cons-to-cf 0) ; 4th species
+ 
     ; every thesis note should be consonant if it does not belong to the fourth species (or not constrained at all)
     (print "Every thesis note should be consonant...")
     (add-h-cons-cst-if (first (is-cons-arr counterpoint)) (collect-by-4 (nth 1 (is-nth-species-arr counterpoint)))) ; 1st species
@@ -394,8 +399,7 @@
     ; RETURN
     (if (eq species 5)
         ; then create the search engine
-        ; (append (fux-search-engine (solution-array counterpoint)) (list species))
-        (append (fux-search-engine (solution-array counterpoint) '(5)) (list (list 5)) (voice-type counterpoint)) ; TODO VOICE_TYPE is now in the param of the counterpoint objects
+        (append (fux-search-engine (solution-array counterpoint) '(5)) (list (list 5)) (voice-type counterpoint))
         ; else
         nil
     )

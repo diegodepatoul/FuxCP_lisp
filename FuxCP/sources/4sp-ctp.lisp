@@ -97,7 +97,7 @@
     ; for all harmonic intervals between the cantus firmus and the thesis notes, the interval must be a consonance
     (print "Harmonic consonances...")
     ; here the penultimate thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
-    (add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_SYNCOPE_VAR)
+    ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_SYNCOPE_VAR)
     (add-h-cons-cst *cf-last-index *cf-penult-index (third (h-intervals counterpoint)) PENULT_CONS_VAR 4)
     (add-no-sync-h-cons (first (h-intervals counterpoint)) (is-no-syncope-arr counterpoint))
 
@@ -117,9 +117,13 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        ;(add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint))))
+        (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals-to-cf counterpoint))))
     ))
 
+    (if (eq *N-PARTS 3) (progn
+        (print "Penultimate measure...")
+        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
+    ))
 
     ;======================================== MELODIC CONSTRAINTS =============================
     (print "Melodic constraints...")

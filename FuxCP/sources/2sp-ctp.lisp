@@ -78,6 +78,12 @@
     (setf (is-ta-dim-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
     (create-is-ta-dim-arr (first (m-succ-intervals counterpoint)) (first (m-intervals counterpoint)) (third (m-intervals counterpoint)) (is-ta-dim-arr counterpoint))
 
+    ; creating boolean is cantus firmus bass array
+    (print "Creating is cantus firmus bass array...")
+    ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
+    (setf (third (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (third (notes counterpoint)) (butlast *cf) (third (is-cf-bass-arr counterpoint)))
+
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
     (setf (is-nbour-arr counterpoint) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
@@ -104,13 +110,19 @@
     ; (print "No unison at all...")
     ; (add-no-unison-at-all-cst (third (notes counterpoint)) (butlast (cf counterpoint)))
 
-    ; if penultimate measure, a major sixth or a minor third must be used
-    ; depending if the cantus firmus is at the bass or on the top part
-    (print "Penultimate measure...")
-    ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this <- this was written by Thibault
+    (if (eq *N-PARTS 2) (progn
+        ; if penultimate measure, a major sixth or a minor third must be used
+        ; depending if the cantus firmus is at the bass or on the top part
+        (print "Penultimate measure...")
+        ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this <- this was written by Thibault
+        (add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+    ))
 
-    ; TODO deal with penult
-    ;(add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+    (if (eq *N-PARTS 3) (progn
+        (print "Penultimate measure...")
+        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
+    ))
+
 
     ;======================================== MELODIC CONSTRAINTS =============================
     (print "Melodic constraints...")

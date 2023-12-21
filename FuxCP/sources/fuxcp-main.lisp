@@ -88,6 +88,8 @@
     (defparameter PENULT_1Q (list 0 3 8))
     ; penultimate syncope intervals, i.e. seconds and sevenths
     (defparameter PENULT_SYNCOPE (list 0 1 2 10 11))
+    ; penultimate intervals for three parts, i.e. minor third and major sixth + the perfect consonances
+    (defparameter PENULT_CONS_3P (list 0 3 7 9))
 
     ; P_CONS in IntVar
     (defparameter P_CONS_VAR (gil::add-int-var-const-array *sp* P_CONS))
@@ -109,6 +111,9 @@
     (defparameter PENULT_1Q_VAR (gil::add-int-var-const-array *sp* PENULT_1Q))
     ; PENULT_SYNCOPE in IntVar
     (defparameter PENULT_SYNCOPE_VAR (gil::add-int-var-const-array *sp* PENULT_SYNCOPE))
+    ; PENULT_CONS_3P in IntVar
+    (defparameter PENULT_CONS_3P_VAR (gil::add-int-var-const-array *sp* PENULT_CONS_3P))
+
 
     ; *cf-brut-intervals is the list of brut melodic intervals in the cantus firmus
     (setq *cf-brut-m-intervals (gil::add-int-var-array *sp* *cf-last-index -127 127))
@@ -367,7 +372,7 @@
                         (setf (third (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
                         (setf (first (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
                         ; add to the penultimate note more possibilities
-                        (if (is-borrow-allowed)
+                        (if (and (is-borrow-allowed) (/= *N-PARTS 1))
                             (progn
                             (setf (nth *cf-penult-index (third (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
                             (setf (nth *cf-penult-index (first (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint)))
@@ -660,6 +665,7 @@
         (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
         (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
+        (handler-case (print (list "third-h-i = " (gil::g-values sol (third (h-intervals (first counterpoints)))))) (error (c) (print "error with third-h-i")))
         ;(print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus)))))
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))
