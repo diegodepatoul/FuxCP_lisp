@@ -70,7 +70,7 @@ The problem with this method arises when one cost is significantly higher than t
 Furthermore, even when considering a less extreme case (e.g. the default setting), this method requires a normalisation of the costs: there are $3\times (m-2)$ sub-costs for the variety cost, $3\times (m-1)$ sub-costs for the motion cost, but only $m$ sub-costs for the octave cost. This means that without normalisation, the motion cost will be on average three times larger than the octave cost, which means that the solver will put three times more effort into minimising the motion cost than the octave cost, which is unfair and unpractical.
 
 
-\subsection{Lexicographical Order}
+\subsection{Lexicographical Order}\label{section:lexicographical-order}
 The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
 
 Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographically ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
@@ -96,10 +96,9 @@ A second example, which ties in particularly well with the first, is that Fux te
 
 And in this way we can keep integrating the different costs until we get a full array $\tau$ with all the costs ordered in a lexicographical way.
 
-Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a drawback of this method, because we have to hierarchise the costs, even if the choice is hard. However, it is technically possible to make two costs as important as the other by adding them together before including them in the total cost array.
+Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a disadvantage of this method, because we have to hierarchise the costs, even if the choice is difficult. What's more, once the costs are ranked, their order becomes absolute and the solver loses some of its flexibility.
 
-
-Since the mentioned drawback can also be avoided by allowing the user to define their own preference order, it was decided to choose a default order (which would be as close as possible to Fux's preference order\footnote{Or at least to what we understood him to convey as his preference order in \gap.}). This default order is as follows:
+Knowing this, we made a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion. The default order we have agreed upon is as follows:
 
 \begin{multicols}{2}
     \begin{enumerate}
@@ -107,23 +106,37 @@ Since the mentioned drawback can also be avoided by allowing the user to define 
         \item $\mathcal{C}_\text{harmonic\_triad}$
         \item $\mathcal{C}_\text{harmonic\_triad\_3rd\_species}$
         \item $\mathcal{C}_\text{octaves}$
+        \item $\mathcal{C}_\text{penult\_thesis\_is\_fifth}$\footnote{A specific cost for the second species, which applies when a penultimate thesis note does not make a fifth interval with the lowest stratum.}
         \item $\mathcal{C}_\text{fifths}$
         \item $\mathcal{C}_\text{off\_key}$\footnote{The cost of using sharps or flats.}
         \item $\mathcal{C}_\text{variety}$
+        \item $\mathcal{C}_\text{m2\_eq\_zero}$\footnote{The cost of having the same note in the downbeat and the upbeat.}
+        \item $\mathcal{C}_\text{not\_cambiata}$\footnote{The cost of not using a \textit{cambiata} if it is possible. The \textit{cambiata} can be characterised by the following scheme: \texttt{consonance - dissonance - consonance}.}
         \item $\mathcal{C}_\text{motions}$
-        \item $\mathcal{C}_\text{m-degrees}$
-        \item $\mathcal{C}_\text{m2-eq-zero}$
-        \item $\mathcal{C}_\text{not-cambiata}$
-        \item $\mathcal{C}_\text{penult-thesis}$\footnote{A specific cost for the second species, which applies when a penultimate thesis note does not make a fifth interval with the lowest stratum.}
-        \item $\mathcal{C}_\text{direct-move-to-p-cons}$
+        \item $\mathcal{C}_\text{m\_degrees}$\footnote{The cost of using big or small melodic intervals.}        
+        \item $\mathcal{C}_\text{direct\_move\_to\_p\_cons}$
     \end{enumerate}
 \end{multicols}
 
-
+Some notes on the proposed order: 
+\begin{itemize}
+    \item One cost comes even before the harmonic triad cost, namely: the $\mathcal{C}_\text{no\_syncope}$ cost. This cost is at the heart of the fourth species, and a fourth species counterpoint without syncopations is not really a fourth species counterpoint. This is why syncope is considered even more important than the harmonic triad.
+    \item The cost of $\mathcal{C}_\text{penult\_thesis\_is\_fifth}$ comes before the cost of $\mathcal{C}_\text{fifths}$, as it is an exception to the latter (similar to the interaction explained above in the section between $\mathcal{C}_\text{harmonic\_triad}$ and $\mathcal{C}_\text{fifths})$.
     
+    \item $\mathcal{C}_\text{off\_key}$ was added to its ranking because it is actually an absolute rule not to use off-key notes, but Fux does use some, and so it was decided to put this cost after the very important costs to allow off-key notes to happen.
 
-\subsection*{Comparison between the three types of costs.}
+    \item The costs $\mathcal{C}_\text{variety}$, $\mathcal{C}_\text{motions}$ and $\mathcal{C}_\text{m\_degrees}$ were ranked in order from least to most restrictive. First we say that we would prefer the note to change as much as possible (with the variety cost), then we indicate our preference for the direction (with the motion cost), and finally we indicate our preference for the size of the motion (with the melodic interval cost). This gives the solver as much flexibility as possible. The other way round would have been more restrictive, since the solver would have minimised the melodic intervals first, setting them all to one, which doesn't leave much room for the motion cost to have an effect, and forcing the variety cost to be high in any case, as with  intervals the melody tends to vary only a little.
+    
+    \item $\mathcal{C}_\text{m2\_eq\_zero}$ and $\mathcal{C}_\text{m\_degrees}$ were classified right after the variety cost as they are an in-measure variation of the variety preference.
 
+\end{itemize}
+
+
+\paragraph{NB} Please note that using the lexicographic order does not \textit{not} mean that the last costs are not taken into account, they will be \textit{too} minimised by the solver. It just means that if the solver has to choose between minimising one cost or another, it will minimise the first one in the lexicographic order. 
+
+\subsection{Comparison between the three types of costs.}
+
+We have now discussed the advantages and disadvantages of each of the three methods. These are all listed in \ref{tab:comparison}. As you can see, no one method is definitively better than another, and the only way to know which method is better in practice is to \textit{test} them in practice to find out which of the methods gives the best results. 
 
 \begin{center}
     \centering
@@ -133,16 +146,29 @@ Since the mentioned drawback can also be avoided by allowing the user to define 
         \hline
         \textbf{Criteria} & \textbf{Linear Combination} & \textbf{Minimising the maximum} & \textbf{Lexicographic Search} \\
         \hline
-        Outsanding costs & \cellcolor{red!25}Yes & \cellcolor{green!25}No & \cellcolor{green!25}Only for minor costs \\
+        Outsanding costs & \cellcolor{red!25}Yes & \cellcolor{green!25}No & \cellcolor{orange!25}Only for minor costs \\
+        \hline
+        Predictability\footnote{Changing a cost has a big impact on the result.} & \cellcolor{red!25}No & \cellcolor{orange!25}Some & \cellcolor{green!25}Yes \\
         \hline
         One cost might be a bottleneck & \cellcolor{green!25}No & \cellcolor{red!25}Yes & \cellcolor{green!25}No \\
+        \hline
+        Need to normalise costs& \cellcolor{green!25}No & \cellcolor{red!25}Yes & \cellcolor{green!25}No \\
         \hline
         Possibility to ensure a preference of one cost over another  & \cellcolor{red!25}No & \cellcolor{red!25}No & \cellcolor{green!25}Yes \\
         \hline
         Need for hierarchisation of costs & \cellcolor{green!25}No & \cellcolor{green!25}No & \cellcolor{red!25}Yes \\
         \hline
-        Need to normalise costs& \cellcolor{green!25}No & \cellcolor{red!25}Yes & \cellcolor{green!25}No \\
+        Flexibility & \cellcolor{orange!25}Medium & \cellcolor{green!25}High & \cellcolor{red!25}Low \\
         \hline
+
     \end{tabularx}
 \end{center}
-blabla
+
+Even more, one could think about a combination of all the methods to get rid of their disadvantages. In fact, we could enjoy the advantages of all the methods by combining them and cleverly designing a lexicographical order search in which the cost is a linear combination of a maximum minimisation.
+
+\subsection{Experimenting with the three types}
+To experiment which method gives the best results, we will follow this plan: start with a purely lexicographical order, using the default preference order as defined in \ref{section:lexicographical-order}, then solve the problem of which preference is more important than the other by grouping them in the same cell of the lexicographical order (either by linear combination or by maximum minimisation).
+
+
+These experiments are carried out using two different counterbalancing combination setups. The first setup is a combination of two first-species counterpoints, since this is the basic case of three-part composition. The second setup is a combination of a third species counterpoint and a fourth species counterpoint. This setup was chosen because it's rich enough to capture the complexity of counterpoint writing, but not too rich, like the fifth species, which makes the way it works more opaque and difficult to analyse.
+
