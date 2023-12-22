@@ -69,7 +69,6 @@
         (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
     ))
 
-
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
@@ -78,9 +77,9 @@
 
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
-    (if (= *N-PARTS 2) 
-        (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-lowest cantus-firmus))
-    )
+(if (= *N-PARTS 2)
+    (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-lowest cantus-firmus))
+)
 #|
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, cantus-firmus melodic interval < -4

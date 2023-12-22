@@ -123,7 +123,7 @@
         (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
     ))
 
-
+    
     ;======================================== MELODIC CONSTRAINTS =============================
     (print "Melodic constraints...")
 

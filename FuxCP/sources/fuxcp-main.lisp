@@ -113,8 +113,7 @@
     (defparameter PENULT_SYNCOPE_VAR (gil::add-int-var-const-array *sp* PENULT_SYNCOPE))
     ; PENULT_CONS_3P in IntVar
     (defparameter PENULT_CONS_3P_VAR (gil::add-int-var-const-array *sp* PENULT_CONS_3P))
-
-
+    
     ; *cf-brut-intervals is the list of brut melodic intervals in the cantus firmus
     (setq *cf-brut-m-intervals (gil::add-int-var-array *sp* *cf-last-index -127 127))
     ; array representing the brut melodic intervals of the cantus firmus
@@ -221,7 +220,11 @@
     ; 1st species variables
     (notes :accessor notes :initarg :notes :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
     (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
-    (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12) (gil::add-int-var-array *sp* *cf-last-index -12 12)))
+    (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list 
+        (gil::add-int-var-array *sp* *cf-last-index -12 12) 
+        (gil::add-int-var-array *sp* *cf-last-index -12 12)
+        (gil::add-int-var-array *sp* *cf-last-index -12 12) 
+        (gil::add-int-var-array *sp* *cf-last-index -12 12)))
     (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
     (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
@@ -399,6 +402,7 @@
                                 )
                             )
                         )
+                        (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -16 16)) 
                     ))
                 )
                 counterpoint
@@ -430,9 +434,9 @@
     (setq *lowest (make-instance 'stratum-class))
     (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
-    (setq *cantus-firmus (init-cantus-firmus))
+    (setq *cantus-firmus (init-cantus-firmus))    
     (setq *parts (cons *cantus-firmus counterpoints))
-
+    
     (create-strata-arrays *parts)
     (case *N-VOICES
         (1 (progn 
@@ -541,53 +545,40 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-        ;(gil::g-branch *sp* (first (notes *lowest)) gil::INT_VAR_DEGREE_MAX gil::INT_VAL_SPLIT_MIN)
-
-        (dolist (counterpoint counterpoints) (progn
-            (if (eq (species counterpoint) 4) 
-                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
-            )
+        (gil::g-branch *sp* (first (notes *lowest)) var-branch-type gil::INT_VAL_MIN)
+        ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
+        ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
+        (dotimes (i *N-VOICES) (progn
             ; 5th species specific
-            (if (eq (species counterpoint) 5) ; otherwise there is no species array
-                (gil::g-branch *sp* (species-arr counterpoint) var-branch-type gil::INT_VAL_RND)
+            (if (eq (nth i species) 5) ; otherwise there is no species array
+                (gil::g-branch *sp* (species-arr (nth i counterpoints)) var-branch-type gil::INT_VAL_RND)
             )
-
-            (gil::g-branch *sp* (is-not-lowest counterpoint) var-branch-type gil::INT_VAL_RND)
-            (gil::g-branch *sp* (first (variety-cost counterpoint)) var-branch-type gil::INT_VAL_MIN)
-
-            (if (< (voice-type counterpoint) 0)
-                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MIN)
-                (gil::g-branch *sp* (first (solution-array counterpoint)) var-branch-type gil::INT_VAL_SPLIT_MAX)
-            )
-            (gil::g-branch *sp* (rest (solution-array counterpoint)) var-branch-type gil::INT_VAL_RND)
 
             ; 3rd and 5th species specific
-            (if (or (eq (species counterpoint) 3) (eq (species counterpoint) 5)) (progn
-                (gil::g-branch *sp* (m-degrees-cost counterpoint) var-branch-type gil::INT_VAL_MIN)
-                (gil::g-branch *sp* (off-key-cost counterpoint) var-branch-type gil::INT_VAL_MIN)
+            (if (or (eq (nth i species) 3) (eq (nth i species) 5)) (progn
+                ;(gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                ;(gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
             ))
 
-
-
             ; 5th species specific
-            ;(if (eq (species counterpoint) 5) (progn ; otherwise there is no species array
-                (gil::g-branch *sp* (no-syncope-cost counterpoint) var-branch-type val-branch-type)
-                (gil::g-branch *sp* (not-cambiata-cost counterpoint) var-branch-type val-branch-type)
-            ;))
+            (if (eq (nth i species) 5) (progn ; otherwise there is no species array
+                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (not-cambiata-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            ))
 
-
+            (if (eq (nth i species) 4) 
+                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+            )
 
             ; branching *total-cost
-            ;(if (eq (species counterpoint) 2)
+            ;(if (eq (nth i species) 2)
                 ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
             ;)
-            
-
-            
         ))
-        
+         
+    
         ;; Solution variables branching
-        ;(gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_MIN)
+        (gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
@@ -646,7 +637,6 @@
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
         ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
-        (print (list "third hi cp1 = " (gil::g-values sol (third (h-intervals (first counterpoints))))))
         (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol *h-intervals-1-2))) (error (c)  (print "error with h-intervals12")))
@@ -677,7 +667,6 @@
         (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
         (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
-        (handler-case (print (list "third-h-i = " (gil::g-values sol (third (h-intervals (first counterpoints)))))) (error (c) (print "error with third-h-i")))
         ;(print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus)))))
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))

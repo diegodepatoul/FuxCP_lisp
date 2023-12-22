@@ -468,21 +468,19 @@
                 (
                     (corresponding-m-intervals (make-list *N-PARTS :initial-element nil))
                 )
-                (dotimes (i *N-PARTS)
-                    (case (species (nth i parts))
-                        (0 (setf (nth i corresponding-m-intervals) (first  (m-intervals-brut (nth i parts)))))
-                        (1 (setf (nth i corresponding-m-intervals) (first  (m-intervals-brut (nth i parts)))))
-                        (2 (setf (nth i corresponding-m-intervals) (third  (m-intervals-brut (nth i parts)))))
-                        (3 (setf (nth i corresponding-m-intervals) (fourth (m-intervals-brut (nth i parts)))))
-                        (4 (setf (nth i corresponding-m-intervals) (third  (m-intervals-brut (nth i parts)))))
-                        (5 (setf (nth i corresponding-m-intervals) (fourth (m-intervals-brut (nth i parts)))))
+                (dotimes (j *N-PARTS)
+                    (case (species (nth j parts))
+                        (0 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts)))))
+                        (1 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts)))))
+                        (2 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
+                        (3 (setf (nth j corresponding-m-intervals) (fourth (m-intervals-brut (nth j parts)))))
+                        (4 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
+                        (5 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
                     )
                 )
                 
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 0 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cf-is-lowest)
-                (print 2)
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 1 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp1-is-lowest)
-                (print 3)
                 (if (eq *N-VOICES 2) (gil::g-rel-reify *sp* (nth (- i 1) (nth 2 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp2-is-lowest))
             ))
         )
@@ -699,7 +697,7 @@
                         ; add penult options
                         (if (eq *N-PARTS 3)
                             (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
-                            (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
+                            (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
                         )
                         ; else add all consonances
                         (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
@@ -729,26 +727,6 @@
     )
 )
 
-; THIS FUNCTION IS WIP AND DOESN'T WORK YET
-; @completely new or reworked
-; counterpoints: the list of all counterpoints
-; i: the ith counterpoint that must be constrained
-(defun add-arsis-consonance-with-thesis-from-other-voices-cst (parts i)
-    (setf counterpoints (rest parts))
-    (setf (h-intervals-to-cf (nth i counterpoints)) (list nil nil (gil::add-int-var-array *sp* *cf-len 0 11) nil))
-    (let 
-        (
-        (h-intervals-1-2-third (gil::add-int-var-array *sp* *cf-len 0 11)) ;  intervals between (third (notes ith cp)) and (first (notes the_other cp))
-        ) 
-        (create-h-intervals (third (notes (nth i counterpoints))) (first (notes (nth (logxor i 1) counterpoints))) h-intervals-1-2-third)
-        (create-h-intervals (third (notes (nth i counterpoints))) *cf (third (h-intervals-to-cf (nth i counterpoints))))
-        (print (third (h-intervals-to-cf (nth i counterpoints))))
-        (dotimes (j *cf-len)
-            (gil::g-member *sp* ALL_CONS_VAR (nth j h-intervals-1-2-third))
-            (gil::g-member *sp* ALL_CONS_VAR (nth j (third (h-intervals-to-cf (nth i counterpoints)))))
-        )
-    )
-)
 
 ; add the constraint such that the penultimate note belongs to the domain @penult-dom-var
 (defun add-penult-dom-cst (h-interval penult-dom-var)
@@ -921,16 +899,16 @@
         do 
             (loop for m1 in motions1 for m2 in motions2 do
                 (let (
-                        (m1-direct (gil::add-bool-var *sp* 0 1))
-                        (m2-direct (gil::add-bool-var *sp* 0 1))
-                    )
-                    (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
-                    (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
-                    (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
-                )
-            )
+            (m1-direct (gil::add-bool-var *sp* 0 1))
+            (m2-direct (gil::add-bool-var *sp* 0 1))
+        )
+            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
+            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
+            (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
         )
     )
+)
+)
 )
 ; add the constraint such that the first harmonic interval is a perfect consonance
 (defun add-p-cons-start-cst (h-intervals)
@@ -955,13 +933,11 @@
     (let (
         (h (lastone h-intervals))
         (hbrut (lastone h-intervals-brut))
-        (is-hbrut-gr-octave (gil::add-bool-var *sp* 0 1))
         (is-hbrut-not-third (gil::add-bool-var *sp* 0 1))
         ) 
-        (gil::g-rel-reify *sp* hbrut gil::IRT_GR 12 is-hbrut-gr-octave)
-        ;(gil::g-op *sp* is-hbrut-third gil::BOT_XOR is-hbrut-not-third 1)
-        (gil::g-rel-reify *sp* h gil::IRT_NQ 3 is-hbrut-gr-octave gil::RM_IMP)
-        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-gr-octave gil::RM_IMP)
+        (gil::g-rel-reify *sp* hbrut gil::IRT_NQ 4
+        is-hbrut-not-third)
+        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-not-third)
     )
 )
 
@@ -1266,7 +1242,7 @@
                 (b-pd-qu (gil::add-bool-var *sp* 0 1)) ; boolean p down and q up
                 (cm-or1 (gil::add-bool-var *sp* 0 1)) ; temporary boolean
                 (is-contrary (gil::add-bool-var *sp* 0 1)) ; temporary boolean
-                ; is bass
+                ; is lowest
                 (is-lowest (gil::add-bool-var *sp* 0 1))
             )
                 (gil::g-rel-reify *sp* p gil::IRT_LE 0 b-pd) ; b-pd = (p < 0)
@@ -1283,7 +1259,7 @@
                 (gil::g-op *sp* dm-or1 gil::BOT_OR b-both-down dm-or2) ; dm-or2 = (dm-or1 or b-both-down)
                 (gil::g-op *sp* dm-or2 gil::BOT_AND is-not-lowest is-direct)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct) ; m = 1 if dm-or2
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct gil::RM_IMP) ; add the cost of direct motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct) ; add the cost of direct motion
                 ; oblique motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qs b-pu-qs) ; b-pu-qs = (b-pu and b-qs)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qs b-pd-qs) ; b-pd-qs = (b-pd and b-qs)
@@ -1294,7 +1270,7 @@
                 (gil::g-op *sp* om-or2 gil::BOT_OR b-ps-qd om-or3) ; om-or3 = (om-or2 or b-ps-qd)
                 (gil::g-op *sp* om-or3 gil::BOT_AND is-not-lowest is-oblique)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE is-oblique) ; m = 0 if om-or3
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique gil::RM_IMP) ; add the cost of oblique motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique ) ; add the cost of oblique motion
                 ; contrary motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qd b-pu-qd) ; b-pu-qd = (b-pu and b-qd)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qu b-pd-qu) ; b-pd-qu = (b-pd and b-qu)
@@ -1406,6 +1382,15 @@
 
 ; add the constraint that there cannot be two successive perfect consonances between two voices
 ; @completely new or reworked
+(defun add-no-successive-p-cons-cst (is-p-cons-array)
+    (loop 
+    for i from 0 to (- (length is-p-cons-array) 2)
+    do (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) 0) ; NOT (is-curr-consonant AND is-next-consonant))
+    )
+)
+
+; add the constraint that there cannot be two successive perfect consonances between two voices
+; @completely new or reworked
 (defun add-no-successive-p-cons-except-fifths-cst (h-intervals)
     (dotimes (i (- (length h-intervals) 1))
         (let (
@@ -1461,15 +1446,6 @@
         )
     )
 
-)
-
-; add the constraint that there cannot be two successive perfect consonances between two voices
-; @completely new or reworked
-(defun add-no-successive-p-cons-cst (is-p-cons-array)
-    (loop 
-    for i from 0 to (- (length is-p-cons-array) 2)
-    do (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) 0) ; NOT (is-curr-consonant AND is-next-consonant))
-    )
 )
 
 (defun compute-no-successive-p-cons-cost (is-p-cons-array cost-array j)

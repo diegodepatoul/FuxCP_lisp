@@ -125,7 +125,7 @@
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
         (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint))))
-    ))
+        ))
 
     (if (eq *N-PARTS 3) (progn
         (print "Penultimate measure...")

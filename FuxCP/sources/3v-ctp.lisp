@@ -28,7 +28,7 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
-    (dotimes (i *N-VOICES)
+        (dotimes (i *N-VOICES)
         (create-h-intervals (first (notes (nth i *upper))) (first (notes *lowest)) (first (h-intervals (nth i *upper))))
         (setf (h-intervals-abs (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
         (setf (h-intervals-brut (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
@@ -38,9 +38,6 @@
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
-    (print "no unison between cp1 and cp2")
-    
-    
     (loop 
         ; for each possible pair or parts
         ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
@@ -50,32 +47,14 @@
         do (progn 
             ; no unison between the voices
             (print "No unison between the voices")
-            (case (species v1)
-                (4 (case (species v2)
-                    (4 (add-no-unison-cst (third (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-cst (third (notes v1)) (first (notes v2))))
-                ))
-                (otherwise (case (species v2)
-                    (4 (add-no-unison-cst (first (notes v1)) (third (notes v2))))
-                    (otherwise (add-no-unison-cst (first (notes v1)) (first (notes v2))))
-                ))
-            )
+            (add-no-unison-cst (first (notes v1)) (first (notes v2)))
+            
             (print "No successive perfect consonances")
             (let (
                 (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
                 (is-cons-arr-1-2 (gil::add-bool-var-array *sp* *cf-len 0 1))
                 )
-                (case (species v1)
-                    (4 (case (species v2)
-                        (4 (create-h-intervals (third (notes v1)) (third (notes v2)) h-intervals-1-2))
-                        (otherwise (create-h-intervals (third (notes v1)) (first (notes v2))h-intervals-1-2))
-                    ))
-                    (otherwise (case (species v2)
-                        (4 (create-h-intervals (first (notes v1)) (third (notes v2)) h-intervals-1-2))
-                        (otherwise (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2))
-                    ))
-                )
-                (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) ; for all species, the last note is in the first beat
+                (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2)
                 (create-is-p-cons-arr h-intervals-1-2 is-cons-arr-1-2)
                 (cond 
                     ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species
@@ -87,7 +66,7 @@
                     ((= 2 (species v2))
                         (add-no-successive-p-cons-except-fifths-if-cst h-intervals-1-2 (first (m-succ-intervals v2))) ; for the second species, successive fifths are allowed if there is a third in between
                     )
-                    ((or (= 4 (species v1)) (= 4 (species v2)))
+                    ((or (eq 4 (species v1)) (eq 4 (species v2)))
                         (add-no-successive-p-cons-except-fifths-cst h-intervals-1-2) ; for the fourth species, successive fifths are allowed, but no other successive perfect consonances
                     )
                 )
@@ -100,7 +79,7 @@
     ; WARNING: this implementation works only for three voices
     (print "No together move")
     (add-no-together-move-cst (list (first (motions counterpoint-1)) (first (motions counterpoint-2)) (first (motions cantus-firmus))))
- 
+
 
     (print "Last chord cannot be minor")
     ; next line covered by creating the harmonic arrays
@@ -113,13 +92,6 @@
 
     (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
-
-    (dotimes (i *N-PARTS)
-        (if (eq (species (nth i parts)) 2) 
-           ;(add-arsis-consonance-with-thesis-from-other-voices-cst parts (- i 1))
-           nil
-        )
-    )
 
     ; fifth species only
     (if (equal species-list '(5 5))
@@ -213,7 +185,7 @@
         ))
     )
      |#
-    
+
     ;================================================================================;
     ;                                    RETURN                                      ;
     ;================================================================================;
