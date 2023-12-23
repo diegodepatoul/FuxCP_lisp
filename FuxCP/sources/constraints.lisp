@@ -230,7 +230,7 @@
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
                     (2 (incf *N-COST-FACTORS 6))
-                    (3 (incf *N-COST-FACTORS 7)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
+                    (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
                     (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
                     (5 (incf *N-COST-FACTORS 8))
                 (otherwise (error "Unexpected value in the species list (~A), when setting the costs." species))
@@ -992,6 +992,28 @@
             (gil::g-op *sp* is-harmonic-triad gil::BOT_XOR is-not-p-chord 1)
             (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-harmonic-triad) ; it costs 0 to be a harmonic triad
             (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a harmonic triad
+        )
+    )
+)
+
+(defun compute-h-triad-cost-3rd-species (h-intervals costs)
+    (loop
+        for h-interval in h-intervals
+        for cost in costs
+        do
+        (let (
+                (not-minor-third (gil::add-bool-var *sp* 0 1))
+                (not-major-third (gil::add-bool-var *sp* 0 1))
+                (not-third       (gil::add-bool-var *sp* 0 1))
+                (not-major-fifth (gil::add-bool-var *sp* 0 1))
+                (not-in-h-triad  (gil::add-bool-var *sp* 0 1))
+            )
+            (gil::g-rel-reify *sp* h-interval gil::IRT_NQ 3 not-minor-third)
+            (gil::g-rel-reify *sp* h-interval gil::IRT_NQ 4 not-major-third)
+            (gil::g-rel-reify *sp* h-interval gil::IRT_NQ 7 not-major-fifth)
+            (gil::g-op *sp* not-minor-third gil::BOT_AND not-major-third not-third)
+            (gil::g-op *sp* not-third gil::BOT_AND not-major-fifth not-in-h-triad)
+            (gil::g-rel-reify *sp* cost gil::IRT_EQ 1 not-in-h-triad)
         )
     )
 )

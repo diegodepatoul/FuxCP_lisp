@@ -169,22 +169,21 @@
     )
     (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
-    #| TO DO REWRITE THIS PART    (dotimes (i *N-PARTS)
+    (dotimes (i *N-PARTS)
         ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
         (if (eq (species (nth i parts)) 3) (let
             (
                 (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))
             )
             (dotimes (j 2) (progn 
-               (compute-h-triad-cost 
+               (compute-h-triad-cost-3rd-species 
                     (nth (+ j 1) (h-intervals (nth i parts))) ; this is the jth beat
-                    (first (h-intervals (nth (logxor i 1) parts))) ; these are the intervals of the OTHER counterpoint
                     (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index))) ; these are the costs corresponding to the jth beat
             ))
             (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
-    )
-     |#
+    )    
+     
 
     ;================================================================================;
     ;                                    RETURN                                      ;
