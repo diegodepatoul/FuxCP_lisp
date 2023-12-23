@@ -225,14 +225,10 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     This rule needs no special constraint, since it is the very definition of the first species  to consist only of whole notes.
 
 \subsubsection{Harmonic constraints}
-\begin{enumerate}[wide, label=\bfseries 1.H\arabic*]        
-    \item\label{constraint:consonant} \textit{All notes on the downbeat are consonant with the notes of the lowest stratum}
+\paragraph{\hspace{.6cm}\ref{rule:consonant}} \textit{All notes on the downbeat are consonant with the notes of the lowest stratum}
     
     The new definition of variable H already captures the change in the rule. This means that the equation of rule \ref{rule:consonant} stays the same.
-
-   \setcounter{enumi}{7} 
-
-    \item\label{constraint:harmonic-triad} \reddot \textit{The harmonic triad should be used as much as possible.}
+    \paragraph{\hspace{.6cm}\ref{rule:harmonic-triad}} \reddot \textit{The harmonic triad should be used as much as possible.}
     
     As this rule is actually a preference and not a mandatory rule, it has been implemented as a cost. If the harmonic triad is used, then the cost is 0. Else, it is 1.
     % todo should not be 1 absolutely, should depend on the user
@@ -244,10 +240,7 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
     \end{aligned}
     \end{equation}
     
-    \addtocounter{enumi}{1} 
-
-
-    \item\label{constraint:tenth-is-last-chord} \reddot \textit{Tenths are prohibited in the last chord.}
+    \paragraph{\hspace{.6cm}\ref{rule:tenth-is-last-chord}} \reddot \textit{Tenths are prohibited in the last chord.}
 
     \begin{equation} \begin{aligned}
     &H_{brut}[0, m-1] > 12 \implies H[0, m-1] \notin \{3, 4\}
@@ -255,23 +248,19 @@ All rules described in this subsection marked with a red dot ( \reddot) apply no
 
     If the interval is bigger than an octave, then you cannot use thirds anymore.
 
-    \addtocounter{enumi}{1} 
-
-    \item\label{constraint:minor-third} \reddot \textit{Last chord cannot include a minor third.}
+    
+    \paragraph{\hspace{.6cm}\ref{rule:minor-third}} \reddot \textit{Last chord cannot include a minor third.}
 
     \begin{equation} \begin{aligned}
     H[0, m-1] \neq 3
     \end{aligned} \end{equation}
-\end{enumerate}
 
 \subsubsection{Melodic constraints}
 \paragraph{\hspace{.6cm}\ref{rule:steps-prefered}} \textit{Steps are preferred to skips.}
 
 As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it already exists.
 
-\begin{enumerate}[wide, label=\bfseries 1.M\arabic*]
-\setcounter{enumi}{3} % Start from 4
-    \item\label{constraint:variety} \reddot \textit{The notes of each part should be as diverse as possible.}
+\paragraph{\hspace{.6cm}\ref{rule:variety}} \reddot \textit{The notes of each part should be as diverse as possible.}
 
     As it is not explained either if this has to be true for the whole partition or only for two following notes, it has been chosen as an arbitrary seven successive notes to apply the rule on. This means that the solution is penalized if a note in measure X was already present in measures [X-3, X+3]. This amount was chosen because it represents the number of flat notes that exist, pushing for the solver to find a solution that contain all of them.
 
@@ -279,11 +268,9 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
     &\forall p \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1), \quad \forall k \in [j+1, \text{min} (j+3, m-1)] :\\ 
     &N(p)[0, j] = N(p)[0, j+k]\iff cost_{variety}[j+m*k]= 1
     \end{aligned} \end{equation}
-\end{enumerate}
 
 \subsubsection{Motion constraints}
-\begin{enumerate}[wide, label=\bfseries 1.P\arabic*]
-    \item\label{constraint:direct-to-p-cons} \reddot \textit{Reaching a perfect consonance by direct motion should be avoided.}
+\paragraph{\hspace{.6cm}\ref{rule:direct-to-p-cons}} \reddot \textit{Reaching a perfect consonance by direct motion should be avoided.}
 
     Since there is no way in constraint programming to implement a rule that must be obeyed only if possible other than by using a cost, the initial constraint was rewritten to a new one.
 
@@ -295,8 +282,7 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 
     Remember: $P[0,j] = 2$ means that the motion is direct.
     
-\setcounter{enumi}{3} % Start from 4
-    \item\label{constraint:succ-p-cons} \reddot  \textit{Successive perfect consonances are prohibited.}
+\paragraph{\hspace{.6cm}\ref{rule:succ-p-cons}} \reddot  \textit{Successive perfect consonances are prohibited.}
 
     \begin{equation} \begin{aligned}
     &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2, \quad \\
@@ -306,14 +292,14 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 
     The meaning of this equation is that a harmonic interval and the following one cannot be consonant at the same time.
     
-    \item\label{constraint:start-distant} \reddot \textit{Each part starts distant from the lowest stratum.}
+    \paragraph{\hspace{.6cm}\ref{rule:start-distant}}  \reddot \textit{Each part starts distant from the lowest stratum.}
 
     This is not a strict rule but an indication to make easier for the composer to have contrary motions. Given that is not an obligation, nor a preference, it was simply added as a heuristic for the solver.
 
     % todo mention the heuristic?
 
 
-    \item\label{constraint:same-movement} \reddot \textit{It is prohibited that all parts move in the same direction.}
+    \paragraph{\hspace{.6cm}\ref{rule:same-movement}} \reddot \textit{It is prohibited that all parts move in the same direction.}
 
     To prevent this, we need only look at the motions between the parts and the lowest stratum. If one of their motions is contrary, then it is guaranteed that the three voices will not go in the same direction (because at least one is contrary). The same applies if one of the motions is oblique. The problem arises when all the movements are direct, because this would mean that the three voices are going in the same direction. So it was forbidden to have all motions direct at the same time.
     \begin{equation} \begin{aligned}
@@ -321,7 +307,7 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
     &\bigvee_{p \in \{cf, cp_1, cp_2\}}  M(p)[0, j] \neq 2
     \end{aligned} \end{equation}
 
-    \item\label{constraint:ascending-sixths} \reddot \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
+    \paragraph{\hspace{.6cm}\ref{rule:ascending-sixths}} \reddot \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
     Either the harmonic interval is not a sixth in any of both positions, or one of them is not moving up.
 
     \begin{equation}
@@ -331,7 +317,6 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
             & \lor M(v_1)[0, j] > 0 \lor M(v_2)[0, j] > 0
         \end{aligned}
         \end{equation}
-\end{enumerate}
 
 
 \section{Second species}
@@ -414,9 +399,8 @@ As discussed in \ref{formalisation-en-2nd}, no new harmonic rules were defined b
 No need to add a new constraint as this is not an actual rule.
 
 \subsubsection{Melodic constraints}
-\begin{enumerate}[wide, label=\bfseries 2.M\arabic*]
-\setcounter{enumi}{1} % Start from 2
-    \item \textit{It is allowed to ligature the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.} \label{constraint:2nd-species-ligatures}  
+
+    \paragraph{\hspace{.6cm}\ref{rule:2nd-species-ligatures}} \textit{It is allowed to ligature the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.}  
 
     This is a relaxation of the two-voice rule \textbf{2.M2} "two consecutive notes cannot be the same".
     
@@ -432,12 +416,9 @@ No need to add a new constraint as this is not an actual rule.
     \end{equation}
 
     The first line prohibits the ligatures except where they are allowed, and the second lines states that only one ligature can occur.
-\end{enumerate}
 
 \subsubsection{Motion constraints}
-\begin{enumerate}[wide, label=\bfseries 2.P\arabic*]
-\setcounter{enumi}{2} 
-    \item \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{constraint:succ-fifths-flanking-third}    
+\paragraph{\hspace{.6cm}\ref{rule:succ-fifths-flanking-third}} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.}    
     
     In the following equation, only $p_1$ needs to be a second species counterpoint, $p_2$ can be of any species.
     \begin{equation}
@@ -447,7 +428,6 @@ No need to add a new constraint as this is not an actual rule.
             & \iff (H(p_1, p_2)[2, j] = 3) \lor (H(p_1, p_2)[2, j] = 4)
         \end{aligned}
     \end{equation}
-\end{enumerate}
 
 \section{Third species}
 \subsection{Formalisation in English}\label{formalisation-en-3rd}
@@ -478,9 +458,7 @@ Fux introduces no new motion constraints for the third species.
 \subsection{Formalisation into constraints}
 \subsubsection{Harmonic constraints}
 \paragraph{\hspace{.5cm}\ref{rule:concur-3rd}} \textit{The quarter notes must be coherent with respect to the whole notes.}
-\begin{enumerate}[wide, label=\bfseries 3.H\arabic*]
-\setcounter{enumi}{5}
-    \item \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.} \label{constraint:coherent}    
+\paragraph{\hspace{.6cm}\ref{rule:coherent}} \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.}    
 
     This rule is quite clear and speaks for itself. Since this is not a strict rule but an advice, it was treated as a cost.
 
@@ -489,7 +467,6 @@ Fux introduces no new motion constraints for the third species.
             &(H[1, j] \notin Cons_{h\_triad}) \land  (H[2, j] \notin Cons_{h\_triad})\\
             &\iff cost_{harmonic-triad-3rd-species}[j] = 1       
     \end{aligned} \end{equation}
-\end{enumerate}
 
 
 
@@ -592,18 +569,13 @@ Fux introduces no new melodic constraints for the third species.
 
 
 \subsubsection{Harmonic constraints}
-\begin{enumerate}[wide, label=\bfseries 4.H\arabic*]
-    \setcounter{enumi}{4}
-    \item \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{constraint:prefer-fifths-over-octaves}   
+\paragraph{\hspace{.6cm}\ref{rule:prefer-fifths-over-octaves}} \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.}   
 
     This rule is almost covered by the existing costs, as a perfect consonance has a cost of 1, where an imperfect consonance has a cost of 0. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a cost of 2 to octaves and a cost of 1 to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see \ref{costs}).
 
-\end{enumerate}
 
 \subsubsection{Motion constraints}
-\begin{enumerate}[wide, label=\bfseries 4.P\arabic*]
-\setcounter{enumi}{2}
-    \item \textit{Successive fifths are allowed when using ligatures.} \label{constraint:successive-fifths-in-4th-species}    
+\paragraph{\hspace{.6cm}\ref{rule:successive-fifths-in-4th-species}} \textit{Successive fifths are allowed when using ligatures.}    
 
     The point of this rule is that Fux introduces an exception to \ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species, thanks to the delaying it induces.
 
@@ -618,11 +590,11 @@ Fux introduces no new melodic constraints for the third species.
         &\forall j \in [0, m-2) \colon H(p_1,p_2)[i_n, j] = 0 \implies H(p_1,p_2)[i_n, j+1] \neq 0
     \end{aligned} \end{equation}
 
-    \item \textit{Resolving to a fifth is preferred over resolving to an octave.} \label{constraint:resolving-to-fifths-rather-than-octaves}    
+    \paragraph{\hspace{.6cm}\ref{rule:resolving-to-fifths-rather-than-octaves}} \textit{Resolving to a fifth is preferred over resolving to an octave.}    
     
     This is already covered by the rule \ref{rule:prefer-fifths-over-octaves} (prefer fifths over octaves), since preferring fifths over octaves in \textit{all} cases implies preferring to resolve to a fifth rather than to an octave.
 
-    \item \textit{Stationary movement in the bass implies dissonance in the fourth species part.} \label{constraint:dissonance-in-4th-species}
+    \paragraph{\hspace{.6cm}\ref{rule:dissonance-in-4th-species}} \textit{Stationary movement in the bass implies dissonance in the fourth species part.}
 
     \begin{equation}
         \begin{aligned}
@@ -634,7 +606,7 @@ Fux introduces no new melodic constraints for the third species.
     \end{equation}        
 
 
-    \item \textit{A note provoking a hidden fifth gets replaced by a rest.} \label{constraint:hidden-fifths}
+    \paragraph{\hspace{.6cm}\ref{rule:hidden-fifths}} \textit{A note provoking a hidden fifth gets replaced by a rest.}
     \begin{equation}
         \begin{aligned}
             &\forall j \in [1, m-1):\\
@@ -643,7 +615,6 @@ Fux introduces no new melodic constraints for the third species.
     \end{equation}
 
 
-\end{enumerate}
 
 \section{Fifth species}
 No additional rules (be they harmonic rules, melodic rules or motion rules) were observed by Fux for the fifth species.
