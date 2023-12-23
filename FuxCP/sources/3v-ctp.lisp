@@ -16,7 +16,7 @@
 
     (dotimes (i *N-PARTS)
         (case (species (nth i parts))
-            (0 (fux-cp-cf (nth i parts)))
+            (0 (fux-cp-cf  (nth i parts)))
             (1 (fux-cp-1st (nth i parts) 6))
             (2 (fux-cp-2nd (nth i parts) 7))
             (3 (fux-cp-3rd (nth i parts) 8))
@@ -84,6 +84,9 @@
     (print "Last chord cannot be minor")
     ; next line covered by creating the harmonic arrays
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
+    (dotimes (i (- 1 *N-PARTS))
+        (add-no-minor-third (lastone (first (h-intervals (nth i *upper)))))
+    )
     
     (print "Last chord cannot include a tenth")
     (dotimes (i *N-VOICES)
@@ -183,7 +186,6 @@
             (add-cost-to-factors h-triad-3rd-species-cost 'h-triad-3rd-species-cost)
         ))
     )    
-     
 
     ;================================================================================;
     ;                                    RETURN                                      ;

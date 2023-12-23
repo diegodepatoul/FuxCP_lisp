@@ -636,7 +636,7 @@
         ;(print (list "successive fifths= " (gil::g-values sol successive-fifths-print)))
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
-        ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
         (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol *h-intervals-1-2))) (error (c)  (print "error with h-intervals12")))

@@ -922,8 +922,7 @@
 
 ; add the constraint that there cannot be a minor third in the last chord
 ; @completely new or reworked
-(defun add-no-minor-third-in-last-chord-cst (h-interval-1 h-interval-2)
-    (gil::g-rel *sp* h-interval-1 gil::IRT_NQ 3)
+(defun add-no-minor-third-cst (h-interval)
     (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 3)
 )
 
@@ -2220,6 +2219,16 @@
                         (get-4th-species-array len-2)
                         (get-4th-notes-array (subseq sol-pitches 0 (* 2 len-1)) (+ (* 4 len-1) 1))
                     ))
+                    (setf j 0)
+                    (dotimes (k *cf-penult-index)
+                        (setf j (+ j 2))
+                        (if (and
+                            (eq 7 (nth (+ 1 j) (gil::g-values sol (first (h-intervals (nth i counterpoints))))))
+                            (eq DIRECT (nth j (gil::g-values sol (first (motions (nth i counterpoints))))))
+                            )
+                            (setf (nth j (first (nth i rythmic+pitches))) -1/2)
+                        )
+                    )
                     (setf sol-pitches (subseq sol-pitches (* 2 len-1)))
                 ))
                 (5 (let (
@@ -2235,6 +2244,12 @@
         (assert (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
         rythmic+pitches
     )
+)
+
+(defun detect-hidden-fifth ()
+    (gil::g-values sol (first (h-intervals (third *parts))))
+    (gil::g-values sol (first (h-intervals (second *parts))))
+    (gil::g-values sol (first (h-intervals (first *parts))))
 )
 
 ; return a species array for a 4th species counterpoint

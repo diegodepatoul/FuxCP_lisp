@@ -122,7 +122,7 @@
 
     (if (eq *N-PARTS 3) (progn
         (print "Penultimate measure...")
-        (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
+        (gil::g-member *sp* PENULT_SYNCOPE_VAR (lastone (third (h-intervals counterpoint))))
     ))
 
     ;======================================== MELODIC CONSTRAINTS =============================
