@@ -98,7 +98,8 @@
     (print "Harmonic consonances...")
     ; here the penultimate thesis note must be a seventh or a second and the arsis note must be a major sixth or a minor third
     ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_SYNCOPE_VAR)
-    (add-h-cons-cst *cf-last-index *cf-penult-index (third (h-intervals counterpoint)) PENULT_CONS_VAR 4)
+    
+    (add-h-cons-cst *cf-last-index *cf-penult-index (third (h-intervals counterpoint)) PENULT_CONS_VAR 4 (is-not-lowest counterpoint))
     (add-no-sync-h-cons (first (h-intervals counterpoint)) (is-no-syncope-arr counterpoint))
 
     ; no seventh dissonance if the cantus firmus is at the top

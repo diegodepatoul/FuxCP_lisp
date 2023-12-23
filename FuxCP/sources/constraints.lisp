@@ -687,7 +687,7 @@
 ; @cf-penult-index: the index of penultimate note in the counterpoint
 ; @h-intervals: the array of harmonic intervals
 ; @penult-dom-var: the domain of the penultimate note
-(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR) (species 0))
+(defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR) (species 0) (is-not-lowest nil))
     (loop for i from 0 below len do
         (if (/= species 4)
             (if (eq i *cf-last-index) ; if it is the last note
@@ -711,17 +711,23 @@
                 (otherwise (let
                     (
                         (lower-stays (gil::add-bool-var *sp* 0 1))
+                        (is-not-lowest-and-lower-stays (gil::add-bool-var *sp* 0 1))
                         (lower-not-stays (gil::add-bool-var *sp* 0 1))
-                        (h-eq-dis (gil::add-int-var *sp* 0 11))
-                        (h-eq-cons (gil::add-int-var *sp* 0 11))
+                        (is-not-lowest-and-lower-not-stays (gil::add-bool-var *sp* 0 1))
+                        (h-dis (gil::add-int-var *sp* 0 11))
+                        (h-cons (gil::add-int-var *sp* 0 11))
                     )
                     (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ 0 lower-stays)
+                    (gil::g-op *sp* lower-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-stays)
                     (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_NQ 0 lower-not-stays)
-                    (gil::g-member *sp* DIS_VAR h-eq-dis)    
-                    (gil::g-member *sp* ALL_CONS_VAR h-eq-cons)    
-                    (gil::g-rel-reify *sp* h-eq-dis gil::IRT_EQ (nth i h-intervals) lower-stays)
-                    (gil::g-rel-reify *sp* h-eq-cons gil::IRT_EQ (nth i h-intervals) lower-not-stays)
+                    (gil::g-op *sp* lower-not-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-not-stays)
+
+                    (gil::g-member *sp* DIS_VAR h-dis)    
+                    (gil::g-member *sp* ALL_CONS_VAR h-cons)    
+                    (gil::g-rel-reify *sp* h-dis gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-stays)
+                    (gil::g-rel-reify *sp* h-cons gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-not-stays)
                 ))
+                ;(otherwise (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals)))
             )
         )
     )
@@ -923,7 +929,7 @@
 ; add the constraint that there cannot be a minor third in the last chord
 ; @completely new or reworked
 (defun add-no-minor-third-cst (h-interval)
-    (gil::g-rel *sp* h-interval-2 gil::IRT_NQ 3)
+    (gil::g-rel *sp* h-interval gil::IRT_NQ 3)
 )
 
 ; add the constraint that there cannot be a tenth in the last chord

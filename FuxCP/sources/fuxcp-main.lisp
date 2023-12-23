@@ -463,6 +463,7 @@
         (n-different-costs 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
         (costs-names-by-order (list ; from least to most important
+                                'motions-cost
                                 'm2-eq-zero-cost
                                 'direct-move-to-p-cons-cost
                                 'not-cambiata-cost
@@ -476,7 +477,6 @@
                                 'variety-cost
                                 'off-key-cost
                                 'no-syncope-cost
-                                'motions-cost
         ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
@@ -567,7 +567,7 @@
             ))
 
             (if (eq (nth i species) 4) 
-                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type val-branch-type)
+                (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type gil::INT_VAL_MIN)
             )
 
             ; branching *total-cost
@@ -578,7 +578,7 @@
          
     
         ;; Solution variables branching
-        (gil::g-branch *sp* the-cp var-branch-type gil::INT_VAL_RND)
+        (gil::g-branch *sp* the-cp gil::INT_VAR_NONE gil::INT_VAL_RND)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
@@ -636,7 +636,8 @@
         ;(print (list "successive fifths= " (gil::g-values sol successive-fifths-print)))
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
-        (print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
+        (print (list "h-interv cp1 = " (gil::g-values sol (third (h-intervals (first counterpoints))))))
         (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
         (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol *h-intervals-1-2))) (error (c)  (print "error with h-intervals12")))
@@ -645,10 +646,13 @@
         (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
         (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2Nbass")))
         (handler-case (print (list "is-cfNbass = " (gil::g-values sol *is-cf-not-bass-print))) (error (c) (print "error with is-cf-bass")))
+        (print (list "cp1-f      = " (gil::g-values sol (first (notes (first counterpoints))))))
+        (print (list "cp1-t      = " (gil::g-values sol (third (notes (first counterpoints))))))
         (print (list "cp1        = " (gil::g-values sol (solution-array (first counterpoints)))))
         (handler-case (print (list "cp2        = " (gil::g-values sol (solution-array (second counterpoints))))) (error (c) (print "error with cp2")))
         (print (list "cf         = " *cf))
         (handler-case (print (list "upper-2    = " (gil::g-values sol (first (notes (second *upper)))))) (error (c) (print "error with upper-2")))
+        (handler-case (print (list "intup-1    = " (gil::g-values sol (first (h-intervals (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
         (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *lowest))))) (error (c) (print "error with bass")))
         (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))

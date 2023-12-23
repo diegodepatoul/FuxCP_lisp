@@ -28,7 +28,7 @@
     
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
-        (dotimes (i *N-VOICES)
+    (dotimes (i *N-VOICES)
         (create-h-intervals (first (notes (nth i *upper))) (first (notes *lowest)) (first (h-intervals (nth i *upper))))
         (setf (h-intervals-abs (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
         (setf (h-intervals-brut (nth i *upper)) (gil::add-int-var-array *sp* *cf-len -127 127))
@@ -84,8 +84,8 @@
     (print "Last chord cannot be minor")
     ; next line covered by creating the harmonic arrays
     ;(add-no-minor-third-in-last-chord-cst (last (first (h-intervals counterpoint-1))) (last (first (h-intervals counterpoint-2)))) 
-    (dotimes (i (- 1 *N-PARTS))
-        (add-no-minor-third (lastone (first (h-intervals (nth i *upper)))))
+    (dotimes (i (- *N-PARTS 1))
+        (add-no-minor-third-cst (lastone (first (h-intervals (nth i *upper)))))
     )
     
     (print "Last chord cannot include a tenth")
