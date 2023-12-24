@@ -1,5 +1,32 @@
 \chapter{Introduction}
+This thesis is a formalisation of three-part counterpoint based on the writings and rules of Fux. Its aim is to provide a mathematical set of rules and a computer environment capable of translating Fux's teachings into formal logic, and capable of implementing these logical rules in a concrete way to produce Fux-style counterpoint.
+
+
+This thesis will therefore be divided into several parts: we will first immerse ourselves in \gap, Fux's central work, from which we will meticulously extract the rules laid down by its author. We will briefly discuss these rules to make them unambiguous, and then translate them into formal logic, so that each rule Fux had in mind when writing his work is mathematically recorded. On this basis, we will create a computer implementation using constraint programming. We will then look at how this implementation finds results, discussing the search algorithm and heuristics used. We then discuss the cost techniques used to obtain the best possible results. Finally, we will analyse the musical compositions produced by the tool created.
+
 \section{Fux's theory of counterpoint}
+
+But to fully understand what we're talking about, we need to focus on a few key points. First, let's talk about counterpoint. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent in terms of rhythm and melodic contour, but harmonically interdependent. These melodies sound melodious when played independently, and harmonious when played together. 
+
+
+Counterpoint has been central to the work of many famous composers from different artistic movements, such as Bach in the Baroque, Mozart in the Classical and Beethoven in the Romantic, and has continued to arouse interest over the centuries, with the development of key texts on the subject, such as Schenker's Counterpoint \cite{schenker1906} or Jeppesen's Analysis \cite{jeppesen1960}. However, the mainstay of this musical style is the \gaps  by the Austrian composer Fux. In it, this Baroque composer gives a detailed analysis of two-, three- and four-part writing of counterpoint, all told as a discourse between a master and his pupil. \gaps  was part of the species counterpoint movement, a way of conceiving counterpoint in five different types that could then be combined. This is the work on which this dissertation is based. 
+
+
+For Fux, but also for many other authors, these species of counterpoint are governed by rules that are as different as they are varied, and it is these rules that interest us in the present work. They are based on old concepts that have been discussed by many authors \cite{crocker1962}. They include, for example, the notions of opposite motion and consonance (which in turn can be either perfect or imperfect). These concepts and their application to counterpoint are particularly interesting because they allow us to consider the composition of counterpoint both in a 'vertical' way, in which we consider the harmony of the notes played together, and in a 'horizontal' way, in which we consider the melodic development of each of the parts individually, which provides the independence of the counterpoints from each other and their melodic beauty.
+
+This is what makes it interesting to analyse from a constraint programming point of view. We'll come back to this later, but for now let's concentrate on Fux's music theory.
+
+
+\subsection{Melodic Rules}
+
+Fux explains that there are rules that apply within parts (the horizontal rules) about the order of the interval between one note and the next: we find, for example, that a melody is more beautiful\footnote{Throughout this work we will speak of the "beauty of music". This beauty is highly subjective, and therefore reference will be made to the Fuxian concept of music to define whether a melody is beautiful or not. In other words, music will be considered beautiful if it conforms to the rules of Fux, and vice versa}. if the spaces between its successive notes are small, that there is no chromatic succession if the notes that follow each other are varied, and so on. These 'horizontal' rules are called 'melodic' rules because they concern only the melody.
+
+
+\subsection{Harmonic Rules}
+
+
+If there is a horizontal perspective to counterpoint, there is also, of course, a vertical perspective. This perspective is expressed in a harmonic relationship between the different voices. At each point in the composition, a series of rules (known as 'harmonic rules' because they concern harmony alone) apply. For example, there is the rule that in the first beats of each measure the interval between the voices must be a consonance \footnote{A third, a fifth, a sixth or an octave.}; imperfect consonances\footnote{Thirds and sixths.} are preferred to fifths, which are preferred to octaves; and the rule that the different voices must be different at each point in the composition.
+
 \section{T. Wafflard's thesis in a nutshell}
 \section{The contributions of the present thesis}
 \begin{enumerate}
