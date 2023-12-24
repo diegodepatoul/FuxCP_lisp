@@ -458,52 +458,48 @@
 ; @completely new or reworked
 (defun reorder-costs (species-list)
     (print "########## REORDERING ##########")
+    (setf costs-names-by-order (make-list 13 :initial-element nil))
+    (maphash #'(lambda (key value)
+            (setf value (- (parse-integer value) 1))
+            (setf (nth value costs-names-by-order) (append (nth value costs-names-by-order) (list key)))
+            )
+        *cost-preferences*)
+    ; THIS CAN SEEM COUNTERINTUITIVE BUT THE COSTS ARE GIVEN IN REVERSE ORDER TO C++ SO WE HAVE TO REVERT
+    (setq costs-names-by-order (reverse costs-names-by-order))
     (let (
         (i 0)
         (n-different-costs 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
-        (costs-names-by-order (list ; from least to most important
-                                'variety-cost
-                                'direct-move-to-p-cons-cost
-                                'm-degrees-cost
-                                'motions-cost
-                                'not-cambiata-cost
-                                'm2-eq-zero-cost
-                                'off-key-cost
-                                'fifth-cost
-                                'penult-thesis-cost
-                                'octave-cost               
-                                'h-triad-3rd-species-cost
-                                'h-triad-cost                 
-                                'no-syncope-cost
-        ))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
-        (dolist (cost costs-names-by-order)
-            (let ((index (gethash cost *cost-indexes)))
-                (if index (progn
-                    (assert (gethash cost *cost-indexes) () "The hash is nil, but should not be. Current cost name = ~A" (nth i costs-names-by-order))
-                    (let
-                        (
-                            (current-cost-array nil)
-                            (current-cost-sum (gil::add-int-var *sp* 0 1000))
-                        )
-                        (loop for index in (gethash cost *cost-indexes) do (progn
-                            (assert index () "index should not be nil")
-                            (setf current-cost-array (append current-cost-array (list (nth index *cost-factors))))
-                            ;(setf (nth i reordered-costs) (nth index *cost-factors))
-                            ;(print (list i "th cost = " cost))
-                            ;(incf i)
-                        ))
-                        (gil::g-sum *sp* current-cost-sum current-cost-array)
-                        (setf (nth n-different-costs reordered-costs) current-cost-sum)
-                        (print (list n-different-costs "th cost = " cost))
-                    )
-                    (incf n-different-costs)
-                    )
-                    ; if index is nil (i.e. if this cost doesn't exist in this species)
-                    (print (list "Cost " cost " was not found."))
+        (dolist (preference-level costs-names-by-order)
+            (let
+                (
+                    (current-cost-array '())
+                    (current-cost-sum (gil::add-int-var *sp* 0 1000))
                 )
+                (dolist (cost preference-level)
+                    (let ((index (gethash cost *cost-indexes)))
+                        (if index (progn
+                            (loop for index in (gethash cost *cost-indexes) do (progn
+                                (assert index () "index should not be nil")
+                                ;(setf current-cost-array (append current-cost-array (list (nth index *cost-factors))))
+                                ;;(setf current-cost-array (cons current-cost-array (nth index *cost-factors)))
+                                (push (nth index *cost-factors) current-cost-array)
+                            ))
+                            )
+                            ; if index is nil (i.e. if this cost doesn't exist in this species)
+                            (print (list "Cost " cost " was not found."))
+                        )
+                    )
+                )
+                (if preference-level (progn ; if the preference level is not empty
+                    (gil::g-lmax *sp* current-cost-sum current-cost-array)
+                    (print current-cost-array)
+                    (setf (nth n-different-costs reordered-costs) current-cost-sum)
+                    (print (list n-different-costs "th cost = " preference-level))
+                    (incf n-different-costs) ; increase by one only if there was a cost in the preference level
+                ))
             )
         )
         (setf reordered-costs (subseq reordered-costs 0 n-different-costs))
@@ -672,6 +668,7 @@
         (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
         (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
         (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
+        (handler-case (print (list "nosyncope  = " (gil::g-values sol (no-syncope-cost (second counterpoints))))) (error (c) (print "error with syncopes")))
         ;(print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus)))))
         ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
         ;(print (list "direct   = " (gil::g-values sol *direct)))

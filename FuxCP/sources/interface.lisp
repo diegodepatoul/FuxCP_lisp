@@ -1146,6 +1146,23 @@
             (setparam-cost 'variety-cost (variety-cost-param (om::object editor)))
             (setparam-cost 'penult-fifth-cost (penult-fifth-cost-param (om::object editor)))
 
+
+            ;; preferences for the cost order
+            (defparameter *cost-preferences* (make-hash-table))
+            (setf (gethash 'no-syncope-cost *cost-preferences*)               (ligature-cost-param (om::object editor)))
+            (setf (gethash 'h-triad-cost *cost-preferences*)                (h-triad-cost-param (om::object editor)))
+            (setf (gethash 'h-triad-3rd-species-cost *cost-preferences*)            (h-triad-3rd-cost-param (om::object editor)))
+            (setf (gethash 'fifth-cost *cost-preferences*)                 (fifths-cost-param (om::object editor)))
+            (setf (gethash 'octave-cost *cost-preferences*)                (octaves-cost-param (om::object editor)))
+            (setf (gethash 'motions-cost *cost-preferences*)                (motions-cost-param (om::object editor)))
+            (setf (gethash 'direct-move-to-p-cons-cost *cost-preferences*)  (direct-move-to-p-cons-cost-param (om::object editor)))
+            (setf (gethash 'off-key-cost *cost-preferences*)                (off-key-cost-param (om::object editor)))
+            (setf (gethash 'm-degrees-cost *cost-preferences*)              (m-degrees-cost-param (om::object editor)))
+            (setf (gethash 'not-cambiata-cost *cost-preferences*)           (not-cambiata-cost-param (om::object editor)))
+            (setf (gethash 'm2-eq-zero-cost *cost-preferences*)             (m2-eq-zero-cost-param (om::object editor)))
+            (setf (gethash 'variety-cost *cost-preferences*)                (variety-cost-param (om::object editor)))
+            (setf (gethash 'penult-thesis-cost *cost-preferences*)           (penult-fifth-cost-param (om::object editor)))
+
             
             (setf species-integer-list (convert-to-species-integer-list (species-param (om::object editor))))
             (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
