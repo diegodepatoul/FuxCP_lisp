@@ -463,19 +463,18 @@
         (n-different-costs 0)
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
         (costs-names-by-order (list ; from least to most important
-                                'motions-cost
-                                'm2-eq-zero-cost
+                                'variety-cost
                                 'direct-move-to-p-cons-cost
+                                'm-degrees-cost
+                                'motions-cost
                                 'not-cambiata-cost
-                                'penult-thesis-cost
+                                'm2-eq-zero-cost
+                                'off-key-cost
                                 'fifth-cost
+                                'penult-thesis-cost
                                 'octave-cost               
                                 'h-triad-3rd-species-cost
                                 'h-triad-cost                 
-                                'successive-p-cons-cost
-                                'm-degrees-cost
-                                'variety-cost
-                                'off-key-cost
                                 'no-syncope-cost
         ))
         )
@@ -570,15 +569,17 @@
                 (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type gil::INT_VAL_MIN)
             )
 
+            ;(gil::g-branch *sp* (first (motions (nth i counterpoints))) var-branch-type val-branch-type)
+
             ; branching *total-cost
             ;(if (eq (nth i species) 2)
                 ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
             ;)
         ))
-         
+
     
         ;; Solution variables branching
-        (gil::g-branch *sp* the-cp gil::INT_VAR_NONE gil::INT_VAL_RND)
+        (gil::g-branch *sp* the-cp gil::INT_VAR_DEGREE_MAX gil::INT_VAL_RND)
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object

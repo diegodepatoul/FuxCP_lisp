@@ -71,15 +71,14 @@
 
     ; if penultimate measure, a major sixth or a minor third must be used
     ; depending if the cantus firmus is at the bass or on the top part
-    (print "Penultimate measure...")
-    (add-penult-cons-cf-cst (penult (is-not-lowest cantus-firmus)) (penult (first (h-intervals cantus-firmus))))  
-    ;(gil::g-rel *sp* (penult (first (h-intervals cantus-firmus))) gil::IRT_EQ 3)
+    (print "Penultimate measure...")    
+    (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals cantus-firmus))))
 
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")
-(if (= *N-PARTS 2)
-    (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-lowest cantus-firmus))
-)
+    (if (= *N-PARTS 2)
+        (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-lowest cantus-firmus))
+    )
 #|
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, cantus-firmus melodic interval < -4

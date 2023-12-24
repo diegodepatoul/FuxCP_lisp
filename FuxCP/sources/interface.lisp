@@ -54,6 +54,21 @@
     ; ---------- Output & Stop ----------
     (current-csp :accessor current-csp :initform nil :documentation "")
     (result-voice :accessor result-voice :initarg :result-voice :initform nil :documentation "")
+    ; ---------- Cost order --------------
+    (ligature-cost-param :accessor ligature-cost-param :initform "1" :type integer :documentation "")
+    (h-triad-cost-param :accessor h-triad-cost-param :initform "2" :type integer :documentation "")
+    (h-triad-3rd-cost-param :accessor h-triad-3rd-cost-param :initform "3" :type integer :documentation "")
+    (fifths-cost-param :accessor fifths-cost-param :initform "6" :type integer :documentation "")
+    (octaves-cost-param :accessor octaves-cost-param :initform "4" :type integer :documentation "")
+    (motions-cost-param :accessor motions-cost-param :initform "11" :type integer :documentation "")
+    (direct-move-to-p-cons-cost-param :accessor direct-move-to-p-cons-cost-param :initform "13" :type integer :documentation "")
+    (off-key-cost-param :accessor off-key-cost-param :initform "7" :type integer :documentation "")
+    (m-degrees-cost-param :accessor m-degrees-cost-param :initform "12" :type integer :documentation "")
+    (not-cambiata-cost-param :accessor not-cambiata-cost-param :initform "10" :type integer :documentation "")
+    (m2-eq-zero-cost-param :accessor m2-eq-zero-cost-param :initform "9" :type integer :documentation "")
+    (variety-cost-param :accessor variety-cost-param :initform "8" :type integer :documentation "")
+    (penult-fifth-cost-param :accessor penult-fifth-cost-param :initform "5" :type integer :documentation "")
+
 )
     (:icon 225)
     (:documentation "This class implements FuxCP.
@@ -121,6 +136,11 @@
             :position (om::om-make-point 1225 330)
             :bg-color om::*workspace-color*)
         )
+        (orderable-panel (om::om-make-view 'om::om-view
+            :size (om::om-make-point 1600 220)
+            :position (om::om-make-point 5 460)
+            :bg-color om::*azulito*)
+        )
         )
 
         (make-general-params-panel self general-params-panel)
@@ -128,6 +148,7 @@
         (make-species-params-panel self species-params-panel)
         (make-search-params-panel self search-params-panel)
         (make-search-buttons self search-buttons)
+        (make-new-panel-with-button self orderable-panel)
         ; ; add the subviews for the different parts into the main view
         (om::om-add-subviews
             self
@@ -136,11 +157,284 @@
             species-params-panel
             general-params-panel
             melodic-params-panel
+            orderable-panel
         )
     )
     ; return the editor
     self
 )
+
+(defun make-new-panel-with-button (editor panel)
+    (om::om-add-subviews
+        panel
+        (om::om-make-dialog-item
+        'om::om-static-text
+        (om::om-make-point 0 0)
+        (om::om-make-point 220 20)
+        "Cost importance of..."
+        :font om::*om-default-font2b*
+        )
+
+        (om::om-make-dialog-item
+        'om::om-static-text
+        (om::om-make-point 80 30)
+        (om::om-make-point 150 20)
+        "Ligatures in 4th sp."
+        :font om::*om-default-font1b*
+        )
+        (om::om-make-dialog-item
+        'om::pop-up-menu
+        (om::om-make-point 0 30)
+        (om::om-make-point 70 20)
+        "Ligatures in 4th species"
+        :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+        :value (ligature-cost-param (om::object editor))
+        :di-action #'(lambda (cost)
+            (setf (ligature-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+        )
+        )
+
+         ;; Add pop-up menus for other cost parameters
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 80 70)
+  (om::om-make-point 220 20)
+  "Use a lot of harmonic triads"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 0 70)
+  (om::om-make-point 70 20)
+  "Use a lot of harmonic triads"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (h-triad-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (h-triad-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 80 110)
+  (om::om-make-point 200 20)
+  "Upbeat h. triad (3rd sp.)"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 0 110)
+  (om::om-make-point 70 20)
+  "Upbeat h. triad (3rd sp.)"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (h-triad-3rd-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (h-triad-3rd-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 80 150)
+  (om::om-make-point 150 20)
+  "No fifths"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 0 150)
+  (om::om-make-point 70 20)
+  "No fifths"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (fifths-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (fifths-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 380 0)
+  (om::om-make-point 150 20)
+  "No octaves"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 300 0)
+  (om::om-make-point 70 20)
+  "No octaves"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (octaves-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (octaves-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 380 40)
+  (om::om-make-point 220 20)
+  "Motions cost (as defined above)"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 300 40)
+  (om::om-make-point 70 20)
+  "Motions cost (as defined above)"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (motions-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (motions-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 380 80)
+  (om::om-make-point 220 20)
+  "No direct motion to p. cons."
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 300 80)
+  (om::om-make-point 70 20)
+  "No direct motion to p. cons."
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (direct-move-to-p-cons-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (direct-move-to-p-cons-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 380 120)
+  (om::om-make-point 150 20)
+  "No off-key notes"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 300 120)
+  (om::om-make-point 70 20)
+  "No off-key notes"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (off-key-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (off-key-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 380 160)
+  (om::om-make-point 250 20)
+  "Melodic intervals (defined above)"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 300 160)
+  (om::om-make-point 70 20)
+  "M Degrees cost"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (m-degrees-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (m-degrees-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 680 0)
+  (om::om-make-point 150 20)
+  "Many cambiatas"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 600 0)
+  (om::om-make-point 70 20)
+  "Many cambiatas"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (not-cambiata-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (not-cambiata-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 680 40)
+  (om::om-make-point 220 20)
+  "Diff. notes in down- and upbeat"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 600 40)
+  (om::om-make-point 70 20)
+  "Diff. notes in down- and upbeat"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (m2-eq-zero-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (m2-eq-zero-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 680 80)
+  (om::om-make-point 150 20)
+  "A lot of variety"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 600 80)
+  (om::om-make-point 70 20)
+  "A lot of variety"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (variety-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (variety-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+
+ ;; Repeat the pattern for other cost parameters...
+
+ (om::om-make-dialog-item
+  'om::om-static-text
+  (om::om-make-point 680 120)
+  (om::om-make-point 280 20)
+  "Penult. thesis should be a fifth (2nd sp.)"
+  :font om::*om-default-font1b*)
+ (om::om-make-dialog-item
+  'om::pop-up-menu
+  (om::om-make-point 600 120)
+  (om::om-make-point 70 20)
+  "Penult. thesis should be a fifth (2nd sp.)"
+  :range (mapcar #'(lambda (x) (format nil "~A" x)) (loop for i from 1 to 20 collect i))
+  :value (penult-fifth-cost-param (om::object editor))
+  :di-action #'(lambda (cost)
+                 (setf (penult-fifth-cost-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                 )
+  )
+    )
+)
+
 
 (defun make-melodic-params-panel (editor melodic-params-panel)
     (om::om-add-subviews
@@ -836,6 +1130,22 @@
             ;; set search parameters
             (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
+
+            ;; cost preference
+            (setparam-cost 'ligature-cost (ligature-cost-param (om::object editor)))
+            (setparam-cost 'h-triad-cost (h-triad-cost-param (om::object editor)))
+            (setparam-cost 'h-triad-3rd-cost (h-triad-3rd-cost-param (om::object editor)))
+            (setparam-cost 'fifths-cost (fifths-cost-param (om::object editor)))
+            (setparam-cost 'octaves-cost (octaves-cost-param (om::object editor)))
+            (setparam-cost 'motions-cost (motions-cost-param (om::object editor)))
+            (setparam-cost 'direct-move-to-p-cons-cost (direct-move-to-p-cons-cost-param (om::object editor)))
+            (setparam-cost 'off-key-cost (off-key-cost-param (om::object editor)))
+            (setparam-cost 'm-degrees-cost (m-degrees-cost-param (om::object editor)))
+            (setparam-cost 'not-cambiata-cost (not-cambiata-cost-param (om::object editor)))
+            (setparam-cost 'm2-eq-zero-cost (m2-eq-zero-cost-param (om::object editor)))
+            (setparam-cost 'variety-cost (variety-cost-param (om::object editor)))
+            (setparam-cost 'penult-fifth-cost (penult-fifth-cost-param (om::object editor)))
+
             
             (setf species-integer-list (convert-to-species-integer-list (species-param (om::object editor))))
             (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
