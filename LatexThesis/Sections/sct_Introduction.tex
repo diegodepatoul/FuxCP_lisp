@@ -7,16 +7,6 @@ This thesis will therefore be divided into several parts: we will first immerse 
 It is very important to know that this thesis is based on T. Wafflard's thesis "FuxCP: a constraint programming based tool formalizing Fux's musical theory of counterpoint" \cite{wafflard2023}. The present work takes up T. Wafflard's concepts and definitions, and could only be understood in its full depth by reading and fully understanding that work as well. A short summary of it is given in section \ref{section:thomas-in-a-nutshell}.
 
 
-\section{Underlying works and editions of \gaps used}
-As has just been said, this work is the continuation of T. Wafflard's thesis. However, it also relies heavily on the work of
-\begin{itemize}
-    \item \textcite{GiLthesis}, who presented an interface for using Gecode functions in Lisp called "GiL". This interface was then tested with some rhythm-oriented constraints.
-    \item \textcite{Melothesis}, who explored the use of constraint programming in OpenMusic using GiL. The tool that was produced in this thesis is capable of producing songs with basic harmonic and melodic constraints.
-    \item \textcite{Melo2thesis}, who created a tool capable of combining the strengths of the first two implementations while continuing to develop support for GiL.
-\end{itemize}
-
-Regarding \gaps (i.e. the book Fux wrote), there are obviously many versions of it. This is good news, as Fux can sometimes be really unclear about what he means, and having many versions (some annotated, some not) from many people who also had to interpret Fux to translate it is a great treasure, as it helps to clarify Fux's meanings. This work is therefore based on several different editions and translations of the book, although it is mainly based on Alfred Mann's English translation \cite{GaPEng}. French (both Chevalier's \cite{GaPFrChevalier} and Denis's \cite{GaPFrDenis}), German \cite{GaPDe} and Latin \cite{GapLa} translations are used when it is necessary to remove an ambiguity or clarify an unclear rule. These translations have been chosen because French is the \textit{lingua franca} of the team; German is the language of Fux and the environment in which he developed; and Latin is the original version, so we can hope that it is the most faithful to what he wanted to convey.
-
 
 \section{Counterpoint and Fux}
 And before we get to the heart of the matter (which is the formalisation), let's take a look at Fux's theory of counterpoint, because that's the work that this work aims to formalise. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent and distinct from one another but are balanced and sound beautiful \cite{CpSachs}. No voice is dominant over the others, and all are main voices, even though some may take a small precedence during part of the composition \cite{hess2016}.  
@@ -25,7 +15,7 @@ And before we get to the heart of the matter (which is the formalisation), let's
 Counterpoint has been central to the work of many famous composers from different artistic movements, such as Bach in the Baroque, Mozart in the Classical and Beethoven in the Romantic, and has continued to arouse interest over the centuries, with the development of key texts on the subject, such as Schenker's Counterpoint \cite{schenker1906} or Jeppesen's Analysis \cite{jeppesen1960}. And while Bach was probably the master of counterpoint composition in his day \cite{yearsley2002}, the central and founding work in the teaching of counterpoint belongs to another great Baroque composer: the Austrian Fux and his treatise \gap. In it, this Baroque composer gives a detailed analysis of two-, three- and four-part writing of counterpoint, all told as a discourse between a master and his pupil. \gaps  was part of the species counterpoint movement, a way of conceiving counterpoint in five different types that could then be combined. This is the work on which this dissertation is based. 
 
 
-For Fux, but also for many other authors, these species of counterpoint are governed by rules that are as different as they are varied, and it is these rules that interest us in the present work. They are based on old concepts that have been discussed by many authors \cite{crocker1962}. They include, for example, the notions of opposite motion and consonance (which in turn can be either perfect or imperfect). These concepts and their application to counterpoint are particularly interesting because they allow us to consider the composition of counterpoint both in a 'vertical' way, in which we consider the harmony of the notes played together, and in a 'horizontal' way, in which we consider the melodic development of each of the parts individually, which provides the independence of the counterpoints from each other and their melodic beauty.
+For Fux, but also for many other authors, species counterpoint are governed by many diverse rules, and it is these rules that interest us in the present work. The rules are based on old concepts that go back to older styles \cite{crocker1962} and have been discussed by many authors.  Those concepts include, for example, the notions of opposite motion and consonance (which in turn can be either perfect or imperfect). These concepts and their application to counterpoint are particularly interesting because they allow us to consider the composition of counterpoint both in a 'vertical' way, in which we consider the harmony of the notes played together, and in a 'horizontal' way, in which we consider the melodic development of each of the parts individually, which provides the independence of the counterpoints from each other and their melodic beauty.
 
 This is what makes it interesting to analyse from a constraint programming point of view. We'll come back to this later, but for now let's concentrate on Fux's music theory.
 
@@ -55,7 +45,24 @@ In addition to these rules, there are a series of basic concepts, namely: specie
     \item \textbf{Fifth species}: Florid counterpoint \textendash{} counterpoint is a mixture of all the other species and is the richest form of counterpoint. It allows great freedom of composition while respecting the rules of the other types.
 \end{enumerate}
 
-Even though these species can be combined in order to form a three-part composition with 
+Although these types could technically be combined to form a three-part composition with two different types of counterpoint, Fux seems to prefer to write a 'special' counterpoint (i.e. second, third, fourth or fifth species) in one voice and only whole notes (i.e. a first species counterpoint) in another voice. He also sometimes says that it is possible and recommended to mix species, but does not do so extensively.
+
+\section{Building a computer tool for writing counterpoint}
+We have just seen that counterpoint is an ancient style, and many generations of composers have worked on it (and still do). So it's only natural that, over the years, some computer specialists have thought about automating the writing of counterpoint. The first notorious example of this was Schottstaedt, who in 1984 developed an expert system for writing counterpoint based on Fux's rules. Confronted with the technologies and algorithms of his time, he created an algorithm consisting of over 300 if-else clauses, with the drawback that these if-else clauses are far less efficient than what constraints are capable of today.
+
+Many years later, the species counterpoint was implemented by Dorien Herremans and Kenneth Sörensen, who developed a way to compose counterpoints of the first kind only, using a variable neighbourhood search algorithm \cite{Herremans2012}.
+
+\section{Underlying works and editions of \gaps used}
+As has been said before, this work is the continuation of T. Wafflard's thesis. However, it also relies heavily on the work of
+\begin{itemize}
+    \item \textcite{GiLthesis}, who presented an interface for using Gecode functions in Lisp called "GiL". This interface was then tested with some rhythm-oriented constraints.
+    \item \textcite{Melothesis}, who explored the use of constraint programming in OpenMusic using GiL. The tool that was produced in this thesis is capable of producing songs with basic harmonic and melodic constraints.
+    \item \textcite{Melo2thesis}, who created a tool capable of combining the strengths of the first two implementations while continuing to develop support for GiL.
+\end{itemize}
+
+Regarding \gaps (i.e. the book Fux wrote), there are obviously many versions of it. This is good news, as Fux can sometimes be really unclear about what he means, and having many versions (some annotated, some not) from many people who also had to interpret Fux to translate it is a great treasure, as it helps to clarify Fux's meanings. This work is therefore based on several different editions and translations of the book, although it is mainly based on Alfred Mann's English translation \cite{GaPEng}. French (both Chevalier's \cite{GaPFrChevalier} and Denis's \cite{GaPFrDenis}), German \cite{GaPDe} and Latin \cite{GapLa} translations are used when it is necessary to remove an ambiguity or clarify an unclear rule. These translations have been chosen because French is the \textit{lingua franca} of the team; German is the language of Fux and the environment in which he developed; and Latin is the original version, so we can hope that it is the most faithful to what he wanted to convey.
+
+
 
 \section{T. Wafflard's thesis in a nutshell}\label{section:thomas-in-a-nutshell}
 
