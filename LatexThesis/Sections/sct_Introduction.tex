@@ -4,41 +4,105 @@ This thesis is a formalisation of three-part counterpoint based on the writings 
 
 This thesis will therefore be divided into several parts: we will first immerse ourselves in \gap, Fux's central work, from which we will meticulously extract the rules laid down by its author. We will briefly discuss these rules to make them unambiguous, and then translate them into formal logic, so that each rule Fux had in mind when writing his work is mathematically recorded. On this basis, we will create a computer implementation using constraint programming. We will then look at how this implementation finds results, discussing the search algorithm and heuristics used. We then discuss the cost techniques used to obtain the best possible results. Finally, we will analyse the musical compositions produced by the tool created.
 
-\section{Fux's theory of counterpoint}
-
-But to fully understand what we're talking about, we need to focus on a few key points. First, let's talk about counterpoint. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent in terms of rhythm and melodic contour, but harmonically interdependent. These melodies sound melodious when played independently, and harmonious when played together. 
+It is very important to know that this thesis is based on T. Wafflard's thesis "FuxCP: a constraint programming based tool formalizing Fux's musical theory of counterpoint" \cite{wafflard2023}. The present work takes up T. Wafflard's concepts and definitions, and could only be understood in its full depth by reading and fully understanding that work as well. A short summary of it is given in section \ref{section:thomas-in-a-nutshell}.
 
 
-Counterpoint has been central to the work of many famous composers from different artistic movements, such as Bach in the Baroque, Mozart in the Classical and Beethoven in the Romantic, and has continued to arouse interest over the centuries, with the development of key texts on the subject, such as Schenker's Counterpoint \cite{schenker1906} or Jeppesen's Analysis \cite{jeppesen1960}. However, the mainstay of this musical style is the \gaps  by the Austrian composer Fux. In it, this Baroque composer gives a detailed analysis of two-, three- and four-part writing of counterpoint, all told as a discourse between a master and his pupil. \gaps  was part of the species counterpoint movement, a way of conceiving counterpoint in five different types that could then be combined. This is the work on which this dissertation is based. 
+\section{Underlying works and editions of \gaps used}
+As has just been said, this work is the continuation of T. Wafflard's thesis. However, it also relies heavily on the work of
+\begin{itemize}
+    \item \textcite{GiLthesis}, who presented an interface for using Gecode functions in Lisp called "GiL". This interface was then tested with some rhythm-oriented constraints.
+    \item \textcite{Melothesis}, who explored the use of constraint programming in OpenMusic using GiL. The tool that was produced in this thesis is capable of producing songs with basic harmonic and melodic constraints.
+    \item \textcite{Melo2thesis}, who created a tool capable of combining the strengths of the first two implementations while continuing to develop support for GiL.
+\end{itemize}
+
+Regarding \gaps (i.e. the book Fux wrote), there are obviously many versions of it. This is good news, as Fux can sometimes be really unclear about what he means, and having many versions (some annotated, some not) from many people who also had to interpret Fux to translate it is a great treasure, as it helps to clarify Fux's meanings. This work is therefore based on several different editions and translations of the book, although it is mainly based on Alfred Mann's English translation \cite{GaPEng}. French (both Chevalier's \cite{GaPFrChevalier} and Denis's \cite{GaPFrDenis}), German \cite{GaPDe} and Latin \cite{GapLa} translations are used when it is necessary to remove an ambiguity or clarify an unclear rule. These translations have been chosen because French is the \textit{lingua franca} of the team; German is the language of Fux and the environment in which he developed; and Latin is the original version, so we can hope that it is the most faithful to what he wanted to convey.
+
+
+\section{Counterpoint and Fux}
+And before we get to the heart of the matter (which is the formalisation), let's take a look at Fux's theory of counterpoint, because that's the work that this work aims to formalise. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent and distinct from one another but are balanced and sound beautiful \cite{CpSachs}. No voice is dominant over the others, and all are main voices, even though some may take a small precedence during part of the composition \cite{hess2016}.  
+
+
+Counterpoint has been central to the work of many famous composers from different artistic movements, such as Bach in the Baroque, Mozart in the Classical and Beethoven in the Romantic, and has continued to arouse interest over the centuries, with the development of key texts on the subject, such as Schenker's Counterpoint \cite{schenker1906} or Jeppesen's Analysis \cite{jeppesen1960}. And while Bach was probably the master of counterpoint composition in his day \cite{yearsley2002}, the central and founding work in the teaching of counterpoint belongs to another great Baroque composer: the Austrian Fux and his treatise \gap. In it, this Baroque composer gives a detailed analysis of two-, three- and four-part writing of counterpoint, all told as a discourse between a master and his pupil. \gaps  was part of the species counterpoint movement, a way of conceiving counterpoint in five different types that could then be combined. This is the work on which this dissertation is based. 
 
 
 For Fux, but also for many other authors, these species of counterpoint are governed by rules that are as different as they are varied, and it is these rules that interest us in the present work. They are based on old concepts that have been discussed by many authors \cite{crocker1962}. They include, for example, the notions of opposite motion and consonance (which in turn can be either perfect or imperfect). These concepts and their application to counterpoint are particularly interesting because they allow us to consider the composition of counterpoint both in a 'vertical' way, in which we consider the harmony of the notes played together, and in a 'horizontal' way, in which we consider the melodic development of each of the parts individually, which provides the independence of the counterpoints from each other and their melodic beauty.
 
 This is what makes it interesting to analyse from a constraint programming point of view. We'll come back to this later, but for now let's concentrate on Fux's music theory.
 
+\subsection{Fux's theory of counterpoint}
+As we have just said, Fux uses a set of rules to create 'the right counterpoint'. These rules can be divided into three categories: melodic rules, harmonic rules and rules of motion. We will examine them here, bearing in mind that the formalisation of all the rules for two-voice counterpoint can be found in T. Wafflard's thesis, and that the complete set of rules (in mathematical form) can be found in the appendix \ref{appendix:complete-set-of-rule} to this thesis.
 
-\subsection{Melodic Rules}
+\subsubsection{Melodic Rules}
 
-Fux explains that there are rules that apply within parts (the horizontal rules) about the order of the interval between one note and the next: we find, for example, that a melody is more beautiful\footnote{Throughout this work we will speak of the "beauty of music". This beauty is highly subjective, and therefore reference will be made to the Fuxian concept of music to define whether a melody is beautiful or not. In other words, music will be considered beautiful if it conforms to the rules of Fux, and vice versa}. if the spaces between its successive notes are small, that there is no chromatic succession if the notes that follow each other are varied, and so on. These 'horizontal' rules are called 'melodic' rules because they concern only the melody.
-
-
-\subsection{Harmonic Rules}
+Fux explains that there are rules that apply within parts (the horizontal rules) about the order of the interval between one note and the next: we find, for example, that a melody is more beautiful\footnote{Throughout this work we will speak of the "beauty of music". This beauty is highly subjective, and therefore reference will be made to the Fuxian concept of music to define whether a melody is beautiful or not. In other words, music will be considered beautiful if it conforms to the rules of Fux, and vice versa} if the intervals between its successive notes are small, that there is no chromatic succession, if the notes that follow each other are varied, and so on. These 'horizontal' rules are called 'melodic' rules because they concern only the melody. These rules apply within a given counterpoint.
 
 
-If there is a horizontal perspective to counterpoint, there is also, of course, a vertical perspective. This perspective is expressed in a harmonic relationship between the different voices. At each point in the composition, a series of rules (known as 'harmonic rules' because they concern harmony alone) apply. For example, there is the rule that in the first beats of each measure the interval between the voices must be a consonance \footnote{A third, a fifth, a sixth or an octave.}; imperfect consonances\footnote{Thirds and sixths.} are preferred to fifths, which are preferred to octaves; and the rule that the different voices must be different at each point in the composition.
+\subsubsection{Harmonic Rules}
 
-\section{T. Wafflard's thesis in a nutshell}
-\section{The contributions of the present thesis}
+
+If there is a horizontal perspective to counterpoint, there is also, of course, a vertical perspective. This perspective is expressed in a harmonic relationship between the different voices. At each point in the composition, a series of rules (known as 'harmonic rules' because they concern harmony alone) apply. For example, there is the rule that in the first beats of each measure the interval between the voices must be a consonance \footnote{A third, a fifth, a sixth or an octave.}; imperfect consonances\footnote{Thirds and sixths.} are preferred to fifths, which are preferred to octaves; and the rule that the different voices must be different at each point in the composition. These rules apply between the counterpoints.
+
+\subsubsection{Motion rules}
+Finally, there is a third type of rule: movement rules. These rules are a hybrid of the two discussed above in that they consider not only vertical interaction, i.e. harmony, but also horizontal interaction, i.e. melody. They can therefore be seen as 'diagonal' rules that relate the unique melody of each counterpoint to its respective harmonies. These rules include, for example, the fact that we prefer voices that move in opposite directions (i.e. if one voice goes up, we want the other to go down), the rule that there should be no sequence of fifths or octaves between voices, or the rule that we should not arrive at a perfect interval by direct motion.
+
+\subsection{Species}
+In addition to these rules, there are a series of basic concepts, namely: species. Species Counterpoint works on the basis of five different species, each with its own peculiarities. The species are as follows:
 \begin{enumerate}
-    \item Theory of three voices (low / mid / high strata)
-    \item Mathematical formalization of 3 voices
-    \item Constraint solver for 3 voices
-    \item Musical experiments with preferences (incl. Youtube musical fragments)
-    \item User interface $\rightarrow$ screenshots
-    \item Adaptation of Thibault's rules - changes made for 3 voices
-    \item Roadmap of your master's thesis
-    \item Summarize content of each chapter
+    \item \textbf{First species}: Note against note \textendash{} counterpoint is composed entirely of rounds, and the composition is a sequence of harmonies sounding on the first beat.
+    \item \textbf{Second species}: Half notes against whole notes \textendash{} the counterpoint is composed entirely of white notes, which introduce dissonant harmonies.
+    \item \textbf{Third species}: Quarters against whole notes \textendash{} the counterpoint is made up entirely of quarter notes, which allow more different movements and more freedom in the composition.
+    \item \textbf{Fourth species}: The ligature \textendash{} the counterpoint is delayed by two beats, creating syncopation. The notes are all round (i.e., tied minims, since they span between two measures).
+    \item \textbf{Fifth species}: Florid counterpoint \textendash{} counterpoint is a mixture of all the other species and is the richest form of counterpoint. It allows great freedom of composition while respecting the rules of the other types.
 \end{enumerate}
+
+Even though these species can be combined in order to form a three-part composition with 
+
+\section{T. Wafflard's thesis in a nutshell}\label{section:thomas-in-a-nutshell}
+
+In 2023, T. Wafflard proposed a complete formalisation of Fux's two-voice counterpoint. This formalisation takes each of the rules given by Fux in his chapter on two-voice composition, translates them into a formal logic and implements them in a computer tool which, by means of an input key, makes it possible to compose a counterpoint. The purpose of this section is not to summarise this excellent work in a few lines, but to present some elements of T. Wafflard's work which will be the key to understanding the three-voice formalisation.
+
+\subsection{Array notation}
+Throughout T. Wafflard's work (and this one), it is necessary to refer to numerous arrays. These arrays formally represent the musical composition and many of its underlying aspects. These arrays always have two indexes: the first index represents the time in question, the second index represents the measure in question. These indices are written in computer notation. For example, $X[3, 7]$ represents the value X on the 3rd beat of the 7th measure.
+
+\subsection{Variables}
+In order to formalise the Fux rules, it was necessary to define variables whose purpose is to represent a compositional reality. Thus T. Wafflard created variables to represent various concepts such as the pitch of notes ($N[i,j]$), the harmonic interval between voices ($H[i,j]$), the melodic interval from one note to the next ($M[i,j]$), and many others. It is also in his work that we find the definition of constants that will be useful to us later (think, for example, of the constant $m$, which represents the length of the \cf, $n$, which represents the number of notes in a given counterpoint, or Cons$_{\text{all, p, imp}}$, which represents the set of consonances (all, perfect and imperfect)).
+Costs are also defined, which will be more than useful in this work. These costs are defined as follows:
+
+\begin{equation}
+    \begin{gathered}
+        cost = \begin{cases}
+            0 & \text{if } pref = \text{no cost}\\
+            1 & \text{if } pref = \text{low cost}\\
+            2 & \text{if } pref = \text{medium cost}\\
+            4 & \text{if } pref = \text{high cost}\\
+            8 & \text{if } pref = \text{last resort}\\
+            2m & \text{if } pref = \text{cost prop. to length}\\
+            64m & \text{if } pref = \text{forbidden}
+        \end{cases}
+    \end{gathered}
+\end{equation}
+
+These newly introduced rules are then related to each other to form the formalised rules: a simple example of a rule defined in the thesis is $H[0, m] \in Cons_{\text{perf}}$. This rule means that the last harmonic interval must be a perfect consonance\footnote{We'll see later on (section \ref{subsection:modified_variables}) which harmonic interval exactly.}.
+
+\subsection{Searching for the solution}
+T. Wafflard then uses constraint programming to translate these rules of formal logic and creates a tool capable of putting them into practice. This tool works as follows: it takes as input a \cf\footnote{The \cfs is the basic melody in the writing of a counterpoint. It is composed entirely of whole notes. Once the composition is complete, it is no more or less important than the other counterpoints. It is the basis from which we start writing}, defines a whole series of variables (those mentioned in the formalisation) to which relations are subsequently applied (the equations of the formalisation) and produces a counterpoint that follows all the rules that have been defined. In the case of T. Wafflard's implementation, the output counterpoint is obtained by a depth first search on the costs, which have been ordered by a sum on all the costs. It is therefore the sum of all the costs that is minimised.
+
+
+\section{The contributions of this paper}
+The aim of this work is to generalise T. Wafflard's formalisation to three-voice counterpoint, still based on Fux's work, and to create the corresponding implementation. It would be too easy to believe (wrongly) that three-voice counterpoint is nothing more than the combination of two two-voice counterpoints. From this point of view, we would then calculate a first counterpoint according to the \cf, and then a second counterpoint again according to the \cf, and that's it. Obviously, this view is too simplistic and doesn't really capture all the interactions between three voices. It is to this point (the peculiarities brought about by the addition of a third voice) that a whole section of this thesis will be devoted. Another part will be devoted to discussing and analysing the impact of costs. The following is a more detailed summary of the contributions of this thesis. 
+\begin{itemize}
+    \item \textbf{Introducing new concepts and redefining variables}:
+    As we have just mentioned, a three-part composition is much more than a (two+one) part composition. So we had to redefine and define a whole series of concepts to adapt to this reality. The creation of the (lowest, middle and highest) stratum concept is part of this, and is essential for formalising Fux's counterpoint constraints.
+    \item \textbf{Mathematical formalisation of three-part counterpoint}: As with the two parts of the formalisation, we rewrote Fux's explanations into unambiguous English and then translated them into logical notation. This formalisation builds on the previous formalisation for two voices, and sometimes (rarely) has to modify it.
+    \item \textbf{Implementation of a working constraint solver for a three-voice composition}: Those logical rules were then implemented as constraints and the solver was adapted to allow a search for two counterpoints.
+    \item \textbf{Searching for the best cost management techniques}: Three-part composition introduces so many possibilities for the search that it was important to rethink the way we thought about costs. Therefore, some cost management techniques were discussed to find out the best way to use the costs.
+    \item \textbf{Musical analysis of the solutions generated by the solver}: Finding the best solution also means being able to assess the quality of current solutions.
+    \item \textbf{Adapted user interface to allow them to compose with three voices and set a cost order}: All the new capabilities of the solver and the costing techniques must also be accessible to the user: it is now possible for a user to freely combine any number of species to form a three-part composition, and to set a cost order to indicate their preferences to the solver (in addition to the previous ability to set personalised costs).
+\end{itemize}
+
+
+
+
 \section{Musical examples}
 \section{Conclusions}
 \subsection*{3 voices gives much richer musical texture than 2 voices}
