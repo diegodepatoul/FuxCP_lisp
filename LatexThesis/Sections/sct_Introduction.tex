@@ -85,35 +85,32 @@ As with T. Wafflard, the musical reference work chosen is Fux's \gap, because it
 
 \section{T. Wafflard's thesis in a nutshell}\label{section:thomas-in-a-nutshell}
 
-In 2023, T. Wafflard proposed a complete formalisation of Fux's two-voice counterpoint. This formalisation takes each of the rules given by Fux about two-voice composition, translates them into formal logic and implements them in a computer tool which, by means of an input \cf, makes it possible to compose a counterpoint. The purpose of this section is not to summarise this excellent work in a few lines, but to present some elements of T. Wafflard's work which will be the key to understanding the three-voice formalisation.
+In 2023, T. Wafflard proposed a complete formalisation of Fux's two-voice counterpoint. This formalisation takes each of the rules given by Fux about two-voice composition and translates them into formal logic. Those formal relations are then translated into constraints and given to a constraint solver. When given an input \cf, the solver applies all the constraints it was given and yields an output counterpoint. The following subsection is not intended to be an exhaustive summary of all of T. Wafflard's excellent work, but rather a brief outline of the idea behind it and the procedure followed. This brief overview is given to the reader because many of the concepts in T. Wafflard's work are at the heart of the three-voice generalisation and will be key to understanding the three-voice formalisation.
+
+\subsection{Variables} \label{Wafflard-variables}
+In order to formalise Fux's rules, it was necessary to define variables whose purpose is to represent a compositional reality. Thus T. Wafflard created variables to represent various concepts, such as the pitch of notes (written $N$), the harmonic interval between voices (written $H$), the melodic interval from one note to the next (written $M$), and many others. These variables are then related to each other according to the formalised rules. The constraint solver searches for all possible values of these variables, according to the constraints, and stops when all variables in $N$ (the pitches) are fixed, as this means that a solution has been reached (the notes of the counterpoint are known, and this is the goal of the solver).
+
+Useful constants were also defined and will be reused throughout this work. The most important of these are $m$, which represents the length of the \cfs (and thus the number of bars in the composition), $n$, which represents the number of notes in a given counterpoint, or Cons$_{\text{all, p, imp}}$, which represents the set of consonances (all, perfect and imperfect).
+
+Of course, there are many different solutions for the same \cf, and in order to distinguish between two valid solutions (i.e. all solutions that respect all constraints), some costs have been defined. These costs are intended to convey the preferences expressed by Fux in \gap. Thus, the solver considers a valid solution with a low cost to be better than a valid solution with a high cost. The costs scale from 0 (when we don't care) to 64$m$ (when something should only happen as a last resort), but most costs scale from 0 to 8. These costs are then added together to form a total cost, which the solver tries to minimise.
 
 \subsection{Array notation}
-Throughout T. Wafflard's work (and this one), it is necessary to refer to numerous arrays. These arrays formally represent the musical composition and many of its underlying aspects (pitches, harmony, melody, ...). These arrays always have two indexes: the first index represents the time in question, the second index represents the measure in question. These indices are written in computer notation. For example, $X[3, 7]$ represents the value X on the 3rd beat of the 7th measure.
+As we have just seen it is necessary to refer to numerous arrays, that formally represent the musical composition and many of its underlying aspects (pitches, harmony, melody, ...). These arrays always have two indexes: the first index represents the time in question, the second index represents the measure in question. These indices are written in computer notation. For example, $X[3, 7]$ represents the value X on the 3rd beat of the 7th measure.
 
-\subsection{Variables}
-In order to formalise Fux's rules, it was necessary to define variables whose purpose is to represent a compositional reality. Thus T. Wafflard created variables to represent various concepts such as the pitch of notes (denoted $N$), the harmonic interval between voices (written $H$), the melodic interval from one note to the next (written $M$), and many others. Useful constants were also defined (think, for example, of the constant $m$, which represents the length of the \cf, $n$, which represents the number of notes in a given counterpoint, or Cons$_{\text{all, p, imp}}$, which represents the set of consonances (all, perfect and imperfect)).
-The third and last type of declaration performed in T. Wafflard's work are the costs. They serve to guide the solver in search of the bet solution possible, and help discriminate between to valid solutions. , which will be more than useful in this work. These costs are defined as follows:
-
-\begin{equation}
-    \begin{gathered}
-        cost = \begin{cases}
-            0 & \text{if } pref = \text{no cost}\\
-            1 & \text{if } pref = \text{low cost}\\
-            2 & \text{if } pref = \text{medium cost}\\
-            4 & \text{if } pref = \text{high cost}\\
-            8 & \text{if } pref = \text{last resort}\\
-            2m & \text{if } pref = \text{cost prop. to length}\\
-            64m & \text{if } pref = \text{forbidden}
-        \end{cases}
-    \end{gathered}
+Let's put it all together. Here is a simple example of how the variables and constants are brought together through the formalisation: 
+\begin{equation}    
+    H[0, m] \in Cons_{\text{perf}}
 \end{equation}
+ This is a rule which means that the last harmonic interval must be a perfect consonance\footnote{Please refer to section \ref{subsection:modified_variables} for more exact details}. All rules from T. Wafflard's thesis can be found in appendix \ref{appendix:complete-set-of-rule}.
 
-These newly introduced rules are then related to each other to form the formalised rules: a simple example of a rule defined in the thesis is $H[0, m] \in Cons_{\text{perf}}$. This rule means that the last harmonic interval must be a perfect consonance\footnote{We'll see later on (section \ref{subsection:modified_variables}) which harmonic interval exactly.}.
 
-\subsection{Searching for the solution}
-T. Wafflard then uses constraint programming to translate these rules of formal logic and creates a tool capable of putting them into practice. The tool uses the Gecode constraint solver \cite{Gecode}. The tool works as follows: it takes as input a \cf\footnote{The \cfs is the basic melody in the writing of a counterpoint. It is composed entirely of whole notes. Once the composition is complete, it is no more or less important than the other counterpoints. It is the basis from which we start writing}, defines a whole series of variables (those mentioned in the formalisation) to which relations are subsequently applied (the equations of the formalisation) and produces a counterpoint that follows all the rules that have been defined. In the case of T. Wafflard's implementation, the output counterpoint is obtained by a depth first search on the costs, which have been ordered by a sum on all the costs. It is therefore the sum of all the costs that is minimised.
 
-As for the front-end, all the user sees and interacts with is OpenMusic \cite{OpenMusic}, an object-oriented visual programming environment for musical composition based on Common Lisp \cite{commonlisp} developed by the Institut de recherche et coordination acoustique/musique \cite{IRCAM}.
+\subsection{In practice}
+In practice, to solve this constraint programming problem, the constraints are written in Lisp, and thanks to the Gecode Interface Lisp (GiL) \cite{GiL}, it uses the Gecode constraint solver \cite{Gecode} to find a solution. To make the constraints work, we need a starting point. The starting point is the \cf, a basic melody composed entirely of whole notes. It is the basis of a composition when writing counterpoint. Once the composition is complete, the \cf is no more or less important than the other voices. It is the basis from which we begin to write. In other words, it is a fixed melody. 
+Given the \cf, the solver defines a set of variables (those mentioned in the formalisation) to which constraints are then applied (the reltations from the formalisation) and produces a counterpoint that obeys all the rules that have been defined and whose quality can be given by its cost. As explained in \ref{Wafflard-variables}, in the case of T. Wafflard's implementation, the total cost is the sum of all the costs, and this cost is minimised by a depth first search algorithm that finds the lowest cost, and then gives the corresponding solution.
+
+
+As for the front-end, all the user sees and interacts with is OpenMusic \cite{OpenMusic}, an object-oriented visual programming environment for musical composition based on Common Lisp \cite{commonlisp} developed by the Parisian institute IRCAM (Institute for Acoustic/Music Research and Coordination) \cite{IRCAM}.
 
 The present work has exactly the same basic functioning. 
 
@@ -129,12 +126,4 @@ The aim of this work is to generalise T. Wafflard's formalisation to three-voice
     \item \textbf{Musical analysis of the solutions generated by the solver}: Finding the best solution also means being able to assess the quality of current solutions.
     \item \textbf{Adapted user interface to allow them to compose with three voices and set a cost order}: All the new capabilities of the solver and the costing techniques must also be accessible to the user: it is now possible for a user to freely combine any number of species to form a three-part composition, and to set a cost order to indicate their preferences to the solver (in addition to the previous ability to set personalised costs).
 \end{itemize}
-
-
-
-
-\section{Musical examples}
-\section{Conclusions}
-\subsection*{3 voices gives much richer musical texture than 2 voices}
-\subsection*{combination of multiple species is expecially fruitful}
 % citer Fux page 71 

@@ -62,8 +62,8 @@ The problem with this method arises when one cost is significantly higher than t
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/minimising-maxima.png}
-    \caption{Example of two situations where one costs causes a bottleneck in the search as the solver cannot differn a situation where a solution with an outstanding cost is preferred to a solution with equivalent low costs when using a linear combination}
-    \label{fig:outstanding-cost}
+    \caption{Example of two situations where a cost causes a bottleneck in the search because the solver cannot distinguish between left and right situations. The solver will blindly choose one of the two solutions, even if the solution on the right is obviously better.}
+    \label{fig:bottleneck}
 \end{figure}
 
 
