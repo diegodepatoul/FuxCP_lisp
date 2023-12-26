@@ -11,9 +11,27 @@ This chapter will begin by explaining the search algorithm that is used to find 
 To cope with the increased complexity brought about by the three-part composition, it was decided to switch from the Depth First Search algorithm (used in T. Wafflard's thesis) to a more efficient Branch and Bound (BAB). This allows us to handle costs properly and to find faster solutions. Moreover, the BAB algorithm can also produce non-optimal results, which is very valuable since finding the best overall solution can be time-consuming. When starting the search for a solution, it is now possible to ask for the next solution (i.e. a better solution than the one found previously, and if none was found previously, then just any valid solution), or for the best solution. In the latter case, the solver will continue to search until it finds the best solution or until it is stopped, returning a better solution each time it finds one.
 
 
-\subsection{Heuristics}
+\subsection{Heuristics} \label{heuristics}
 When it comes to finding a solution, we obviously need some heuristics to guide the search, as there are so many different possibilities for a three-part composition. 
-To know which heuristics we apply, we simply think about the most important variable to fix first. The most important 
+To know which heuristics to use, simply think about the most important variable to fix first. In case it is not clear enough, the key to writing counterpoint for many voices is to know what the bass is doing. This is true whether the composer is a human or a constraint solver. So the first heuristic follows naturally, and it is: branch on the lowest stratum array, take the highest constrained variable yet, and try with its lowest possible value.
+
+Rule \ref{rule:start-distant} states that the voices should start distant, and as was proposed in the section about the rules, this should translate into a heuristic. However, when we tried to implement this 
+
+
+\subsection{Time to find a solution}
+Many factors come into play in determining how long it will take the solver to find a valid solution. These factors are mainly: the species of counterpoints, the spacing between the voice ranges of the counterpoints, and the key of the \cf.
+
+
+In general, the solver is able to find a valid solution fairly quickly (in the order of a second). In some cases, however, it cannot find a valid solution (and so searches endlessly). These cases are generally related to the three factors mentioned above, and we will discuss them a little. Each of these factors makes the search a little more difficult. A single factor may have no effect on the search time, and it is sometimes at the intersection of the factors that an effect is discovered.
+
+\begin{itemize}
+    \item \textbf{Species of the counterpoint} \textendash{} The more complex the species of the counterpoints (think of the 3rd and 5th species, for example), the longer it will probably take the solver to find a solution. The reason is quite obvious: the more complex the species, the more variables the solver has to play with and the greater the range of possibilities.  
+    \item \textbf{Distance between the voice ranges} \textendash{}  The closer the ranges of the voices, the greater the risk that the solver will take a long time to find a solution. For example, finding a solution by giving the two counterpoints the same voice range as the \cfs is more time-consuming than selecting distant voice ranges. This is because the voices cannot form a unison, and the possibilities for each voice are therefore smaller when their range is close together. 
+    \item \textbf{Key of the \cf} \textendash{} The solver finds it much easier to find a counterpoint when the key is C, probably because counterpoints are played with as many natural notes as possible (no flats or sharps), and in the case of C this corresponds to the Ionian mode (also known as the C mode). When using the key of X, the further away the X mode is from the C mode, the more difficult it will be for the counterpoint. For example, take a composition in E: the E (Phrygian) mode is far from the C (Ionian) mode, whereas the G (Myxolydian) mode is quite close. The solver will therefore find it slightly more difficult to find a solution in E than in G, which in turn will be more complicated than in C.
+\end{itemize}
+There are also cases where the exact combination of two given vocal ranges for two given species with a given mode does not give a solution, but by changing the vocal range a little the solver finds a solution immediately, quite surprisingly. It is still unclear why some given combinations do not produce solutions. Our best guess is that there are some combinations of parameters for which the solver has difficulty finding a solution, given the very large number of constraints that apply to the voices. However, this doesn't happen very often.
+
+It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution).
 
 
 \section{Designing the costs to be as faithful as possible to \gap} \label{costs}
@@ -62,7 +80,7 @@ The problem with this method arises when one cost is significantly higher than t
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/minimising-maxima.png}
-    \caption{Example of two situations where a cost causes a bottleneck in the search because the solver cannot distinguish between left and right situations. The solver will blindly choose one of the two solutions, even if the solution on the right is obviously better.}
+    \caption{Example of two situations where a cost causes a bottleneck in the search because the solver cannot distinguish between left and right situations. The solver will blindly choose one of the two solutions, even if the solution on the left is obviously better.}
     \label{fig:bottleneck}
 \end{figure}
 
@@ -172,7 +190,7 @@ To experiment which method gives the best results, we will follow this plan: sta
 
 These experiments are carried out using two different counterpoint combination setups. The first setup is a combination of two first-species counterpoints, since this is the basic case of three-part composition. The second setup is a combination of a second species counterpoint and a fourth species counterpoint. This setup was chosen because it's rich enough to capture the complexity of counterpoint writing, but not too rich, like the third and fifth species, which makes the way it works more opaque and difficult to analyse in terms of the effects of cost. In addition, the search for an optimal solution is quite time-consuming, and this is even more the case when we are talking about complex species such as the third and the fifth, and when they are combined. This means that it is more difficult to grasp the impact of the cost method when studying its impact on these species, as the solver won't have the time to find two significantly different solutions by the time we stop the search. What's more, the vast majority of the costs are related to the interaction of the voices in the first beat of the measures: the behaviour we want to observe, i.e. the interaction between the cost method and the resulting composition, will be just as observable with complex species as with simple ones.
 
-The analyses in this section are superficial and do not deal with in-depth music theory. They will consist of general surface and impression remarks. They are highly subjective and should not be taken at face value. The aim of this analysis is to establish an initial critical view of the results offered by the solver.
+The analyses in this section are superficial and do not deal with in-depth music theory. They will consist of general surface and impression remarks. They are highly subjective and should not be taken at face value. The aim of this analysis is to provide an initial critical view of the results offered by the solver.
 
 The selected \textit{cantus firmi} were chosen from \gap. If the search time exceeds 30 seconds, the search is stopped and the current solution is analysed.
 
