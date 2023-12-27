@@ -493,7 +493,8 @@
                         )
                     )
                 )
-                (if preference-level (progn ; if the preference level is not empty
+                (if current-cost-array (progn ; if there exists a cost
+                    (print (list preference-level current-cost-array))
                     (gil::g-lmax *sp* current-cost-sum current-cost-array)
                     (print current-cost-array)
                     (setf (nth n-different-costs reordered-costs) current-cost-sum)
