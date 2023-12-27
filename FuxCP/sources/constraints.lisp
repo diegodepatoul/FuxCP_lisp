@@ -1437,7 +1437,7 @@
             
             (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons) 
             (gil::g-op *sp* successive-p-cons gil::BOT_AND not-successive-fifths successive-p-cons-and-not-successive-fifths)
-            (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons)
+            (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons-and-not-successive-fifths)
         )
     ) 
 )
