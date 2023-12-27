@@ -139,6 +139,7 @@
     (defparameter *con-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'con-motion-cost)))
     (defparameter *obl-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'obl-motion-cost)))
     (defparameter *dir-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-motion-cost)))
+    (defparameter *succ-p-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'succ-p-cons-cost)))
     ;; Species specific costs
     (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
     (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
@@ -147,11 +148,16 @@
     (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
 
     ;; Params domains
-    (defparameter *motions-domain*
-        (remove-duplicates (mapcar (lambda (x) (getparam x))
-            (list 'con-motion-cost 'obl-motion-cost 'dir-motion-cost)
+    (defparameter *motions-domain* ; equal to all possible values of the motions cost, plus zero
+        (remove-duplicates (append
+            (mapcar (lambda (x) (getparam x))
+                (list 'con-motion-cost 'obl-motion-cost 'dir-motion-cost)
+            )
+            (list 0)
         ))
     )
+
+    (defparameter *succ-p-cons-domain* (list 0 (getparam 'succ-p-cons-cost)))
 )
 ; @completely new or reworked
 (defclass stratum-class () (
@@ -458,12 +464,13 @@
 ; @completely new or reworked
 (defun reorder-costs (species-list)
     (print "########## REORDERING ##########")
-    (setf costs-names-by-order (make-list 13 :initial-element nil))
+    (setf costs-names-by-order (make-list 14 :initial-element nil))
     (maphash #'(lambda (key value)
             (setf value (- (parse-integer value) 1))
             (setf (nth value costs-names-by-order) (append (nth value costs-names-by-order) (list key)))
             )
         *cost-preferences*)
+    (print costs-names-by-order)
     ; THIS CAN SEEM COUNTERINTUITIVE BUT THE COSTS ARE GIVEN IN REVERSE ORDER TO C++ SO WE HAVE TO REVERT
     (setq costs-names-by-order (reverse costs-names-by-order))
     (let (
@@ -494,9 +501,7 @@
                     )
                 )
                 (if current-cost-array (progn ; if there exists a cost
-                    (print (list preference-level current-cost-array))
                     (gil::g-lmax *sp* current-cost-sum current-cost-array)
-                    (print current-cost-array)
                     (setf (nth n-different-costs reordered-costs) current-cost-sum)
                     (print (list n-different-costs "th cost = " preference-level))
                     (incf n-different-costs) ; increase by one only if there was a cost in the preference level

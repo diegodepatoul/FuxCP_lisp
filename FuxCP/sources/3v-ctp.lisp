@@ -38,43 +38,6 @@
     ;================================================================================;
     ;                                CONSTRAINTS                                     ;
     ;================================================================================;
-    (loop 
-        ; for each possible pair or parts
-        ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
-        for v1 in parts 
-        for i from 0 
-        do (loop for v2 in (nthcdr (1+ i) parts) 
-        do (progn 
-            ; no unison between the voices
-            (print "No unison between the voices")
-            (add-no-unison-cst (first (notes v1)) (first (notes v2)))
-            
-            (print "No successive perfect consonances")
-            (let (
-                (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
-                (is-cons-arr-1-2 (gil::add-bool-var-array *sp* *cf-len 0 1))
-                )
-                (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2)
-                (create-is-p-cons-arr h-intervals-1-2 is-cons-arr-1-2)
-                (cond 
-                    ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species
-                        (add-no-successive-p-cons-cst is-cons-arr-1-2) ; for all species except the fourth and the second, successive perfect consonances are prohibited
-                    )
-                    ((= 2 (species v1))
-                        (add-no-successive-p-cons-except-fifths-if-cst h-intervals-1-2 (first (m-succ-intervals v1))) ; for the second species, successive fifths are allowed if there is a third in between
-                    )
-                    ((= 2 (species v2))
-                        (add-no-successive-p-cons-except-fifths-if-cst h-intervals-1-2 (first (m-succ-intervals v2))) ; for the second species, successive fifths are allowed if there is a third in between
-                    )
-                    ((or (eq 4 (species v1)) (eq 4 (species v2)))
-                        (add-no-successive-p-cons-except-fifths-cst h-intervals-1-2) ; for the fourth species, successive fifths are allowed, but no other successive perfect consonances
-                    )
-                )
-                (if (and (eq (species v1) 0) (eq (species v2) 2)) (setq *h-intervals-1-2 h-intervals-1-2))
-            )
-        )
-    ))
-
     ; it is not allowed to have two direct motions
     ; WARNING: this implementation works only for three voices
     (print "No together move")
@@ -109,16 +72,64 @@
             )
             (gil::g-sum *sp* percentage-same-species is-same-species-int)
             (gil::g-rel *sp* percentage-same-species gil::IRT_LE (floor (/ (solution-len (second parts)) 2)))
-            ;(gil::g-rel *sp* percentage-same-species gil::IRT_EQ (solution-len (second parts))) ; debug line
         )
     )
 
     ;================================================================================;
     ;                                    COSTS                                       ;
     ;================================================================================;
+    ; Cost #1 : no successive perfect consonances
+    (setf succ-p-cons-cost (gil::add-int-var-array-dom *sp* (* 3 *cf-last-index) *succ-p-cons-domain*))
+    (setf succ-p-cons-cost-index 0)
+    (loop 
+        ; for each possible pair or parts
+        ; for example if we have (cf, cp1 and c2), take (cf and cp1), (cf and cp2) and (cp1 and cp2)
+        for v1 in parts 
+        for i from 0 
+        do (loop for v2 in (nthcdr (1+ i) parts) 
+        do (progn 
+            ; no unison between the voices
+            (print "No unison between the voices")
+            (add-no-unison-cst (first (notes v1)) (first (notes v2)))
+            (print "No successive perfect consonances")
+            (let (
+                (h-intervals-1-2 (gil::add-int-var-array *sp* *cf-len 0 11))
+                (is-cons-arr-1-2 (gil::add-bool-var-array *sp* *cf-len 0 1))
+                (current-cost (subseq succ-p-cons-cost succ-p-cons-cost-index))
+                )
+                (incf succ-p-cons-cost-index *cf-last-index)
+                
+                (if (member 4 (list (species v1) (species v2)))
+                    ; if one voice is of the fourth species the last chord was not created yet, due to the delaying of the fourth specues
+                    (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) 
+                )
+
+                (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2)
+                (create-is-p-cons-arr h-intervals-1-2 is-cons-arr-1-2)
+                (cond 
+                    ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species
+                        (add-no-successive-p-cons-cst is-cons-arr-1-2 current-cost) ; for all species except the fourth and the second, successive perfect consonances are prohibited
+                    )
+                    ((= 2 (species v1))
+                        (add-no-successive-p-cons-2nd-species-cst is-cons-arr-1-2 h-intervals-1-2 (first (m-succ-intervals v1)) current-cost) ; for the second species, successive fifths are allowed if there is a third in between
+                    )
+                    ((= 2 (species v2))
+                        (add-no-successive-p-cons-2nd-species-cst is-cons-arr-1-2 h-intervals-1-2 (first (m-succ-intervals v2)) current-cost) ; for the second species, successive fifths are allowed if there is a third in between
+                    )
+                    ((or (eq 4 (species v1)) (eq 4 (species v2)))
+                        (add-no-successive-p-cons-4th-species-cst is-cons-arr-1-2 h-intervals-1-2 current-cost) ; for the fourth species, successive fifths are allowed, but no other successive perfect consonances
+                    ) 
+                )
+                (if (and (eq (species v1) 4) (eq (species v2) 4)) (setq *h-intervals-1-2 h-intervals-1-2))
+            )
+             
+        )
+    ))
+    (add-cost-to-factors succ-p-cons-cost 'succ-p-cons-cost)
+
     (dolist (part parts) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
-        ; Cost #1: as few direct motion to reach a perfect consonance as possible
+        ; Cost #2: as few direct motion to reach a perfect consonance as possible
         (if (or (eq (species part) 4))
             nil ; pass, this cost doesn't apply to 4th species nor to the cantus firmus
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
@@ -136,7 +147,7 @@
             )
         )
         
-        ; Cost #2: as many different notes as possible
+        ; Cost #3: as many different notes as possible
         (print "as many different notes as possible")
         (if (eq (species part) 0)
             nil ; this cost has no sense for the cantus firmus
@@ -149,7 +160,7 @@
         )
     ))
 
-    ; Cost #3
+    ; Cost #4
     (print "prefer harmonic triad") ; todo check interdependency with 1st and 2nd cost
     (if (member 4 species-list) ; the 4th species behaves differently, as the note to be considered is the note on the upbeat, and not on the downbeat as the other species
         (progn
@@ -173,7 +184,7 @@
     (add-cost-to-factors h-triad-cost 'h-triad-cost)
 
     (dotimes (i *N-PARTS)
-        ; Cost #4, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
+        ; Cost #5, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
         (if (eq (species (nth i parts)) 3) (let
             (
                 (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))

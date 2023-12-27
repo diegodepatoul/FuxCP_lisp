@@ -225,7 +225,7 @@
             (5 (incf *N-COST-FACTORS 8))
         ))
         (3 (progn
-            (incf *N-COST-FACTORS 6)
+            (incf *N-COST-FACTORS 7)
             (dolist (species *species-list)
                 (case species
                     (1 (incf *N-COST-FACTORS 5))
@@ -1286,7 +1286,7 @@
                 (gil::g-op *sp* dm-or1 gil::BOT_OR b-both-down dm-or2) ; dm-or2 = (dm-or1 or b-both-down)
                 (gil::g-op *sp* dm-or2 gil::BOT_AND is-not-lowest is-direct)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ DIRECT is-direct) ; m = 1 if dm-or2
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct) ; add the cost of direct motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-motion-cost* is-direct gil::RM_IMP) ; add the cost of direct motion
                 ; oblique motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qs b-pu-qs) ; b-pu-qs = (b-pu and b-qs)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qs b-pd-qs) ; b-pd-qs = (b-pd and b-qs)
@@ -1297,7 +1297,7 @@
                 (gil::g-op *sp* om-or2 gil::BOT_OR b-ps-qd om-or3) ; om-or3 = (om-or2 or b-ps-qd)
                 (gil::g-op *sp* om-or3 gil::BOT_AND is-not-lowest is-oblique)
                 (gil::g-rel-reify *sp* m gil::IRT_EQ OBLIQUE is-oblique) ; m = 0 if om-or3
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique ) ; add the cost of oblique motion
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *obl-motion-cost* is-oblique gil::RM_IMP) ; add the cost of oblique motion
                 ; contrary motion
                 (gil::g-op *sp* b-pu gil::BOT_AND b-qd b-pu-qd) ; b-pu-qd = (b-pu and b-qd)
                 (gil::g-op *sp* b-pd gil::BOT_AND b-qu b-pd-qu) ; b-pd-qu = (b-pd and b-qu)
@@ -1409,81 +1409,86 @@
 
 ; add the constraint that there cannot be two successive perfect consonances between two voices
 ; @completely new or reworked
-(defun add-no-successive-p-cons-cst (is-p-cons-array)
+(defun add-no-successive-p-cons-cst (is-p-cons-array successive-p-cons-cost)
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
-    do (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) 0) ; NOT (is-curr-consonant AND is-next-consonant))
-    )
+    do (let ((successive-p-cons (gil::add-bool-var *sp* 0 1)))
+        (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons) 
+        (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons)
+    ))
 )
 
 ; add the constraint that there cannot be two successive perfect consonances between two voices
 ; @completely new or reworked
-(defun add-no-successive-p-cons-except-fifths-cst (h-intervals)
+(defun add-no-successive-p-cons-4th-species-cst (is-p-cons-array h-intervals successive-p-cons-cost)
+
     (dotimes (i (- (length h-intervals) 1))
         (let (
-            (first-is-octave (gil::add-bool-var *sp* 0 1))
-            (second-is-octave (gil::add-bool-var *sp* 0 1))
-            (first-is-fifth (gil::add-bool-var *sp* 0 1))
-            (second-is-fifth (gil::add-bool-var *sp* 0 1))
+            (first-not-fifth (gil::add-bool-var *sp* 0 1))
+            (second-not-fifth (gil::add-bool-var *sp* 0 1))
+            (not-successive-fifths (gil::add-bool-var *sp* 0 1))
+
+            (successive-p-cons (gil::add-bool-var *sp* 0 1))
+            (successive-p-cons-and-not-successive-fifths (gil::add-bool-var *sp* 0 1))
             )
-            (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 0 first-is-octave)
-            (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 0 second-is-octave)
-
-            (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
-            (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
-
-            (gil::g-op *sp* first-is-octave gil::BOT_AND second-is-octave 0)
-            (gil::g-op *sp* first-is-octave gil::BOT_AND second-is-fifth 0)
-            (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-octave 0)
+            (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_NQ 7 first-not-fifth)
+            (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_NQ 7 second-not-fifth)
+            (gil::g-op *sp* first-not-fifth gil::BOT_OR second-not-fifth not-successive-fifths)
+            
+            (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons) 
+            (gil::g-op *sp* successive-p-cons gil::BOT_AND not-successive-fifths successive-p-cons-and-not-successive-fifths)
+            (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons)
         )
-    )
+    ) 
 )
 
-; add the constraint that there cannot be two successive perfect consonances between two voices
-; @completely new or reworked
-(defun add-no-successive-p-cons-except-fifths-if-cst (h-intervals m-succ-intervals)
-    (dotimes (i (- (length h-intervals) 1))
-        (let (
-            (first-is-octave (gil::add-bool-var *sp* 0 1))
-            (second-is-octave (gil::add-bool-var *sp* 0 1))
+(defun add-no-successive-p-cons-2nd-species-cst (is-p-cons-array h-intervals m-succ-intervals successive-p-cons-cost)
+    (loop 
+    for i from 0 to (- (length is-p-cons-array) 2)
+    do (let (
+            ; 1st case
+            (first-not-fifth (gil::add-bool-var *sp* 0 1))
+            (second-not-fifth (gil::add-bool-var *sp* 0 1))
+            (not-successive-fifths (gil::add-bool-var *sp* 0 1))
+
+            (successive-p-cons (gil::add-bool-var *sp* 0 1))
+            (successive-p-cons-and-not-successive-fifths (gil::add-bool-var *sp* 0 1))
+
+            ; 2nd case
+            (m-is-not-third-1 (gil::add-bool-var *sp* 0 1))
+            (m-is-not-third-2 (gil::add-bool-var *sp* 0 1))
+            (m-is-not-third (gil::add-bool-var *sp* 0 1))
+
             (first-is-fifth (gil::add-bool-var *sp* 0 1))
             (second-is-fifth (gil::add-bool-var *sp* 0 1))
-            (is-successive-fifths (gil::add-bool-var *sp* 0 1))
-            (m-is-third-1 (gil::add-bool-var *sp* 0 1))
-            (m-is-third-2 (gil::add-bool-var *sp* 0 1))
-            (m-is-third (gil::add-bool-var *sp* 0 1))
-            )
+            (successive-fifths (gil::add-bool-var *sp* 0 1))
+            (successive-fifths-and-not-third (gil::add-bool-var *sp* 0 1))
 
-            (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 0 first-is-octave)
-            (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 0 second-is-octave) 
-
-            (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
-            (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
-            (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-fifth is-successive-fifths)
-
-            (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_EQ 3 m-is-third-1)
-            (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_EQ 4 m-is-third-2)
-            (gil::g-op *sp* m-is-third-1 gil::BOT_OR m-is-third-2 m-is-third)
-
-            (gil::g-op *sp* is-successive-fifths gil::BOT_IMP m-is-third 1)
-
-            (gil::g-op *sp* first-is-octave gil::BOT_AND second-is-octave 0)
-            (gil::g-op *sp* first-is-octave gil::BOT_AND second-is-fifth 0)
-            (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-octave 0)
+            ; finally
+            (apply-the-cost (gil::add-bool-var *sp* 0 1))
         )
-    )
+        ; first case : the successive perfect consonances are not successive fifths
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_NQ 7 first-not-fifth)
+        (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_NQ 7 second-not-fifth)
+        (gil::g-op *sp* first-not-fifth gil::BOT_OR second-not-fifth not-successive-fifths)
 
-)
+        (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons) 
+        (gil::g-op *sp* successive-p-cons gil::BOT_AND not-successive-fifths successive-p-cons-and-not-successive-fifths)
 
-(defun compute-no-successive-p-cons-cost (is-p-cons-array cost-array j)
-    (print  "")
-    (dotimes (i *cf-last-index)
-        (let ((successive-p-cons (gil::add-bool-var *sp* 0 1)))
-            (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons)
-            (print (+ i j))
-            (gil::g-rel-reify *sp* (nth (+ i j) cost-array) gil::IRT_EQ 1 successive-p-cons)
-        )
-    )
+        ; second case : the successive perfect consonants are fifths
+        (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_NQ 3 m-is-not-third-1)
+        (gil::g-rel-reify *sp* (nth i m-succ-intervals) gil::IRT_NQ 4 m-is-not-third-2)
+        (gil::g-op *sp* m-is-not-third-1 gil::BOT_AND m-is-not-third-2 m-is-not-third)
+
+        (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_EQ 7 first-is-fifth)
+        (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_EQ 7 second-is-fifth)
+        (gil::g-op *sp* first-is-fifth gil::BOT_AND second-is-fifth successive-fifths)
+        (gil::g-op *sp* m-is-not-third gil::BOT_AND successive-fifths successive-fifths-and-not-third) 
+
+        ; finally
+        (gil::g-op *sp* successive-p-cons-and-not-successive-fifths gil::BOT_OR successive-fifths-and-not-third apply-the-cost) 
+        (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* apply-the-cost)
+    ))
 )
 
 ; computes the variety cost, i.e. the number of times a note repeats itself in a frame of 7 measures
