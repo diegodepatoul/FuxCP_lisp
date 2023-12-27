@@ -22,25 +22,6 @@
     (setf (first (h-intervals counterpoint)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (notes counterpoint)) (first (notes *lowest)) (first (h-intervals counterpoint)))
 
-    ; (create-h-intervals (first (notes counterpoint)) (first (notes *lowest)) (first (h-intervals counterpoint)))
-    ; @completely new or reworked
-    ; ======= 2 counterpoints specific -> this is used further on for 3 voices costs
-    
-    (if (eq *N-VOICES 2) (progn
-        (if (eq species 9) (progn 
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-last-index -127 127))
-                (create-intervals (rest (first (notes *lowest))) (third (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) (progn
-                (setf (h-intervals-abs counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (setf (h-intervals-brut counterpoint) (gil::add-int-var-array *sp* *cf-len -127 127))
-                (create-intervals (first (notes *lowest)) (first (notes counterpoint)) (h-intervals-abs counterpoint) (h-intervals-brut counterpoint))
-            ) 
-        )
-    )) 
-    
-    ; =======
-
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
     ; array of IntVar representing the absolute intervals between two notes in a row of the counterpoint

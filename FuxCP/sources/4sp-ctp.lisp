@@ -106,7 +106,7 @@
     (print "No seventh dissonance if the cantus firmus is at the top...")
     (add-no-seventh-cst (first (h-intervals counterpoint)) (is-not-lowest counterpoint))
 
-    (if (eq *N-VOICES 1) (progn 
+    (if (eq *N-PARTS 2) (progn 
         ; must start with a perfect consonance
         (print "Perfect consonance at the beginning...")
         (add-p-cons-start-cst (third (h-intervals counterpoint)))

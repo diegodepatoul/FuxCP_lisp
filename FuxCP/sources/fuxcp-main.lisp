@@ -335,7 +335,7 @@
                         (setf (first (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
 
                         ; ======= 2 counterpoints specific
-                        (if (eq *N-VOICES 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+                        (if (eq *N-COUNTERPOINTS 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
                             (tonal (mod (car (last *cf)) 12))
                             )
                             (case tonal ((2 4 9 10) 
@@ -425,12 +425,12 @@
     (setq *cost-factors (set-cost-factors))
 
     (print (list "Choosing species: " species-list))
-    (setq counterpoints (make-list *N-VOICES :initial-element nil))
-    (dotimes (i *N-VOICES) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
+    (setq counterpoints (make-list *N-COUNTERPOINTS :initial-element nil))
+    (dotimes (i *N-COUNTERPOINTS) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
     (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
     
-    (setq *upper (make-list *N-VOICES :initial-element nil))
-    (dotimes (i *N-VOICES) (setf (nth i *upper) (make-instance 'stratum-class)))
+    (setq *upper (make-list *N-COUNTERPOINTS :initial-element nil))
+    (dotimes (i *N-COUNTERPOINTS) (setf (nth i *upper) (make-instance 'stratum-class)))
     (setq *lowest (make-instance 'stratum-class))
     (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
@@ -438,7 +438,7 @@
     (setq *parts (cons *cantus-firmus counterpoints))
     
     (create-strata-arrays *parts)
-    (case *N-VOICES
+    (case *N-COUNTERPOINTS
         (1 (progn 
             (fux-cp-cf (first *parts))
             (case (first species-list) ; if only two voices
@@ -544,7 +544,7 @@
         (gil::g-branch *sp* (first (notes *lowest)) var-branch-type gil::INT_VAL_MIN)
         ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
         ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
-        (dotimes (i *N-VOICES) (progn
+        (dotimes (i *N-COUNTERPOINTS) (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array
                 (gil::g-branch *sp* (species-arr (nth i counterpoints)) var-branch-type gil::INT_VAL_RND)
@@ -698,10 +698,10 @@
 
         (let (
             (basic-rythmics (get-basic-rythmics species-list *cf-len sol-pitches counterpoints sol))
-            (sol-voices (make-list *N-VOICES :initial-element nil))
+            (sol-voices (make-list *N-COUNTERPOINTS :initial-element nil))
             )
 
-            (loop for i from 0 below *N-VOICES do (progn
+            (loop for i from 0 below *N-COUNTERPOINTS do (progn
                 (setq rythmic+pitches (nth i basic-rythmics)) ; get the rythmic correpsonding to the species
                 (setq rythmic-om (first rythmic+pitches))
                 (setq pitches-om (second rythmic+pitches))

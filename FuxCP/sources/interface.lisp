@@ -1309,7 +1309,7 @@
                 ((equal param "None") nil)
             )
         ))
-        (setq *N-VOICES (length species-list))
+        (setq *N-COUNTERPOINTS (length species-list))
         (setq *N-PARTS (+ 1 (length species-list)))
         species-list
     )
@@ -1319,7 +1319,7 @@
 ;; belong to {"Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below"}
 ;; convert to {-3 -2 -1 0 1 2 3}
 (defun convert-to-voice-integer-list (params)
-    (let ((integer-list (make-list *N-VOICES :initial-element nil))) (loop for i from 0 below *N-VOICES do
+    (let ((integer-list (make-list *N-COUNTERPOINTS :initial-element nil))) (loop for i from 0 below *N-COUNTERPOINTS do
         (cond
             ((equal (nth i params) "Really far above") (setf (nth i integer-list) 3))
             ((equal (nth i params) "Far above") (setf (nth i integer-list) 2))
@@ -1382,6 +1382,6 @@
     (defparameter *cf-penult-index (- *cf-len 2))
     ; COST_UB is the upper bound of the cost function
     (defparameter COST_UB (* *cf-len 20))
-    ; *N-VOICES is the number of voices in the counterpoint
-    (defparameter *N-VOICES 0) ; will be defined when parsing the input
+    ; *N-COUNTERPOINTS is the number of counterpoints in the counterpoint
+    (defparameter *N-COUNTERPOINTS -1) ; will be defined when parsing the input
 )

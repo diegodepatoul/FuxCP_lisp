@@ -79,23 +79,7 @@
     (if (= *N-PARTS 2)
         (add-no-direct-move-to-p-cons-cst (first (motions cantus-firmus)) (is-p-cons-arr cantus-firmus) (is-not-lowest cantus-firmus))
     )
-#|
-    ; no battuta kind of motion
-    ; i.e. contrary motion to an *octave, lower voice up, higher voice down, cantus-firmus melodic interval < -4
-    (print "No battuta kind of motion...")
-    (add-no-battuta-cst (first (motions cantus-firmus)) (first (h-intervals cantus-firmus)) (first (m-intervals-brut cantus-firmus)) (first (is-cp-bass cantus-firmus)))
 
-    ; @completely new or reworked
-    ; ========= 2 cantus-firmuss specific
-    (if (eq *N-VOICES 2)
-        (progn
-            (print "No successive perfect consonances (cantus-firmus to cantus firmus)")
-            (add-no-successive-p-cons-cst (is-p-cons-arr *upper-voice))
-        )
-    )
-    ; =========
-     |#
-    
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 

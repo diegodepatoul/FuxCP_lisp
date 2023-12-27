@@ -112,7 +112,7 @@
 
     ;======================================== HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
-    (if (eq *N-VOICES 1) (progn
+    (if (eq *N-PARTS 2) (progn
         ; must start with a perfect consonance
         (print "Perfect consonance at the beginning...")
         (add-p-cons-start-cst (first (h-intervals counterpoint)))
@@ -168,7 +168,7 @@
 
     ; no direct motion to reach a perfect consonance
     (print "No direct motion to reach a perfect consonance...")
-    (if (eq *N-VOICES 1) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-lowest counterpoint)))
+    (if (eq *N-PARTS 2) (add-no-direct-move-to-p-cons-cst (fourth (motions counterpoint)) (is-p-cons-arr counterpoint) (is-not-lowest counterpoint)))
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")

@@ -216,15 +216,15 @@
 ; @completely new or reworked
 (defun set-cost-factors ()
     (setq *N-COST-FACTORS 3)
-    (case *N-VOICES
-        (1 (case (first *species-list)
+    (case *N-PARTS
+        (2 (case (first *species-list)
             (1 (incf *N-COST-FACTORS 5))
             (2 (incf *N-COST-FACTORS 6))
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 6))
             (5 (incf *N-COST-FACTORS 8))
         ))
-        (2 (progn
+        (3 (progn
             (incf *N-COST-FACTORS 6)
             (dolist (species *species-list)
                 (case species
@@ -421,7 +421,7 @@
     (setq sorted-voices (make-list *cf-len :initial-element nil))
     (dotimes (i *N-PARTS) (setf (is-not-lowest (nth i parts)) (gil::add-bool-var-array *sp* *cf-len 0 1)))
     (dotimes (i *cf-len) ; the ith measure
-        (setf voices (gil::add-int-var-array *sp* (+ *N-VOICES 1) 0 120))
+        (setf voices (gil::add-int-var-array *sp* *N-PARTS 0 120))
         (dotimes (j *N-PARTS) ; the jth counterpoint
             (if (eq (species (nth j parts)) 4) 
                 (if (< i *cf-last-index)
@@ -431,13 +431,13 @@
                 (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth i (first (notes (nth j parts)))))   
             )
         )
-        (setf order (gil::add-int-var-array *sp* *N-PARTS 0 *N-VOICES))
+        (setf order (gil::add-int-var-array *sp* *N-PARTS 0 (- *N-PARTS 1)))
 
         (setf (nth i sorted-voices) (gil::add-int-var-array *sp* *N-PARTS 0 120))
         (gil::g-sorted *sp* voices (nth i sorted-voices) order)
         
         (gil::g-rel *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (first (nth i sorted-voices)))
-        (dotimes (j *N-VOICES) ; the jth voice
+        (dotimes (j *N-COUNTERPOINTS) ; the jth voice
             (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
             (gil::g-rel *sp* (nth i (third (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
         )
@@ -458,11 +458,11 @@
             )
 
             (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-lowest (nth i (is-not-lowest (second parts))))       
-            (if (eq *N-VOICES 2) (gil::g-op *sp* (nth i (is-not-lowest cantus-firmus)) gil::BOT_XOR (nth i (is-not-lowest (second parts))) (nth i (is-not-lowest (third parts)))))
+            (if (eq *N-COUNTERPOINTS 2) (gil::g-op *sp* (nth i (is-not-lowest cantus-firmus)) gil::BOT_XOR (nth i (is-not-lowest (second parts))) (nth i (is-not-lowest (third parts)))))
 
             (gil::g-op *sp* cf-is-lowest gil::BOT_XOR (nth i (is-not-lowest cantus-firmus)) 1)
             (gil::g-op *sp* cp1-is-lowest gil::BOT_XOR (nth i (is-not-lowest (second parts))) 1)
-            (if (eq *N-VOICES 2) (gil::g-op *sp* cp2-is-lowest gil::BOT_XOR (nth i (is-not-lowest (third parts))) 1))
+            (if (eq *N-COUNTERPOINTS 2) (gil::g-op *sp* cp2-is-lowest gil::BOT_XOR (nth i (is-not-lowest (third parts))) 1))
 
             (if (> i 0) (let 
                 (
@@ -481,12 +481,12 @@
                 
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 0 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cf-is-lowest)
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 1 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp1-is-lowest)
-                (if (eq *N-VOICES 2) (gil::g-rel-reify *sp* (nth (- i 1) (nth 2 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp2-is-lowest))
+                (if (eq *N-COUNTERPOINTS 2) (gil::g-rel-reify *sp* (nth (- i 1) (nth 2 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp2-is-lowest))
             ))
         )
     )
     (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-lowest (second parts))))
-    (if (eq *N-VOICES 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-lowest (third parts)))))
+    (if (eq *N-COUNTERPOINTS 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-lowest (third parts)))))
     (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-lowest cantus-firmus)))
     
     ; todo do something with this (working) constraint (put it somewhere else to be cleaner)
@@ -2175,9 +2175,9 @@
     (setq len-1 (- len 1))
     (setq len-2 (- len 2))
     (let (
-        (rythmic+pitches (make-list *N-VOICES :initial-element nil))
+        (rythmic+pitches (make-list *N-COUNTERPOINTS :initial-element nil))
         )
-        (loop for i from 0 below *N-VOICES do (progn
+        (loop for i from 0 below *N-COUNTERPOINTS do (progn
             (case (nth i species-list)
                 (1 (progn 
                     (setf (nth i rythmic+pitches) (list
