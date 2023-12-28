@@ -122,9 +122,8 @@ However, when it comes to generalising the composition of counterpoint for three
 
 It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
 
-\paragraph{TODO} complement the following paragraph to make it clearer
 \paragraph{}
-A very important detail, and perhaps the biggest change brought about by this paradigm shift, is since we do not compute all voices with respect to the \cfs, but with respect to the lowest stratum, it is important that the relationship between the \cfs and the lowest stratum also get taken into account. This means, when applying the constraints over the parts, we are considering the \cfs too (as it is a part, like the counterpoints), unless explicitely mentioned otherwise (for example in the variety cost). 
+A very important detail, and perhaps the biggest change brought about by this paradigm shift, is that since we are not calculating all the voices in relation to the \cfs, but in relation to the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints. It is important that the relationship between the \cfs and the lowest stratum is also taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as variety cost (see \ref{rule:variety}).
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules will continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
@@ -321,16 +320,19 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
 \vspace{.5cm}
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
-The motions array was redefined to compute the motions of a voice v with respect to the lowest stratum, instead of computing them with respect to the \cf, since Fux considers that the motions should be considered between each voice and the lowest voice. Dealing with the melodic intervals of the lowest stratum is not a problem anymore, since we defined what it exactly means in the section about melodic intervals.
+The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a voice v with respect to the lowest stratum. The change from the previous work (where the motions array represented the motions with respect to the \cf) was made since Fux considers that the motions should be considered between each voice and the lowest voice. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
 However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section \ref{is-lowest}). 
 \begin{equation}
 \begin{aligned}
 &\forall p \in \{cf, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
     &motion(p)[i,j] = \,  
     \begin{cases}
-        0 & \land (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad  \vee (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\
-        1 & M_{brut}^{x}(p)[i, j] = 0  \oplus M(a)_{brut}[j]=0 \\
-        2 & (M_{brut}^{x}(p)[i, j] > 0 \land M(a)_{brut}[j] > 0) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad   \vee  (M_{brut}^{x}(p)[i, j] < 0 \land M(a)_{brut}[j] <0)
+        0 &\text{if } (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad  \vee (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\
+        &\\
+        1 &\text{if } M_{brut}^{x}(p)[i, j] = 0  \oplus M(a)_{brut}[j]=0 \\
+        &\\
+        2 &\text{if } (M_{brut}^{x}(p)[i, j] > 0 \land M(a)_{brut}[j] > 0) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad   \vee  (M_{brut}^{x}(p)[i, j] < 0 \land M(a)_{brut}[j] <0)\\
+        &\quad \quad \quad \quad \quad \quad \quad \quad \quad \vee (M_{brut}^{x}(p)[i, j] = 0 = M(a)_{brut}[j])
     \end{cases} 
     \\
     &P(p)[i,j] = \,  
