@@ -1,11 +1,18 @@
 \chapter{Formalising Fux rules for three-part composition}\label{chapter:species}
-This section will be concerned with extracting all the rules that Fux mentions in his work and making sure that they are unambiguous.
-It will consist of seven subsections: first, a section for the implicit rules (the rules that Fux doesn't mention, but are present in all his examples), then a section for each species, and finally one that considers the interaction between different species. There is no section on rules for all species, yet there \textit{are} rules that apply to all species. In fact, all the rules mentioned in the first species section also apply to the other species. This isn't something that Fux mentions explicitly, but it's obvious when you look at how he teaches these rules and how he composes with them. Therefore, the rules for all species are in the first species section. The reason these rules are in the first type section is because Fux himself mentions these rules in his chapter on first type counterpoints.
+The purpose of this section is to extract all the rules that Fux mentions in his work and to make sure that they are unambiguous.
+
+It consists of seven subsections: first, a section for the implicit rules (the rules that Fux doesn't mention, but are present in all his examples), then a section for each species, and finally a short section that considers the interaction between different species. There is no section on rules for all species, yet there \textit{are} rules that apply to all species. In fact, all the rules mentioned in the first species section also apply to the other species. This isn't something that Fux mentions explicitly, but it's obvious when you look at how he teaches these rules and how he composes with them. Therefore, the rules for all species are in the first species section. The reason these rules are in the first type section is because Fux himself mentions these rules in his chapter on first type counterpoint.
 
 Each species subsection is divided into two parts: the first part is about setting up Fux's rules and discussing them. The second part is about translating the rules into formal logic.
 
-\paragraph{}
-Please note that all the rules from T. Wafflard's thesis still apply to three-part compositions. The numbering of the rules in this work is the same as in T. Wafflard's work. If a rule is defined with the same number as an existing rule for two-part compositions, this means that the corresponding rule from T. Wafflard's work does not apply to three-part compositions, and that the new rule should be used instead. To make this clearer, there is a green dot (\greendot) next to these rules.
+\paragraph{Meaning of the green dot}
+Please note that all the rules from T. Wafflard's thesis still apply to three-part compositions. The numbering of the rules in this work is the same as in T. Wafflard's work. If a rule is defined with the same number as an existing rule for two-part compositions, this means that the corresponding rule from T. Wafflard's work does not apply to three-part compositions, and that the new rule should be used instead. To make this clearer, there is a green dot (\greendot) next to the rules from T. Wafflard's thesis that got redefined when used in a three-voice composition.
+
+\paragraph{Difference between preference and strict rule}
+As discussed earlier (see Section \ref{subsection:preferences-vs-hard-rules}), some rules are mandatory and must be followed to find a valid solution, and other rules are just preferences that can be followed to find a \textit{better} solution. The preferences have been marked '\texttt{[PREF]}' throughout the chapter to make it clearer which rule is mandatory and which is a preference.
+
+\paragraph{Purpose of all the rules}
+It may be interesting to remember the purpose of these rules. Some rules are concerned with musicality: composing counterpoint that sounds nice; for example, the rule that forbids dissonance. Some rules are concerned with singability: composing counterpoint that is not too difficult for the human voice to sing; for example, the rule forbidding a melodic leap greater than a sixth.
 
 \section{Implicit rules}
 \subsection{Formalisation in English} \label{sec:generalenglish}
@@ -14,6 +21,14 @@ Please note that all the rules from T. Wafflard's thesis still apply to three-pa
     \item \greendots \textit{First and last notes have not to be perfect consonances anymore.} \label{rule:last-chord-not-perfect-anymore}    
 
     Fux doesn't state this in his text, but in many of his examples, we see that when he composes with three voices (and more), the first and last harmonic intervals between the parts and the lowest stratum are not necessary a perfect consonance anymore.
+\end{enumerate}
+
+\begin{enumerate}[wide, label=\bfseries 1.H7 and 1.H\arabic*]
+    \setcounter{enumi}{7} % Start from 8
+    \item \greendots \textit{The harmonic interval of the penultimate measure must be either a minor
+    third, a perfect fifth, a major sixth, or an octave.} \label{rule:penult-interval-3-voices}
+    
+    In two-part composition rules, Fux said that the last harmonic interval had to be either a minor or a majord third (see rule \ref{rule:penult-interval-2v} for two voices). This is something he doesn't respect at all in three-part composition, but we can see that he still tries to use minor third and major sixths when possible, in the penultimate measure. The rule from two-part species was thus rewritten in order to be appropriate: either use a perfect consonance, a minor third, or a major sixth.
 \end{enumerate}
 
 \begin{enumerate}[wide, label=\bfseries G\arabic*]
@@ -30,17 +45,24 @@ Please note that all the rules from T. Wafflard's thesis still apply to three-pa
 \end{enumerate}
 
 \subsection{Formalisation into constraints} \label{sec:generalconstraints}
-    \paragraph{\ref{rule:last-chord-not-perfect-anymore}} \greendots \textit{First and last notes have not to be perfect consonances anymore.}
+    \paragraph{\hspace{0.6cm}\ref{rule:last-chord-not-perfect-anymore}} \greendots \textit{First and last notes have not to be perfect consonances anymore.}
 
     There is no constraint associated with this rule, as it is a relaxation of a rule from the two-part composition rule set.
 
-    \paragraph{\ref{rule:last-chord-h-triad}} \textit{The last chord must be composed only of the notes of the harmonic triad.} 
+    \paragraph{\hspace{0.6cm}\ref{rule:penult-interval-3-voices}} \greendots \textit{The harmonic interval of the penultimate measure must be either a minor third, a perfect fifth, a major sixth, or an octave.}
+    \begin{equation}
+        \begin{aligned}
+            H[0, m-1] \in \{0, 3, 7, 9\}
+        \end{aligned}
+    \end{equation}
+
+    \paragraph{\hspace{0.6cm}\ref{rule:last-chord-h-triad}} \textit{The last chord must be composed only of the notes of the harmonic triad.} 
     
     \begin{equation} \begin{aligned}
     \forall s \in \{b, c\} \colon H(s)[0, m-1] \in Cons_{h\_triad}
     \end{aligned} \end{equation}
 
-    \paragraph{\ref{rule:same-fundamental}} \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
+    \paragraph{\hspace{0.6cm}\ref{rule:same-fundamental}} \textit{The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{constraint:same-fundamental}
 
     Since the fundamental of the scale is defined by being the first note of the \textit{cantus firmus}, we impose that the last note of the lowest stratum must be equal to the first one of the \textit{cantus firmus} (taking the modulos into account).
     
@@ -50,7 +72,17 @@ Please note that all the rules from T. Wafflard's thesis still apply to three-pa
     \end{aligned} \end{equation}
 
 \section{First species}
-Concerning the rules applying to all species (those marked with a red dot): when a constraint described in this section applies to all species, it means that it applies to the first beat of every species, unless mentioned otherwise, and excepted for the fourth species, where it applies to the third beat.
+This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. To be more precise, the rules mentioned in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see note on the fourth species \ref{nota-bene-4th-species}).
+
+\paragraph{}
+The first species consists of whole notes only. It is the basis of counterpoint and its simplest case. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Species_examples/1sp-example.png}
+    \caption{Example of a first species counterpoint in three-part composition}
+    \label{fig:example-1sp}
+\end{figure}
 
 \subsection{Formalisation into English}
 \subsubsection{Structural constraints}
@@ -64,7 +96,7 @@ Concerning the rules applying to all species (those marked with a red dot): when
 
    This pretty straightforward rule is the very definition of the first species. It adds nothing in comparison with the rules for the two part comparison. It is hence already implemented by the first species for two voices and does not need any consideration. 
 \end{enumerate}
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \begin{enumerate}[wide, label=\bfseries 1.H\arabic*]
     \item\label{rule:consonant} \greendots \textit{All notes on the downbeat are consonant with the notes of the lowest stratum.}
      
@@ -77,8 +109,7 @@ Concerning the rules applying to all species (those marked with a red dot): when
     
     \setcounter{enumi}{7} % Start from 8
 
-    %start template
-    \item\label{rule:harmonic-triad}  \textit{The harmonic triad should be used as much as possible.}
+    \item\label{rule:harmonic-triad} \texttt{[PREF]}  \textit{The harmonic triad should be used as much as possible.} 
 
     \begin{quotation}
     "The harmonic triad should be employed in every measure if there is no special reason against it."
@@ -107,14 +138,14 @@ Concerning the rules applying to all species (those marked with a red dot): when
 
     When Fux says this, he takes a tenth as an example, but it here understood that the final chord cannot include a tenth (third + octave), nor an eight-teenth (third + two octaves), etc. Nevertheless, "simple" third are considered completely valid.
 
-    \item\label{rule:unison-vs-octave}  \textit{Octaves should be used over unisons.}
+    \item\label{rule:unison-vs-octave} \texttt{[PREF]} \textit{Octaves should be preferred over unisons.}
 
     \begin{quotation}
     "Unison is less harmonious than the octave."
     \textcite[p.79]{GaPEng}
     \end{quotation}
 
-    This rule is not bringing anything new, as there is already a rule stating that two parts cannot blend in unison. If no unison is possible, then the octaves will always be preferred over the unison.
+    This rule does not bring anything new, as there is already a rule stating that two parts cannot blend in unison. If no unison is possible, then the octaves will always be preferred over the unison (since the latter is not possible).
 
     \item\label{rule:minor-third}  \textit{Last chord cannot include a minor third.}
 
@@ -127,10 +158,10 @@ Concerning the rules applying to all species (those marked with a red dot): when
 
 \end{enumerate}
 
-\subsubsection{Melodic constraints}
+\subsubsection{Melodic rules}
 \begin{enumerate}[wide, label=\bfseries 1.M\arabic*]
 \setcounter{enumi}{2} % Start from 3
-    \item\label{rule:steps-prefered}  \textit{Steps are preferred to skips.}
+    \item\label{rule:steps-prefered} \texttt{[PREF]} \textit{Steps are preferred to skips.}
 
     \begin{quotation}
     "[Each part] follows the natural order closely."
@@ -139,14 +170,16 @@ Concerning the rules applying to all species (those marked with a red dot): when
 
     After having said this, Fux complements his explication by saying the counterpoints should be "moving gracefully, stepwise without any skip". This is clearly a preference, and has already been covered when implementing the first species for two voices. It can thus be ignored in the scope of this thesis.
 
-    \item\label{rule:variety}  \textit{The notes of each part should be as diverse as possible.}
+    \item\label{rule:variety} \texttt{[PREF]}  \textit{The notes of each part should be as diverse as possible.}
 
     \begin{quotation}
     "[Each part] follows the principle of variety."
     \textcite[p.73]{GaPEng}
     \end{quotation}
 
-    Fux never defines clearly what he means by "principle of variety". Nevertheless, the examples he provides are of a great help as he corrects his student for not following the principle by augmenting the variety of different notes in a single voice. This means, the principle of variety can be understood as having as many different notes in a single voice. 
+    Fux never clearly defines what he means by the "principle of variety". So we try to define it according to what we can read in his work. The examples he gives are a great help. He first writes an incorrect example and then corrects it, saying that the corrected example is better because it follows the principle of variety more closely. The difference between the two examples is that the number of different pitches has been increased. So we can define the principle of variety as: use as many different notes as possible in a single voice. 
+
+    The principle of variety is therefore clearly a preference.
 
     \item\label{rule:each-part-should-stay-in-its-voice-range}  \textit{Each part should stay in its voice range.}
 
@@ -166,12 +199,12 @@ Concerning the rules applying to all species (those marked with a red dot): when
     \textcite[p.79]{GaPEng}
     \end{quotation}
 
-    This rule is only a restatement of rule 1.M2, saying that melodic intervals cannot exceed a minor sixth interval.
+    This rule is only a restatement of rule \ref{rule:mlesixth}, saying that melodic intervals cannot exceed a minor sixth interval.
 \end{enumerate}
 
-\subsubsection{Motion constraints}
+\subsubsection{Motion rules}
 \begin{enumerate}[wide, label=\bfseries 1.P\arabic*]
-    \item\label{rule:direct-to-p-cons} \greendots  \textit{Reaching a perfect consonance by direct motion should be avoided.}
+    \item\label{rule:direct-to-p-cons} \greendots \texttt{[PREF]}  \textit{Reaching a perfect consonance by direct motion should be avoided.}
 
     \begin{quotation}
     "[Reaching] perfect consonance by direct motion [is allowed if] there is no other possibility."
@@ -181,7 +214,7 @@ Concerning the rules applying to all species (those marked with a red dot): when
     This is a new rule as it only applies to three-part composition, but it cancels an already existing rule that used to be applied in two-part composition. The same rule in two-part composition states that it is prohibited to reach a perfect consonance using a direct motion. In three-part composition, this is not prohibited anymore, as not doing it is sometimes impossible, and you may thus derogate from this rule.
 
 \setcounter{enumi}{3} % Start from 4
-    \item\label{rule:succ-p-cons}   \textit{Successive perfect consonances are prohibited.}
+    \item\label{rule:succ-p-cons} \texttt{[PREF]} \textit{Successive perfect consonances are prohibited.}
 
     \begin{quotation}
     "The necessity of avoiding the succession of two perfect consonances [...]."
@@ -208,7 +241,7 @@ Concerning the rules applying to all species (those marked with a red dot): when
     \textcite[p.76]{GaPEng}
     \end{quotation}
 
-    What Fux says here is just that the three parts cannot be moving in the same direction. 
+    What Fux is explaining here is simply that the three parts cannot move in the same direction. In other words, if two voices go up, the last one cannot go up. If two voices go down, the last one cannot go down. And if two voices stand still, the last one must move.
 
     \item\label{rule:ascending-sixths}  \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
 
@@ -217,7 +250,7 @@ Concerning the rules applying to all species (those marked with a red dot): when
     \textcite[p.77]{GaPEng}
     \end{quotation}
 
-    This rule is pretty straightforward and states that if an interval is a sixth, the next one cannot be one.
+    This rule is quite simple and states that if one harmonic interval is a sixth, then the next harmonic interval cannot also be a sixth.
 \end{enumerate}
 
 \subsection{Formalisation into constraints}
@@ -226,21 +259,24 @@ Concerning the rules applying to all species (those marked with a red dot): when
     
     This rule needs no special constraint, since it is the very definition of the first species  to consist only of whole notes.
 
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \paragraph{\hspace{.6cm}\ref{rule:consonant}} \greendots \textit{All notes on the downbeat are consonant with the notes of the lowest stratum.}
     
     The new definition of variable H already captures the change in the rule. This means that the equation of rule \ref{rule:consonant} stays the same.
-    \paragraph{\hspace{.6cm}\ref{rule:harmonic-triad}}  \textit{The harmonic triad should be used as much as possible.}
+    \paragraph{\hspace{.6cm}\ref{rule:harmonic-triad}} \texttt{[PREF]} \textit{The harmonic triad should be used as much as possible.}
     
     As this rule is actually a preference and not a mandatory rule, it has been implemented as a cost. If the harmonic triad is used, then the cost is 0. Else, it is 1.
     % todo should not be 1 absolutely, should depend on the user
     \begin{equation}
     \begin{aligned}
     &\forall j \in [0, m-1) \colon \\
-    &((H(b)[0, j] \neq 3) \land (H(b)[0, j] \neq 4)) \lor (H(c)[0, j]  \neq 7)) \\
+    &((H(b)[0, j] \neq 3) \land (H(b)[0, j] \neq 4)) \lor (H(c)[0, j]  \neq 7) \\
     &\iff cost_{prefer-harmonic-triad}[j] = 1
     \end{aligned}
     \end{equation}
+
+    \paragraph{\hspace{.6cm}\ref{rule:sixth-or-octaves}}  \textit{One might use sixths or octaves.}
+    As discussed in \ref{rule:sixth-or-octaves}, there is no constraint to add for this rule.
     
     \paragraph{\hspace{.6cm}\ref{rule:tenth-is-last-chord}}  \textit{Tenths are prohibited in the last chord.}
 
@@ -248,21 +284,23 @@ Concerning the rules applying to all species (those marked with a red dot): when
     &H_{brut}[0, m-1] > 12 \implies H[0, m-1] \notin \{3, 4\}
     \end{aligned} \end{equation}
 
-    If the interval is bigger than an octave, then you cannot use thirds anymore.
+    If the harmonic interval is bigger than an octave, then you cannot use thirds anymore.
 
-    
+    \paragraph{\hspace{.6cm}\ref{rule:unison-vs-octave}} \texttt{[PREF]} \textit{Octaves should be preferred over unisons.}
+    As discussed in \ref{rule:unison-vs-octave}, there is no constraint to add for this rule.
+
     \paragraph{\hspace{.6cm}\ref{rule:minor-third}}  \textit{Last chord cannot include a minor third.}
 
     \begin{equation} \begin{aligned}
     H[0, m-1] \neq 3
     \end{aligned} \end{equation}
 
-\subsubsection{Melodic constraints}
-\paragraph{\hspace{.6cm}\ref{rule:steps-prefered}} \textit{Steps are preferred to skips.}
+\subsubsection{Melodic rules}
+\paragraph{\hspace{.6cm}\ref{rule:steps-prefered}} \texttt{[PREF]} \textit{Steps are preferred to skips.}
 
 As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it already exists.
 
-\paragraph{\hspace{.6cm}\ref{rule:variety}}  \textit{The notes of each part should be as diverse as possible.}
+\paragraph{\hspace{.6cm}\ref{rule:variety}} \texttt{[PREF]}  \textit{The notes of each part should be as diverse as possible.}
 
     As it is not explained either if this has to be true for the whole partition or only for two following notes, it has been chosen as an arbitrary seven successive notes to apply the rule on. This means that the solution is penalized if a note in measure X was already present in measures [X-3, X+3]. This amount was chosen because it represents the number of flat notes that exist, pushing for the solver to find a solution that contain all of them.
 
@@ -273,8 +311,8 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 
     This rule is very interesting because it is the only \textit{across all} rule that has a scope greater than two bars. While without this rule the solver uses constraints that apply only to one bar (think of harmonic constraints) or sometimes to two bars (think of melodic constraints), this constraint is the first to give the solver some "memory" about the composition. And although seven bars may seem like a small range, it means that the constraint covers a large part of the composition (when dealing with compositions of 10 to 15 bars, of course).
 
-\subsubsection{Motion constraints}
-\paragraph{\hspace{.6cm}\ref{rule:direct-to-p-cons}} \greendots \textit{Reaching a perfect consonance by direct motion should be avoided.}
+\subsubsection{Motion rules}
+\paragraph{\hspace{.6cm}\ref{rule:direct-to-p-cons}} \greendots \texttt{[PREF]} \textit{Reaching a perfect consonance by direct motion should be avoided.}
 
     Since there is no way in constraint programming to implement a rule that must be obeyed only if possible other than by using a cost, the initial constraint was rewritten to a new one.
 
@@ -286,7 +324,7 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 
     Remember: $P[0,j] = 2$ means that the motion is direct.
     
-\paragraph{\hspace{.6cm}\ref{rule:succ-p-cons}}   \textit{Successive perfect consonances are prohibited.}
+\paragraph{\hspace{.6cm}\ref{rule:succ-p-cons}} \texttt{[PREF]} \textit{Successive perfect consonances are prohibited.}
 
     As discussed before, this rule is actually a preference.
 
@@ -324,8 +362,16 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 
 
 \section{Second species}
+The second species consists only of half notes. It introduces more dissonance than was possible with the first species. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Species_examples/2sp-example.png}
+    \caption{Example of a second species counterpoint in three-part composition}
+    \label{fig:example-2sp}
+\end{figure}
 \subsection{Formalisation in English}\label{formalisation-en-2nd}
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \begin{enumerate}[wide, label=\bfseries 2.H\arabic*]
 \setcounter{enumi}{3} % Start from 4
     \item \textit{Major thirds are now allowed in the last chord.} \label{rule:major-third-last-chord}    
@@ -343,10 +389,10 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
     One might ask what Fux meant when he wrote "concordant". Did he mean to say "consonant"? Our take on the question is that he meant that the half notes are written whilst taking the whole notes into account. This interpretation is aligned with the French translation, and even with the Latin original. In other words, Fux just says "there are constraints on the half notes". It is thus not a rule \textit{per se}.
 \end{enumerate}
 
-\subsubsection{Melodic constraints}
+\subsubsection{Melodic rules}
 \begin{enumerate}[wide, label=\bfseries 2.M\arabic*]
 \setcounter{enumi}{1} % Start from 4
-    \item \greendots \textit{It is allowed to ligature the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.} \label{rule:2nd-species-ligatures}    
+    \item \greendots \textit{It is allowed to ligate the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.} \label{rule:2nd-species-ligatures}    
     \begin{quotation}
         "Ligatures have no place in this species [except] in the final cadence."
         \textcite[p.87]{GaPEng}
@@ -365,10 +411,10 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
     We thus have to relax the already existing constraint from two-part composition stating that no two consecutive notes can be the same, to accept it in some cases.
 \end{enumerate}
 
-\subsubsection{Motion constraints}
+\subsubsection{Motion rules}
 \begin{enumerate}[wide, label=\bfseries 2.P\arabic*]
 \setcounter{enumi}{2} 
-    \item \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{rule:succ-fifths-flanking-third}    
+    \item \texttt{[PREF]} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} \label{rule:succ-fifths-flanking-third}    
     \begin{quotation}
         "A half note may, for the sake of the harmonic triad, occasionally make a succession of two parallel fifth acceptable - which can be effected by the skip of a third."
         \textcite[p.86]{GaPEng}
@@ -392,7 +438,7 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 \end{enumerate}
 
 \subsection{Formalisation into constraints}
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \paragraph{\hspace{.5cm}\ref{rule:major-third-last-chord}} \textit{Major thirds are now allowed in the last chord.}
 
 No need to add a new constraint as this rule is already covered by rules \ref{rule:last-chord-not-perfect-anymore} and \ref{rule:harmonic-triad}.
@@ -402,9 +448,9 @@ As discussed in \ref{formalisation-en-2nd}, no new harmonic rules were defined b
 
 No need to add a new constraint as this is not an actual rule.
 
-\subsubsection{Melodic constraints}
+\subsubsection{Melodic rules}
 
-    \paragraph{\hspace{.6cm}\ref{rule:2nd-species-ligatures}} \greendots \textit{It is allowed to ligature the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.}  
+    \paragraph{\hspace{.6cm}\ref{rule:2nd-species-ligatures}} \greendots \textit{It is allowed to ligate the fourth-to-last with the third-to-last or to ligature the third-to-last with the second-to-last.}  
 
     This is a relaxation of the two-voice rule \textbf{2.M2} "two consecutive notes cannot be the same".
     
@@ -421,8 +467,8 @@ No need to add a new constraint as this is not an actual rule.
 
     The first line prohibits the ligatures except where they are allowed, and the second lines states that only one ligature can occur.
 
-\subsubsection{Motion constraints}
-\paragraph{\hspace{.6cm}\ref{rule:succ-fifths-flanking-third}} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.}    
+\subsubsection{Motion rules}
+\paragraph{\hspace{.6cm}\ref{rule:succ-fifths-flanking-third}} \texttt{[PREF]} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.}    
     This rule is a relaxation of the cost \ref{rule:succ-p-cons} defined above, and is thus rewritten to correspond to a special case that occurs with the second species.
         
     In the following equation, only $p_1$ must be a second species \cp, $p_2$ can be any species.
@@ -442,8 +488,16 @@ No need to add a new constraint as this is not an actual rule.
     The meaning of this equation is that $Cost_{succ\_p\_cons}$ is equal to zero if one of the two considered consonances is not perfect (because then we do not have two successive perfect consonances), or if we have two successive fifths with a third in between. Otherwise (when we have perfect consonances), the cost must be set.
 
 \section{Third species}
+The second species consists only of half notes. It introduces more dissonance than was possible with the first species. 
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Species_examples/3sp-example.png}
+    \caption{Example of a third species counterpoint in three-part composition}
+    \label{fig:example-3sp}
+\end{figure}
 \subsection{Formalisation in English}\label{formalisation-en-3rd}
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \begin{enumerate}[wide, label=\bfseries 3.H\arabic*]
 \setcounter{enumi}{4}
     \item \textit{The quarter notes must be coherent with respect to the whole notes.} \label{rule:concur-3rd}    
@@ -453,7 +507,7 @@ No need to add a new constraint as this is not an actual rule.
     \end{quotation}
     When using the word "concur", Fux more than probably means "are put in relation", and not "are consonant". As for rule \ref{rule:concur-2nd} in the second species, where the half notes had to be \textit{concordant} with the \textit{cantus firmus}. It is not a rule by itself, Fux is only annunciating that some rules should be followed (i.e. the other constraints).
 
-    \item \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.} \label{rule:coherent}    
+    \item\texttt{[PREF]}  \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.} \label{rule:coherent}     
     \begin{quotation}
         "Take care whenever you cannot use the harmonic triad on the first quarter occurring on the upbeat, to use it on the second or third quarters."
         \textcite[p.91]{GaPEng}
@@ -462,17 +516,17 @@ No need to add a new constraint as this is not an actual rule.
     This rule is quite clear and speaks for itself.
 \end{enumerate}
 
-\subsubsection{Melodic constraints}
+\subsubsection{Melodic rules}
 Fux introduces no new melodic constraints for the third species.
-\subsubsection{Motion constraints}
+\subsubsection{Motion rules}
 Fux introduces no new motion constraints for the third species.
 
 \subsection{Formalisation into constraints}
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \paragraph{\hspace{.5cm}\ref{rule:concur-3rd}} \textit{The quarter notes must be coherent with respect to the whole notes.}
 As has been discussed in the English section, there is no constraint to add for this rule, which isn't really a rule.
 
-\paragraph{\hspace{.6cm}\ref{rule:coherent}} \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.}    
+\paragraph{\hspace{.6cm}\ref{rule:coherent}} \texttt{[PREF]} \textit{If the harmonic triad could not be used on the downbeat, it should be used on the second or third beat.}    
 
     This rule is quite clear and speaks for itself. Since this is not a strict rule but an advice, it was treated as a cost.
 
@@ -486,6 +540,14 @@ As has been discussed in the English section, there is no constraint to add for 
 
 
 \section{Fourth species}
+As a reminder, the fourth species consists of syncopations. Each note is played on the upbeat and is ligated to the next note on the upbeat.
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Species_examples/4sp-example.png}
+    \caption{Example of a fourth species counterpoint in three-part composition}
+    \label{fig:example-4sp}
+\end{figure}
+
 \subsection{Formalisation in English}\label{formalisation-en-4th}
 \subsubsection{Structural constraints}
 \begin{enumerate}[wide, label=\bfseries 4.S\arabic*]
@@ -505,10 +567,10 @@ As has been discussed in the English section, there is no constraint to add for 
     Fux speaks here about our concept of strata. The tenor can become the lowest stratum, just like the alto and the soprano may do. This is a fundamental concept of the generalization of Fux counterpoint to three voices, and has already been extensively discussed before (see section \ref{section:parts-and-strata}).
 \end{enumerate}
 
-\subsubsection{Harmonic constraints}
+\subsubsection{Harmonic rules}
 \begin{enumerate}[wide, label=\bfseries 4.H\arabic*]
     \setcounter{enumi}{4}
-    \item \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{rule:prefer-fifths-over-octaves}    
+    \item \texttt{[PREF]} \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.} \label{rule:prefer-fifths-over-octaves}    
     \begin{quotation}
         "The fifth is a perfect consonance, the octave a more perfect one, and the unison the most perfect of all; and the more perfect a consonance, the less harmony it has."
         \textcite[p.97]{GaPEng}
@@ -516,13 +578,13 @@ As has been discussed in the English section, there is no constraint to add for 
     This rule is as clear as it gets.
 \end{enumerate}
 
-\subsubsection{Melodic constraints}
+\subsubsection{Melodic rules}
 Fux introduces no new melodic constraints for the third species.
 
-\subsubsection{Motion constraints}
+\subsubsection{Motion rules}
 \begin{enumerate}[wide, label=\bfseries 4.P\arabic*]
 \setcounter{enumi}{2}
-    \item \textit{Successive fifths are allowed when using ligatures.} \label{rule:successive-fifths-in-4th-species}    
+    \item \texttt{[PREF]} \textit{Successive fifths are allowed when using ligatures.} \label{rule:successive-fifths-in-4th-species}    
     \begin{quotation}
         "[It would be impossible to remove] the ligatures because of another consideration, the immediate succession of several fifths."
         \textcite[p.95]{GaPEng}
@@ -531,7 +593,7 @@ Fux introduces no new melodic constraints for the third species.
     
     The conclusion is that successive fifths are allowed in the fourth species.
 
-    \item \textit{Resolving to a fifth is preferred over resolving to an octave.} \label{rule:resolving-to-fifths-rather-than-octaves}    
+    \item \texttt{[PREF]} \textit{Resolving to a fifth is preferred over resolving to an octave.} \label{rule:resolving-to-fifths-rather-than-octaves}    
     \begin{quotation}
         "A dissonance that resolves to a fifth is more acceptable than a dissonance that resolves to an octave."
         \textcite[p.98]{GaPEng}
@@ -561,14 +623,14 @@ Fux introduces no new melodic constraints for the third species.
     \vspace{.5cm}
     \begin{minipage}{0.46\textwidth}
     \centering
-    \includegraphics[width=\textwidth]{Images/hidden-fifths-1.png}
+    \includegraphics[width=\textwidth]{Images/hidden-fifths-2.png}
     \captionof{figure}{Invalid solution featuring hidden fifths}
     \label{fig:hidden-fifths-1}
     \end{minipage}
     \hfill
     \begin{minipage}{0.46\textwidth}
       \centering
-      \includegraphics[width=\textwidth]{Images/hidden-fifths-2.png}
+      \includegraphics[width=\textwidth]{Images/hidden-fifths-1.png}
       \captionof{figure}{Valid solution replacing the hidden fifth by a rest.}
       \label{fig:hidden-fifths-2}
     \end{minipage}
@@ -577,21 +639,23 @@ Fux introduces no new melodic constraints for the third species.
 
 \subsection{Formalisation into constraints}\label{formalisation-c-4th}
 \subsubsection{Structural constraints}
-    \paragraph{\hspace{.5cm}\ref{rule:delaying}} \textit{The fourth species is staggered by two beats.}     
+    \paragraph{\hspace{.5cm}\ref{rule:delaying}} \textit{The fourth species is staggered by two beats.}
+
     There is no constraint to add since this rule is the very definition of the fourth species.
 
     \paragraph{\hspace{.5cm}\ref{rule:tenor-might-take-place-of-bass}} \textit{All parts can become the lowest stratum somewhere in the composition.} 
+    
     Again, there is no constraint to add since this rule is already covered by the concept of lowest stratum.
 
 
-\subsubsection{Harmonic constraints}
-\paragraph{\hspace{.6cm}\ref{rule:prefer-fifths-over-octaves}} \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.}   
+\subsubsection{Harmonic rules}
+\paragraph{\hspace{.6cm}\ref{rule:prefer-fifths-over-octaves}} \texttt{[PREF]} \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.}   
 
     This rule is almost covered by the existing costs, as a perfect consonance has a cost of 1, where an imperfect consonance has a cost of 0. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a cost of 2 to octaves and a cost of 1 to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see \ref{costs}).
 
 
-\subsubsection{Motion constraints}
-\paragraph{\hspace{.6cm}\ref{rule:successive-fifths-in-4th-species}} \textit{Successive fifths are allowed when using ligatures.}    
+\subsubsection{Motion rules}
+\paragraph{\hspace{.6cm}\ref{rule:successive-fifths-in-4th-species}} \texttt{[PREF]} \textit{Successive fifths are allowed when using ligatures.}    
 
     The point of this rule is that Fux introduces an exception to \ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species, thanks to the delaying it induces.
 
@@ -608,7 +672,7 @@ Fux introduces no new melodic constraints for the third species.
 
     The meaning of this equation is that the cost is set to zero if the two consecutive intervals are not perfect consonances, or if the consecutive intervals are both fifths. Otherwise, the cost must be set.
 
-    \paragraph{\hspace{.6cm}\ref{rule:resolving-to-fifths-rather-than-octaves}} \textit{Resolving to a fifth is preferred over resolving to an octave.}    
+    \paragraph{\hspace{.6cm}\ref{rule:resolving-to-fifths-rather-than-octaves}} \texttt{[PREF]} \textit{Resolving to a fifth is preferred over resolving to an octave.}    
     
     This is already covered by the rule \ref{rule:prefer-fifths-over-octaves} (prefer fifths over octaves), since preferring fifths over octaves in \textit{all} cases implies preferring to resolve to a fifth rather than to an octave.
 
@@ -620,7 +684,6 @@ Fux introduces no new melodic constraints for the third species.
         &M(a)[0, j] \neq 0 \iff H[2, j] \in Cons\\
         &M(a)[0, j] = 0 \iff H[2, j] \in Dis
         \end{aligned}
-        \label{eq:arsiscons} 
     \end{equation}        
 
 
@@ -635,6 +698,17 @@ Fux introduces no new melodic constraints for the third species.
 
 
 \section{Fifth species}
+
+As a reminder, the fifth species is a mix of all previously mentioned species.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Species_examples/5sp-example.png}
+    \caption{Example of a fifth species counterpoint in three-part composition}
+    \label{fig:example-5sp}
+\end{figure}
+
+
 No additional rules (be they harmonic rules, melodic rules or motion rules) were observed by Fux for the fifth species.
 However, in order to have some melodic and rhythmic variety when composing with two fifth counterpoints, it was decided to impose a rule that Fux never mentioned: knowing that the fifth is just all the others combined, not more than 50\% of the composition of the parts can be made by using the same species for the same measure.
 

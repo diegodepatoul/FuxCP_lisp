@@ -1,12 +1,13 @@
 \chapter{Searching for the best existing solution}\label{chapter:search}
-Three parts composition brings in way more possibilities than two parts composition. 
-But more possibilities also mean an increased computation complexity. The search space has been extended a lot by adding a whole new set of variables, and the time taken for a solution to be found might to be too elevated if one does not think about optimizing the search. In addition to that, adding a third voice to a composition is not bringing many new constraints (which would help discarding some potential solutions faster), but instead comes with many preferences, which in constraint programming, are translated to costs.
+Three-part composition is much richer than two-part composition. In fact, it offers many more possibilities than the two-part composition. In constraint solver terms, this means that the search space is much larger, which means two things: the computational complexity of finding a solution is greater, and there are many more possible solutions. The first difficulty is to find a valid solution in this large search space, and the second difficulty is to find the solution that best respects the preferences expressed by Fux.
 
-In addition, we need to find a way of arranging the costs in a way that comes as close as possible to what Fux was trying to express in his book. There are several ways to do this, which we will go through and discuss.  
+In this chapter, we first discuss the computational aspect and then turn to the preference management aspect.
+The computational complexity section covers: the search algorithm used, the heuristics implemented, and some of the factors that influence the speed of finding a solution; whereas the preference management section covers: discussing how to translate Fux's preferences into solver costs, and comparing the different methods that exist for doing so. 
 
-This chapter will begin by explaining the search algorithm that is used to find a solution, continue by discussing the different ways of considering costs, and end by analysing the results that these different perspectives produce.
+\section{Dealing with the higher computational complexity}
+As we have just said, composing a three-part counterpoint is more computationally demanding than composing a two-part counterpoint. The search space has been greatly expanded by adding a whole new set of variables, and the time it takes to find a solution may be too high if you do not think about optimising the search. In addition, adding a third voice to a composition does not bring many new constraints (which would help to discard some potential solutions faster), but it does bring many preferences, which in constraint programming are translated into costs. The solver must be efficient in finding the solution that has the lowest cost (i.e. that is best in terms of musicality).
 
-\section{Using Branch-And-Bound as a search algorithm}
+\subsection{Using Branch-And-Bound as a search algorithm}
 
 To cope with the increased complexity brought about by the three-part composition, it was decided to switch from the Depth First Search algorithm (used in T. Wafflard's thesis) to a more efficient Branch and Bound (BAB). This allows us to handle costs properly and to find faster solutions. Moreover, the BAB algorithm can also produce non-optimal results, which is very valuable since finding the best overall solution can be time-consuming. When starting the search for a solution, it is now possible to ask for the next solution (i.e. a better solution than the one found previously, and if none was found previously, then just any valid solution), or for the best solution. In the latter case, the solver will continue to search until it finds the best solution or until it is stopped, returning a better solution each time it finds one.
 
@@ -43,13 +44,20 @@ There are also cases where the exact combination of two given vocal ranges for t
 It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution).
 
 
-\section{Designing the costs to be as faithful as possible to \gap} \label{costs}
+\section{Designing the costs of the solver to be as faithful as possible to the preferences of Fux} \label{costs}
+A constraint solver cannot say whether one valid solution is better than another valid solution, and yet we need it to produce the best possible musical solution. We can already say that one solution is better than another if it respects Fux's preferences (see \ref{subsection:preferences-vs-hard-rules}) more. In order for the solver to understand these preferences and to be able to distinguish the musical quality of two solutions, we give costs to it.  The lower the cost, the higher the preference.
 
 Knowing that we are looking for the solution whose cost must be as low as possible, the question arises: how can we calculate the cost in order to best reflect the preferences expressed in \gap?
 
-The way to translate each preference into a corresponding cost has of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to get the most accurate result in terms of what Fux is trying to convey?
+The way to translate each preference into a corresponding cost has of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to get the most accurate result in terms of what Fux is trying to convey in terms of preferences?
 
-Three main ways of doing this have been identified: a linear combination between costs, a search that minimises costs by lexicographic order, and a cost ordering that involves the calculation of minima. We will first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
+Three main ways of doing this have been identified. These are, in order from the simplest to the most complex:
+\begin{enumerate}
+    \item a linear combination of all costs,
+    \item computing the maximum over all costs and minimising it,
+    \item a lexicographic order search, 
+\end{enumerate}
+We first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
 
 
 
@@ -79,7 +87,7 @@ However, it has a major drawback: since the total cost $\tau$ we are minimising 
 Another drawback of linear combination is that the result is pretty and unpredictable: changing the value of the cost may or may not make a difference, and you may need to set huge values to see a real effect. For example, if a composer really wants oblique motion, they may be forced to set the cost of the other types of motion to a huge value, or they may not see the difference between the default solution and their personalised solution. This is due to the fact that all the costs are mixed together and form an indistinguishable soup that the solver considers as a whole, and a small increase in the cost of the direct and contrary motions is very likely to be absorbed into this soup without any change being noticed.
 
 These two drawbacks make the linear combination solution for the costs hardly acceptable when it comes to representing the preferences.
-We will therefore examine the other two options for adjusting costs.
+We therefore examine the other two options for adjusting costs.
 
 \subsection {Minimising the maxima} \label{section:minimising-the-maxima}
 In order to overcome the problem of outstanding costs that we encountered when considering the linear combination solution, one might consider using some minimums when calculating $\tau$, the total cost. For example, $\tau$ could be the maximum of all costs. By doing this, the solver would try to find a solution where the focus is on the worst cost and try to reduce it before trying to reduce the other costs.
@@ -97,17 +105,17 @@ The problem with this method arises when one cost is significantly higher than t
 Furthermore, even when considering a less extreme case (e.g. the default setting), this method requires a normalisation of the costs: there are $3\times (m-2)$ sub-costs for the variety cost, $3\times (m-1)$ sub-costs for the motion cost, but only $m$ sub-costs for the octave cost. This means that without normalisation, the motion cost will be on average three times larger than the octave cost, which means that the solver will put three times more effort into minimising the motion cost than the octave cost, which is unfair and unpractical.
 
 
-\subsection{Lexicographical Order}\label{section:lexicographical-order}
+\subsection{Lexicographic Order}\label{section:lexicographic-order}
 The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
 
-Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographically ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
+Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographicly ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
 \begin{figure}[h]
     \begin{equation}
         \begin{aligned}
             \tau = [\underset{\text{minimise this first}}{\underbrace{\mathcal{C}_\text{octaves}}}, \mathcal{C}_\text{fifths}]
         \end{aligned}
     \end{equation}
-    \caption{Array of costs demonstrating the practicality of a lexicographical order solving.}
+    \caption{Array of costs demonstrating the practicality of a lexicographic order solving.}
 \end{figure}
 
 A second example, which ties in particularly well with the first, is that Fux tells us that the harmonic triad must be used in every measure unless a rule forbids it. In saying this, he places the preference for the harmonic triad above all other preferences, because the only reason that can prevent the use of a harmonic triad is a fixed constraint (and not a preference). You'll notice that the harmonic triad consists of a fifth (which is a perfect consonant), so Fux is telling us that we'd rather use a fifth in a harmonic triad than an imperfect consonant outside a harmonic triad. The lexicographic order search is the only one that allows this kind of concept to be taken into account, because in a linear combination these two preferences would be mutually "exclusive"\footnote{In the sense that their effects would work against each other.}: the first preference would add a cost where the second preference would not, and the second preference would add a cost where the first would not.
@@ -118,10 +126,10 @@ A second example, which ties in particularly well with the first, is that Fux te
             \tau = [& \underset{\text{\fontsize{7}{11}\selectfont{minimize this first}}}{\underbrace{\mathcal{C}_\text{harmonic\_triad}}}, \underset{\text{\fontsize{7}{11}\selectfont\parbox{4cm}{and start minimizing this only if it is not possible anymore to minimize the harmonic triad cost}}}{\underbrace{\mathcal{C}_\text{octaves}}},\quad  \mathcal{C}_\text{fifths}]
         \end{aligned}
     \end{equation}
-    \caption{Array of costs demonstrating the practicality of a lexicographical order solving.}
+    \caption{Array of costs demonstrating the practicality of a lexicographic order solving.}
 \end{figure}
 
-And in this way we can keep integrating the different costs until we get a full array $\tau$ with all the costs ordered in a lexicographical way.
+And in this way we can keep integrating the different costs until we get a full array $\tau$ with all the costs ordered in a lexicographic way.
 
 
 Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a drawback of this method, because we have to hierarchise the costs, even if the choice is difficult. What's more, once the costs are ranked, their order becomes absolute and the solver loses some of its flexibility.
@@ -193,10 +201,10 @@ We have now discussed the advantages and disadvantages of each of the three meth
     \end{tabularx}
 \end{center}
 
-Even more, one could think about a combination of all the methods to get rid of their disadvantages. In fact, we could enjoy the advantages of all the methods by combining them and cleverly designing a lexicographical order search in which the cost is a linear combination of a maximum minimisation.
+Even more, one could think about a combination of all the methods to get rid of their disadvantages. In fact, we could enjoy the advantages of all the methods by combining them and cleverly designing a lexicographic order search in which the cost is a linear combination of a maximum minimisation.
 
 \subsection{Experimenting with the three types of costs arrangements}
-To experiment which method gives the best results, we will follow this plan: first compare the result of a linear combination and the result of a purely lexicographical order, using the default preference order as defined in \ref{section:lexicographical-order}. We then analyse the result by looking at what could have been done to manage costs more effectively and, where appropriate, group costs together.
+To experiment which method gives the best results, we will follow this plan: first compare the result of a linear combination and the result of a purely lexicographic order, using the default preference order as defined in \ref{section:lexicographic-order}. We then analyse the result by looking at what could have been done to manage costs more effectively and, where appropriate, group costs together.
 
 
 These experiments are carried out using two different counterpoint combination setups. These setups will increase in complexity, starting with the basic case of 3-voice counterpoint (two counterpoints of the 1st species) and moving on to mixed counterpoints. 
@@ -222,7 +230,7 @@ The selected \textit{cantus firmi} were chosen from \gap. If the search time exc
 \end{figure}
 
 % above very far above
-Here are the first two results: \ref{fig:combili-1sp} and \ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions, except that the second is perhaps a tad more vibrant. The linear combination solution feels like chords that follow one another without any discernible link between them, whereas the solution with the lexicographical order offers a solution that seems to hold together better over time. What's more, the linear combination solution contains a few dissonances that are not so pleasing to the ear.
+Here are the first two results: \ref{fig:combili-1sp} and \ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions, except that the second is perhaps a tad more vibrant. The linear combination solution feels like chords that follow one another without any discernible link between them, whereas the solution with the lexicographic order offers a solution that seems to hold together better over time. What's more, the linear combination solution contains a few dissonances that are not so pleasing to the ear.
 
 In more technical terms, the two solutions are fairly similar, and both feature the same number of harmonic triads, i.e. one, which is a really small number given the eleven measures of the composition. The lexicographic solution is composed of four direct motions, whereas the linear combination solution only is composed of only three. However, the solution does not suffer from any particular redundancy to the ear, as you do not get the impression of hearing the same melody three times. The lexicographic composition gives a more melodic impression than the composition by linear combination.
 
@@ -241,9 +249,9 @@ In more technical terms, the two solutions are fairly similar, and both feature 
 \end{figure}
 
 % below far above
-Let's look at the second result (obtained with a different \cf), featured in figures \ref{fig:combili-1sp0} and \ref{fig:lexico-1sp0}. Once again, there's no major difference between the two solutions, although once again the linear combination solution seems to lack a melodic direction. The dissonances are more numerous and once again it feels like a series of unrelated chords. In contrast, and perhaps it's a coincidence, but the solution proposed by the lexicographical research seems to tell a dark story.
+Let's look at the second result (obtained with a different \cf), featured in figures \ref{fig:combili-1sp0} and \ref{fig:lexico-1sp0}. Once again, there's no major difference between the two solutions, although once again the linear combination solution seems to lack a melodic direction. The dissonances are more numerous and once again it feels like a series of unrelated chords. In contrast, and perhaps it's a coincidence, but the solution proposed by the lexicographic research seems to tell a dark story.
 
-Once again, the technical results are fairly similar: two harmonic triads for the linear combination and three for the lexicographical search. Again, this is surprisingly few, given that there are ten measures in the composition. Both solutions feature four direct motions, but one does not feel a lack of independence of the voices in any of them.
+Once again, the technical results are fairly similar: two harmonic triads for the linear combination and three for the lexicographic search. Again, this is surprisingly few, given that there are ten measures in the composition. Both solutions feature four direct motions, but one does not feel a lack of independence of the voices in any of them.
 
 Now what happens when we start to mix the techniques and group some of the costs in the lexicographic order? At each level of the lexicographic order, we calculate the maximum of the costs at that level, which we then try to minimise. All preferences that Fux has not explicitely ordered get packed on the same level, i.e. three levels subsist: the first one, with only the cost for successive perfect consonances, the second one, with only the cost for not using a harmonic triad, and a third one, with all the other costs.
 
@@ -277,7 +285,7 @@ The following can be concluded from these initial experiments
     \item The lexicographic order seems to give results with a stronger sense of coherence: the composition seems to tell a story (to a very limited extent, of course).
     \item Linear combination gives more dissonant results.
     \item The three search methods give three different results, so a composer could experiment.
-    \item Our view of the best search method so far is: there is none. The best that can be done is to use a mixture of lexicographical order and maximum minimisation, with personalised orders, to find a counterpoint that the composer will like.
+    \item Our view of the best search method so far is: there is none. The best that can be done is to use a mixture of lexicographic order and maximum minimisation, with personalised orders, to find a counterpoint that the composer will like.
 \end{enumerate}
 \subsubsection{Second experiment: one fourth-species counterpoint and one first-species counterpoint on a single \cf}
 
@@ -359,10 +367,10 @@ On the other hand, the fact that the penultimate note of the middle voice resolv
 \subsubsection{Conclusion on the search methods}
 As we have stressed several times in this chapter, there is probably no \textit{best} way of ordering costs. Each technique has its shortcomings, and it is probably by allowing the composer to order their costs as they see fit that the tool will be able to reveal its full potential. 
 
-Nevertheless, the lexicographical method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
+Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
 
 
 \subsection{Some remarks to insert somewhere}
 \begin{itemize}
-    \item The lexicographical order was faster to converge than the linear, and the mix between minimisation and lexicographical was even faster.
+    \item The lexicographic order was faster to converge than the linear, and the mix between minimisation and lexicographic was even faster.
 \end{itemize}

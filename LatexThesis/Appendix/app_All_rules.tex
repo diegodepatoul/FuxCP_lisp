@@ -1,4 +1,8 @@
 \chapter{Complete set of rules for two and three part compositions}\label{appendix:complete-set-of-rule}
+This appendix contains all the rules for composing counterpoint for two or three voices. All the rules apply to three-voice compositions, but only the rules for two voices apply to two-voice compositions. Rules for three-part compositions are indicated by '3V' at the beginning of the rule.
+
+
+Some of the rules are different depending on whether the composition is for two or three voices. In these cases, the mathematical relationship to be followed for the rule in question, depending on the situation, is clearly indicated.
 \section*{Constraints of the First Species}
 \subsection*{Harmonic Constraints of the First Species}
 \begin{enumerate}[wide, label=\bfseries 1.H\arabic*]
@@ -9,7 +13,6 @@
         H[0, j] \in Cons
     \end{gathered}
 \end{equation}
-This can be expressed with the constraint {\small\texttt{(gil::g-member *sp* ALL\_CONS\_VAR h-intervals)}} (see original code for more details).
 
 \item\label{rule:firstpcons}{\textit{The first harmonic interval must be a perfect consonance.}}
 When dealing with two-part composition:
@@ -36,7 +39,7 @@ When dealing with three-part composition:
     \end{gathered}
 \end{equation}
 
-\item{\textit{The counterpoint and the \cf cannot play the same note at the same time except in the first and last measure.}}
+\item{\textit{The counterpoint and the \cfs cannot play the same note at the same time except in the first and last measure.}}
 
 \begin{equation}
     \begin{gathered}
@@ -59,7 +62,7 @@ When dealing with three-part composition:
     \end{gathered}
 \end{equation}
 
-\item{and \textbf{1.H8} \textit{The harmonic interval of the penultimate note must be a major sixth or a minor third depending on the \cf pitch.}}
+\item{and \textbf{1.H8} \textit{The harmonic interval of the penultimate note must be a major sixth or a minor third depending on the \cfs pitch.}}\label{rule:penult-interval-2v}
 \addtocounter{enumi}{1} 
 \begin{equation}
     \begin{gathered}
@@ -306,7 +309,7 @@ the first species. Note that this constraint would indeed use P[2] and not P$_{r
     \end{gathered}
 \end{equation}
 
-\item\label{rule:penult3sp} {\textit{In the penultimate measure, if the \cf is in the upper part, then the harmonic interval of the first note should be a minor third.}}
+\item\label{rule:penult3sp} {\textit{In the penultimate measure, if the \cfs is in the upper part, then the harmonic interval of the first note should be a minor third.}}
 
 \begin{equation}
     \begin{gathered}
@@ -351,7 +354,7 @@ This implies that the costs of the motions and the first species constraints on 
     \end{gathered}
 \end{equation}
 
-\item\label{rule:nosecond} {\textit{If the \cf is in the lower part then no second harmony can be preceded by a unison/octave harmony.}}
+\item\label{rule:nosecond} {\textit{If the \cfs is in the lower part then no second harmony can be preceded by a unison/octave harmony.}}
 
 \begin{equation}
     \begin{gathered}
@@ -373,7 +376,7 @@ This implies that the costs of the motions and the first species constraints on 
     \label{eq:arsiscons}
 \end{equation}
 
-\item\label{rule:noseventh} {\textit{If the \cf is in the upper part, then no harmonic seventh interval can occur.}}
+\item\label{rule:noseventh} {\textit{If the \cfs is in the upper part, then no harmonic seventh interval can occur.}}
 
 \begin{equation}
     \begin{gathered}
@@ -382,7 +385,7 @@ This implies that the costs of the motions and the first species constraints on 
     \end{gathered}
 \end{equation}
 
-\item\label{rule:lowpenult4th} \label{rule:uppenult4th} {and \textbf{4.H4} \textit{In the penultimate measure, the harmonic interval of the thesis note must be a major sixth or a minor third depending on the \cf pitch.}}
+\item\label{rule:lowpenult4th} \label{rule:uppenult4th} {and \textbf{4.H4} \textit{In the penultimate measure, the harmonic interval of the thesis note must be a major sixth or a minor third depending on the \cfs pitch.}}
 
 \begin{equation}
     \begin{gathered}
