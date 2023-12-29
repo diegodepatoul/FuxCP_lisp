@@ -183,35 +183,25 @@
 }
 
 \begin{document}
-%\pagenumbering{roman}
-% \maketitle
+\pagenumbering{roman}
+%\maketitle
 \includepdf[pages=1]{FrontPage.pdf}
-%\null
-%\thispagestyle{empty}
-%\addtocounter{page}{-1}
-%\newpage
-%\newgeometry{left=1.65in,right=1.65in,top=2in,bottom=2in}
-%\begin{abstract}
-%    \large{
-%        This master's thesis presents FuxCP, a tool for computer-aided contrapuntal composition. The objective is to assist composers without programming skills by automating repetitive and time-consuming tasks. The tool is based on constraint programming with Gecode and formalizes musical rules as constraints. Thanks to this approach, the tool provides transparency and control over the generated solutions, allowing composers to shape their desired music. This thesis focuses on formalizing the rules of two-voice counterpoint from Fux's \textit{Gradus ad Parnassum}. The research highlights the advantages of constraint programming over other approaches, as it allows the tool to "understand" the generated music. The thesis covers the formalization of counterpoint species-specific rules as mathematical constraints, the evaluation of the tool compared to Fux, and suggestions for future development. The conclusion emphasizes the importance of a comprehensive set of rules for formalization, the need for additional constraints on melodic development, and the potential for more expert solvers in other musical genres. The findings indicate the potential of constraint programming in enhancing computer-aided composition across various musical styles.
-%    }
-%\end{abstract}
+\null
+\thispagestyle{empty}
+\addtocounter{page}{-1}
+\newpage
+\newgeometry{left=1.65in,right=1.65in,top=2in,bottom=2in}
+\begin{abstract}
+    \large{
+        This master's thesis extends the capabilities of T. Wafflard's FuxCP, a tool designed specifically for composers to assist them in counterpoint composition without the need for technical expertise. FuxCP uses Gecode and the constraint programming framework to automatically generate counterpoints. The implementation is based on Johann Joseph Fux's Gradus ad Parnassum, a seminal thesis in the field of counterpoint, by translating the rules of this book into formal logic and implementing them as constraints. In particular, the extension to three voices places special emphasis on the lowest voice, introducing innovative concepts and variables to address this key aspect.
+        By overcoming the challenge of including the lowest voice in the formalisation process and generalising the interaction between voices, this thesis contributes to the research and understanding of automated contrapuntal composition. Importantly, this work builds seamlessly on T. Wafflard's previous efforts, ensuring full compatibility with his thesis.
+        This research delves into the discussion and experimentation with preferences, a central focus of the thesis. While the concept of preferences was present in the previous thesis, this thesis goes more into their implications. Preferences, treated as optional rules rules, introduce nuance into the generation of musical solutions, enhancing the overall aesthetic considerations in automated counterpoint composition.
+    }
+\end{abstract}
 
-%\chapter*{Acknowledgements}
-%\paragraph{Thanks to Peter Van Roy}, my supervisor, for giving me the opportunity to write this thesis combining two of my passions: computer science and music.
-
-%\paragraph{Thanks to Damien Sprockeels} for his pragmatic feedback, his devotion to the project, and his great contribution to computer music.
-
-%\paragraph{Thanks to Karim Haddad} from IRCAM for proposing the \textit{Gradus ad Parnassum} as a reference book.
-
-%\paragraph{Thanks to Yves Deville} for reading this thesis.
-
-%\paragraph{Thanks to UCLouvain} for allowing me to finish my studies on such an instructive project.
-
-%\paragraph{Thanks to Justine Nagant} for supporting me throughout this long ordeal.
-
-%\paragraph{It is thanks to} the energy and time of all these people that this thesis exceeded my expectations.
-%\restoregeometry
+\chapter*{Acknowledgements}
+\paragraph{TO DO}
+\restoregeometry 
 
 \tableofcontents
 
