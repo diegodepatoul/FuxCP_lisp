@@ -464,14 +464,17 @@
 ; @completely new or reworked
 (defun reorder-costs (species-list)
     (print "########## REORDERING ##########")
+    ; first put all the costs in order according to the preferences
+    ; the list cost-names-by-order looks like this (python notation) [[cost1, cost2], [cost3], [cost4], [cost5, cost6]]
+    ; which means first level for the lexicographic order are cost1 and cost2
+    ; cost3 comes on the second level, cost4 on the third, and cost5 and cost6 are together on the fourth level
     (setf costs-names-by-order (make-list 14 :initial-element nil))
     (maphash #'(lambda (key value)
             (setf value (- (parse-integer value) 1))
             (setf (nth value costs-names-by-order) (append (nth value costs-names-by-order) (list key)))
             )
         *cost-preferences*)
-    (print costs-names-by-order)
-    ; THIS CAN SEEM COUNTERINTUITIVE BUT THE COSTS ARE GIVEN IN REVERSE ORDER TO C++ SO WE HAVE TO REVERT
+    ; reverse the cost order because when passing them to C++ they are reversed again
     (setq costs-names-by-order (reverse costs-names-by-order))
     (let (
         (i 0)
@@ -479,37 +482,45 @@
         (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
         )
         (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
+        ; for each level of the ordered cost names
         (dolist (preference-level costs-names-by-order)
             (let
                 (
+                    ; create a cost representing all the cost of this level
                     (current-cost-array '())
                     (current-cost-sum (gil::add-int-var *sp* 0 1000))
                 )
+                ; for each cost in the level
                 (dolist (cost preference-level)
                     (let ((index (gethash cost *cost-indexes)))
                         (if index (progn
                             (loop for index in (gethash cost *cost-indexes) do (progn
                                 (assert index () "index should not be nil")
-                                ;(setf current-cost-array (append current-cost-array (list (nth index *cost-factors))))
-                                ;;(setf current-cost-array (cons current-cost-array (nth index *cost-factors)))
+                                ; get the value of the cost and put in into our temporary array
                                 (push (nth index *cost-factors) current-cost-array)
                             ))
                             )
                             ; if index is nil (i.e. if this cost doesn't exist in this species)
+                            ; it is not a problem, it is the normal way of working that some cost don't exist in some species
                             (print (list "Cost " cost " was not found."))
                         )
                     )
                 )
-                (if current-cost-array (progn ; if there exists a cost
-                    (gil::g-lmax *sp* current-cost-sum current-cost-array)
+                (if current-cost-array (progn ; if there was at least one cost on this level
+                    (if *linear-combination
+                        ; if linear combination perform a linear combination
+                        (gil::g-sum *sp* current-cost-sum current-cost-array)
+                        ; else perform a maximum minimisation
+                        (gil::g-lmax *sp* current-cost-sum current-cost-array)
+                    )
+                    ; put our linear combination or maximum minimisation into our global cost array
                     (setf (nth n-different-costs reordered-costs) current-cost-sum)
                     (print (list n-different-costs "th cost = " preference-level))
-                    (incf n-different-costs) ; increase by one only if there was a cost in the preference level
+                    (incf n-different-costs) 
                 ))
             )
         )
         (setf reordered-costs (subseq reordered-costs 0 n-different-costs))
-        ;(assert (eq i *N-COST-FACTORS) () "Some costs are missing in the reordering.")
         (dolist (cost reordered-costs) (assert cost () "A cost is nil. Ordered costs = ~A" reordered-costs))
         (setf *cost-factors reordered-costs)
     )
@@ -546,7 +557,7 @@
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
-        (gil::g-branch *sp* (first (notes *lowest)) var-branch-type gil::INT_VAL_MIN)
+        (gil::g-branch *sp* (first (notes *lowest)) gil::INT_VAR_DEGREE_MAX gil::INT_VAL_SPLIT_MIN)
         ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
         ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dotimes (i *N-COUNTERPOINTS) (progn

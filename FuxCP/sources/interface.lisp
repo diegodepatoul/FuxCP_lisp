@@ -70,6 +70,7 @@
     (variety-order-param :accessor variety-order-param :initform "7" :type integer :documentation "")
     (penult-fifth-order-param :accessor penult-fifth-order-param :initform "6" :type integer :documentation "")
     (succ-p-cons-order-param :accessor succ-p-cons-order-param :initform "2" :type integer :documentation "")
+    (linear-combination :accessor linear-combination :initform "Linear combination" :type string :documentation "")
 
 )
     (:icon 225)
@@ -173,7 +174,7 @@
         'om::om-static-text
         (om::om-make-point 0 0)
         (om::om-make-point 220 20)
-        "Cost importance of..."
+        "Cost importance order of importance"
         :font om::*om-default-font2b*
         )
 
@@ -428,6 +429,24 @@
         :value (succ-p-cons-order-param (om::object editor))
         :di-action #'(lambda (cost)
                         (setf (succ-p-cons-order-param (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                        )
+        )
+
+        (om::om-make-dialog-item
+        'om::om-static-text
+        (om::om-make-point 1000 0)
+        (om::om-make-point 400 20)
+        "If two costs are ranked the same, perform between them a:"
+        :font om::*om-default-font1b*)
+        (om::om-make-dialog-item
+        'om::pop-up-menu
+        (om::om-make-point 1000 20)
+        (om::om-make-point 280 20)
+        "Linear combination"
+        :range (list "Linear combination" "Maximum minimisation")
+        :value (linear-combination (om::object editor))
+        :di-action #'(lambda (cost)
+                        (setf (linear-combination (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
                         )
         )
     )
@@ -1167,6 +1186,10 @@
             (setf (gethash 'variety-cost *cost-preferences*)                (variety-order-param (om::object editor)))
             (setf (gethash 'penult-thesis-cost *cost-preferences*)           (penult-fifth-order-param (om::object editor)))
             (setf (gethash 'succ-p-cons-cost *cost-preferences*)           (succ-p-cons-order-param (om::object editor)))
+            (if (string= "Linear combination" (linear-combination (om::object editor))) 
+                (setf *linear-combination t)
+                (setf *linear-combination nil)
+            )
 
             
             (setf species-integer-list (convert-to-species-integer-list (species-param (om::object editor))))
