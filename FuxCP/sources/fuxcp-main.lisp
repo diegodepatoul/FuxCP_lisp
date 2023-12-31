@@ -558,8 +558,6 @@
         ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
         (gil::g-branch *sp* (first (notes *lowest)) gil::INT_VAR_DEGREE_MAX gil::INT_VAL_SPLIT_MIN)
-        ;(gil::g-branch *sp* (first (variety-cost (first counterpoints))) var-branch-type val-branch-type)
-        ;(gil::g-branch *sp* (first (variety-cost (second counterpoints))) var-branch-type val-branch-type)
         (dotimes (i *N-COUNTERPOINTS) (progn
             ; 5th species specific
             (if (eq (nth i species) 5) ; otherwise there is no species array

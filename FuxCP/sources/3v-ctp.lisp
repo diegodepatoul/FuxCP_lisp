@@ -90,7 +90,12 @@
         do (progn 
             ; no unison between the voices
             (print "No unison between the voices")
-            (dotimes (i 4) (add-no-unison-cst (nth i (notes v1)) (nth i (notes v2))))
+            (dotimes (i 4) (if (eq i 0)
+                ; first beat can be the same on first and last measure
+                (add-no-unison-cst (nth i (notes v1)) (nth i (notes v2)))
+                ; other beats must always be different
+                (add-no-unison-at-all-cst (nth i (notes v1)) (nth i (notes v2)))
+            ))
             ; (add-no-unison-cst (first (notes v1)) (first (notes v2)))
             (print "No successive perfect consonances")
             (let (

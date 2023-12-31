@@ -50,7 +50,6 @@
     ; ---------- Solver parameters ----------
     (species-param :accessor species-param :initform (list "1st" "1st") :type string :documentation "")
     (voice-type-param :accessor voice-type-param :initform (list "Really far above" "Above") :type string :documentation "")
-    (irreverence-slider-param :accessor irreverence-slider-param :initform 0 :type integer :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
     ; ---------- Output & Stop ----------
     (current-csp :accessor current-csp :initform nil :documentation "")
@@ -140,9 +139,9 @@
             :bg-color om::*workspace-color*)
         )
         (pref-order-panel (om::om-make-view 'om::om-view
-            :size (om::om-make-point 2000 220)
+            :size (om::om-make-point 1615 220)
             :position (om::om-make-point 5 460)
-            :bg-color om::*azulito*)
+            :bg-color (om::make-color-255 255 215 180))
         )
         )
 
@@ -1073,34 +1072,13 @@
         'om::om-static-text
         (om::om-make-point 15 250)
         (om::om-make-point 150 20)
-        "Irreverence"
-        :font om::*om-default-font1b*
-        )
-
-        (om::om-make-dialog-item
-        'om::om-slider
-        (om::om-make-point 170 250)
-        (om::om-make-point 200 20)
-        "Irreverence"
-        :range '(0 40)
-        :increment 1
-        :value (irreverence-slider-param (om::object editor))
-        :di-action #'(lambda (s)
-            (setf (irreverence-slider-param (om::object editor)) (om::om-slider-value s))
-        )
-        )
-
-        (om::om-make-dialog-item
-        'om::om-static-text
-        (om::om-make-point 15 300)
-        (om::om-make-point 150 20)
         "Minimum % of skips"
         :font om::*om-default-font1b*
         )
 
         (om::om-make-dialog-item
         'om::om-slider
-        (om::om-make-point 170 300)
+        (om::om-make-point 170 250)
         (om::om-make-point 200 20)
         "Minimum % of skips"
         :range '(0 100)
@@ -1167,7 +1145,6 @@
             (setparam-cost 'no-syncopation-cost (no-syncopation-cost-param (om::object editor)))
             (setparam-slider 'pref-species-slider (pref-species-slider-param (om::object editor)))
             ;; set search parameters
-            (setparam-slider 'irreverence-slider (irreverence-slider-param (om::object editor)))
             (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
 
             ;; preferences for the cost order
