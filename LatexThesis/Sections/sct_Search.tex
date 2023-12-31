@@ -59,6 +59,7 @@ Three main ways of doing this have been identified. These are, in order from the
 \end{enumerate}
 We first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
 
+Throughout this section we talk about some specific costs. All these costs are listed in \ref{fig:default-order-lexico} with a short explanation. Some more details can be found in \ref{appendix:interface-parameters-description}, and for the full description of a specific cost, please refer to its corresponding rule. 
 
 
 \subsection{Linear Combination}
@@ -137,7 +138,7 @@ Of course, it is not always as simple as in the examples above, because it is no
 
 Knowing this, we came up with a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion. The default order we have agreed upon is as follows. Please note that where a cost is followed by a number in brackets, this means that it only applies if the corresponding species is used.
 \begin{multicols}{2}
-    \begin{enumerate}
+    \begin{enumerate}\label{fig:default-order-lexico}
         \item $\mathcal{C}_\text{no\_syncope}$\footnote{The cost of not using a syncope.} [4, 5] 
         \item $\mathcal{C}_\text{successive\_p\_cons}$
         \item $\mathcal{C}_\text{harmonic\_triad}$
@@ -312,7 +313,7 @@ As far as the costs are concerned, one thing is clear: not all the notes of the 
 
 
 \subsubsection{Third experiment: one third-species counterpoint and one second-species counterpoint on a single \cf}
-Our first cross-species test will involve a counterpoint of the 2nd species and a counterpoint of the 3rd species. The \cfs used is the one proposed by Fux in an example in which he uses exactly these two species. The search was given one minute, as the complexity is getting higher than in the previous experiments.
+Our first cross-species test will involve a counterpoint of the 2nd species and a counterpoint of the 3rd species. The \cfs used is the one proposed by Fux in an example in which he uses exactly these two species. The search was given one minute, as the complexity is getting higher than in the previous experiments. \label{subsection:third-experiment-with-costs}
 
 
 The results are shown in the figures:
@@ -331,7 +332,7 @@ The results are shown in the figures:
     \label{fig:lexico-2sp}
 \end{figure}
 
-The results are strikingly similar, and a quite unmelodic. Let's look at these two aspects in turn.
+The results are strikingly similar and quite unmelodic. Let's look at these two aspects in turn.
 
 About the similarity: The similarity is probably due to two things: the solver doesn't have much room for manoeuvre, since all the voices are highly constrained, so the costs don't have much of an effect in this very setup. 
 
@@ -367,9 +368,4 @@ On the other hand, the fact that the penultimate note of the middle voice resolv
 As we have stressed several times in this chapter, there is probably no \textit{best} way of ordering costs. Each technique has its shortcomings, and it is probably by allowing the composer to order their costs as they see fit that the tool will be able to reveal its full potential. 
 
 Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
-
-
-\subsection{Some remarks to insert somewhere}
-\begin{itemize}
-    \item The lexicographic order was faster to converge than the linear, and the mix between minimisation and lexicographic was even faster.
-\end{itemize}
+The best compromise that has been found is therefore to give the composer as much choice as possible, by offering them the three possibilities, as well as the combination between the lexicographical order and the other two techniques. This allows the composer to compose their counterpoint iteratively: they make a first attempt that doesn't work well, adjust the costs to direct the search, and so on, until they gets the result that suits them best. In practice, this leads to the user interface described in Appendix \ref{chapter:user-guide}.
