@@ -1,0 +1,25 @@
+p.39 - il faudrait p-e expliquer ce que j'ai fait pour régler le problème de pas de solution.
+p.40 - discuter la distance de la meilleure solution
+p.41 - combili gérés avec les poids
+p.42 - détecter le bottleneck 
+p.42 - ça c'est pas un problème
+p.43 - l'inconvénient c'est que tu vas minimiser dans l'ordre
+p.44 - les coûts interdépendants
+p.46 - il y a bcp de notes -> mettre un tableau avec les coûts
+p.49 - on ne peut pas tirer des conclusions
+
+
+Exploration musicale: donner les arrays des coûts pour comparer autre chose que les notes.
+
+Préciser l'explication:
+comment l'implémentation fonctionne: gecode, openmusic, gil, etc, constraint programming
+-> Tools and implementation
+
+
+Séparer (experimenting w/) and (combining the) costs
+
+expliquer quelles species se basent sur quelles species -> écrire une section sur quelles règles s'appliquent pour n'importe quelle combinaison de deux voix
+
+Définir S(cp1) : the fifth species is a mix of all other species -> each note belongs to a species according to S(cp1)[i,j]
+
+-> checker que les règles pour chaque espèce se traduisent dans la 5e
