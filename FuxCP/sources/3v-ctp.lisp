@@ -136,8 +136,8 @@
     (dolist (part parts) (progn
         (print "as few direct motion to reach a perfect consonance as possible")
         ; Cost #2: as few direct motion to reach a perfect consonance as possible
-        (if (or (eq (species part) 4))
-            nil ; pass, this cost doesn't apply to 4th species nor to the cantus firmus
+        (if (eq (species part) 4)
+            nil ; pass, this cost doesn't apply to 4th species
             (let ((direct-move-to-p-cons-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 8))))
                 (print (list "species = " (species part)))
                 (case (species part)
@@ -191,7 +191,7 @@
 
     (dotimes (i *N-PARTS)
         ; Cost #5, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
-        (if (eq (species (nth i parts)) 3) (let
+        (if (or (eq (species (nth i parts)) 3) (eq (species (nth i parts)) 5))  (let
             (
                 (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))
             )

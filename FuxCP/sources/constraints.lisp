@@ -232,7 +232,7 @@
                     (2 (incf *N-COST-FACTORS 6))
                     (3 (incf *N-COST-FACTORS 8)) ; + 7 from fux-cp-3rd and + 1 from fux-cp-3v
                     (4 (incf *N-COST-FACTORS 5)) ; + 6 from fux-cp-4th and -1 not used in fux-cp-3v
-                    (5 (incf *N-COST-FACTORS 8))
+                    (5 (incf *N-COST-FACTORS 9)) ; + 7 from fux-cp-5th and + 1 from fux-cp-3v
                 (otherwise (error "Unexpected value in the species list (~A), when setting the costs." species))
                 )
             )
@@ -894,7 +894,7 @@
 ; i.e. that there are no two direct motions
 ; i.e. that either motions1 is direct or motions 2 is direct, but not both
 ; @completely new or reworked
-;; WARNING : this implementation works onlly for 3 voices or less, it won't work for 4 voices!!
+;; WARNING : this implementation works only for 3 voices or less, it won't work for 4 voices!!
 (defun add-no-together-move-cst (motions)
     (loop 
         ; for each possible pair or motions
@@ -908,6 +908,11 @@
             (m1-direct (gil::add-bool-var *sp* 0 1))
             (m2-direct (gil::add-bool-var *sp* 0 1))
         )
+            ; if a part is the lowest stratum its motion is -1, so the following is always true
+
+            ; the following has an impact if none of the current parts are the lowest stratum
+            ; then, if they both have a direct motion it means that they both move in the same direction than the lowest stratum
+            ; which means that all voices move in the same direction -> this is prohibited.
             (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
             (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
             (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
