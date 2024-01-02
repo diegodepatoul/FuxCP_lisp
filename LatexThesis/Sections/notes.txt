@@ -11,11 +11,6 @@ p.49 - on ne peut pas tirer des conclusions
 
 Exploration musicale: donner les arrays des coûts pour comparer autre chose que les notes.
 
-Préciser l'explication:
-comment l'implémentation fonctionne: gecode, openmusic, gil, etc, constraint programming
--> Tools and implementation
-
-
 Séparer (experimenting w/) and (combining the) costs
 
 expliquer quelles species se basent sur quelles species -> écrire une section sur quelles règles s'appliquent pour n'importe quelle combinaison de deux voix

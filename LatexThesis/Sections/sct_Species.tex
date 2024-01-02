@@ -15,6 +15,8 @@ As discussed earlier (see Section \ref{subsection:preferences-vs-hard-rules}), s
 It may be interesting to remember the purpose of these rules. Some rules are concerned with musicality: composing counterpoint that sounds nice; for example, the rule that forbids dissonance. Some rules are concerned with singability: composing counterpoint that is not too difficult for the human voice to sing; for example, the rule forbidding a melodic leap greater than a sixth.
 
 \section{Implicit rules}
+These implicit rules apply to all types of counterpoint. They are never explicitly defined by Fux, but are derived from his many examples. These implicit rules are therefore actually used by Fux, even though he doesn't talk about them.
+
 \subsection{Formalisation in English} \label{sec:generalenglish}
 \begin{enumerate}[wide, label=\bfseries 1.H2 and 1.H\arabic*]
     \setcounter{enumi}{2} % Start from 8
@@ -72,7 +74,7 @@ It may be interesting to remember the purpose of these rules. Some rules are con
     \end{aligned} \end{equation}
 
 \section{First species}
-This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. To be more precise, the rules mentioned in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see note on the fourth species \ref{nota-bene-4th-species}).
+This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. In other words, these rules apply whenever $species(p) \in \{0, 1, 2, 3, 4, 5\}$. More specifically, the rules in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see the note on the fourth species \ref{nota-bene-4th-species}).
 
 \paragraph{}
 The first species consists of whole notes only. It is the basis of counterpoint and its simplest case. 
@@ -372,6 +374,8 @@ As discussed in \ref{rule:steps-prefered}, there is no constraint to add as it a
 \section{Second species}
 The second species consists only of half notes. It introduces more dissonance than was possible with the first species. 
 
+All the rules in this section apply only when $species(p) =2$, with p being the part mentioned in the rule. Note that the rules for the first species also apply to counterpoints of the second species.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Species_examples/2sp-example.png}
@@ -495,7 +499,9 @@ No need to add a new constraint as this is not an actual rule.
     The meaning of this equation is that $Cost_{succ\_p\_cons}$ is equal to zero if one of the two considered consonances is not perfect (because then we do not have two successive perfect consonances), or if we have two successive fifths with a third in between. Otherwise (when we have perfect consonances), the cost must be set.
 
 \section{Third species}
-The second species consists only of half notes. It introduces more dissonance than was possible with the first species. 
+The second species consists only of quarter notes. It introduces even more dissonance than the second species and opens the space for more variation. 
+
+All the rules in this section apply when $species(p) =3$. Note that the rules for the first species also apply to counterpoints of the third species.
 
 \begin{figure}[h]
     \centering
@@ -548,6 +554,9 @@ As has been discussed in the previous section, there is no constraint to add for
 
 \section{Fourth species}
 As a reminder, the fourth species consists of syncopations. Each note is played on the upbeat and is ligated to the next note on the upbeat.
+
+All the rules in this section apply when $species(p) =4$. Note that the rules for the first species also apply to counterpoints of the third species.
+
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Species_examples/4sp-example.png}
@@ -706,7 +715,7 @@ Fux introduces no new melodic constraints for the third species.
 
 \section{Fifth species}
 
-As a reminder, the fifth species is a mix of all previously mentioned species.
+As a reminder, the fifth species is a mix of all previously mentioned species, which means that it combines the rules from all previous species.
 
 \begin{figure}[h]
     \centering
@@ -720,9 +729,9 @@ No additional rules (be they harmonic rules, melodic rules or motion rules) were
 However, in order to have some melodic and rhythmic variety when composing with two fifth counterpoints, it was decided to impose a rule that Fux never mentioned: knowing that the fifth is just all the others combined, not more than 50\% of the composition of the parts can be made by using the same species for the same measure.
 
 
-To better understand this rule, please remember that the fifth species works by combining all the other species, and that it assigns a species to each beat (i.e. each of the beats of a fifth species counterpoint actually belongs to a given species). If we want to force the solver to find different solutions when searching for a solution of two fifth species counterpoints, a good trick is to enforce that as many notes as possible should belong to different species.
+To better understand this rule, remember that the fifth species works by combining all the other species, and that it assigns a species to each beat (i.e. each of the beats of a fifth species counterpoint actually belongs to a given species). This is represented by the variable S. $S[i,j]=x$ means that the note on the i-th beat of the j-th measure follows the rules of the species $x$. If we want to force the solver to find different solutions when searching for a solution of two fifth species counterpoints, a good trick is to force as many notes as possible to belong to different species.
 
-The following equation holds true if both counterpoints are fifth species counterpoints.
+The following equation holds true only if both counterpoints are fifth species counterpoints.
 
 
 \begin{equation}
