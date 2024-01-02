@@ -14,8 +14,8 @@ To cope with the increased complexity brought about by the three-part compositio
 
 \subsection{Heuristics} \label{heuristics}
 \subsubsection{Main heuristics}
-When it comes to finding a solution, we obviously need some heuristics to guide the search, as there are so many different possibilities for a three-part composition. 
-To know which heuristics to use, simply think about the most important variable to fix first. In case it is not clear enough, the key to writing counterpoint for many voices is to know what the bass is doing. This is true whether the composer is a human or a constraint solver. So the first heuristic follows naturally, and it is: branch on the lowest stratum array, take the highest constrained variable yet, and try with its lowest possible value.
+When it comes to finding a solution, we obviously need some heuristics to guide the search, because there are so many different possibilities for a three-part composition. 
+To know which heuristics to use, simply think about the most important variable to fix first. In case it is not clear enough, the key to writing counterpoint for many voices is to know what the bass is doing. This is true whether the composer is a human or a constraint solver. So the first heuristic follows naturally, and it is: branch on the lowest stratum array, take the highest constrained variable yet, and try with any value less than the median. This value branching was thought of because the possible values for the lowest stratum are those of the notes of the three parts. Since the lowest stratum is designed to always be equal to the lowest sounding note, it doesn't make sense to try to give it a high value. Therefore, lower values are chosen.
 
 
 The other central heuristic is the one that instructs the solver to branch on the variables of the $N$ arrays (containing the pitches of the voices), choosing as a priority the variables whose domain is small. This choice is motivated by the fact that in the case of a highly constrained counterpoint (5th species) and a weakly constrained counterpoint (1st species), the counterpoint should not only seek to improve the highly constrained counterpoint, but also the weakly constrained counterpoint. This is why the heuristic chosen is based on the size of the domain and not on the level of constraint. The choice of the value of the variable is then random. This ensures maximum diversity in the final composition and quickly leads to a solution whose notes are varied.
@@ -41,7 +41,7 @@ In general, the solver is able to find a valid solution fairly quickly (in the o
 \end{itemize}
 There are also cases where the exact combination of two given vocal ranges for two given species with a given mode does not give a solution, but by changing the vocal range a little the solver finds a solution immediately, quite surprisingly. It is still unclear why some given combinations do not produce solutions. Our best guess is that there are some combinations of parameters for which the solver has difficulty finding a solution, given the very large number of constraints that apply to the voices. However, this doesn't happen very often.
 
-It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution).
+It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution: then the solver starts taking some time again).
 
 
 \section{Designing the costs of the solver to be as faithful as possible to the preferences of Fux} \label{costs}
@@ -85,13 +85,13 @@ However, it has a major drawback: since the total cost $\tau$ we are minimising 
     \label{fig:outstanding-cost}
 \end{figure}
 
-Another drawback of linear combination is that the result is pretty and unpredictable: changing the value of the cost may or may not make a difference, and you may need to set huge values to see a real effect. For example, if a composer really wants oblique motion, they may be forced to set the cost of the other types of motion to a huge value, or they may not see the difference between the default solution and their personalised solution. This is due to the fact that all the costs are mixed together and form an indistinguishable soup that the solver considers as a whole, and a small increase in the cost of the direct and contrary motions is very likely to be absorbed into this soup without any change being noticed.
+Another disadvantage of linear combination is that the result is quite unpredictable: changing the value of the cost may or may not make a difference, and you may need to set huge values to see a real effect. For example, if a composer really wants oblique motion, they may be forced to set the cost of the other types of motion to a huge value, or they may not see the difference between the default solution and their personalised solution. This is due to the fact that all the costs are mixed together and form an indistinguishable soup that the solver considers as a whole, and a small increase in the cost of the direct and contrary motions is very likely to be absorbed into this soup without any change being noticed.
 
 These two drawbacks make the linear combination solution for the costs hardly acceptable when it comes to representing the preferences.
 We therefore examine the other two options for adjusting costs.
 
 \subsection {Minimising the maxima} \label{section:minimising-the-maxima}
-In order to overcome the problem of outstanding costs that we encountered when considering the linear combination solution, one might consider using some minimums when calculating $\tau$, the total cost. For example, $\tau$ could be the maximum of all costs. By doing this, the solver would try to find a solution where the focus is on the worst cost and try to reduce it before trying to reduce the other costs.
+In order to overcome the problem of outstanding costs that we encountered when considering the linear combination solution, one could consider a technique that specifically addresses these outstanding costs: namely, minimising the maximum cost.For example, $\tau$ the total cost, could be set equal to the current largest cost. By doing this, the solver would try to find a solution where the focus is on the worst cost and try to reduce it before trying to reduce the other costs.
 
 The problem with this method arises when one cost is significantly higher than the others because it has been defined that way. Let's go back to our example of the composer wanting as many oblique motions as possible. You will set the cost for direct motion and contrary motion to the highest possible cost and start the search. As we've already discussed, it is not possible to have only oblique motions, since this would contradict the rule that not all voices can move in the same direction (\ref{rule:same-movement}). As a result, there will always be contrary motions, and since the cost for them has been set very high, it would be impossible for the solver to converge to a good solution. This creates a bottleneck effect, where once the solver has reached the best potential value of the worst cost, it cannot continue to find better solutions. 
 
@@ -136,7 +136,7 @@ And in this way we can keep integrating the different costs until we get a full 
 Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a drawback of this method, because we have to hierarchise the costs, even if the choice is difficult. What's more, once the costs are ranked, their order becomes absolute and the solver loses some of its flexibility.
 
 
-Knowing this, we came up with a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion. The default order we have agreed upon is as follows. Please note that where a cost is followed by a number in brackets, this means that it only applies if the corresponding species is used.
+Knowing this, we came up with a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion\footnote{Please have a look at Appendix \ref{chapter:user-guide} to see how the composer can personalise the order.}. The default order we have agreed upon is as follows. Please note that where a cost is followed by a number in brackets, this means that it only applies if the corresponding species is used.
 \begin{multicols}{2}
     \begin{enumerate}\label{fig:default-order-lexico}
         \item $\mathcal{C}_\text{no\_syncope}$\footnote{The cost of not using a syncope.} [4, 5] 
@@ -174,8 +174,8 @@ Some notes on the proposed order:
 
 \subsection{Comparison between the three types of costs.}
 
-We have now discussed the advantages and disadvantages of each of the three methods. These are all listed in \ref{tab:comparison}. As you can see, no one method is definitively better than another, and the only way to know which method is better in practice is to \textit{test} them in practice to find out which of the methods gives the best results. 
-
+We have now discussed the advantages and disadvantages of each of the three methods. These are all listed in Table \ref{tab:comparison}. As you can see, no one method is definitively better than another, and the only way to know which method is better in practice is to \textit{test} them in practice to find out which of the methods gives the best results. 
+\newpage
 \begin{center}
     \centering
     \captionof{table}{Comparison of Three Methods According to Criteria}
@@ -219,14 +219,14 @@ The selected \textit{cantus firmi} were chosen from \gap. If the search time exc
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-1sp.png}
-    \caption{Result 1 of the linear combination method with default costs.}
+    \caption{Result 1 of the linear combination method with default costs. Click \href{https://example.com/}{here} to listen.}
     \label{fig:combili-1sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp.png}
-    \caption{Result 1 of the lexicographic search method with default costs.}
+    \caption{Result 1 of the lexicographic search method with default costs. Click \href{https://youtu.be/wh1bXyVt5LI}{here} to listen.}
     \label{fig:lexico-1sp}
 \end{figure}
 
@@ -238,14 +238,14 @@ In more technical terms, the two solutions are fairly similar, and both feature 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-1sp0.png}
-    \caption{Result 2 of the linear combination method with default costs.}
+    \caption{Result 2 of the linear combination method with default costs. Click \href{https://example.com/}{here} to listen.}
     \label{fig:combili-1sp0}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp0.png}
-    \caption{Result 2 of the lexicographic search method with default costs.}
+    \caption{Result 2 of the lexicographic search method with default costs. Click \href{https://youtu.be/FdsxyXVvBTE}{here} to listen.}
     \label{fig:lexico-1sp0}
 \end{figure}
 
@@ -259,13 +259,13 @@ Now what happens when we start to mix the techniques and group some of the costs
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp.png}
-    \caption{Result 1 of a mix between lexicographic and maximum minimisation method.}
+    \caption{Result 1 of a mix between lexicographic and maximum minimisation method. Click \href{https://example.com/}{here} to listen.}
     \label{fig:min-sp}
-\end{figure}
+\end{figure} 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp0.png}
-    \caption{Result 2 of a mix between lexicographic and maximum minimisation method.}
+    \caption{Result 2 of a mix between lexicographic and maximum minimisation method. Click \href{https://youtu.be/GRGE7NN3jNE}{here} to listen.}
     \label{fig:min-sp0}
 \end{figure}
 
@@ -294,14 +294,14 @@ If we now go on, here is a result combining the first and the fourth species, an
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-4sp.png}
-    \caption{Result 3 of the linear combination method with default costs.}
+    \caption{Result 3 of the linear combination method with default costs. Click \href{https://youtu.be/_VrM76hp1v8}{here} to listen.}
     \label{fig:combili-4sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-4sp.png}
-    \caption{Result 3 of the lexicographic search method with default costs.}
+    \caption{Result 3 of the lexicographic search method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
     \label{fig:lexico-4sp}
 \end{figure}
 Looking at the results obtained with this setup (figures \ref{fig:combili-4sp} and \ref{fig:lexico-4sp}), we come to the same conclusions as in the previous experiment. 
@@ -321,14 +321,14 @@ The results are shown in the figures:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-2sp.png}
-    \caption{Result 4 of the linear combination method with default costs.}
+    \caption{Result 4 of the linear combination method with default costs. Click \href{https://youtu.be/eunaKHOQ2Nk}{here} to listen.}
     \label{fig:combili-2sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-2sp.png}
-    \caption{Result 4 of the lexicographic search method with default costs.}
+    \caption{Result 4 of the lexicographic search method with default costs. Click \href{https://youtu.be/rh3YdRu62J4}{here} to listen.}
     \label{fig:lexico-2sp}
 \end{figure}
 
@@ -347,14 +347,14 @@ The search was run for two minutes instead of thirty seconds, as the fifth speci
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-5sp.png}
-    \caption{Result 5 of the linear combination method with default costs.}
+    \caption{Result 5 of the linear combination method with default costs. Click \href{https://youtu.be/Lyi2Tv0eto8}{here} to listen.}
     \label{fig:combili-5sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-5sp.png}
-    \caption{Result 5 of the lexicographic search method with default costs.}
+    \caption{Result 5 of the lexicographic search method with default costs. Click \href{https://youtu.be/wYq28XcmpVw}{here} to listen.}
     \label{fig:lexico-5sp}
 \end{figure}
 
@@ -364,7 +364,7 @@ On the other hand, the fact that the penultimate note of the middle voice resolv
 
 \textit{However}, the solver did a surprisingly good job of finding passable solutions with such a small search field. The solutions obtained are far from high art, but you can see the musical intuition behind them.
 
-\subsubsection{Conclusion on the search methods}
+\subsection{Conclusion on the search methods}
 As we have stressed several times in this chapter, there is probably no \textit{best} way of ordering costs. Each technique has its shortcomings, and it is probably by allowing the composer to order their costs as they see fit that the tool will be able to reveal its full potential. 
 
 Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.

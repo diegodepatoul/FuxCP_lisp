@@ -109,14 +109,14 @@ The particular case happening when composing with two parts is illustrated in fi
 \begin{minipage}{0.46\textwidth}
     \centering
     \includegraphics[width=\textwidth]{Images/cp2cf-2v.png}
-    \captionof{figure}{Applying the constraints from the \cps to the \cf}
+    \captionof{figure}{Applying the constraints between the counterpoint and the \cf}
     \label{fig:cp2cf-2v}
     \end{minipage}
     \hfill
     \begin{minipage}{0.46\textwidth}
       \centering
       \includegraphics[width=\textwidth]{Images/p2l-2v.png}
-      \captionof{figure}{Applying the constraints from the parts to the lowest stratum}
+      \captionof{figure}{Applying the constraints between the parts and the lowest stratum~~~~~~~}
       \label{fig:p2l-2v}
 \end{minipage}
 \vspace{.5cm}
@@ -142,7 +142,7 @@ However, when it comes to generalising the composition of counterpoint for three
 It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
 
 \paragraph{}
-A very important detail, and perhaps the biggest change brought about by this paradigm shift, is that since we are not calculating all the voices in relation to the \cfs, but in relation to the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints. It is important that the relationship between the \cfs and the lowest stratum is also taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as variety cost (see \ref{rule:variety}).
+A very important detail, and perhaps the biggest change brought about by this paradigm shift, is the following. Previously, we applied constraints between the counterpoints and the \cf, which guaranteed that the \cfs was taken into account in the constraints. But if we now apply the constraints between the counterpoints and the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints, for example if the \cfs is not the lowest stratum. Nevertheless, it is important that the relationship between the \cfs and the lowest stratum is \textit{also} taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as the variety cost (see \ref{rule:variety}).
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
@@ -252,7 +252,7 @@ In practice, there is only an \texttt{is-not-bass} array in the code (which is t
 \subsection{Modified constants} \label{subsection:modified_constants}
 \noindent \textbf{species} \hspace{.2cm} \texttt{species} 
 
-The species constant, which represents the species of a given part, can now take also take the value zero. The value zero is specific to the \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
+The species constant represents the species of a given part: 1 for the first species, 2 for the second, and so on, with each part having its own species constant. This constant can now also take the value zero: this means that we are talking about \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
 \begin{equation}
 species(v) = 0 \iff v = cf
 \end{equation}
@@ -373,7 +373,9 @@ However, a problem arises when computing the motions of the part that is also th
 \end{equation}
 
 This equation \ref{eq:motions} may seem daunting, but it's actually very simple (just a little verbose).
-It works like this: for each beat in the composition:
+It works like this: 
+
+For each beat in the composition:
 \begin{itemize}
     \item If a part is also the lowest stratum, P is -1 (i.e. non applicable, otherwise we would calculate the motion between the part and itself)
     \item If the part moves in the opposite direction to the lowest stratum, P is 0.
