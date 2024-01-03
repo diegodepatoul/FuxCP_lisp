@@ -100,8 +100,8 @@
             (:section "General preferences" :name "Borrowed notes" :display nil :importance "8" :value "High cost" :param borrow-cost)
             (:section "General preferences" :name "Harmonic fifths on the downbeat" :display nil :importance "7" :value "Low cost" :param h-fifth-cost)
             (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "5" :value "Low cost" :param h-octave-cost)
-            (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "High cost" :param succ-p-cons-cost)
-            (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "High cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "Medium cost" :param succ-p-cons-cost)
+            (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "Medium cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
             (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
             (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param dir-mot-to-perf-cons-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
             (:section "General preferences" :name "Motion cost" :display nil :importance "12" :value nil :subcosts ,motion-subcosts :param motions-cost)
@@ -111,12 +111,12 @@
         ))
 
         (specific-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
-            (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "6" :value "High cost" :param penult-sixth-cost)
+            (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "6" :value "Last resort" :param penult-sixth-cost)
             (:section "Third species specific pref." :name "Use of cambiatas" :importance "11" :value "High cost" :param non-cambiata-cost)
             (:section "Third species specific pref." :name "Force joint contrary melody after skip" :value "No" :special-range ("Yes" "No") :param con-m-after-skip-check)
-            (:section "Third species specific pref." :name "Not having a h. triad in 2nd or 3rd beat" :display nil :importance "4" :value "High cost" :param h-triad-cost-3rd-species-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
-            (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "10" :value "High cost" :param m2-eq-zero-cost)
-            (:section "Fourth species specific pref." :name "No ligatures" :importance "1" :value "High cost" :param no-syncopation-cost)
+            (:section "Third species specific pref." :name "Not having a h. triad in 2nd or 3rd beat" :display nil :importance "4" :value "Medium cost" :param h-triad-cost-3rd-species-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
+            (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "10" :value "Low cost" :param m2-eq-zero-cost)
+            (:section "Fourth species specific pref." :name "No ligatures" :importance "1" :value "Last resort" :param no-syncopation-cost)
             (:section "Fifth species specific pref." :name "Many quarters (left) or many syncopations (right)" :value 50 :make-slider t :param pref-species-slider)
             ;; Add more cost data as needed
         ))
@@ -237,7 +237,7 @@
                     (name-label (om::om-make-dialog-item 'om::om-static-text
                                 (om::om-make-point 25 y-position) (om::om-make-point 500 20) name))
                     (importance-popup (om::om-make-dialog-item 'om::pop-up-menu
-                                        (om::om-make-point 275 (- y-position 7)) (om::om-make-point 50 20)
+                                        (om::om-make-point 275 (- y-position 7)) (om::om-make-point 70 20)
                                         (format nil "~A" importance)
                                         :value importance
                                         :range (importance-range)
