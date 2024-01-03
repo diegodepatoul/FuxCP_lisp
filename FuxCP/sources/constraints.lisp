@@ -1070,14 +1070,6 @@
     )
 )
 
-(defun add-penult-cons-cf-cst (b-bass h-interval)
-    #|
-    (if (getparam 'penult-rule-check)
-        (gil::g-ite *sp* b-bass THREE h-interval h-interval)
-    )
-     |#
-)
-
 
 (defun factorial (n)
   (if (zerop n)

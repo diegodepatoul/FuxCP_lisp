@@ -132,34 +132,79 @@
             (:name "Octaves leaps" :value "Low cost")
         ))
 
-        (melodic-data `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
+        (melodic-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
             (:section "Melodic Preferences" :name "Melodic cost" :display nil :importance "4" :value nil :subcosts ,melodic-subcosts)
             ;; Add more cost data as needed
         ))
 
-        (general-data `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
+        (motion-subcosts '(
+            (:name "Direct motion" :value "Medium cost" :cannot-be-forbidden t)
+            (:name "Oblique motion" :value "Low cost")
+            (:name "Contrary motion" :value "No cost" :cannot-be-forbidden t)
+        ))
+
+        (general-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
             (:section "General preferences" :name "Borrowed notes" :display nil :importance "4" :value "High cost")
             (:section "General preferences" :name "Harmonic fifths on the downbeat" :display nil :importance "4" :value "High cost")
             (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "4" :value "High cost")
-            (:section "General preferences" :name "Motion cost" :display nil :importance "4" :value nil :subcosts ,melodic-subcosts)
+            (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "4" :value "High cost")
+            (:section "General preferences" :name "Repeating notes" :display nil :importance "4" :value "High cost")
+            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "4" :value "High cost")
+            (:section "General preferences" :name "Motion cost" :display nil :importance "4" :value nil :subcosts ,motion-subcosts)
+            (:section "General preferences" :name "Apply specific penultimate note rules" :value "Yes" :special-range ("Yes" "No"))
+            
             ;; Add more cost data as needed
         ))
 
-        (cost-data `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
-            (:section "First Type of Preferences" :name "Ligatures in 4th sp." :importance "1" :value "High cost")
-            (:section "First Type of Preferences" :name "Use a lot of h. triads" :importance "2" :value "High cost")
-            (:section "Second Type of Preferences" :name "Upbeat h. triad (3rd sp.)" :importance "3" :value "High cost")
+        (specific-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
+            (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "1" :value "High cost")
+            (:section "Third species specific pref." :name "Use of cambiatas" :importance "2" :value "High cost")
+            (:section "Third species specific pref." :name "Force joint contrary melody after skip" :value "No" :special-range ("Yes" "No"))
+            (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "2" :value "High cost")
+            (:section "Fourth species specific pref." :name "No ligatures" :importance "3" :value "High cost")
+            (:section "Fifth species specific pref." :name "Many quarters (left) or many syncopations (right)" :value 50 :make-slider t)
             ;; Add more cost data as needed
         ))
     )
     ;; Add the cost table to the main view
-    (om::om-add-subviews editor (make-cost-panel melodic-data #|x-offset:|# 0 #|y-offset:|# 0   #|size:|# 375 #|colour:|# om::*azulito*))
-    (om::om-add-subviews editor (make-cost-panel general-data #|x-offset:|# 0 #|y-offset:|# 376 #|size:|# 375 #|colour:|# om::*azulote*))
+    (om::om-add-subviews editor (make-cost-panel general-preferences  #|x-offset:|# 0    #|y-offset:|# 0   #|size:|# 500 #|colour:|# om::*azulote*))
+    (om::om-add-subviews editor (make-cost-panel melodic-preferences  #|x-offset:|# 526  #|y-offset:|# 0   #|size:|# 500 #|colour:|# om::*azulito*))
+    (om::om-add-subviews editor (make-cost-panel specific-preferences #|x-offset:|# 1052 #|y-offset:|# 0   #|size:|# 500 #|colour:|# (om::make-color-255 230 190 165)))
+    (om::om-add-subviews editor (make-explanation-panel               #|x-offset:|# 0    #|y-offset:|# 501 #|size:|# 500 #|colour:|# (om::make-color-255 230 190 165)))
     )
     
     ;; ... (existing code)
+    
 
     editor ; Return the editor
+)
+
+(defun make-explanation-panel (panel-x-offset panel-y-offset size colour)
+    (let* (
+        ;; ... (existing code)
+
+        ;; Explanation text
+        (explanation-text "This is an explanation of the panel.")
+
+        ;; Create a view for the explanation panel
+        (explanation-panel (om::om-make-view 'om::om-view
+                                :size (om::om-make-point size 100)
+                                :position (om::om-make-point panel-x-offset panel-y-offset)
+                                :bg-color colour))
+        
+        ;; Create a text element for the explanation
+        (explanation-label (om::om-make-dialog-item 'om::om-static-text
+                                (om::om-make-point 10 10) (om::om-make-point 580 80)
+                                explanation-text
+                                :font om::*om-default-font1b*))
+        )
+
+    ;; Add the text element to the explanation panel
+    (om::om-add-subviews explanation-panel explanation-label)
+
+    ;; Add the explanation panel to the main view
+    explanation-panel
+    )
 )
 
 (defun make-cost-panel (cost-data panel-x-offset panel-y-offset y-size colour)
@@ -170,17 +215,17 @@
 
          
          (cost-table (om::om-make-view 'om::om-view
-                       :size (om::om-make-point 625 y-size)
+                       :size (om::om-make-point 525 y-size)
                        :position (om::om-make-point panel-x-offset panel-y-offset)
                        :bg-color colour))
          
          (importance-column (om::om-make-dialog-item 'om::om-static-text
-                               (om::om-make-point 300 0) (om::om-make-point 150 20) "Importance"
+                               (om::om-make-point 275 0) (om::om-make-point 150 20) "Importance"
                                :font om::*om-default-font2b*
          ))
          
          (value-column (om::om-make-dialog-item 'om::om-static-text
-                           (om::om-make-point 450 0) (om::om-make-point 150 20) "Value"
+                           (om::om-make-point 400 0) (om::om-make-point 150 20) "Value"
                            :font om::*om-default-font2b*
          ))
         )
@@ -191,13 +236,13 @@
     ;; Populate the cost data dynamically
     (let (
         (current-section nil)
-        (y-offset 5)
+        (y-offset 0)
         )
         (loop for index from 0 below (length cost-data)
             do
             (let* ((cost (nth index cost-data))
                     (section (getf cost :section))
-                    (y-position (+ y-offset (* 35 index)))
+                    (y-position (+ y-offset (* 45 index)))
                     (name (if (getf cost :display) (getf cost :display) (getf cost :name)))
                     (importance (getf cost :importance))
                     (value (getf cost :value))
@@ -217,9 +262,9 @@
                 ;; Add the row to the cost table
                 (let* (
                     (name-label (om::om-make-dialog-item 'om::om-static-text
-                                (om::om-make-point 50 y-position) (om::om-make-point 250 20) name))
+                                (om::om-make-point 25 y-position) (om::om-make-point 500 20) name))
                     (importance-popup (om::om-make-dialog-item 'om::pop-up-menu
-                                        (om::om-make-point 300 (- y-position 7)) (om::om-make-point 150 20)
+                                        (om::om-make-point 275 (- y-position 7)) (om::om-make-point 50 20)
                                         (format nil "~A" importance)
                                         :value importance
                                         :range (importance-range)
@@ -229,17 +274,22 @@
                                     )
                                       )
                     )
-                    (value-popup (om::om-make-dialog-item 'om::pop-up-menu
-                                    (om::om-make-point 450 (- y-position 7)) (om::om-make-point 150 20)
+                    (value-popup (if (getf cost :make-slider)
+                        (make-slider cost y-position)
+                        (om::om-make-dialog-item 'om::pop-up-menu
+                                    (om::om-make-point 345 (- y-position 7)) (om::om-make-point 150 20)
                                     (format nil "~A" value)
                                     :value value
-                                    :range (value-range)
+                                    :range (if (getf cost :special-range)
+                                        (getf cost :special-range)
+                                        (value-range (getf cost :cannot-be-forbidden))
+                                    )
                                     :di-action #'(lambda (x)
                                         (setf (getf cost :value) (nth (om::om-get-selected-item-index x) (om::om-get-item-list x)))
                                         (print (getf cost :value))
                                     )
                                  )
-                    )
+                    ))
                 )
                     (cond 
                         ((and value importance) (om::om-add-subviews cost-table name-label importance-popup value-popup))
@@ -262,19 +312,8 @@
                              (let* (
                                 (name-label (om::om-make-dialog-item 'om::om-static-text
                                             (om::om-make-point 100 y-position) (om::om-make-point 250 20) name))
-                                (importance-popup (om::om-make-dialog-item 'om::pop-up-menu
-                                                    (om::om-make-point 300 (- y-position 7)) (om::om-make-point 150 20)
-                                                    (format nil "~A" importance)
-                                                    :value importance
-                                                    :range (importance-range)
-                                                    :di-action #'(lambda (x)
-                                                        (setf (getf cost :importance) (nth (om::om-get-selected-item-index x) (om::om-get-item-list x)))
-                                                        (print (getf cost :importance))
-                                                )
-                                                )
-                                )
                                 (value-popup (om::om-make-dialog-item 'om::pop-up-menu
-                                                (om::om-make-point 450 (- y-position 7)) (om::om-make-point 150 20)
+                                                (om::om-make-point 345 (- y-position 7)) (om::om-make-point 150 20)
                                                 (format nil "~A" value)
                                                 :value value
                                                 :range (value-range (getf cost :cannot-be-forbidden))
@@ -295,3 +334,19 @@
     )
     cost-table
 ))
+
+(defun make-slider (cost y-position)
+    (om::om-make-dialog-item
+    'om::om-slider
+    (om::om-make-point 350 (- y-position 3))
+    (om::om-make-point 150 20)
+    "5th: Preference to a lot of quarters [left] OR a lot of syncopations [right]"
+    :range '(0 100)
+    :increment 1
+    :value (getf cost :value)
+    :di-action #'(lambda (s)
+        (setf (getf cost :value) (om::om-slider-value s))
+                                        (print (getf cost :value))
+    )
+    )
+)
