@@ -87,9 +87,9 @@
             (:section "General preferences" :name "Harmonic fifths on the downbeat" :display nil :importance "7" :value "Low cost" :param h-fifth-cost)
             (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "5" :value "Low cost" :param h-octave-cost)
             (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "Medium cost" :param succ-p-cons-cost)
-            (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "Medium cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
-            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
-            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param dir-mot-to-perf-cons-cost) ; TODO DIR MOTION IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "Medium cost" :param variety-cost) 
+            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost) 
+            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param direct-move-to-p-cons-cost) ; TODO DIR MOTION IS NOT IMPLEMENTED
             (:section "General preferences" :name "Motion cost" :display nil :importance "12" :value nil :subcosts ,motion-subcosts :param motions-cost)
             (:section "General preferences" :name "Apply specific penultimate note rules" :value "Yes" :special-range ("Yes" "No") :param penult-rule-check)
             

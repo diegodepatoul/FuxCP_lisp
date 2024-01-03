@@ -140,7 +140,7 @@
     (defparameter *succ-p-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'succ-p-cons-cost)))
     (defparameter *variety-cost* (gil::add-int-var-dom *sp* (getparam-val 'variety-cost)))
     (defparameter *h-triad-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-triad-cost)))
-    (defparameter *dir-mot-to-perf-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-mot-to-perf-cons-cost)))
+    (defparameter *direct-move-to-p-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'direct-move-to-p-cons-cost)))
     ;; Species specific costs
     (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
     (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
