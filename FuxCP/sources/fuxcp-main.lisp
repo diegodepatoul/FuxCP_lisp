@@ -138,11 +138,15 @@
     (defparameter *obl-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'obl-motion-cost)))
     (defparameter *dir-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-motion-cost)))
     (defparameter *succ-p-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'succ-p-cons-cost)))
+    (defparameter *variety-cost* (gil::add-int-var-dom *sp* (getparam-val 'variety-cost)))
+    (defparameter *h-triad-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-triad-cost)))
+    (defparameter *dir-mot-to-perf-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-mot-to-perf-cons-cost)))
     ;; Species specific costs
     (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
     (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
     (defparameter *m2-eq-zero-cost* (gil::add-int-var-dom *sp* (getparam-val 'm2-eq-zero-cost)))
     (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
+    (defparameter *h-triad-3rd-species-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-triad-3rd-species-cost)))
 
     ;; Params domains
     (defparameter *motions-domain* ; equal to all possible values of the motions cost, plus zero

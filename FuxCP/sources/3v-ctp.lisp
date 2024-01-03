@@ -158,7 +158,7 @@
         (if (eq (species part) 0)
             nil ; this cost has no sense for the cantus firmus
             (let (
-                (variety-cost (gil::add-int-var-array *sp* (* 3 (- (length (first (notes part))) 2)) 0 1))
+                (variety-cost (gil::add-int-var-array-dom *sp* (* 3 (- (length (first (notes part))) 2)) (append '(0)(getparam-val 'variety-cost))))
                 )
                 (compute-variety-cost (first (notes part)) variety-cost)
                 (add-cost-to-factors variety-cost 'variety-cost)
@@ -170,7 +170,7 @@
     (print "prefer harmonic triad") ; todo check interdependency with 1st and 2nd cost
     (if (member 4 species-list) ; the 4th species behaves differently, as the note to be considered is the note on the upbeat, and not on the downbeat as the other species
         (progn
-            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-last-index (list 0 1)))
+            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-last-index (append '(0) (getparam-val 'h-triad-cost))))
             (if (eq (species counterpoint-1) 4)
                 (if (eq (species counterpoint-2) 4) 
                     ; both are of fourth species
@@ -183,7 +183,7 @@
             )
         )
         (progn
-            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-len (list 0 1)))
+            (setq h-triad-cost (gil::add-int-var-array-dom *sp* *cf-len (append '(0) (getparam-val 'h-triad-cost))))
             (compute-h-triad-cost (first (h-intervals counterpoint-1)) (first (h-intervals counterpoint-2)) h-triad-cost)
         )
     )

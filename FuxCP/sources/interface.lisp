@@ -25,20 +25,6 @@
     (current-csp :accessor current-csp :initform nil :documentation "")
     (result-voice :accessor result-voice :initarg :result-voice :initform nil :documentation "")
     ; ---------- Cost order --------------
-    (no-syncope-order-param :accessor no-syncope-order-param :initform "1" :type integer :documentation "")
-    (h-triad-order-param :accessor h-triad-order-param :initform "3" :type integer :documentation "")
-    (h-triad-3rd-species-order-param :accessor h-triad-3rd-species-order-param :initform "4" :type integer :documentation "")
-    (fifths-order-param :accessor fifths-order-param :initform "7" :type integer :documentation "")
-    (octaves-order-param :accessor octaves-order-param :initform "5" :type integer :documentation "")
-    (motions-order-param :accessor motions-order-param :initform "12" :type integer :documentation "")
-    (direct-move-to-p-cons-order-param :accessor direct-move-to-p-cons-order-param :initform "14" :type integer :documentation "")
-    (off-key-order-param :accessor off-key-order-param :initform "8" :type integer :documentation "")
-    (m-degrees-order-param :accessor m-degrees-order-param :initform "13" :type integer :documentation "")
-    (not-cambiata-order-param :accessor not-cambiata-order-param :initform "11" :type integer :documentation "")
-    (m2-eq-zero-order-param :accessor m2-eq-zero-order-param :initform "10" :type integer :documentation "")
-    (variety-order-param :accessor variety-order-param :initform "7" :type integer :documentation "")
-    (penult-fifth-order-param :accessor penult-fifth-order-param :initform "6" :type integer :documentation "")
-    (succ-p-cons-order-param :accessor succ-p-cons-order-param :initform "2" :type integer :documentation "")
     (linear-combination :accessor linear-combination :initform "Linear combination" :type string :documentation "")
 
 )
@@ -103,7 +89,7 @@
             (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "Medium cost" :param succ-p-cons-cost)
             (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "Medium cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
             (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
-            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param dir-mot-to-perf-cons-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param dir-mot-to-perf-cons-cost) ; TODO DIR MOTION IS NOT IMPLEMENTED
             (:section "General preferences" :name "Motion cost" :display nil :importance "12" :value nil :subcosts ,motion-subcosts :param motions-cost)
             (:section "General preferences" :name "Apply specific penultimate note rules" :value "Yes" :special-range ("Yes" "No") :param penult-rule-check)
             

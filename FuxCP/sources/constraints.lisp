@@ -1000,8 +1000,8 @@
             (gil::g-op *sp* is-harmonic-triad-1st-possibility gil::BOT_OR is-harmonic-triad-1st-possibility is-harmonic-triad)
 
             (gil::g-op *sp* is-harmonic-triad gil::BOT_XOR is-not-p-chord 1)
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-harmonic-triad) ; it costs 0 to be a harmonic triad
-            (gil::g-rel-reify *sp* c gil::IRT_EQ 1 is-not-p-chord) ; it costs 1 not to be a harmonic triad
+            (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-harmonic-triad gil::RM_IMP) ; it costs 0 to be a harmonic triad
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *h-triad-cost* is-not-p-chord gil::RM_IMP) ; it costs 1 not to be a harmonic triad
         )
     )
 )
@@ -1371,7 +1371,8 @@
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
                 (gil::g-op *sp* is-direct-move-to-p-cons gil::BOT_XOR is-not-direct-move-to-p-cons 1)
 
-                (gil::g-rel-reify *sp* c gil::IRT_EQ 8 is-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+;todo 
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *dir-mot-to-perf-cons-cost* is-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
                 (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
         )
     )
@@ -1504,8 +1505,8 @@
             )
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_NQ (nth j cp) is-not-equal)
-                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 1 is-equal)
-                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 0 is-not-equal)
+                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ *variety-cost* is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 0 is-not-equal gil::RM_IMP)
                 (setf k (+ 1 k))
             )
         )
