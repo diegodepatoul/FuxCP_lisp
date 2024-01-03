@@ -364,7 +364,7 @@
     ; IntVar array representing the cost to have cambiata notes
     (setf (not-cambiata-cost counterpoint) (gil::add-int-var-array-dom *sp* *cf-last-index (getparam-dom 'non-cambiata-cost)))
     (add-cost-bool-cst-if (is-not-cambiata-arr counterpoint) (is-mostly-3rd-arr counterpoint) (not-cambiata-cost counterpoint) *non-cambiata-cost*)
-    (add-cost-to-factors (not-cambiata-cost counterpoint) 'not-cambiata-cost)
+    (add-cost-to-factors (not-cambiata-cost counterpoint) 'non-cambiata-cost)
 
     ; 7) intervals between notes n and n+2 are prefered greater than zero
     (print "Intervals between notes n and n+2 are prefered different than zero...")

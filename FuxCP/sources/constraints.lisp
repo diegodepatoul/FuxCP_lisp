@@ -180,8 +180,8 @@
         ; else
         (add-h-inter-cost-cst (restbutlast (first h-intervals)) fifth-cost octave-cost (restbutlast is-not-lowest))
     )
-    (add-cost-to-factors fifth-cost 'fifth-cost)
-    (add-cost-to-factors octave-cost 'octave-cost)
+    (add-cost-to-factors fifth-cost 'h-fifth-cost)
+    (add-cost-to-factors octave-cost 'h-octave-cost)
 )
 
 ; add cost constraints such that a cost is added when a fifth or an octave is present in @h-intervals
@@ -256,7 +256,7 @@
             (add-cost-bool-cst-if (is-cp-off-key-arr counterpoint) is-cst-arr1 (off-key-cost counterpoint) *borrow-cost*)
         )
         ; sum of the cost of the off-key notes
-        (add-cost-to-factors (off-key-cost counterpoint) 'off-key-cost)
+        (add-cost-to-factors (off-key-cost counterpoint) 'borrow-cost)
     
         ; 3) melodic intervals should be as small as possible 
         (print "Melodic intervals should be as small as possible...")
@@ -695,10 +695,7 @@
                     (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals))
                     (if (eq i *cf-penult-index) ; if penult note
                         ; add penult options
-                        (if (eq *N-PARTS 3)
-                            (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
-                            (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals))
-                        )
+                        (gil::g-member *sp* penult-dom-var (nth i h-intervals))
                         ; else add all consonances
                         (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
                     )
@@ -706,7 +703,7 @@
             ; if 4th species (things get complicated)
             (case i
                 (0 (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals)))
-                (*cf-penult-index (gil::g-member *sp* PENULT_CONS_VAR (nth i h-intervals)))
+                (*cf-penult-index (gil::g-member *sp* penult-dom-var (nth i h-intervals)))
                 (*cf-last-index (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals)))
                 (otherwise (let
                     (
@@ -727,7 +724,6 @@
                     (gil::g-rel-reify *sp* h-dis gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-stays)
                     (gil::g-rel-reify *sp* h-cons gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-not-stays)
                 ))
-                ;(otherwise (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals)))
             )
         )
     )
