@@ -119,9 +119,6 @@
     ; array representing the brut melodic intervals of the cantus firmus
     (create-cf-brut-m-intervals *cf *cf-brut-m-intervals)
 
-    ;(setq *cf-motions (gil::add-int-var-array *sp* (gil::add-int-var-array *sp* *cf-last-index 0 2)))
-    ;(create-cf-motions *cf-brut-m-intervals (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-
     ;; COSTS
     ;; Melodic costs
     (defparameter *m-step-cost* (gil::add-int-var-dom *sp* (getparam-val 'm-step-cost)))
@@ -144,8 +141,7 @@
     ;; Species specific costs
     (defparameter *penult-sixth-cost* (gil::add-int-var-dom *sp* (getparam-val 'penult-sixth-cost)))
     (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
-    (defparameter *two-beats-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-beats-apart-cost)))
-    (defparameter *two-bars-apart-cost* (gil::add-int-var-dom *sp* (getparam-val 'two-bars-apart-cost)))
+    (defparameter *m2-eq-zero-cost* (gil::add-int-var-dom *sp* (getparam-val 'm2-eq-zero-cost)))
     (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
 
     ;; Params domains

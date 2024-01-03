@@ -167,8 +167,8 @@
 
     ; 6) add m2-intervals equal to 0 cost
     (print "Monotonia...")
-    (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (- *cf-len 3) (getparam-dom 'two-bars-apart-cost)))
-    (add-cost-multi-cst (third (notes counterpoint)) gil::IRT_EQ (cddr (third (notes counterpoint))) (m2-eq-zero-cost counterpoint) *two-bars-apart-cost*)
+    (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (- *cf-len 3) (getparam-dom 'm2-eq-zero-cost)))
+    (add-cost-multi-cst (third (notes counterpoint)) gil::IRT_EQ (cddr (third (notes counterpoint))) (m2-eq-zero-cost counterpoint) *m2-eq-zero-cost*)
     (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
     ;======================================== COST FUNCTION ===================================

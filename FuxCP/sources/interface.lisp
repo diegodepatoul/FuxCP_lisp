@@ -16,41 +16,11 @@
 (
     ; ---------- Input cantus firmus ----------
     (cf-voice :accessor cf-voice :initarg :cf-voice :initform nil :documentation "")
-    ; ---------- Melodic parameters ----------
-    (m-step-cost-param :accessor m-step-cost-param :initform "No cost" :type string :documentation "")
-    (m-third-cost-param :accessor m-third-cost-param :initform "Low cost" :type string :documentation "")
-    (m-fourth-cost-param :accessor m-fourth-cost-param :initform "Low cost" :type string :documentation "")
-    (m-tritone-cost-param :accessor m-tritone-cost-param :initform "Forbidden" :type string :documentation "")
-    (m-fifth-cost-param :accessor m-fifth-cost-param :initform "Medium cost" :type string :documentation "")
-    (m-sixth-cost-param :accessor m-sixth-cost-param :initform "Medium cost" :type string :documentation "")
-    (m-seventh-cost-param :accessor m-seventh-cost-param :initform "Medium cost" :type string :documentation "")
-    (m-octave-cost-param :accessor m-octave-cost-param :initform "Low cost" :type string :documentation "")
-    ; ---------- Global parameters (species 1) ----------
-    (borrow-mode-param :accessor borrow-mode-param :initform "Major" :type string :documentation "")
-    (borrow-cost-param :accessor borrow-cost-param :initform "High cost" :type string :documentation "")
-    (h-fifth-cost-param :accessor h-fifth-cost-param :initform "Low cost" :type string :documentation "")
-    (h-octave-cost-param :accessor h-octave-cost-param :initform "Low cost" :type string :documentation "")
-    (con-motion-cost-param :accessor con-motion-cost-param :initform "No cost" :type string :documentation "")
-    (obl-motion-cost-param :accessor obl-motion-cost-param :initform "Low cost" :type string :documentation "")
-    (dir-motion-cost-param :accessor dir-motion-cost-param :initform "Medium cost" :type string :documentation "")
-    (penult-rule-check-param :accessor penult-rule-check-param :initform t :type boolean :documentation "")
-    (succ-p-cons-cost-param :accessor succ-p-cons-cost-param :initform "Medium cost" :type string :documentation "")
-    ; ---------- Species parameters ----------
-    ; Species 2
-    (penult-sixth-cost-param :accessor penult-sixth-cost-param :initform "Last resort" :type string :documentation "")
-    ; Species 3
-    (non-cambiata-cost-param :accessor non-cambiata-cost-param :initform "High cost" :type string :documentation "")
-    (two-beats-apart-cost-param :accessor two-beats-apart-cost-param :initform "Low cost" :type string :documentation "")
-    (con-m-after-skip-check-param :accessor con-m-after-skip-check-param :initform nil :type boolean :documentation "")
-    ; Species 4
-    (two-bars-apart-cost-param :accessor two-bars-apart-cost-param :initform "High cost" :type string :documentation "")
-    (no-syncopation-cost-param :accessor no-syncopation-cost-param :initform "Last resort" :type string :documentation "")
-    ; Species 5
-    (pref-species-slider-param :accessor pref-species-slider-param :initform 50 :type integer :documentation "")
     ; ---------- Solver parameters ----------
     (species-param :accessor species-param :initform (list "1st" "1st") :type string :documentation "")
     (voice-type-param :accessor voice-type-param :initform (list "Really far above" "Above") :type string :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
+    (borrow-mode-param :accessor borrow-mode-param :initform "Major" :type string :documentation "")
     ; ---------- Output & Stop ----------
     (current-csp :accessor current-csp :initform nil :documentation "")
     (result-voice :accessor result-voice :initarg :result-voice :initform nil :documentation "")
@@ -116,46 +86,48 @@
         ))
 
         (melodic-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
-            (:section "Melodic Preferences" :name "Melodic cost" :display nil :importance "4" :value nil :subcosts ,melodic-subcosts)
+            (:section "Melodic Preferences" :name "Melodic cost" :display nil :importance "13" :value nil :subcosts ,melodic-subcosts)
             ;; Add more cost data as needed
         ))
 
         (motion-subcosts '(
             (:name "Direct motion" :value "Medium cost" :cannot-be-forbidden t :param dir-motion-cost)
             (:name "Oblique motion" :value "Low cost" :param obl-motion-cost)
-            (:name "Contrary motion" :value "No cost" :cannot-be-forbidden t :cost con-motion-cost)
+            (:name "Contrary motion" :value "No cost" :cannot-be-forbidden t :param con-motion-cost)
         ))
 
         (general-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
-            (:section "General preferences" :name "Borrowed notes" :display nil :importance "4" :value "High cost" :param borrow-cost)
-            (:section "General preferences" :name "Harmonic fifths on the downbeat" :display nil :importance "4" :value "High cost" :param h-fifth-cost)
-            (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "4" :value "High cost" :param h-octave-cost)
-            (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "4" :value "High cost" :param succ-p-cons-cost)
-            (:section "General preferences" :name "Repeating notes" :display nil :importance "4" :value "High cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
-            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "4" :value "High cost" :param h-triad-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
-            (:section "General preferences" :name "Motion cost" :display nil :importance "4" :value nil :subcosts ,motion-subcosts :param motions-cost)
+            (:section "General preferences" :name "Borrowed notes" :display nil :importance "8" :value "High cost" :param borrow-cost)
+            (:section "General preferences" :name "Harmonic fifths on the downbeat" :display nil :importance "7" :value "Low cost" :param h-fifth-cost)
+            (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "5" :value "Low cost" :param h-octave-cost)
+            (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "High cost" :param succ-p-cons-cost)
+            (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "High cost" :param variety-cost) ; TODO VARIETY COST IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param dir-mot-to-perf-cons-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
+            (:section "General preferences" :name "Motion cost" :display nil :importance "12" :value nil :subcosts ,motion-subcosts :param motions-cost)
             (:section "General preferences" :name "Apply specific penultimate note rules" :value "Yes" :special-range ("Yes" "No") :param penult-rule-check)
             
             ;; Add more cost data as needed
         ))
 
         (specific-preferences `( ; care it is a special apostrophe here (needed to evaluate every value that has a comma in this list, and not to take their symbols)
-            (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "1" :value "High cost")
-            (:section "Third species specific pref." :name "Use of cambiatas" :importance "2" :value "High cost")
-            (:section "Third species specific pref." :name "Force joint contrary melody after skip" :value "No" :special-range ("Yes" "No"))
-            (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "2" :value "High cost")
-            (:section "Fourth species specific pref." :name "No ligatures" :importance "3" :value "High cost")
-            (:section "Fifth species specific pref." :name "Many quarters (left) or many syncopations (right)" :value 50 :make-slider t)
+            (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "6" :value "High cost" :param penult-sixth-cost)
+            (:section "Third species specific pref." :name "Use of cambiatas" :importance "11" :value "High cost" :param non-cambiata-cost)
+            (:section "Third species specific pref." :name "Force joint contrary melody after skip" :value "No" :special-range ("Yes" "No") :param con-m-after-skip-check)
+            (:section "Third species specific pref." :name "Not having a h. triad in 2nd or 3rd beat" :display nil :importance "4" :value "High cost" :param h-triad-cost-3rd-species-cost) ; TODO HTRIAD IS NOT IMPLEMENTED
+            (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "10" :value "High cost" :param m2-eq-zero-cost)
+            (:section "Fourth species specific pref." :name "No ligatures" :importance "1" :value "High cost" :param no-syncopation-cost)
+            (:section "Fifth species specific pref." :name "Many quarters (left) or many syncopations (right)" :value 50 :make-slider t :param pref-species-slider)
             ;; Add more cost data as needed
         ))
         )   
         ;; Add the cost table to the main view
-        (om::om-add-subviews editor (make-cost-panel editor general-preferences  #|x-offset:|# 0    #|y-offset:|# 0   #|size:|# 500 #|colour:|# om::*azulote*))
-        (om::om-add-subviews editor (make-cost-panel editor melodic-preferences  #|x-offset:|# 526  #|y-offset:|# 0   #|size:|# 500 #|colour:|# om::*azulito*))
+        (om::om-add-subviews editor (make-cost-panel editor general-preferences  #|x-offset:|# 0    #|y-offset:|# 0   #|size:|# 540 #|colour:|# om::*azulote*))
+        (om::om-add-subviews editor (make-cost-panel editor melodic-preferences  #|x-offset:|# 526  #|y-offset:|# 0   #|size:|# 350 #|colour:|# om::*azulito*))
         (om::om-add-subviews editor (make-cost-panel editor specific-preferences #|x-offset:|# 1052 #|y-offset:|# 0   #|size:|# 500 #|colour:|# (om::make-color-255 230 190 165)))
-        (om::om-add-subviews editor (make-explanation-panel editor              #|x-offset:|# 0    #|y-offset:|# 501 #|size:|# 500 #|colour:|# (om::make-color-255 255 240 120)))
-        (om::om-add-subviews editor (make-search-params-panel editor      #|x-offset:|# 526  #|y-offset:|# 501 #|size:|# 500 #|colour:|# om::*maq-color*))
-        (om::om-add-subviews editor (make-search-buttons      editor      #|x-offset:|# 1052 #|y-offset:|# 501 #|size:|# 500 #|colour:|# om::*workspace-color* melodic-subcosts melodic-preferences motion-subcosts general-preferences  ))
+        (om::om-add-subviews editor (make-explanation-panel editor              #|x-offset:|# 0    #|y-offset:|# 541 #|size:|# 160 #|colour:|# (om::make-color-255 255 240 120)))
+        (om::om-add-subviews editor (make-search-params-panel editor      #|x-offset:|# 526  #|y-offset:|# 351 #|size:|# 350 #|colour:|# om::*maq-color*))
+        (om::om-add-subviews editor (make-search-buttons      editor      #|x-offset:|# 1052 #|y-offset:|# 501 #|size:|# 200 #|colour:|# om::*workspace-color* melodic-subcosts melodic-preferences motion-subcosts general-preferences specific-preferences))
 
     )
     
@@ -170,23 +142,43 @@
         ;; ... (existing code)
 
         ;; Explanation text
-        (explanation-text "This is an explanation of the panel.")
+        (explanation-text "First choose the importance of each preference (1 being the most important and 14 being the least important). The solver will give priority to the most important preferences. The cost value is taken into account if two costs have the same importance. ")
 
         ;; Create a view for the explanation panel
         (explanation-panel (om::om-make-view 'om::om-view
-                                :size (om::om-make-point size 100)
+                                :size (om::om-make-point 525 size)
                                 :position (om::om-make-point panel-x-offset panel-y-offset)
                                 :bg-color colour))
         
         ;; Create a text element for the explanation
         (explanation-label (om::om-make-dialog-item 'om::om-static-text
-                                (om::om-make-point 10 10) (om::om-make-point 580 80)
+                                (om::om-make-point 10 10) (om::om-make-point 500 800)
                                 explanation-text
-                                :font om::*om-default-font1b*))
+                                ))
         )
 
     ;; Add the text element to the explanation panel
     (om::om-add-subviews explanation-panel explanation-label)
+
+    (om::om-add-subviews explanation-panel
+        (om::om-make-dialog-item
+        'om::om-static-text
+        (om::om-make-point 10 100)
+        (om::om-make-point 400 20)
+        "If two costs are ranked the same, perform between them a:"
+        )
+        (om::om-make-dialog-item
+        'om::pop-up-menu
+        (om::om-make-point 100 120)
+        (om::om-make-point 280 20)
+        "Linear combination"
+        :range (list "Linear combination" "Maximum minimisation")
+        :value (linear-combination (om::object editor))
+        :di-action #'(lambda (cost)
+                        (setf (linear-combination (om::object editor)) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+                        )
+        )
+    )
 
     ;; Add the explanation panel to the main view
     explanation-panel
@@ -292,7 +284,7 @@
                             ;; Add the row to the cost table
                              (let* (
                                 (name-label (om::om-make-dialog-item 'om::om-static-text
-                                            (om::om-make-point 100 y-position) (om::om-make-point 250 20) name))
+                                            (om::om-make-point 50 y-position) (om::om-make-point 250 20) name))
                                 (value-popup (om::om-make-dialog-item 'om::pop-up-menu
                                                 (om::om-make-point 345 (- y-position 7)) (om::om-make-point 150 20)
                                                 (format nil "~A" value)
@@ -327,7 +319,7 @@
             search-params-panel
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 140 2)
+            (om::om-make-point 15 0)
             (om::om-make-point 200 20)
             "Solver Configuration"
             :font om::*om-default-font2b*
@@ -335,15 +327,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 50)
+            (om::om-make-point 25 30)
             (om::om-make-point 150 20)
             "First voice species"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 50)
+            (om::om-make-point 170 25)
             (om::om-make-point 200 20)
             "First voice species"
             :range (list "1st" "2nd" "3rd" "4th" "5th")
@@ -355,15 +346,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 100)
+            (om::om-make-point 25 80)
             (om::om-make-point 150 20)
             "First voice range"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 100)
+            (om::om-make-point 170 75)
             (om::om-make-point 200 20)
             "Voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
@@ -375,15 +365,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 150)
+            (om::om-make-point 25 130)
             (om::om-make-point 150 20)
             "Second voice species"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 150)
+            (om::om-make-point 170 125)
             (om::om-make-point 200 20)
             "Second voice species"
             :range (list "None" "1st" "2nd" "3rd" "4th" "5th")
@@ -395,15 +384,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 200)
+            (om::om-make-point 25 180)
             (om::om-make-point 150 20)
             "Second voice range"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 200)
+            (om::om-make-point 170 175)
             (om::om-make-point 200 20)
             "Second voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
@@ -415,15 +403,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 250)
+            (om::om-make-point 25 230)
             (om::om-make-point 150 20)
             "Borrowing mode"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 250)
+            (om::om-make-point 170 225)
             (om::om-make-point 200 20)
             "Borrowing mode"
             :range (list "None" "Major" "Minor")
@@ -435,15 +422,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 15 300)
+            (om::om-make-point 25 280)
             (om::om-make-point 150 20)
             "Minimum % of skips"
-            :font om::*om-default-font1b*
             )
 
             (om::om-make-dialog-item
             'om::om-slider
-            (om::om-make-point 170 300)
+            (om::om-make-point 170 275)
             (om::om-make-point 200 20)
             "Minimum % of skips"
             :range '(0 100)
@@ -458,7 +444,7 @@
     )
 )
 
-(defun make-search-buttons (editor panel-x-offset panel-y-offset y-size colour melodic-subcosts)
+(defun make-search-buttons (editor panel-x-offset panel-y-offset y-size colour melodic-subcosts melodic-preferences motion-subcosts general-preferences specific-preferences)
     (let* (      
         (search-buttons (om::om-make-view 'om::om-view
                         :size (om::om-make-point 525 y-size)
@@ -495,25 +481,32 @@
                     (setparam-cost (getf subcost :param) (getf subcost :value))
                 )
 
-                (dolist (cost general-costs)
-                    (if (= (getf cost :param) 'motions-cost)
-                        (error cost) ;nil ; it is tread by the subcosts
-                        (if (= (get cost :param 'penult-rule-check))
-                            (error cost) ; todo
-                            (setparam-cost (getf subcost :param) (getf subcost :value))
+                ;; set general costs
+                (dolist (cost general-preferences)
+                    (if (equal (getf cost :param) 'motions-cost)
+                        nil ; it is treated by the subcosts
+                        (if (equal (getf cost :param) 'penult-rule-check)
+                            (setparam-yes-no (getf cost :param) (getf cost :value)) ; it is a yes no
+                            (setparam-cost (getf cost :param) (getf cost :value)) ; else
                         )
                     )
                 )
 
+                ;; set motions costs
+                (dolist (subcost motion-subcosts)
+                    (setparam-cost (getf subcost :param) (getf subcost :value))
+                )
 
-                ;; set species specific parameters
-                (setparam-cost 'penult-sixth-cost (penult-sixth-cost-param (om::object editor)))
-                (setparam-cost 'non-cambiata-cost (non-cambiata-cost-param (om::object editor)))
-                (setparam-cost 'two-beats-apart-cost (two-beats-apart-cost-param (om::object editor)))
-                (setparam-yes-no 'con-m-after-skip-check (con-m-after-skip-check-param (om::object editor)))
-                (setparam-cost 'two-bars-apart-cost (two-bars-apart-cost-param (om::object editor)))
-                (setparam-cost 'no-syncopation-cost (no-syncopation-cost-param (om::object editor)))
-                (setparam-slider 'pref-species-slider (pref-species-slider-param (om::object editor)))
+                ;; set species specific costs
+                (dolist (cost specific-preferences)
+                    (if (equal (getf cost :param) 'pref-species-slider)
+                        (setparam-slider (getf cost :param) (getf cost :value)) ; it is a slider
+                        (if (equal (getf cost :param) 'con-m-after-skip-check)
+                            (setparam-yes-no (getf cost :param) (getf cost :value)) ; it is a yes-no
+                            (setparam-cost (getf cost :param) (getf cost :value)) ; else
+                        ) 
+                    )
+                )
 
                 ;; set search parameters
                 (setparam-slider 'min-skips-slider (min-skips-slider-param (om::object editor)))
@@ -522,20 +515,14 @@
 
                 ;; preferences for the cost order
                 (defparameter *cost-preferences* (make-hash-table))
-                (setf (gethash 'no-syncope-cost *cost-preferences*)            (no-syncope-order-param (om::object editor)))
-                (setf (gethash 'h-triad-cost *cost-preferences*)               (h-triad-order-param (om::object editor)))
-                (setf (gethash 'h-triad-3rd-species-cost *cost-preferences*)   (h-triad-3rd-species-order-param (om::object editor)))
-                (setf (gethash 'fifth-cost *cost-preferences*)                 (fifths-order-param (om::object editor)))
-                (setf (gethash 'octave-cost *cost-preferences*)                (octaves-order-param (om::object editor)))
-                (setf (gethash 'motions-cost *cost-preferences*)               (motions-order-param (om::object editor)))
-                (setf (gethash 'direct-move-to-p-cons-cost *cost-preferences*) (direct-move-to-p-cons-order-param (om::object editor)))
-                (setf (gethash 'off-key-cost *cost-preferences*)               (off-key-order-param (om::object editor)))
-                (setf (gethash 'm-degrees-cost *cost-preferences*)             (m-degrees-order-param (om::object editor)))
-                (setf (gethash 'not-cambiata-cost *cost-preferences*)          (not-cambiata-order-param (om::object editor)))
-                (setf (gethash 'm2-eq-zero-cost *cost-preferences*)            (m2-eq-zero-order-param (om::object editor)))
-                (setf (gethash 'variety-cost *cost-preferences*)               (variety-order-param (om::object editor)))
-                (setf (gethash 'penult-thesis-cost *cost-preferences*)         (penult-fifth-order-param (om::object editor)))
-                (setf (gethash 'succ-p-cons-cost *cost-preferences*)           (succ-p-cons-order-param (om::object editor)))
+                (dolist (current-list (list general-preferences specific-preferences melodic-preferences))
+                    (dolist (cost current-list)
+                        (if (getf cost :importance)
+                            (setf (gethash (getf cost :param) *cost-preferences*) (getf cost :importance))
+                        )   
+                    )
+                )
+
                 (if (string= "Linear combination" (linear-combination (om::object editor))) 
                     (setf *linear-combination t)
                     (setf *linear-combination nil)

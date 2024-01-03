@@ -194,8 +194,8 @@
     ; 7) intervals between notes n and n+2 are prefered greater than zero
     (print "Intervals between notes n and n+2 are prefered different than zero...")
     ; IntVar array representing the cost to have intervals between notes n and n+2 equal to zero
-    (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (m2-len counterpoint) (getparam-dom 'two-beats-apart-cost)))
-    (add-cost-cst (m2-intervals counterpoint) gil::IRT_EQ 0 (m2-eq-zero-cost counterpoint) *two-beats-apart-cost*)
+    (setf (m2-eq-zero-cost counterpoint) (gil::add-int-var-array-dom *sp* (m2-len counterpoint) (getparam-dom 'm2-eq-zero-cost)))
+    (add-cost-cst (m2-intervals counterpoint) gil::IRT_EQ 0 (m2-eq-zero-cost counterpoint) *m2-eq-zero-cost*)
     (add-cost-to-factors (m2-eq-zero-cost counterpoint) 'm2-eq-zero-cost)
 
 
