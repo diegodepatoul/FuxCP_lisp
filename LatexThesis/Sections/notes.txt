@@ -1,7 +1,6 @@
 p.39 - il faudrait p-e expliquer ce que j'ai fait pour régler le problème de pas de solution.
 p.40 - discuter la distance de la meilleure solution
 p.41 - combili gérés avec les poids
-p.42 - détecter le bottleneck 
 p.42 - ça c'est pas un problème
 p.43 - l'inconvénient c'est que tu vas minimiser dans l'ordre
 p.44 - les coûts interdépendants

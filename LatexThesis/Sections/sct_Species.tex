@@ -5,16 +5,18 @@ It consists of seven subsections: first, a section for the implicit rules (the r
 
 Each species subsection is divided into two parts: the first part is about setting up Fux's rules and discussing them. The second part is about translating the rules into formal logic.
 
-\paragraph{Meaning of the green dot}
-Please note that all the rules from T. Wafflard's thesis still apply to three-part compositions. The numbering of the rules in this work is the same as in T. Wafflard's work. If a rule is defined with the same number as an existing rule for two-part compositions, this means that the corresponding rule from T. Wafflard's work does not apply to three-part compositions, and that the new rule should be used instead. To make this clearer, there is a green dot (\greendot) next to the rules from T. Wafflard's thesis that got redefined when used in a three-voice composition.
+\paragraph*{Some important notes}
+\begin{itemize}
+    \item \textbf{Concerning the green dot} ---
+    Please note that all the rules from T. Wafflard's thesis still apply to three-part compositions. The numbering of the rules in this work is the same as in T. Wafflard's work. If a rule is defined with the same number as an existing rule for two-part compositions, this means that the corresponding rule from T. Wafflard's work does not apply to three-part compositions, and that the new rule should be used instead. To make this clearer, there is a green dot (\greendot) next to the rules from T. Wafflard's thesis that got redefined when used in a three-voice composition.
+    \item \textbf{Concerning the \texttt{[PREF]} marker} ---
+    As discussed earlier (see Section~\ref{subsection:preferences-vs-hard-rules}), some rules are mandatory and must be followed to find a valid solution, and other rules are just preferences that can be followed to find a \textit{better} solution. The preferences have been marked '\texttt{[PREF]}' throughout the chapter to make it clearer which rule is mandatory and which is a preference.
 
-\paragraph{Difference between preference and strict rule}
-As discussed earlier (see Section~\ref{subsection:preferences-vs-hard-rules}), some rules are mandatory and must be followed to find a valid solution, and other rules are just preferences that can be followed to find a \textit{better} solution. The preferences have been marked '\texttt{[PREF]}' throughout the chapter to make it clearer which rule is mandatory and which is a preference.
+    \item \textbf{Concerning the default costs} --- Each time a cost is mentioned in the formalisation rules, the value corresponding to it is its default value, as defined in Appendix~\ref{chapter:user-guide}. Note, however, that in practice the value for each cost can be changed by the user to suit their needs.
+    \item \textbf{Concerning the purpose of all the rules} --- 
+    It may be interesting to remember the purpose of these rules. Some rules are concerned with musicality: composing counterpoint that sounds nice; for example, the rule that forbids dissonance. Some rules are concerned with singability: composing counterpoint that is not too difficult for the human voice to sing; for example, the rule forbidding a melodic leap greater than a sixth.
 
-Also, the cost values written in the rules are the default values, as defined in Appendix~\ref{chapter:user-guide}. Note, however, that in practice the value for each cost can be changed by the user to suit their needs.
-
-\paragraph{Purpose of all the rules}
-It may be interesting to remember the purpose of these rules. Some rules are concerned with musicality: composing counterpoint that sounds nice; for example, the rule that forbids dissonance. Some rules are concerned with singability: composing counterpoint that is not too difficult for the human voice to sing; for example, the rule forbidding a melodic leap greater than a sixth.
+\end{itemize}
 
 \section{Implicit rules}
 These implicit rules apply to all types of counterpoint. They are never explicitly defined by Fux, but are derived from his many examples. These implicit rules are therefore actually used by Fux, even though he doesn't talk about them.
@@ -76,7 +78,7 @@ These implicit rules apply to all types of counterpoint. They are never explicit
     \end{aligned} \end{equation}
 
 \section{First species}
-This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. In other words, these rules apply whenever $species(p) \in \{0, 1, 2, 3, 4, 5\}$. More specifically, the rules in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see the note on the fourth species~\ref{nota-bene-4th-species}).
+This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. In other words, these rules apply whenever $species(p) \in \{1, 2, 3, 4, 5\}$. More specifically, the rules in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see the note on the fourth species~\ref{nota-bene-4th-species}).
 
 \paragraph{}
 The first species consists of whole notes only. It is the basis of counterpoint and its simplest case. 
@@ -675,11 +677,11 @@ Fux introduces no new melodic constraints for the third species.
 \subsubsection{Motion rules}
 \paragraph{\hspace{.6cm}\ref{rule:successive-fifths-in-4th-species}} \texttt{[PREF]} \textit{Successive fifths are allowed when using ligatures.}    
 
-    The point of this rule is that Fux introduces an exception to~\ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species, thanks to the delaying it induces.
+    The point of this rule is that Fux introduces an exception to~\ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species.
 
-    We shall then amend the rule\footnote{Don't forget that it is a cost.}~\ref{rule:succ-p-cons} to allow successive fifths in any case, and rewrite it as:
+    We shall then amend the rule~\ref{rule:succ-p-cons} (don't forget that it is a cost) to allow successive fifths in any case, and rewrite it as:
     \begin{equation} \begin{aligned}
-        &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad \text{with } v_1 \neq v_2, \quad \forall j \in [0, m-2) \colon\\
+        &\forall p_1, p_2 \in \{cf, cp_1, cp_2\}, \quad \text{with } p_1 \neq p_2, \quad \forall j \in [0, m-2) \colon\\
         &Cost_{succ\_p\_cons} = \,  
         \begin{cases}
             0 & \text{if } (H(p_1, p_2)[0, j] \notin Cons_p) \lor (H(p_1, p_2)[0, j+1] \notin Cons_p)\\
@@ -713,6 +715,10 @@ Fux introduces no new melodic constraints for the third species.
         \end{aligned}
     \end{equation}
 
+    This rule is very special because it applies after the search, not during the search. More precisely, after the search is started and a result is found, only then does this rule begin to apply. To understand why, remember that the suppressed note is suppressed because it causes a hidden fifth. But the only way to have a hidden fifth is to have an existing note, you cannot have a hidden fifth to a non-existing note. So we don't delete the note during the search, because then we would also delete the hidden fifth (because you can't have a hidden fifth without a note) and so we would change the solution. You have to find a solution first, and then remove the possible note that causes a hidden fifth. 
+
+    This is actually a very interesting property, because here we have a note that is not played and yet has an effect on the composition.
+
 
 
 \section{Fifth species}
@@ -726,14 +732,23 @@ As a reminder, the fifth species is a mix of all previously mentioned species, w
     \label{fig:example-5sp}
 \end{figure}
 
+\paragraph{}
+No additional rules (be they harmonic rules, melodic rules or motion rules) were observed by Fux when writing a three-part counterpoint with the fifth species.
 
-No additional rules (be they harmonic rules, melodic rules or motion rules) were observed by Fux for the fifth species.
-However, in order to have some melodic and rhythmic variety when composing with two fifth counterpoints, it was decided to impose a rule that Fux never mentioned: knowing that the fifth is just all the others combined, not more than 50\% of the composition of the parts can be made by using the same species for the same measure.
 
+However, in order to have some rhythmic variety when composing with two fifth species counterpoints, it was decided to impose a rule that Fux never mentioned. We know that the fifth is just all the other species combined, and the way the solver understands this is that it considers each note of the composition to belong to a given species. This is represented as S[i,j], where $S[i,j]=x$ means that the i-th note of the j-th measure belongs to the x-th species. This gives us a metric for similarity, since two fifth-species counterpoints that have the same $S$ array will be rhythmically redundant. To tackle this problem, we force the solver to find a solution where $S(cp_1)$ must be at least half as different as $S(cp_2)$. For more information on this notation and the way the solver works with the fifth species, see section 7.2.2 of T. Wafflard's thesis, where the implications of the S array are fully developed. 
 
-To better understand this rule, remember that the fifth species works by combining all the other species, and that it assigns a species to each beat (i.e. each of the beats of a fifth species counterpoint actually belongs to a given species). This is represented by the variable S. $S[i,j]=x$ means that the note on the i-th beat of the j-th measure follows the rules of the species $x$. If we want to force the solver to find different solutions when searching for a solution of two fifth species counterpoints, a good trick is to force as many notes as possible to belong to different species.
-
-The following equation holds true only if both counterpoints are fifth species counterpoints.
+\begin{minipage}{0.32\textwidth}
+As can be seen in Figure \ref{fig:fifth-species-redundancy}, the first composition is indeed rythmically redundant, since both fifth species counterpoints have (almost) the same rhythm. The second is much less redundant, since at least 50\% of the notes are of a different species.
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.6\textwidth}
+      \centering
+      \includegraphics[width=\textwidth]{Images/fifth-species-redundancy.png}
+      \captionof{figure}{Two compositions of two fifth-species counterpoint, one redundant and the other not}
+      \label{fig:fifth-species-redundancy}
+\end{minipage}
+\vspace{.5cm}
 
 
 \begin{equation}
@@ -741,6 +756,8 @@ The following equation holds true only if both counterpoints are fifth species c
 \sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
 \end{aligned}
 \end{equation}
+
+This equation is only true if both counterpoints are of the fifth species, and its meaning is that the sum of the times $S(cp_1)=S(cp_2)$ must be less than half the number of notes in the composition.
 
 \section{Writing a three-part composition using various species}
 In \gap, Fux almost always writes his counterpoints using a combination of the first species and another species, i.e. either a counterpoint of the first species and another of the first species, a counterpoint of the first species and another of the second species, and so on, up to a counterpoint of the first species and another of the fifth species. However, he sometimes creates other combinations, either with two of the same species (for example, two of the fifth species) or with two different species (for example, the second and the third).
