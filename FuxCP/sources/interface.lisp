@@ -125,8 +125,6 @@
 
 (defun make-explanation-panel (editor panel-x-offset panel-y-offset size colour)
     (let* (
-        ;; ... (existing code)
-
         ;; Explanation text
         (explanation-text "First choose the importance of each preference (1 being the most important and 14 being the least important). The solver will give priority to the most important preferences. The cost value is taken into account if two costs have the same importance. ")
 
@@ -155,7 +153,7 @@
         )
         (om::om-make-dialog-item
         'om::pop-up-menu
-        (om::om-make-point 100 120)
+        (om::om-make-point 215 120)
         (om::om-make-point 280 20)
         "Linear combination"
         :range (list "Linear combination" "Maximum minimisation")
@@ -320,8 +318,8 @@
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 25)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 25)
+            (om::om-make-point 220 20)
             "First voice species"
             :range (list "1st" "2nd" "3rd" "4th" "5th")
             :value (first (species-param (om::object editor)))
@@ -339,8 +337,8 @@
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 75)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 75)
+            (om::om-make-point 220 20)
             "Voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
             :value (first (voice-type-param (om::object editor)))
@@ -358,8 +356,8 @@
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 125)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 125)
+            (om::om-make-point 220 20)
             "Second voice species"
             :range (list "None" "1st" "2nd" "3rd" "4th" "5th")
             :value (second (species-param (om::object editor)))
@@ -377,8 +375,8 @@
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 175)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 175)
+            (om::om-make-point 220 20)
             "Second voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
             :value (second (voice-type-param (om::object editor)))
@@ -396,8 +394,8 @@
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 170 225)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 225)
+            (om::om-make-point 220 20)
             "Borrowing mode"
             :range (list "None" "Major" "Minor")
             :value (borrow-mode-param (om::object editor))
@@ -415,8 +413,8 @@
 
             (om::om-make-dialog-item
             'om::om-slider
-            (om::om-make-point 170 275)
-            (om::om-make-point 200 20)
+            (om::om-make-point 275 275)
+            (om::om-make-point 220 20)
             "Minimum % of skips"
             :range '(0 100)
             :increment 1
@@ -441,7 +439,7 @@
             search-buttons
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 140 5)
+            (om::om-make-point 187 25)
             (om::om-make-point 150 20)
             "Solver Launcher"
             :font om::*om-default-font3b*
@@ -449,7 +447,7 @@
 
             (om::om-make-dialog-item
             'om::om-button
-            (om::om-make-point 55 30) ; position (horizontal, vertical)
+            (om::om-make-point 97 60) ; position (horizontal, vertical)
             (om::om-make-point 160 20) ; size (horizontal, vertical)
             "Save Config"
             :di-action #'(lambda (b)
@@ -523,7 +521,7 @@
 
             (om::om-make-dialog-item
             'om::om-button
-            (om::om-make-point 55 70) ; position
+            (om::om-make-point 97 100) ; position
             (om::om-make-point 160 20) ; size
             "Next Solution"
             :di-action #'(lambda (b)
@@ -552,7 +550,7 @@
 
             (om::om-make-dialog-item
             'om::om-button
-            (om::om-make-point 215 70) ; position
+            (om::om-make-point 262 100) ; position
             (om::om-make-point 160 20) ; size
             "Best Solution"
             :di-action #'(lambda (b)
@@ -583,7 +581,7 @@
 
             (om::om-make-dialog-item
             'om::om-button
-            (om::om-make-point 215 30) ; position (horizontal, vertical)
+            (om::om-make-point 262 60) ; position (horizontal, vertical)
             (om::om-make-point 160 20) ; size (horizontal, vertical)
             "Stop"
             :di-action #'(lambda (b)
