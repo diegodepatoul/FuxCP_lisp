@@ -24,7 +24,7 @@ The other central heuristic is the one that instructs the solver to branch on th
 \subsubsection{Additional heuristics}
 A first additional heuristic is to branch to the array representing the species contained in the fifth species, to ensure a varied composition. If we are dealing with a counterpoint of the fourth or fifth species, we also branch on the "no ligature cost", so that the solver explores solutions in which the notes are linked, since this is the very nature of the fourth species (both when it is used "pure" and when it is used within the fifth species).
 
-The rule \ref{rule:start-distant} states that the voices should start distant, and as suggested in the section on rules, this should be implemented in a heuristic. However, when we implemented the heuristic that all voices should start distant from the lowest one, we did not see any improvement, neither in search speed nor in solution quality. In fact, it sometimes slowed down the search, so this heuristic was dropped. Furthermore, Fux's advice that the voices should start far apart in order to progress in the opposite direction is only true if the bottom layer moves up. If the bottom stratum moves down, the top strata should move up, so starting far apart becomes a compositional disadvantage in this case (as the voices are limited by their range).
+The rule~\ref{rule:start-distant} states that the voices should start distant, and as suggested in the section on rules, this should be implemented in a heuristic. However, when we implemented the heuristic that all voices should start distant from the lowest one, we did not see any improvement, neither in search speed nor in solution quality. In fact, it sometimes slowed down the search, so this heuristic was dropped. Furthermore, Fux's advice that the voices should start far apart in order to progress in the opposite direction is only true if the bottom layer moves up. If the bottom stratum moves down, the top strata should move up, so starting far apart becomes a compositional disadvantage in this case (as the voices are limited by their range).
 
 
 
@@ -45,7 +45,7 @@ It is worth noting that the solver's greatest difficulty (in all cases) is findi
 
 
 \section{Designing the costs of the solver to be as faithful as possible to the preferences of Fux} \label{costs}
-A constraint solver cannot say whether one valid solution is better than another valid solution, and yet we need it to produce the best possible musical solution. We can already say that one solution is better than another if it respects Fux's preferences (see \ref{subsection:preferences-vs-hard-rules}) more. In order for the solver to understand these preferences and to be able to distinguish the musical quality of two solutions, we give costs to it.  The lower the cost, the higher the preference.
+A constraint solver cannot say whether one valid solution is better than another valid solution, and yet we need it to produce the best possible musical solution. We can already say that one solution is better than another if it respects Fux's preferences (see~\ref{subsection:preferences-vs-hard-rules}) more. In order for the solver to understand these preferences and to be able to distinguish the musical quality of two solutions, we give costs to it.  The lower the cost, the higher the preference.
 
 Knowing that we are looking for the solution whose cost must be as low as possible, the question arises: how can we calculate the cost in order to best reflect the preferences expressed in \gap?
 
@@ -59,7 +59,7 @@ Three main ways of doing this have been identified. These are, in order from the
 \end{enumerate}
 We first describe each of these techniques and their respective advantages, and then compare them (and the results they produce).
 
-Throughout this section we talk about some specific costs. All these costs are listed in \ref{fig:default-order-lexico} with a short explanation. Some more details can be found in \ref{appendix:interface-parameters-description}, and for the full description of a specific cost, please refer to its corresponding rule. 
+Throughout this section we talk about some specific costs. All these costs are listed in~\ref{fig:default-order-lexico} with a short explanation. Some more details can be found in~\ref{appendix:interface-parameters-description}, and for the full description of a specific cost, please refer to its corresponding rule. 
 
 
 \subsection{Linear Combination}
@@ -69,14 +69,14 @@ The first method of calculating our costs is a linear combination. This is the t
 
 
 
-To be more precise about the method used to calculate the total cost in T. Wafflard's thesis, here is a more detailed explanation: there exists a total cost, $\tau$, which is equal to the sum of all individual costs, $\mathcal{C}$. The next step is to minimise $\tau$. Each $\mathcal{C}_i$ is usually itself a sum of sub-costs. Take, for example, the cost of motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. This cost is the sum of all sub-costs of the motions (one per motion): by default, a contrary motion has a sub-cost of 0, an oblique motion has a sub-cost of 1 and a direct motion has a sub-cost of 2. These default values can be changed by the user to be set somewhere on a scale that ranges from $0$ to $64m$. For example, the user could set the oblique motion cost to be equal to $0$, and the cost for direct and contrary motion to be equal to $64m$, in order to get a composition filled with as many oblique motions as possible (always in accordance with the basic rules from \gap, i.e. all voices are never going to go in the same direction, see \ref{rule:same-movement}).
+To be more precise about the method used to calculate the total cost in T. Wafflard's thesis, here is a more detailed explanation: there exists a total cost, $\tau$, which is equal to the sum of all individual costs, $\mathcal{C}$. The next step is to minimise $\tau$. Each $\mathcal{C}_i$ is usually itself a sum of sub-costs. Take, for example, the cost of motions, $\mathcal{C}_{motions} = \sum_j P_{costs}[j] $. This cost is the sum of all sub-costs of the motions (one per motion): by default, a contrary motion has a sub-cost of 0, an oblique motion has a sub-cost of 1 and a direct motion has a sub-cost of 2. These default values can be changed by the user to be set somewhere on a scale that ranges from $0$ to $64m$. For example, the user could set the oblique motion cost to be equal to $0$, and the cost for direct and contrary motion to be equal to $64m$, in order to get a composition filled with as many oblique motions as possible (always in accordance with the basic rules from \gap, i.e. all voices are never going to go in the same direction, see~\ref{rule:same-movement}).
 
 As mentioned at the beginning of this subsection, this procedure can be understood as a linear combination with weights of one only. However, since the cost factors are given different values according to the user's choices, this method is actually more like a regular linear combination, except that the weights are not multiplied by the costs once the latter have been set, but the costs are themselves made larger or smaller before the linear combination is calculated.
 
 The linear combination has two major advantages: ease of implementation and high comprehensibility.
 
 
-However, it has a major drawback: since the total cost $\tau$ we are minimising in a linear combination is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure \ref{fig:outstanding-cost}.
+However, it has a major drawback: since the total cost $\tau$ we are minimising in a linear combination is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure~\ref{fig:outstanding-cost}.
 
 \begin{figure}[h]
     \centering
@@ -136,7 +136,7 @@ And in this way we can keep integrating the different costs until we get a full 
 Of course, it is not always as simple as in the examples above, because it is not always easy to determine which cost has priority over which other. Sometimes Fux is very clear about it (e.g. for the harmonic triad cost, which Fux says has priority over everything else), and sometimes he isn't (do we prefer no off-key notes, or as much variety as possible?) This is a drawback of this method, because we have to hierarchise the costs, even if the choice is difficult. What's more, once the costs are ranked, their order becomes absolute and the solver loses some of its flexibility.
 
 
-Knowing this, we came up with a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion\footnote{Please have a look at Appendix \ref{chapter:user-guide} to see how the composer can personalise the order.}. The default order we have agreed upon is as follows. Please note that where a cost is followed by a number in brackets, this means that it only applies if the corresponding species is used.
+Knowing this, we came up with a suggested order that should be as close as possible to Fux's preferred order (or at least what we understood him to convey as his preferred order in \gap). This order should of course be changeable at the composer's discretion\footnote{Please have a look at Appendix~\ref{chapter:user-guide} to see how the composer can personalise the order.}. The default order we have agreed upon is as follows. Please note that where a cost is followed by a number in brackets, this means that it only applies if the corresponding species is used.
 \begin{multicols}{2}
     \begin{enumerate}\label{fig:default-order-lexico}
         \item $\mathcal{C}_\text{no\_syncope}$\footnote{The cost of not using a syncope.} [4, 5] 
@@ -158,7 +158,7 @@ Knowing this, we came up with a suggested order that should be as close as possi
 
 Some notes on the proposed order: 
 \begin{itemize}
-    \item Two costs come even before the harmonic triad cost: the $\mathcal{C}_\text{no\_syncope}$ cost and the $\mathcal{C}_\text{successive\_p\_cons}$ cost. Regarding the $\mathcal{C}_\text{no\_syncope}$ cost: this cost is at the heart of the fourth species, and a fourth species counterpoint without syncopations is not really a fourth species counterpoint. This is why syncopation is considered even more important than the harmonic triad. And concerning the $\mathcal{C}_\text{successive\_p\_cons}$ cost: when Fux expresses his preference for the harmonic triad, he says that there are reasons that are even more important (see rule \ref{rule:harmonic-triad}), and not having successive perfect consonances is one of them.
+    \item Two costs come even before the harmonic triad cost: the $\mathcal{C}_\text{no\_syncope}$ cost and the $\mathcal{C}_\text{successive\_p\_cons}$ cost. Regarding the $\mathcal{C}_\text{no\_syncope}$ cost: this cost is at the heart of the fourth species, and a fourth species counterpoint without syncopations is not really a fourth species counterpoint. This is why syncopation is considered even more important than the harmonic triad. And concerning the $\mathcal{C}_\text{successive\_p\_cons}$ cost: when Fux expresses his preference for the harmonic triad, he says that there are reasons that are even more important (see rule~\ref{rule:harmonic-triad}), and not having successive perfect consonances is one of them.
     \item The cost of $\mathcal{C}_\text{penult\_thesis\_is\_fifth}$ comes before the cost of $\mathcal{C}_\text{fifths}$, as it is an exception to the latter (similar to the interaction explained above in the section between $\mathcal{C}_\text{harmonic\_triad}$ and $\mathcal{C}_\text{fifths})$.
     
     \item $\mathcal{C}_\text{off\_key}$ was added to its ranking because it is actually an absolute rule not to use off-key notes, but Fux does use some, and so it was decided to put this cost after the very important costs to allow off-key notes to happen.
@@ -174,7 +174,7 @@ Some notes on the proposed order:
 
 \subsection{Comparison between the three types of costs.}
 
-We have now discussed the advantages and disadvantages of each of the three methods. These are all listed in Table \ref{tab:comparison}. As you can see, no one method is definitively better than another, and the only way to know which method is better in practice is to \textit{test} them in practice to find out which of the methods gives the best results. 
+We have now discussed the advantages and disadvantages of each of the three methods. These are all listed in Table~\ref{tab:comparison}. As you can see, no one method is definitively better than another, and the only way to know which method is better in practice is to \textit{test} them in practice to find out which of the methods gives the best results. 
 \newpage
 \begin{center}
     \centering
@@ -205,7 +205,7 @@ We have now discussed the advantages and disadvantages of each of the three meth
 Even more, one could think about a combination of all the methods to get rid of their disadvantages. In fact, we could enjoy the advantages of all the methods by combining them and cleverly designing a lexicographic order search in which the cost is a linear combination of a maximum minimisation.
 
 \subsection{Experimenting with the three types of costs arrangements}
-To experiment which method gives the best results, we will follow this plan: first compare the result of a linear combination and the result of a purely lexicographic order, using the default preference order as defined in \ref{section:lexicographic-order}. We then analyse the result by looking at what could have been done to manage costs more effectively and, where appropriate, group costs together.
+To experiment which method gives the best results, we will follow this plan: first compare the result of a linear combination and the result of a purely lexicographic order, using the default preference order as defined in~\ref{section:lexicographic-order}. We then analyse the result by looking at what could have been done to manage costs more effectively and, where appropriate, group costs together.
 
 
 These experiments are carried out using two different counterpoint combination setups. These setups will increase in complexity, starting with the basic case of 3-voice counterpoint (two counterpoints of the 1st species) and moving on to mixed counterpoints. 
@@ -231,7 +231,7 @@ The selected \textit{cantus firmi} were chosen from \gap. If the search time exc
 \end{figure}
 
 % above very far above
-Here are the first two results: \ref{fig:combili-1sp} and \ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions, except that the second is perhaps a tad more vibrant. The linear combination solution feels like chords that follow one another without any discernible link between them, whereas the solution with the lexicographic order offers a solution that seems to hold together better over time. What's more, the linear combination solution contains a few dissonances that are not so pleasing to the ear.
+Here are the first two results:~\ref{fig:combili-1sp} and~\ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions, except that the second is perhaps a tad more vibrant. The linear combination solution feels like chords that follow one another without any discernible link between them, whereas the solution with the lexicographic order offers a solution that seems to hold together better over time. What's more, the linear combination solution contains a few dissonances that are not so pleasing to the ear.
 
 In more technical terms, the two solutions are fairly similar, and both feature the same number of harmonic triads, i.e. one, which is a really small number given the eleven measures of the composition. The lexicographic solution is composed of four direct motions, whereas the linear combination solution only is composed of only three. However, the solution does not suffer from any particular redundancy to the ear, as you do not get the impression of hearing the same melody three times. The lexicographic composition gives a more melodic impression than the composition by linear combination.
 
@@ -250,7 +250,7 @@ In more technical terms, the two solutions are fairly similar, and both feature 
 \end{figure}
 
 % below far above
-Let's look at the second result (obtained with a different \cf), featured in figures \ref{fig:combili-1sp0} and \ref{fig:lexico-1sp0}. Once again, there's no major difference between the two solutions, although once again the linear combination solution seems to lack a melodic direction. The dissonances are more numerous and once again it feels like a series of unrelated chords. In contrast, and perhaps it's a coincidence, but the solution proposed by the lexicographic research seems to tell a dark story.
+Let's look at the second result (obtained with a different \cf), featured in figures~\ref{fig:combili-1sp0} and~\ref{fig:lexico-1sp0}. Once again, there's no major difference between the two solutions, although once again the linear combination solution seems to lack a melodic direction. The dissonances are more numerous and once again it feels like a series of unrelated chords. In contrast, and perhaps it's a coincidence, but the solution proposed by the lexicographic research seems to tell a dark story.
 
 Once again, the technical results are fairly similar: two harmonic triads for the linear combination and three for the lexicographic search. Again, this is surprisingly few, given that there are ten measures in the composition. Both solutions feature four direct motions, but one does not feel a lack of independence of the voices in any of them.
 
@@ -269,7 +269,7 @@ Now what happens when we start to mix the techniques and group some of the costs
     \label{fig:min-sp0}
 \end{figure}
 
-Figures \ref{fig:min-sp} and \ref{fig:min-sp0} show the solutions found by mixing the techniques of lexicographic order and maximum minimisation.
+Figures~\ref{fig:min-sp} and~\ref{fig:min-sp0} show the solutions found by mixing the techniques of lexicographic order and maximum minimisation.
 
 Both solutions handle the ending strangely, but this may be a coincidence, as there is no cost that would obviously cause such an ending.
 
@@ -279,7 +279,7 @@ It would be too bold to say that there is a big difference between the results o
 The good news, however, is that the result, far from being excellent, is different. This means that a composer can set up the tool as they wish and get different results from one setup to another. They might start with the default settings and then change one parameter after another until they find what suits them best. This is really good news, because it means that the solution is not too limited to a few possibilities, but that once a valid solution has been found, there is still too much room for personalisation!
 
 
-Note that the predicted bottleneck effect from section \ref{section:minimising-the-maxima} was indeed observed in both searches, as the solution stopped improving after only ten seconds of search. After these ten seconds, the solver stopped finding better solutions because the third cost level (the one whose maximum was minimised) had already reached its minimum maximum, and so the solver could not distinguish between two solutions if they had the same maximum, since this search technique doesn't allow it. Please refer to figure \ref{fig:bottleneck} for a better understanding of the situation.
+Note that the predicted bottleneck effect from section~\ref{section:minimising-the-maxima} was indeed observed in both searches, as the solution stopped improving after only ten seconds of search. After these ten seconds, the solver stopped finding better solutions because the third cost level (the one whose maximum was minimised) had already reached its minimum maximum, and so the solver could not distinguish between two solutions if they had the same maximum, since this search technique doesn't allow it. Please refer to figure~\ref{fig:bottleneck} for a better understanding of the situation.
 
 The following can be concluded from these initial experiments
 \begin{enumerate}
@@ -304,7 +304,7 @@ If we now go on, here is a result combining the first and the fourth species, an
     \caption{Result 3 of the lexicographic search method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
     \label{fig:lexico-4sp}
 \end{figure}
-Looking at the results obtained with this setup (figures \ref{fig:combili-4sp} and \ref{fig:lexico-4sp}), we come to the same conclusions as in the previous experiment. 
+Looking at the results obtained with this setup (figures~\ref{fig:combili-4sp} and~\ref{fig:lexico-4sp}), we come to the same conclusions as in the previous experiment. 
 In both cases, the melody is a little dull and lacks dynamism. There is no drastic change in quality between the solutions provided by the two search techniques. However, the solution provided by the lexicographic search is somewhat more exciting, since there is more tension in it and it uses more dissonances and resolvings than the linear combination (even if these resolvings are not the most brilliant).
 
 We immediately notice something else with the 4th species on the bass, which is not related to the costs: there are a few dissonances on the downbeat, as the solver doesn't really take into account the harmonic interaction between the notes of the downbeat of the fourth species and the notes of the downbeat of the other species, but rather the harmonic interaction between the upbeat of the fourth species and the downbeat of the others: which leads to a few surprises, as we can see in these examples (that tension mentioned above).
@@ -342,7 +342,7 @@ The fourth experiment is a bit special, as it features two fifth counterpoints \
 
 In this experiment, it is interesting to observe how the solver manages the small margin of manoeuvre it has, given that it has to find two counterpoints in the same voice range, all when the counterpoints are forbidden to take the same value (i.e. the same pitch).
 
-The search was run for two minutes instead of thirty seconds, as the fifth species counterpoint is more complex than the others, and a little more time is needed to let the costs have an effect on the solution. The solutions are those in figures \ref{fig:combili-5sp} and \ref{fig:combili-5sp}.
+The search was run for two minutes instead of thirty seconds, as the fifth species counterpoint is more complex than the others, and a little more time is needed to let the costs have an effect on the solution. The solutions are those in figures~\ref{fig:combili-5sp} and~\ref{fig:combili-5sp}.
 
 \begin{figure}[h]
     \centering
@@ -360,7 +360,7 @@ The search was run for two minutes instead of thirty seconds, as the fifth speci
 
 Just as for the second experiment, some interesting things happen in the composition found by the lexicographic search. The intervals are more beautiful and the fact that there are dissonances that sometimes resolve gives more meaning to what's going on.
 
-On the other hand, the fact that the penultimate note of the middle voice resolves on a G instead of a C is a bit frustrating, as the final chord feels like it is not a real ending, but this is a recurring problem in all solutions. The reason for this is probably that there is a rule (rule \ref{rule:prefer-fifths-over-octaves}) that makes the solver prefer fifths to octaves, and there is no mention from Fux of deviating from this rule for the last measure.
+On the other hand, the fact that the penultimate note of the middle voice resolves on a G instead of a C is a bit frustrating, as the final chord feels like it is not a real ending, but this is a recurring problem in all solutions. The reason for this is probably that there is a rule (rule~\ref{rule:prefer-fifths-over-octaves}) that makes the solver prefer fifths to octaves, and there is no mention from Fux of deviating from this rule for the last measure.
 
 \textit{However}, the solver did a surprisingly good job of finding passable solutions with such a small search field. The solutions obtained are far from high art, but you can see the musical intuition behind them.
 
@@ -368,4 +368,4 @@ On the other hand, the fact that the penultimate note of the middle voice resolv
 As we have stressed several times in this chapter, there is probably no \textit{best} way of ordering costs. Each technique has its shortcomings, and it is probably by allowing the composer to order their costs as they see fit that the tool will be able to reveal its full potential. 
 
 Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
-The best compromise that has been found is therefore to give the composer as much choice as possible, by offering them the three possibilities, as well as the combination between the lexicographical order and the other two techniques. This allows the composer to compose their counterpoint iteratively: they make a first attempt that doesn't work well, adjust the costs to direct the search, and so on, until they gets the result that suits them best. In practice, this leads to the user interface described in Appendix \ref{chapter:used-guide}.
+The best compromise that has been found is therefore to give the composer as much choice as possible, by offering them the three possibilities, as well as the combination between the lexicographical order and the other two techniques. This allows the composer to compose their counterpoint iteratively: they make a first attempt that doesn't work well, adjust the costs to direct the search, and so on, until they gets the result that suits them best. In practice, this leads to the user interface described in Appendix~\ref{chapter:used-guide}.

@@ -17,7 +17,7 @@ As for the strata, they are defined like this: a stratum delineates discrete lay
 This concept is very helpful in identifying and categorising the vertical placement of pitches, creating distinct categories of sound within the overall texture of the counterpoint composition. It provides a way of analysing and understanding the distribution of pitches across different parts, allowing more complex rules to be established: for example, it would now be possible to establish a rule between the notes of the cantus firmus and the highest sounding notes (no matter which part they come from). The full potential of strata lies in harmonic rules, but as we shall see, some melodic rules are also related to it.
 
 \begin{minipage}{0.6\textwidth}
-    The term stratum was chosen in this context for its visual impact. In geology, a stratum "is a rock layer with a lithology (texture, colour, grain size, composition, fossils, etc.) different from the adjacent ones", see figure \ref{fig:geological-strata}.
+    The term stratum was chosen in this context for its visual impact. In geology, a stratum "is a rock layer with a lithology (texture, colour, grain size, composition, fossils, etc.) different from the adjacent ones", see figure~\ref{fig:geological-strata}.
     \end{minipage}
     \hfill
     \begin{minipage}{0.3\textwidth}
@@ -33,7 +33,7 @@ When Fux speaks about the lowest stratum, he often uses the word 'bass'. It was 
 \paragraph{}
 These new terms (parts and strata) are used where the distinction between the concepts is important. Whenever this distinction is not relevant, the more general term 'voice' is used to reduce the complexity of reading. In this case, the 'voice' could refer to both a stratum and a part.
 
-Since a picture is worth a thousand words, Figure \ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningful stratum, and it is particularly important in the formalisation.
+Since a picture is worth a thousand words, Figure~\ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningful stratum, and it is particularly important in the formalisation.
 
 \begin{figure}[h]
   \centering
@@ -43,18 +43,18 @@ Since a picture is worth a thousand words, Figure \ref{fig:lowest} illustrates t
 \end{figure}
 
 
-Here is also the mathematical representation for the notes of the lowest stratum (written $N(a)$, see section \ref{section:changes induced} for the notations):
+Here is also the mathematical representation for the notes of the lowest stratum (written $N(a)$, see section~\ref{section:changes induced} for the notations):
 % todo a, b, c, et A
 \begin{equation}
     \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{min} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
-Of the first upper stratum, or medium stratum (written $N(b)$, see section \ref{section:changes induced} for the notations):
+Of the first upper stratum, or medium stratum (written $N(b)$, see section~\ref{section:changes induced} for the notations):
 \begin{equation}
     \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(b)[i,j] = \text{med}\footnote{Where $\text{med}(X)$ means the median value of X.} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
-And of the second upper stratum, or uppermost stratum (written $N(c)$, see section \ref{section:changes induced} for the notations):
+And of the second upper stratum, or uppermost stratum (written $N(c)$, see section~\ref{section:changes induced} for the notations):
 \begin{equation}
     \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(c)[i,j] = \text{max} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
@@ -62,7 +62,7 @@ And of the second upper stratum, or uppermost stratum (written $N(c)$, see secti
 \subsubsection{One part per stratum and one stratum per part} \label{subsubsection:one-part-per-stratum}
 It is important to note that, for each musical measure, there is a bijection between the individual parts and the corresponding strata. This means that, for any given measure, each stratum uniquely corresponds to a single part, and vice versa. Put differently, if two parts within a measure share the same pitch, they do not constitute the same stratum. Instead, one part corresponds with one stratum, and the other one to a separate stratum.
 
-To illustrate this, consider a scenario in a two-voice composition (see figure \ref{fig:one-voice-max-can-be-a}), where part 'cf' and part 'cp1' in measure X both have a pitch value of 67 (representing a G). Despite having identical pitches at the same moment, one part is categorised as the lowest stratum, while the other is designated as the uppermost stratum. This distinction becomes crucial for subsequent analysis, especially when calculating aspects like motions.
+To illustrate this, consider a scenario in a two-voice composition (see figure~\ref{fig:one-voice-max-can-be-a}), where part 'cf' and part 'cp1' in measure X both have a pitch value of 67 (representing a G). Despite having identical pitches at the same moment, one part is categorised as the lowest stratum, while the other is designated as the uppermost stratum. This distinction becomes crucial for subsequent analysis, especially when calculating aspects like motions.
 
 To know which part gets to be the lowest stratum in such situations, an arbitrary hierarchical rule is implemented. If the ambivalence is between the \cfs and another part, the \cfs is always prioritised and assigned the role of the lowest stratum, over any other part. In the case of a ambivalence between the first \cp and the second \cp, the first \cps is given the status of the lowest stratum. 
 
@@ -103,7 +103,7 @@ In summary, the constraints are as follows:
 \subsubsection{Generalisation of two-voice counterpoint}
 One might be tempted to conclude that three-part composition breaks completely with two-part composition, but that would be too hasty a conclusion. Indeed, on closer inspection, the way the rules worked in two-part composition (from counterpoint to \textit{cantus firmus}) is just one particular case of this new vision of things. In two-part composition, too, the rules apply between the parts and the lowest stratum. But of course, since there were only two voices, the lowest stratum was either counterpoint or cantus firmus. This means that when links were established between the upper part and the lowest stratum, links were also established between the counterpoint and the cantus firmus. Considering the rules as being established between the counterpoint and the \cfs was just a simplification of reality, although it was perfectly correct. We were therefore considering a convenient particular case, and not the general case. Please note that when we talk about "applying constraints from voice A to voice B", it is clear that the constraints are bidirectional and that they also apply from voice B to voice A. What is shown here is rather the philosophy behind the application of these constraints, and the reasons why they were imposed.
 
-The particular case happening when composing with two parts is illustrated in figures \ref{fig:cp2cf-2v} and \ref{fig:p2l-2v}. As we can see on those pseudo-compositions, it does not change anything to apply the constraints between the counterpoints and the \cfs or between the parts and the lowest stratum.
+The particular case happening when composing with two parts is illustrated in figures~\ref{fig:cp2cf-2v} and~\ref{fig:p2l-2v}. As we can see on those pseudo-compositions, it does not change anything to apply the constraints between the counterpoints and the \cfs or between the parts and the lowest stratum.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
@@ -121,7 +121,7 @@ The particular case happening when composing with two parts is illustrated in fi
 \end{minipage}
 \vspace{.5cm}
 
-However, when it comes to generalising the composition of counterpoint for three voices, the same simplification is no longer possible. We are now forced to establish our rules between the parts and the lowest stratum, and no longer between the counterpoints and the \cf. In figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v} it becomes clear that establishing the rules between the counterpoints and the \cfs is really different from applying them between the various parts to the lowest stratum. In these figures, the parts don't intersect and therefore fit perfectly with the strata, so the constraints are always applied to the same counterpoint. This was done for the sake of intelligibility of the graphs, but it is of course possible for the parts to cross and for the "target" of the constraints not always to be the same counterpoint.
+However, when it comes to generalising the composition of counterpoint for three voices, the same simplification is no longer possible. We are now forced to establish our rules between the parts and the lowest stratum, and no longer between the counterpoints and the \cf. In figures~\ref{fig:cp2cf-3v} and~\ref{fig:p2l-3v} it becomes clear that establishing the rules between the counterpoints and the \cfs is really different from applying them between the various parts to the lowest stratum. In these figures, the parts don't intersect and therefore fit perfectly with the strata, so the constraints are always applied to the same counterpoint. This was done for the sake of intelligibility of the graphs, but it is of course possible for the parts to cross and for the "target" of the constraints not always to be the same counterpoint.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
@@ -139,10 +139,10 @@ However, when it comes to generalising the composition of counterpoint for three
 \end{minipage}
 \vspace{.5cm}
 
-It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures \ref{fig:cp2cf-3v} and \ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
+It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures~\ref{fig:cp2cf-3v} and~\ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
 
 \paragraph{}
-A very important detail, and perhaps the biggest change brought about by this paradigm shift, is the following. Previously, we applied constraints between the counterpoints and the \cf, which guaranteed that the \cfs was taken into account in the constraints. But if we now apply the constraints between the counterpoints and the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints, for example if the \cfs is not the lowest stratum. Nevertheless, it is important that the relationship between the \cfs and the lowest stratum is \textit{also} taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as the variety cost (see \ref{rule:variety}).
+A very important detail, and perhaps the biggest change brought about by this paradigm shift, is the following. Previously, we applied constraints between the counterpoints and the \cf, which guaranteed that the \cfs was taken into account in the constraints. But if we now apply the constraints between the counterpoints and the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints, for example if the \cfs is not the lowest stratum. Nevertheless, it is important that the relationship between the \cfs and the lowest stratum is \textit{also} taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as the variety cost (see~\ref{rule:variety}).
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
@@ -170,7 +170,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \paragraph{}
 \noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. If no formal definition or redefinition is mentioned in this work, it means that the applicable definition is the one given in T. Wafflard's thesis.}:
 \begin{itemize}
-    \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis (an explanation of the renaming can be found in the corresponding section (section \ref{subsection:modified_variables})).
+    \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis (an explanation of the renaming can be found in the corresponding section (section~\ref{subsection:modified_variables})).
     \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs to arguments to be meaningful.
     \item \textbf{M}(v) - the melodic intervals of the voice v, 
     \item \textbf{P}(v) - the motions of the voice v, 
@@ -220,7 +220,7 @@ Set representing all consonances that belong to the harmonic triad
 % expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
 
 A is an array of boolean variables with a size of $m$, where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(v)$ is true if v is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
-It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well. See \ref{subsubsection:one-part-per-stratum} for the details.
+It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well. See~\ref{subsubsection:one-part-per-stratum} for the details.
 
 Here is the mathematical definition of the A array:
 \begin{equation}
@@ -261,7 +261,7 @@ species(v) = 0 \iff v = cf
 Since of the rules now apply between parts and the lowest stratum, the meaning of the variables has been modified to reflect this reality. Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same meaning", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
 
 \paragraph{Nota bene}
-Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix \ref{appendix:complete-set-of-rule}) are compatible with the new definitions of the variables, as discussed in \ref{exploring-interaction-p-a}. 
+Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are compatible with the new definitions of the variables, as discussed in~\ref{exploring-interaction-p-a}. 
 
 \vspace{.5cm} \noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
 
@@ -291,7 +291,7 @@ The variable M represents the melodic intervals of a voice. It can either be eva
 Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that strata are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
 
 \paragraph{}
-To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. If the lowest stratum consists of the notes [C$_{cp_1}$, E$_{cf}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation \ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
+To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. If the lowest stratum consists of the notes [C$_{cp_1}$, E$_{cf}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
 
 
 \begin{equation}
@@ -324,7 +324,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
     \end{aligned}
 \end{equation}
 
-\noindent It might be helpful to have a look at figures \ref{fig:stratum-m-intervals-1} and \ref{fig:stratum-m-intervals-2} to understand better how the melodic intervals arrays for the lowest stratum.
+\noindent It might be helpful to have a look at figures~\ref{fig:stratum-m-intervals-1} and~\ref{fig:stratum-m-intervals-2} to understand better how the melodic intervals arrays for the lowest stratum.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
@@ -341,14 +341,14 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
       \label{fig:stratum-m-intervals-2}
 \end{minipage}
 
-As can be seen in figures \ref{fig:stratum-m-intervals-1} and \ref{fig:stratum-m-intervals-2}, the melodic intervals of the lowest stratum are those that lead to the notes of the lowest stratum.
+As can be seen in figures~\ref{fig:stratum-m-intervals-1} and~\ref{fig:stratum-m-intervals-2}, the melodic intervals of the lowest stratum are those that lead to the notes of the lowest stratum.
 
 
 \vspace{.5cm}
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
 The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a voice v with respect to the lowest stratum. The change from the previous work (where the motions array represented the motions with respect to the \cf) was made since Fux considers that the motions should be considered between each voice and the lowest voice. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
-However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section \ref{is-lowest}). 
+However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section~\ref{is-lowest}). 
 
 \begin{equation}
 \begin{aligned}
@@ -372,7 +372,7 @@ However, a problem arises when computing the motions of the part that is also th
 \label{eq:motions}
 \end{equation}
 
-This equation \ref{eq:motions} may seem daunting, but it's actually very simple (just a little verbose).
+This equation~\ref{eq:motions} may seem daunting, but it's actually very simple (just a little verbose).
 It works like this: 
 
 For each beat in the composition:
