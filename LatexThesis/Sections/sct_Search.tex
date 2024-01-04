@@ -37,7 +37,6 @@ In general, the solver is able to find a valid solution fairly quickly (in the o
 \begin{itemize}
     \item \textbf{Species of the counterpoint} \textendash{} The more complex the species of the counterpoints (think of the 3rd and 5th species, for example), the longer it will probably take the solver to find a solution. The reason is quite obvious: the more complex the species, the more variables the solver has to play with and the greater the range of possibilities.  
     \item \textbf{Distance between the voice ranges} \textendash{}  The closer the ranges of the voices, the greater the risk that the solver will take a long time to find a solution. For example, finding a solution by giving the two counterpoints the same voice range as the \cfs is more time-consuming than selecting distant voice ranges. This is because the voices cannot form a unison, and the possibilities for each voice are therefore smaller when their range is close together. 
-    \item \textbf{Key of the \cf} \textendash{} The solver finds it much easier to find a counterpoint when the key is C, probably because counterpoints are played with as many natural notes as possible (no flats or sharps), and in the case of C this corresponds to the Ionian mode (also known as the C mode). When using the key of X, the further away the X mode is from the C mode, the more difficult it will be for the counterpoint. For example, take a composition in E: the E (Phrygian) mode is far from the C (Ionian) mode, whereas the G (Myxolydian) mode is quite close. The solver will therefore find it slightly more difficult to find a solution in E than in G, which in turn will be more complicated than in C.
 \end{itemize}
 There are also cases where the exact combination of two given vocal ranges for two given species with a given mode does not give a solution, but by changing the vocal range a little the solver finds a solution immediately, quite surprisingly. It is still unclear why some given combinations do not produce solutions. Our best guess is that there are some combinations of parameters for which the solver has difficulty finding a solution, given the very large number of constraints that apply to the voices. However, this doesn't happen very often.
 
@@ -73,12 +72,11 @@ To be more precise about the method used to calculate the total cost in T. Waffl
 
 As mentioned at the beginning of this subsection, this procedure can be understood as a linear combination with weights of one only. However, since the cost factors are given different values according to the user's choices, this method is actually more like a regular linear combination, except that the weights are not multiplied by the costs once the latter have been set, but the costs are themselves made larger or smaller before the linear combination is calculated.
 
+\paragraph{}
 The linear combination has two major advantages: ease of implementation and high comprehensibility.
-
-
 However, it has a major drawback: since the total cost $\tau$ we are minimising in a linear combination is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure~\ref{fig:outstanding-cost}.
 
-\begin{figure}[h]
+\begin{figure}[h!]
     \centering
     \includegraphics[width=1\textwidth]{Images/outstanding-costs.png}
     \caption{Example of a situation where a solution with an outstanding cost is preferred to a solution with equivalent low costs when using a linear combination}
@@ -124,7 +122,7 @@ A second example, which ties in particularly well with the first, is that Fux te
 \begin{figure}[h]
     \begin{equation}
         \begin{aligned}
-            \tau = [& \underset{\text{\fontsize{7}{11}\selectfont{minimize this first}}}{\underbrace{\mathcal{C}_\text{harmonic\_triad}}}, \underset{\text{\fontsize{7}{11}\selectfont\parbox{4cm}{and start minimizing this only if it is not possible anymore to minimize the harmonic triad cost}}}{\underbrace{\mathcal{C}_\text{octaves}}},\quad  \mathcal{C}_\text{fifths}]
+            \tau = [& \underset{\text{\fontsize{7}{11}\selectfont{minimise this first}}}{\underbrace{\mathcal{C}_\text{harmonic\_triad}}}, \underset{\text{\fontsize{7}{11}\selectfont\parbox{4cm}{and start minimizing this only if it is not possible anymore to minimise the harmonic triad cost}}}{\underbrace{\mathcal{C}_\text{octaves}}},\quad  \mathcal{C}_\text{fifths}]
         \end{aligned}
     \end{equation}
     \caption{Array of costs demonstrating the practicality of a lexicographic order solving.}
@@ -204,108 +202,86 @@ We have now discussed the advantages and disadvantages of each of the three meth
 
 Even more, one could think about a combination of all the methods to get rid of their disadvantages. In fact, we could enjoy the advantages of all the methods by combining them and cleverly designing a lexicographic order search in which the cost is a linear combination of a maximum minimisation.
 
-\subsection{Experimenting with the three types of costs arrangements}
+\section{Experimenting with the three types of costs arrangement}
 To experiment which method gives the best results, we will follow this plan: first compare the result of a linear combination and the result of a purely lexicographic order, using the default preference order as defined in~\ref{section:lexicographic-order}. We then analyse the result by looking at what could have been done to manage costs more effectively and, where appropriate, group costs together.
 
-
-These experiments are carried out using two different counterpoint combination setups. These setups will increase in complexity, starting with the basic case of 3-voice counterpoint (two counterpoints of the 1st species) and moving on to mixed counterpoints. 
+These experiments are carried out using different counterpoint combination setups. These setups will increase in complexity, starting with the basic case of 3-voice counterpoint (two counterpoints of the 1st species) and moving on to mixed counterpoints. 
 
 The advantage of simple species (first, second and fourth species) is that the search for a solution is much faster. In fact, the search for an optimal solution can be quite time-consuming, and this is even more the case when we are talking about complex species such as the third and the fifth, and when they are combined. This means that it is more difficult to grasp the impact of the cost method when using a setup with complex species. What's more, the vast majority of the costs are related to the interaction of the voices in the first beat of the measures: the behaviour we want to observe, i.e. the interaction between the cost method and the resulting composition, will be just as observable with complex species as with simple ones. Having said that, we are still going to test the cost arrangement methods on all species.
 
 The analyses in this section are superficial and do not deal with in-depth music theory. They will consist of general surface and impression remarks. They are highly subjective and should not be taken at face value. The aim of this analysis is to provide an initial critical view of the results offered by the solver.
 
-The selected \textit{cantus firmi} were chosen from \gap. If the search time exceeds 30 seconds, the search is stopped and the current solution is analysed.
+The selected \textit{cantus firmi} were chosen from \gap. 
+\subsection{Comparing the linear combination and the lexicographic order in practice}
 \subsubsection{First experiment: two first-species counterpoints on two different \textit{cantus firmi}}
+For this first experiment, if the search time exceeds 30 seconds, the search is stopped and the current solution is analysed.
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-1sp.png}
-    \caption{Result 1 of the linear combination method with default costs. Click \href{https://example.com/}{here} to listen.}
+    \caption{Result 1 of the linear combination method with default costs. Click \href{https://youtu.be/w7EQ3b8JHnM}{here} to listen.}
     \label{fig:combili-1sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp.png}
-    \caption{Result 1 of the lexicographic search method with default costs. Click \href{https://youtu.be/wh1bXyVt5LI}{here} to listen.}
+    \caption{Result 1 of the lexicographic search method with default costs. Click \href{https://youtu.be/ryrpi5QNmf0}{here} to listen.}
     \label{fig:lexico-1sp}
 \end{figure}
 
 % above very far above
-Here are the first two results:~\ref{fig:combili-1sp} and~\ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions, except that the second is perhaps a tad more vibrant. The linear combination solution feels like chords that follow one another without any discernible link between them, whereas the solution with the lexicographic order offers a solution that seems to hold together better over time. What's more, the linear combination solution contains a few dissonances that are not so pleasing to the ear.
+Here are the first two results:~\ref{fig:combili-1sp} and~\ref{fig:lexico-1sp}. To the average ear, there's not much difference between these two solutions.
 
-In more technical terms, the two solutions are fairly similar, and both feature the same number of harmonic triads, i.e. one, which is a really small number given the eleven measures of the composition. The lexicographic solution is composed of four direct motions, whereas the linear combination solution only is composed of only three. However, the solution does not suffer from any particular redundancy to the ear, as you do not get the impression of hearing the same melody three times. The lexicographic composition gives a more melodic impression than the composition by linear combination.
+In more technical terms, here are the cost arrays: 
+\begin{itemize}
+    \item for the linear combination: $[2, 20, 0, 3, 4, 6, 4, 14, 0]$, with a total sum of 53,
+    \item for the lexicographical order: $[\underset{\text{succ\_p\_cons}}{\underbrace{0}}, \underset{\text{h\_triad}}{\underbrace{14}}, 0, 3, 0, 10, \underset{\text{motions}}{\underbrace{16}}, 14, \underset{\text{direct\_m\_p\_cons}}{\underbrace{8}}]$, with a total sum of 65.
+\end{itemize}
+
+As we can see, the difference between the two is exactly what we expected: high importance costs are prioritised and low importance costs are neglected in the lexicographic search, while the linear combination tries to minimise everything. A good example of this is the harmonic triads: they are more present in the lexicographic solution than in the linear combination (four versus one). Meanwhile, there are seven direct motions and two oblique motions in the lexicographic solution and only two direct motions in the linear combination solution\footnote{Please remember that the motions are computed with respect to the lowest sounding note.}.
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-1sp0.png}
-    \caption{Result 2 of the linear combination method with default costs. Click \href{https://example.com/}{here} to listen.}
+    \caption{Result 2 of the linear combination method with default costs. Click \href{https://youtu.be/pnwceQyZd9E}{here} to listen.}
     \label{fig:combili-1sp0}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp0.png}
-    \caption{Result 2 of the lexicographic search method with default costs. Click \href{https://youtu.be/FdsxyXVvBTE}{here} to listen.}
+    \caption{Result 2 of the lexicographic search method with default costs. Click \href{https://youtu.be/-twWU-hNcYI}{here} to listen.}
     \label{fig:lexico-1sp0}
 \end{figure}
 
 % below far above
-Let's look at the second result (obtained with a different \cf), featured in figures~\ref{fig:combili-1sp0} and~\ref{fig:lexico-1sp0}. Once again, there's no major difference between the two solutions, although once again the linear combination solution seems to lack a melodic direction. The dissonances are more numerous and once again it feels like a series of unrelated chords. In contrast, and perhaps it's a coincidence, but the solution proposed by the lexicographic research seems to tell a dark story.
+\paragraph{}
+Let's look at the second result (obtained with a different \cf), featured in figures~\ref{fig:combili-1sp0} and~\ref{fig:lexico-1sp0}.
+Once again, the technical results are fairly as one would expect them:
+\begin{itemize}
+    \item for the linear combination: $[0, 20, 4, 0, 4, 12, 11, 8, 8]$, with a total sum of 67,
+    \item for the lexicographical order: $ [0, 16, 0, 2, 4, 8, 10, \underset{\text{melodic\_intervals}}{\underbrace{19}}, 8]$, with a total sum of 67.
+\end{itemize}
+For the average listener, it is difficult to establish an absolute preference between these two solutions.
+We will take this same setting and try to mix the techniques for it in section \ref{subsection:mixing-the-techniques}.
 
-Once again, the technical results are fairly similar: two harmonic triads for the linear combination and three for the lexicographic search. Again, this is surprisingly few, given that there are ten measures in the composition. Both solutions feature four direct motions, but one does not feel a lack of independence of the voices in any of them.
-
-Now what happens when we start to mix the techniques and group some of the costs in the lexicographic order? At each level of the lexicographic order, we calculate the maximum of the costs at that level, which we then try to minimise. All preferences that Fux has not explicitely ordered get packed on the same level, i.e. three levels subsist: the first one, with only the cost for successive perfect consonances, the second one, with only the cost for not using a harmonic triad, and a third one, with all the other costs.
-
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp.png}
-    \caption{Result 1 of a mix between lexicographic and maximum minimisation method. Click \href{https://example.com/}{here} to listen.}
-    \label{fig:min-sp}
-\end{figure} 
-\begin{figure}[h]
-    \centering
-    \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp0.png}
-    \caption{Result 2 of a mix between lexicographic and maximum minimisation method. Click \href{https://youtu.be/GRGE7NN3jNE}{here} to listen.}
-    \label{fig:min-sp0}
-\end{figure}
-
-Figures~\ref{fig:min-sp} and~\ref{fig:min-sp0} show the solutions found by mixing the techniques of lexicographic order and maximum minimisation.
-
-Both solutions handle the ending strangely, but this may be a coincidence, as there is no cost that would obviously cause such an ending.
-
-It would be too bold to say that there is a big difference between the results obtained by this method and those obtained by the others. In other words, to the average ear, the solutions provided by this search technique are not significantly different from those provided by the other search methods.
-
-
-The good news, however, is that the result, far from being excellent, is different. This means that a composer can set up the tool as they wish and get different results from one setup to another. They might start with the default settings and then change one parameter after another until they find what suits them best. This is really good news, because it means that the solution is not too limited to a few possibilities, but that once a valid solution has been found, there is still too much room for personalisation!
-
-
-Note that the predicted bottleneck effect from section~\ref{section:minimising-the-maxima} was indeed observed in both searches, as the solution stopped improving after only ten seconds of search. After these ten seconds, the solver stopped finding better solutions because the third cost level (the one whose maximum was minimised) had already reached its minimum maximum, and so the solver could not distinguish between two solutions if they had the same maximum, since this search technique doesn't allow it. Please refer to figure~\ref{fig:bottleneck} for a better understanding of the situation.
-
-The following can be concluded from these initial experiments
-\begin{enumerate}
-    \item The lexicographic order seems to give results with a stronger sense of coherence: the composition seems to tell a story (to a very limited extent, of course).
-    \item Linear combination gives more dissonant results.
-    \item The three search methods give three different results, so a composer could experiment.
-    \item Our view of the best search method so far is: there is none. The best that can be done is to use a mixture of lexicographic order and maximum minimisation, with personalised orders, to find a counterpoint that the composer will like.
-\end{enumerate}
 \subsubsection{Second experiment: one fourth-species counterpoint and one first-species counterpoint on a single \cf}
 
 If we now go on, here is a result combining the first and the fourth species, and putting the 4th species at the bottom:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-4sp.png}
-    \caption{Result 3 of the linear combination method with default costs. Click \href{https://youtu.be/_VrM76hp1v8}{here} to listen.}
+    \caption{Result 3 of the linear combination method with default costs. Click \href{https://youtu.be/eunaKHOQ2Nk}{here} to listen.}
     \label{fig:combili-4sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-4sp.png}
-    \caption{Result 3 of the lexicographic search method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
+    \caption{Result 3 of the lexicographic search method with default costs. Click \href{https://youtu.be/rh3YdRu62J4}{here} to listen.}
     \label{fig:lexico-4sp}
 \end{figure}
-Looking at the results obtained with this setup (figures~\ref{fig:combili-4sp} and~\ref{fig:lexico-4sp}), we come to the same conclusions as in the previous experiment. 
-In both cases, the melody is a little dull and lacks dynamism. There is no drastic change in quality between the solutions provided by the two search techniques. However, the solution provided by the lexicographic search is somewhat more exciting, since there is more tension in it and it uses more dissonances and resolvings than the linear combination (even if these resolvings are not the most brilliant).
+Looking at the results obtained with this setup (figures~\ref{fig:combili-4sp} and~\ref{fig:lexico-4sp}), we come to the following conclusion: in both cases, the melody is a little dull and lacks dynamism. There is no drastic change in quality between the solutions provided by the two search techniques. However, the solution provided by the lexicographic search is somewhat more exciting, since there is more tension in it and it uses more dissonances and resolvings than the linear combination (even if these resolvings are not the most brilliant).
 
 We immediately notice something else with the 4th species on the bass, which is not related to the costs: there are a few dissonances on the downbeat, as the solver doesn't really take into account the harmonic interaction between the notes of the downbeat of the fourth species and the notes of the downbeat of the other species, but rather the harmonic interaction between the upbeat of the fourth species and the downbeat of the others: which leads to a few surprises, as we can see in these examples (that tension mentioned above).
 
@@ -321,14 +297,14 @@ The results are shown in the figures:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/linear-combination-2sp.png}
-    \caption{Result 4 of the linear combination method with default costs. Click \href{https://youtu.be/eunaKHOQ2Nk}{here} to listen.}
+    \caption{Result 4 of the linear combination method with default costs. Click \href{https://youtu.be/_VrM76hp1v8}{here} to listen.}
     \label{fig:combili-2sp}
 \end{figure}
 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-2sp.png}
-    \caption{Result 4 of the lexicographic search method with default costs. Click \href{https://youtu.be/rh3YdRu62J4}{here} to listen.}
+    \caption{Result 4 of the lexicographic search method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
     \label{fig:lexico-2sp}
 \end{figure}
 
@@ -364,8 +340,38 @@ On the other hand, the fact that the penultimate note of the middle voice resolv
 
 \textit{However}, the solver did a surprisingly good job of finding passable solutions with such a small search field. The solutions obtained are far from high art, but you can see the musical intuition behind them.
 
-\subsection{Conclusion on the search methods}
+\subsection{Mixing the technique of maximum minimisation with lexicographic order}\label{subsection:mixing-the-techniques}
+Now what happens when we start to mix the techniques and group some of the costs in the lexicographic order? At each level of the lexicographic order, we calculate the maximum of the costs at that level, which we then try to minimise. All preferences that Fux has not explicitely ordered get packed on the same level, i.e. three levels subsist: the first one, with only the cost for successive perfect consonances, the second one, with only the cost for not using a harmonic triad, and a third one, with all the other costs.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp.png}
+    \caption{Result 1 of a mix between lexicographic and maximum minimisation method. Click \href{https://example.com/}{here} to listen.}
+    \label{fig:min-sp}
+\end{figure} 
+\begin{figure}[h]
+    \centering
+    \includegraphics[width=1\textwidth]{Images/Experiments/min-1sp0.png}
+    \caption{Result 2 of a mix between lexicographic and maximum minimisation method. Click \href{https://youtu.be/GRGE7NN3jNE}{here} to listen.}
+    \label{fig:min-sp0}
+\end{figure}
+
+Figures~\ref{fig:min-sp} and~\ref{fig:min-sp0} show the solutions found by mixing the techniques of lexicographic order and maximum minimisation.
+
+Both solutions handle the ending strangely, but this may be a coincidence, as there is no cost that would obviously cause such an ending.
+
+It would be too bold to say that there is a big difference between the results obtained by this method and those obtained by the others. In other words, to the average ear, the solutions provided by this search technique are not significantly different from those provided by the other search methods.
+
+
+The good news, however, is that the result, far from being excellent, is different. This means that a composer can set up the tool as they wish and get different results from one setup to another. They might start with the default settings and then change one parameter after another until they find what suits them best. This is really good news, because it means that the solution is not too limited to a few possibilities, but that once a valid solution has been found, there is still too much room for personalisation!
+
+
+Note that the predicted bottleneck effect from section~\ref{section:minimising-the-maxima} was indeed observed in both searches, as the solution stopped improving after only ten seconds of search. After these ten seconds, the solver stopped finding better solutions because the third cost level (the one whose maximum was minimised) had already reached its minimum maximum, and so the solver could not distinguish between two solutions if they had the same maximum, since this search technique doesn't allow it. Please refer to figure~\ref{fig:bottleneck} for a better understanding of the situation.
+
+
+\section{Conclusion on the search methods}
 As we have stressed several times in this chapter, there is probably no \textit{best} way of ordering costs. Each technique has its shortcomings, and it is probably by allowing the composer to order their costs as they see fit that the tool will be able to reveal its full potential. 
 
-Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own.  It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
-The best compromise that has been found is therefore to give the composer as much choice as possible, by offering them the three possibilities, as well as the combination between the lexicographical order and the other two techniques. This allows the composer to compose their counterpoint iteratively: they make a first attempt that doesn't work well, adjust the costs to direct the search, and so on, until they gets the result that suits them best. In practice, this leads to the user interface described in Appendix~\ref{chapter:user-guide}.
+Nevertheless, the lexicographic method seems capable of expressing more character than the cost soup of the linear combination method. The intransigent side of the lexicographic method can be adjusted by combining several costs at the same level of the lexicographic order. This combination can be achieved using the method of minimising maxima, but it should be noted that this is only possible to a certain extent if we want to avoid a cost creating a bottleneck on its own. It may also be preferable to combine costs at one level of the lexicographic order by simple addition, at the risk of making certain costs at that level explode.
+The best compromise that has been found is therefore to give the composer as much choice as possible, by offering them the three possibilities, as well as the combination between the lexicographical order and the other two techniques. This allows the composer to compose their counterpoint iteratively: they make a first attempt that doesn't work well, adjust the costs to direct the search, and so on, until they gets the result that suits them best. In practice, this leads to the user interface described in Appendix~\ref{chapter:user-guide}, where a composer can choose their preferred preference order of importance (lexicographic order), then choose if they prefear the costs to be combined in a linear combination or maximum minimisation fashion.
+

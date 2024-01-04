@@ -75,7 +75,7 @@ The other option is to press the "Best Solution" button. This will start an infi
 
 Please note that the preferences do not affect the speed of finding the first solution. The first solution is the first valid solution and is not affected by the costs. Only the subsequent solutions can be affected by the preferences.
 
-\begin{figure}[!h]
+\begin{figure}[h!]
     \includegraphics[width=1.4\textwidth, center]{Images/om_int_interface.png}
     \caption{User interface of the \texttt{fuxcp::cp-params} class in OpenMusic.}
     \label{fig:om_int_interface}
@@ -84,7 +84,7 @@ Please note that the preferences do not affect the speed of finding the first so
 \section{Interface Parameters Description} \label{appendix:interface-parameters-description}
 Table~\ref{tab:cp-params} describes all the parameters available in the interface. A low cost represents a high preference while a high cost represents a low preference.
 
-\begin{table}[!h]
+\begin{table}[h!]
     \footnotesize
     \begin{adjustbox}{center}
         \begin{tabular}{|m{0.22\textwidth}|m{0.82\textwidth}|m{0.15\textwidth}<{\centering}|}
@@ -110,10 +110,10 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
           Medium cost \\ \hline
         \cellcolor[HTML]{C8D6FF}Not having a harmonic triad &
           High cost means as many harmonic triads as possible.&
-          High cost \\ \hline
+          Medium cost \\ \hline
         \cellcolor[HTML]{C8D6FF}Direct motion to perf. consonance &
           High cost means as few direct motions to perfect consonances as possible.&
-          High cost \\ \hline
+          Last resort \\ \hline
         \cellcolor[HTML]{C8D6FF}Direct motion &
           High cost means as few direct motions as possible. &
           Medium cost \\ \hline

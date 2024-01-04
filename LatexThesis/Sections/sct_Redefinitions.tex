@@ -19,24 +19,19 @@ This concept is very helpful in identifying and categorising the vertical placem
 \paragraph*{Important note concerning the strata}
 Strata are an abstract concept, useful only in the mathematical formalisation of Fux's rules. They are necessary because we need a structure that is able to comprehend the lowest sounding note for each bar. The strata concept is obviously not needed to write counterpoint as a human being, and the aim behind its definition is not to create a new concept for music theory, but to enable us to use a tool in our constraint programming way of conceiving counterpoint composition.
 
-\begin{minipage}{0.6\textwidth}
-    The term stratum was chosen in this context for its visual impact. In geology, a 'stratum' "is a rock layer with a lithology (texture, colour, grain size, composition, fossils, etc.) different from the adjacent ones"~\cite{mcnair2023}, see figure~\ref{fig:geological-strata}.
-    \end{minipage}
-    \hfill
-    \begin{minipage}{0.3\textwidth}
-      \centering
-      \includegraphics[width=\textwidth]{Images/rainbow-sediment.jpg}
-      \captionof{figure}{Geological strata, for the illustration}
-      \label{fig:geological-strata}
-\end{minipage}
-\vspace{.5cm}
-
-When Fux speaks about the lowest stratum, he often uses the word 'bass'. It was deliberately chosen to speak about the 'lowest stratum' instead of the 'bass' (like Fux does), because 'bass' is also the name of a range of voices (on a par with soprano and alto, for example), and there is already enough complexity in all the terminology to add even further ambiguity. 
-
 \paragraph{}
-These new terms (parts and strata) are used where the distinction between the concepts is important. Whenever this distinction is not relevant, the more general term 'voice' is used to reduce the complexity of reading. In this case, the 'voice' could refer to both a stratum and a part.
+\begin{wrapfigure}{r}{0.3\textwidth}
+    \centering
+    \includegraphics[width=\linewidth]{Images/rainbow-sediment.jpg}
+    \caption{Geological strata, for illustration}
+    \label{fig:geological-strata}
+\end{wrapfigure}
 
-Since a picture is worth a thousand words, Figure~\ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningful stratum, and it is particularly important in the formalisation.
+The term stratum was chosen in this context for its visual impact. In geology, a 'stratum' "is a rock layer with a lithology (texture, color, grain size, composition, fossils, etc.) different from the adjacent ones"~\cite{mcnair2023}, see figure~\ref{fig:geological-strata}.
+\paragraph{}
+When Fux speaks about the lowest stratum, he often uses the word 'bass'. It was deliberately chosen to speak about the 'lowest stratum' instead of the 'bass' (like Fux does), because 'bass' is also the name of a range of voices (on a par with soprano and alto, for example), and there is already enough complexity in all the terminology to add even further ambiguity.
+
+These new terms (parts and strata) are used where the distinction between the concepts is important. Whenever this distinction is not relevant, the more general term 'voice' is used to reduce the complexity of reading. In this case, the 'voice' could refer to both a stratum and a part. And since a picture is worth a thousand words, Figure~\ref{fig:lowest} illustrates the difference between parts (the blue lines) and strata (the red and orange lines). The lowest stratum is shown in its own colour (red) because it is the most meaningful stratum, and it is particularly important in the formalisation.
 
 \begin{figure}[h]
   \centering
@@ -45,7 +40,7 @@ Since a picture is worth a thousand words, Figure~\ref{fig:lowest} illustrates t
   \label{fig:lowest}
 \end{figure}
 
-
+\paragraph{}
 Here is also the mathematical representation for the notes of the lowest stratum (written $N(a)$, see section~\ref{section:changes induced} for the notations):
 % todo a, b, c, et A
 \begin{equation}

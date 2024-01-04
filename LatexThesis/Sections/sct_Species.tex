@@ -738,8 +738,9 @@ No additional rules (be they harmonic rules, melodic rules or motion rules) were
 
 However, in order to have some rhythmic variety when composing with two fifth species counterpoints, it was decided to impose a rule that Fux never mentioned. We know that the fifth is just all the other species combined, and the way the solver understands this is that it considers each note of the composition to belong to a given species. This is represented as S[i,j], where $S[i,j]=x$ means that the i-th note of the j-th measure belongs to the x-th species. This gives us a metric for similarity, since two fifth-species counterpoints that have the same $S$ array will be rhythmically redundant. To tackle this problem, we force the solver to find a solution where $S(cp_1)$ must be at least half as different as $S(cp_2)$. For more information on this notation and the way the solver works with the fifth species, see section 7.2.2 of T. Wafflard's thesis, where the implications of the S array are fully developed. 
 
-\begin{minipage}{0.32\textwidth}
-As can be seen in Figure \ref{fig:fifth-species-redundancy}, the first composition is indeed rythmically redundant, since both fifth species counterpoints have (almost) the same rhythm. The second is much less redundant, since at least 50\% of the notes are of a different species.
+\noindent
+\begin{minipage}{0.37\textwidth}
+    As can be seen in Figure \ref{fig:fifth-species-redundancy}, the first composition is indeed rhythmically redundant, since both fifth-species counterpoints have (almost) the same rhythm. The second is much less redundant, since it was required that the counterpoints use different species for at least 50\% of the beats.
     \end{minipage}
     \hfill
     \begin{minipage}{0.6\textwidth}

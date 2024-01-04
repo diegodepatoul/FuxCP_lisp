@@ -47,6 +47,7 @@
 \usepackage{multicol}
 \usepackage{tabularx}
 \usepackage{array}
+\usepackage{wrapfig}
 % TABLES
 \usepackage{xcolor}
 \usepackage[normalem]{ulem}
@@ -192,7 +193,7 @@
 \newgeometry{left=1.65in,right=1.65in,top=2in,bottom=2in}
 \begin{abstract}
     \large{
-        This master's thesis extends the capabilities of T. Wafflard's FuxCP, a tool designed specifically for composers to assist them in counterpoint composition without the need for technical expertise. FuxCP uses Gecode and the constraint programming framework to automatically generate counterpoints. The implementation is based on Johann Joseph Fux's Gradus ad Parnassum, a seminal thesis in the field of counterpoint, by translating the rules of this book into formal logic and implementing them as constraints. In particular, the extension to three voices places special emphasis on the lowest voice, introducing innovative concepts and variables to address this key aspect.
+        This master's thesis extends the capabilities of T. Wafflard's FuxCP, a tool designed specifically for composers to assist them in counterpoint composition without the need for technical expertise. FuxCP uses Gecode and the constraint programming framework to automatically generate counterpoints. The implementation is based on Johann Joseph Fux's \gap, a seminal thesis in the field of counterpoint, by translating the rules of this book into formal logic and implementing them as constraints. In particular, the extension to three voices places special emphasis on the lowest voice, introducing innovative concepts and variables to address this key aspect.
         By overcoming the challenge of including the lowest voice in the formalisation process and generalising the interaction between voices, this thesis contributes to the research and understanding of automated contrapuntal composition. Importantly, this work builds seamlessly on T. Wafflard's previous efforts, ensuring full compatibility with his thesis.
         This research delves into the discussion and experimentation with preferences, a central focus of the thesis. While the concept of preferences was present in the previous thesis, this thesis goes more into their implications. Preferences, treated as optional rules rules, introduce nuance into the generation of musical solutions, enhancing the overall aesthetic considerations in automated counterpoint composition.
     }
