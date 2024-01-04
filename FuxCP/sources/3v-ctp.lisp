@@ -193,10 +193,10 @@
         ; Cost #5, only for 3rd species: if harmonic triad isn't achieved on the downbeat, it shall be on the second or third one
         (if (or (eq (species (nth i parts)) 3) (eq (species (nth i parts)) 5))  (let
             (
-                (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (list 0 1)))
+                (h-triad-3rd-species-cost (gil::add-int-var-array-dom *sp* (* *cf-last-index 2) (append '(0) (getparam-val 'h-triad-3rd-species-cost))))
             )
             (dotimes (j 2) (progn 
-               (compute-h-triad-cost-3rd-species 
+               (compute-h-triad-3rd-species-cost
                     (nth (+ j 1) (h-intervals (nth i parts))) ; this is the jth beat
                     (subseq h-triad-3rd-species-cost (* j *cf-last-index) (* (+ j 1) *cf-last-index))) ; these are the costs corresponding to the jth beat
             ))
