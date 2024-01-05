@@ -71,6 +71,9 @@ To know which part gets to be the lowest stratum in such situations, an arbitrar
     \label{fig:one-voice-max-can-be-a}
   \end{figure}
 
+\subsubsection{Note concerning the intersection of the voices}
+This new stratum concept makes it possible to create compositions in which the bass doesn't always play the lowest notes, and this is precisely its purpose. Note, however, that in order for a voice other than the bass (the tenor, for example) to play the lowest note, the melodies of the tenor and the bass must cross. Fux is strangely silent on this subject: he says that crossings are perfectly permissible, but he doesn't elaborate. Other authors are clearer, and the rules of species counterpoint generally state that crossing is allowed, but that the voices must not remain inverted for too long~\cite[p.28]{Bitsch}. However, this is a rule that was not taken into account in the formalisation because it is not present in \gap. It is therefore a way of improving the FuxCP tool, with the aim of making it compatible with other styles of counterpoint.
+
 \section{Exploring the interaction of the parts with the lowest stratum} \label{exploring-interaction-p-a}
 
 One of the major differences between the composition of two voices (i.e., one \cfs and one counterpoint) and the generalisation to three voices (i.e., one \cfs and two counterpoints) is that the rules no longer necessarily apply between the counterpoints and the \cf, but instead of this are mostly applied \textbf{between the different parts and the lowest stratum}. 
@@ -144,11 +147,20 @@ A very important detail, and perhaps the biggest change brought about by this pa
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
-\section{(Re-)Definitions of the variables used in the formalisation} \label{section:changes induced}
-Many variables are already defined in T. Wafflard's work. In order to generalise his work to three voices, many of these variables are reused. But in order to generalise, some changes had to be made to these variables. As a result, many variables are redefined in relation to T. Wafflard's work. Some other variables had to be added to express realities that emerged with the addition of a third voice. All these (re)definitions are explained in detail in this section.
+\section{Definitions of the variables used in the formalisation} \label{section:changes induced}
+In this section, we define the variables used in the formalisation. Many of those variables were already present in T. Wafflard's work. In order to generalise his work to three voices, many of these variables are reused. But in order to generalise, some changes had to be made to these variables. As a result, many variables are redefined in relation to T. Wafflard's work. Some other variables have been added to express realities that emerged with the addition of a third voice. All these (re)definitions are explained in detail in this section.
 
-\subsection{Linking the variables to a voice}
-One major change affects all the variables, namely: the variables are linked to a voice. To understand this, let's take an example. In a two-part composition, it was obvious that the harmonic interval array described the intervals between the \cfs and the only counterpoint. It was also obvious that the motions variable described the motions of the single counterpoint. And so it is with all the variables. When writing a three-voice composition, we have many possibilities when we talk about intervals or motions. Intervals between which voices? Movements of which counterpoint? To deal with this, each variable is now related to a voice.
+%TODO
+\subsection{Variables and array notation} \label{Wafflard-variables}
+First, let's look at how the variables are defined and the notation we use to access them. The variables are defined to capture a compositional reality, such as the notes of the voices, the harmonic intervals between those voices, or many other concepts. They are represented by a letter ($N$ for the notes, $H$ for the harmonic intervals, ...) and are mainly arrays because they have a different value for each beat of the composition. To know which beat we are talking about, we address the variable in a computer notation. For example, N[i, j] means "the note on the i-th beat of the j-th measure". This implies that $i$ ranges from $0$ to $3$ and that $j$ ranges from $0$ to the number of measures (which is written as $m$).
+
+Once defined, the variables are related to each other according to the formalised rules. The constraint solver searches for all possible values of these variables, according to the constraints, and stops when all variables in $N$ (the pitches) are fixed, as this means that a solution has been reached (the notes of the counterpoints are known, and this is the goal of the solver).
+
+Of course, there are many different solutions for the same \cf, and in order to distinguish between two valid solutions (i.e. all solutions that respect all constraints). So some variables are actually costs, that are intended to convey the preferences expressed by Fux in \gap. Thus, the solver considers a valid solution with a low cost to be better than a valid solution with a high cost. The costs can be $0$ (no cost), $1$ (low cost), $2$ (medium cost), $4$ (high cost), $8$ (last resort) and $64m$ (cost proportional to length). These costs are then combined into a total cost that the solver tries to minimise. We will see in chapter \ref{chapter:search} how the costs are actually combined.
+
+
+\subsection{Overview of all the variables}
+We may now take a look at all the variables that are useful throughout this work. You may note that a vast majority of them already exists in T. Wafflard's thesis, but with one big change, each variable is now linked to a voice. To understand this, let's take an example. In a two-part composition, it was obvious that H (the harmonic intervals array) described the intervals between the \cfs and the only counterpoint. It was also obvious that P (the motions array) described the motions of the single counterpoint. And so it is with all the variables. When writing a three-voice composition, we have many possibilities when we talk about intervals or motions. Intervals between which voices? Movements of which counterpoint? To deal with this, each variable is now related to a voice.
 
 The relationship between a variable and a voice is expressed as a function. $X(v)$ represents the variable $X$ of the voice $v$. The arguments of the function can be either:
 \begin{itemize}
@@ -163,7 +175,7 @@ The relationship between a variable and a voice is expressed as a function. $X(v
 \noindent For example, $X(\mathit{cf})$ refers to the variable $X$ of the \cf.
 
 \paragraph{}
-When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means that we are speaking about the variable X of all parts. Formally, $X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)$.
+When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means that we are speaking about the variable X of all parts. Formally, $X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)$. This is very important, as it makes it possible for T. Wafflard's rules for two voices to \textit{remain valid} even with the new definition of the variables.
 
 \paragraph{}
 \noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. If no formal definition or redefinition is mentioned in this work, it means that the applicable definition is the one given in T. Wafflard's thesis.}:
@@ -171,9 +183,11 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis (an explanation of the renaming can be found in the corresponding section (section~\ref{subsection:modified_variables})).
     \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs two arguments to be meaningful.
     \item \textbf{M}(v) - the melodic intervals of the voice v, 
-    \item \textbf{P}(v) - the motions of the voice v, 
+    \item \textbf{P}(v) - the motions of the voice v,
+    \item \textbf{A}(p) - the boolean array representing whether the part p is the lowest stratum.
     \item \textbf{IsCfB}(v) - the boolean array representing whether the cantus firmus is lower than the voice v,
-    \item \textbf{IsCons}(v) - to the boolean array representing whether the voice v is consonant with the lowest stratum or not.
+    \item \textbf{IsCons}(v) - to the boolean array representing whether the voice v is consonant with the lowest stratum or not,
+    \item \textbf{S}(p) - an array specific to the fifth species, representing for each beat what set of rules a note follows. For example $S[0, 0]=3$ means that the very first note of the fifth species counterpoint actually belongs to the third species. This is important since the fifth species is actually a mixture of all the others.
 \end{itemize}
 
 \noindent It also applies to \textit{some} constants, namely:
@@ -191,10 +205,10 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \end{itemize}
 Please note that the constants can only be linked to the parts, never to a stratum. Indeed, it would have no sense to speak about the species of a stratum or about the extended domain of a stratum.
 
-The costs are also affected by the change, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter two remain global and are not duplicated.
+The costs are also affected by the linking, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter are global variables that exist only once.
 
 \paragraph{}
-To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation is 60 is MIDI representation).
+To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation in MIDI is 60).
 
 \subsubsection{Note regarding the fourth species}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. First of all, it is exclusively composed of syncopations. Its notes are half notes, always linked two by two from bar to bar, producing a pitch change in the middle of the measure, on the upbeat. This gives the impression of hearing a whole note that is constantly shifted by two beats, in other words: syncopation.
 
@@ -213,7 +227,7 @@ This integer describes how many parts there are in a given composition. It can e
 
 Set representing all consonances that belong to the harmonic triad
 
-\subsection{Added variables}
+\subsection{Added variables} \label{section:added-variables}
 \vspace{.5cm} \noindent \textbf{A} \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
 % expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
 
