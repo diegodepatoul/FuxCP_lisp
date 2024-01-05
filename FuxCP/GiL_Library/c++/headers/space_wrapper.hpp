@@ -389,6 +389,16 @@ public:
     void cst_sum(int vid, int n, int* vids);
 
     /**
+     Post the constraint that vids1 = sorted(vids2).
+     */
+    void cst_sorted(int n1, int* vids1, int n2, int* vids2, int n3, int* vids3);
+
+    /**
+    Gets the minimum of a domain
+    */
+    void get_min(int vid1, int vid2);
+
+    /**
      Post the constraint that the number of variables in vids equal to val1 has relation rel_type
      with val2.
      */

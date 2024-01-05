@@ -182,7 +182,7 @@
 
 (defmethod g-argmin (sp vars (v int-var))
     "Post the constraints that v = argmin(vars)."
-    (ge-argmin sp (vid vars) (vid v2)))
+    (ge-argmin sp (vid vars) (vid v)))
 
 (defmethod g-max (sp (v1 int-var) (v2 int-var) (v3 int-var) &rest vars)
     "Post the constraints that v1 = max(v2, v3, ...)."
@@ -220,6 +220,17 @@
 (defmethod g-sum (sp (v int-var) vars)
     "Post the constraints that v = sum(vars)."
     (rel-sum sp (vid v) (vid vars)))
+
+(defmethod g-sorted (sp vars1 vars2 vars3)
+    "Post the constraint that vars1 = sorted(vars2)"
+    (print "gecode-wrapper-ui g-sorted")
+    (rel-sorted sp (vid vars1) (vid vars2) (vid vars3))
+)
+
+(defmethod g-min-value (sp (v1 int-var) (v2 int-var))
+    "returns the minimum value of v's domain" 
+    (min-value sp (vid v1) (vid v2))  
+)
 
 ;DOM
 (defmethod g-dom (sp (v int-var) dom)

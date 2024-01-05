@@ -321,6 +321,22 @@ void rel_sum(void* sp, int vid, int n, int* vids) {
 }
 
 /**
+ Wraps the WSpace cst_sorted method.
+ */
+void rel_sorted(void* sp, int n1, int* vids1, int n2, int* vids2, int n3, int* vids3) {
+    std::cout << "re_sorted in gecode_wrapper.cpp" << std::endl;
+    return static_cast<WSpace*>(sp)->cst_sorted(n1, vids1, n2, vids2, n3, vids3);
+}
+
+/**
+ Wraps the WSpace get_min method.
+ */
+void get_min(void* sp, int vid1, int vid2) {
+    std::cout << "get_min in gecode_wrapper.cpp" << std::endl;
+    return static_cast<WSpace*>(sp)->get_min(vid1, vid2);
+}
+
+/**
  Wraps the WSpace cst_count_val_val method.
  */
 void count_val_val(void* sp, int n, int* vids, int val1, int rel_type, int val2) {
