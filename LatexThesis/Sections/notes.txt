@@ -1,11 +1,14 @@
-p.39 - il faudrait p-e expliquer ce que j'ai fait pour régler le problème de pas de solution.
-p.40 - discuter la distance de la meilleure solution
 p.41 - combili gérés avec les poids
 p.42 - ça c'est pas un problème
 p.43 - l'inconvénient c'est que tu vas minimiser dans l'ordre
 p.44 - les coûts interdépendants
 p.46 - il y a bcp de notes -> mettre un tableau avec les coûts
 p.49 - on ne peut pas tirer des conclusions
+
+
+p.14 - je pensais que le croisement de voix
+est prohibe, et le croisement tolere
+sous certaines conditions???
 
 
 

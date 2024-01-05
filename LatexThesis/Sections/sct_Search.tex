@@ -29,18 +29,18 @@ The rule~\ref{rule:start-distant} states that the voices should start distant, a
 
 
 \subsection{Time to find a solution} \label{section:time-to-find-a-solution}
-Many factors come into play in determining how long it will take the solver to find a valid solution. These factors are mainly: the species of counterpoints, the spacing between the voice ranges of the counterpoints, and the key of the \cf.
+Many factors come into play in determining how long it will take the solver to find a valid solution. These factors are mainly: the species of counterpoints, and the spacing between the voice ranges of the counterpoints.
 
 
-In general, the solver is able to find a valid solution fairly quickly (in the order of a second). In some cases, however, it cannot find a valid solution (and so searches endlessly). These cases are generally related to the three factors mentioned above, and we will discuss them a little. Each of these factors makes the search a little more difficult. A single factor may have no effect on the search time, and it is sometimes at the intersection of the factors that an effect is discovered.
+In general, the solver is able to find a valid solution fairly quickly (in the order of a second). However, in some cases it is more difficult to find a valid solution and the solver may take a little longer to find one. These cases are generally related to the three factors mentioned above, and we will discuss them a little. Each of these factors makes the search a little more difficult. A single factor may have no effect on the search time, and sometimes it is at the intersection of the factors that an effect is discovered.
 
 \begin{itemize}
     \item \textbf{Species of the counterpoint} \textendash{} The more complex the species of the counterpoints (think of the 3rd and 5th species, for example), the longer it will probably take the solver to find a solution. The reason is quite obvious: the more complex the species, the more variables the solver has to play with and the greater the range of possibilities.  
     \item \textbf{Distance between the voice ranges} \textendash{}  The closer the ranges of the voices, the greater the risk that the solver will take a long time to find a solution. For example, finding a solution by giving the two counterpoints the same voice range as the \cfs is more time-consuming than selecting distant voice ranges. This is because the voices cannot form a unison, and the possibilities for each voice are therefore smaller when their range is close together. 
 \end{itemize}
-There are also cases where the exact combination of two given vocal ranges for two given species with a given mode does not give a solution, but by changing the vocal range a little the solver finds a solution immediately, quite surprisingly. It is still unclear why some given combinations do not produce solutions. Our best guess is that there are some combinations of parameters for which the solver has difficulty finding a solution, given the very large number of constraints that apply to the voices. However, this doesn't happen very often.
+There are also cases where the exact combination of two given vocal ranges for two given species with a given mode does not give a solution, but by changing the vocal range a little the solver finds a solution immediately, quite surprisingly. It is still unclear why this happens. Our best guess is that there are some combinations of parameters for which the solver has difficulty finding a solution, given the very large number of constraints that apply to the voices. However, this doesn't happen very often.
 
-It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution: then the solver starts taking some time again).
+It is worth noting that the solver's greatest difficulty (in all cases) is finding a valid solution. Once a valid solution has been found, the solver quickly finds a whole series of solutions, each one better than the previous one (until, of course, it is difficult to find the best solution: then the solver starts taking some time again). The distance between the best solution and the solution found by the solver before reaching a plateau in the search is difficult to estimate. However, it should be remembered that the tool is intended to be used iteratively (the user tries a combination, changes the cost, tries again, etc.), and that in the end it is the user's human preferences that count, and there is no guarantee that the best solution will be the one the solver thinks is best. This means that it is the direction the solver takes that is important, not the best solution.
 
 
 \section{Designing the costs of the solver to be as faithful as possible to the preferences of Fux} \label{costs}
@@ -74,7 +74,7 @@ As mentioned at the beginning of this subsection, this procedure can be understo
 
 \paragraph{}
 The linear combination has two major advantages: ease of implementation and high comprehensibility.
-However, it has a major drawback: since the total cost $\tau$ we are minimising in a linear combination is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure~\ref{fig:outstanding-cost}.
+However, it has a major drawback: since the total cost $\tau$ that gets minimised is the sum of all costs $\mathcal{C}$, the best solution might be a solution where one cost is absolutely huge and all the others are small. This might not be a problem if the outstanding cost is not really relevant, but if it is the cost of not using a harmonic triad, it goes completely against the preferences that Fux conveys in his work, making the solution inappropriate. A representation of this situation can be found in the figure~\ref{fig:outstanding-cost}.
 
 \begin{figure}[h!]
     \centering
