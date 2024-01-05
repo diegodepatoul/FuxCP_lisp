@@ -44,17 +44,17 @@ These new terms (parts and strata) are used where the distinction between the co
 Here is also the mathematical representation for the notes of the lowest stratum (written $N(a)$, see section~\ref{section:changes induced} for the notations):
 % todo a, b, c, et A
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{min} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(a)[i,j] = \text{min} (N(\mathit{cf})[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 The first upper stratum, or medium stratum (written $N(b)$, see section~\ref{section:changes induced} for the notations):
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(b)[i,j] = \text{med}\footnote{Where $\text{med}(X)$ means the median value of X.} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(b)[i,j] = \text{med}\footnote{Where $\text{med}(X)$ means the median value of X.} (N(\mathit{cf})[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 The second upper stratum, or uppermost stratum (written $N(c)$, see section~\ref{section:changes induced} for the notations):
 \begin{equation}
-    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(c)[i,j] = \text{max} (N(cf)[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
+    \forall i \in [0, 3] \quad \forall j \in [0, m-1): N(c)[i,j] = \text{max} (N(\mathit{cf})[i,j], N(cp_1)[i,j], N(cp_2)[i,j])
 \end{equation}
 
 \subsubsection{One part per stratum and one stratum per part} \label{subsubsection:one-part-per-stratum}
@@ -140,7 +140,7 @@ However, when it comes to generalising the composition of counterpoint for three
 It is, of course, possible for the \cfs to be equal to the lowest stratum all along, in which case nothing changes from the perspective we had when composing for two voices. In this particular case, by applying the rules with respect to the \cf, we would find ourselves de facto applying the rules with respect to the lowest stratum (and we would be back to the situation described above, see figures~\ref{fig:cp2cf-3v} and~\ref{fig:p2l-3v}, only that there is now one more part). It is when the \cfs pitches are higher up than those of the counterpoints that considering the lowest stratum consideration becomes necessary.
 
 \paragraph{}
-A very important detail, and perhaps the biggest change brought about by this paradigm shift, is the following. Previously, we applied constraints between the counterpoints and the \cf, which guaranteed that the \cfs was taken into account in the constraints. But if we now apply the constraints between the counterpoints and the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints, for example if the \cfs is not the lowest stratum. Nevertheless, it is important that the relationship between the \cfs and the lowest stratum is \textit{also} taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints to the parts, we also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. For example, some rules that only apply to parts don't apply to \cfs, such as the variety cost (see~\ref{rule:variety}).
+A very important detail, and perhaps the biggest change brought about by this paradigm shift, is the following. Previously, we applied constraints between the counterpoints and the \cf, which guaranteed that the \cfs was taken into account in the constraints. But if we now apply the constraints only between the counterpoints and the lowest stratum, there is no longer any guarantee that the \cfs will be linked to the other voices by any constraints, for example if the \cfs is not the lowest stratum. Nevertheless, it is important that the relationship between the \cfs and the lowest stratum is \textit{also} taken into account, not just the relationship between the counterpoints and the lowest stratum. This means that when we apply the constraints between the parts and the lowest stratum, we \textit{must} also apply them to the \cfs (since the \cfs is a part, like any of the counterpoints), unless explicitly stated otherwise. 
 
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
@@ -169,7 +169,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. If no formal definition or redefinition is mentioned in this work, it means that the applicable definition is the one given in T. Wafflard's thesis.}:
 \begin{itemize}
     \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis (an explanation of the renaming can be found in the corresponding section (section~\ref{subsection:modified_variables})).
-    \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs to arguments to be meaningful.
+    \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs two arguments to be meaningful.
     \item \textbf{M}(v) - the melodic intervals of the voice v, 
     \item \textbf{P}(v) - the motions of the voice v, 
     \item \textbf{IsCfB}(v) - the boolean array representing whether the cantus firmus is lower than the voice v,
@@ -183,8 +183,8 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item \textbf{lb}(p) - the lower bound of the range of part p,
     \item \textbf{ub}(p) - the upper bound of the range of part p,
     \item $\mathcal{R}$(p) - the range of part p,
-    \item \textbf{borrow}(p) - the borrowing scale of part p,
-    \item $\mathcal{N}$(p) - the extended domain of part p,
+    \item \textbf{borrow}(p) - the borrowing scale\footnote{Remember that Fux mainly uses notes without a flat or sharp, which means that if the composition begins with a C, it will be written in Ionian mode, if it begins with a G, in Mixolydian mode, etc. Borrowing mode is a way for counterpoint to access notes that are not originally in its mode. For example, a counterpoint in E (i.e. Phrygian mode) that has the major mode (E major, i.e. Ionian E) as its borrowing mode will also have access to the notes F\#, C\#, G\# and D\#.} of part p,
+    \item $\mathcal{N}$(p) - the extended domain of part p, which is the notes without a flat or a sharp with the borrowed notes,
     \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
     \item b(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
     \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p.
@@ -194,7 +194,7 @@ Please note that the constants can only be linked to the parts, never to a strat
 The costs are also affected by the change, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter two remain global and are not duplicated.
 
 \paragraph{}
-To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation is 60 is Open Music).
+To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation is 60 is MIDI representation).
 
 \subsubsection{Note regarding the fourth species}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. First of all, it is exclusively composed of syncopations. Its notes are half notes, always linked two by two from bar to bar, producing a pitch change in the middle of the measure, on the upbeat. This gives the impression of hearing a whole note that is constantly shifted by two beats, in other words: syncopation.
 
@@ -224,19 +224,19 @@ Here is the mathematical definition of the A array:
 \begin{equation}
 \begin{aligned}
 \forall j \in [0, m-1)& \colon  \\
-A(cf)[j] &= \,  
+A(\mathit{cf})[j] &= \,  
 \begin{cases}
     \top & \text{if } N(cf)[0,j] = N(a)[0,j] \\
     \bot & \text{else }
 \end{cases}\\
 A(cp_1)[j] &= \,  
 \begin{cases}
-    \top & \text{if } (N(cp_1)[0,j] = N(a)[0,j]) \land \neg A(cf)[j] \\
+    \top & \text{if } (N(cp_1)[0,j] = N(a)[0,j]) \land \neg A(\mathit{cf})[j] \\
     \bot & \text{else }
 \end{cases}\\
 A(cp_2)[j] &= \,  
 \begin{cases}
-    \top & \text{if } \neg A(cf) \land \neg A(cp_1)\\
+    \top & \text{if } \neg A(\mathit{cf}) \land \neg A(cp_1)\\
     \bot & \text{else }
 \end{cases}
 \end{aligned}
@@ -252,11 +252,11 @@ In practice, there is only an \texttt{is-not-bass} array in the code (which is t
 
 The species constant represents the species of a given part: 1 for the first species, 2 for the second, and so on, with each part having its own species constant. This constant can now also take the value zero: this means that we are talking about \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
 \begin{equation}
-species(v) = 0 \iff v = cf
+species(v) = 0 \iff v = \mathit{\mathit{cf}}
 \end{equation}
 
 \subsection{Redefined variables with respect to the definitions in T. Wafflard's thesis} \label{subsection:modified_variables}
-Since of the rules now apply between parts and the lowest stratum, the meaning of the variables has been modified to reflect this reality. Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same meaning", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
+Since of the rules now apply between parts and the lowest stratum, the definition of the variables has been modified to reflect this reality. Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same definition", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
 
 \paragraph{Nota bene}
 Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are compatible with the new definitions of the variables, as discussed in~\ref{exploring-interaction-p-a}. 
@@ -274,7 +274,7 @@ This variable is an array of size $s_m$ and it represents the harmonic interval 
 Here is the generalisation explained above, matching to the current definition of the harmonic intervals array:
 \begin{equation}
 \begin{aligned}
-    &\forall v_1, v_2 \in \{cf, cp_1, cp_2, a, b, c\}, \quad \forall i \in \mathcal{B}(v_1), \quad \forall j \in [0, m):\\
+    &\forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2, a, b, c\}, \quad \forall i \in \mathcal{B}(v_1), \quad \forall j \in [0, m):\\
     &H_{abs}(v_1,v_2)[i, j] = \left|N(v_1)[i, j] - N(v_2)[0,j]\right|\\
     &H(v_1-v_2)[i, j] = H_{abs}[i, j]\ \text{mod}\ 12\\
     &\text{where } H_{abs}[i, j] \in [0, 127], H[i, j] \in [0, 11]
@@ -289,13 +289,13 @@ The variable M represents the melodic intervals of a voice. It can either be eva
 Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that strata are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
 
 \paragraph{}
-To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. If the lowest stratum consists of the notes [C$_{cp_1}$, E$_{cf}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
+To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. If the lowest stratum consists of the notes [C$_{cp_1}$, E$_{\mathit{cf}}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
 
 
 \begin{equation}
     \begin{aligned}        
-    N(cf) &= [64,\quad  \textcolor{darkred}{\textbf{64}},\quad  71] \quad 
-    &M_{brut}(cf) &= [\textcolor{darkred}{\textbf{+0}}, \quad +7]\\
+    N(\mathit{cf}) &= [64,\quad  \textcolor{darkred}{\textbf{64}},\quad  71] \quad 
+    &M_{brut}(\mathit{cf}) &= [\textcolor{darkred}{\textbf{+0}}, \quad +7]\\
     N(cp_1) &= [\textcolor{darkred}{\textbf{60}},\quad  67,\quad  74] \quad 
     &M_{brut}(cp_2) &= [+7, \quad +7]\\
     N(cp_2) &= [72,\quad  71,\quad  \textcolor{darkred}{\textbf{67}}] \quad 
@@ -315,7 +315,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
         &\forall j \in [0, m-2):\\
         &M_{brut}(a)[j] = \,  
         \begin{cases}
-            M_{brut}(cf)[0][j] & \text{if } A(cf)[j+1]\\
+            M_{brut}(\mathit{cf})[0][j] & \text{if } A(\mathit{cf})[j+1]\\
             M_{brut}(cp_1)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_1)[j+1]\\
             M_{brut}(cp_2)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_2)[j+1]\\
         \end{cases}
@@ -350,7 +350,7 @@ However, a problem arises when computing the motions of the part that is also th
 
 \begin{equation}
 \begin{aligned}
-&\forall p \in \{cf, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
+&\forall p \in \{\mathit{cf}, cp_1, cp_2\}, \quad \forall x \in \{1, 2\}, \quad \forall i \in B, \quad \forall j \in [0, m - 1),\quad x := b - i\\
     &motion(p)[i,j] = \,  
     \begin{cases}
         0 &\text{if } (M_{brut}^{x}(p)[i, j] > 0 > M(a)_{brut}[j]) \\ & \quad \quad \quad \quad \quad \quad \quad \quad \quad  \vee (M_{brut}^{x}(p)[i, j] < 0 < M(a)_{brut}[j]) \\

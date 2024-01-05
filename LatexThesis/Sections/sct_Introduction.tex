@@ -10,7 +10,7 @@ It is very important to know that this thesis is based on T. Wafflard's thesis "
 
 
 \section{A brief history of counterpoint: from Bach to algorithmic generation}
-Before we get to the heart of the matter (i.e. the formalisation), let's take a look at Fux's theory of counterpoint, which this work aims to formalise. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent and distinct from each other, but that are balanced and sound beautiful~\cite{CpSachs}. No voice is dominant over the others, and all are main voices, although some may take a small precedence during part of the composition~\cite{hess2016}.
+Before delving into the formalities of our study, let's first examine Fux's theory of counterpoint, which forms the basis of the formalisation undertaken in this work. Counterpoint is a compositional technique in which there are several musical lines (or voices) that are independent and distinct from each other, but that are balanced and sound beautiful~\cite{CpSachs}. No voice is dominant over the others, and all are main voices, although some may take a small precedence during part of the composition~\cite{hess2016}.
 
 
 Counterpoint has been central to the work of many famous composers from different artistic movements, such as Bach in the Baroque era, Mozart in the Classical era and Beethoven in the Romantic era~\cite{kramer1987gradus}. It is still presenet in some modern music~\cite{altozano2017contrapunto}, and has aroused interest over the centuries with the development of key texts on the subject, such as Schenker's Counterpoint~\cite{schenker1906} or Jeppesen's Analysis~\cite{jeppesen1960}. And while Bach mastered counterpoint to an unprecedented level for his time~\cite{yearsley2002}, the central and foundational work in the teaching of counterpoint belongs to another great Baroque composer: the Austrian Johann Joseph Fux and his treatise \gap. In it, this composer gives a detailed analysis of the writing of two-, three- and four-part counterpoint, all narrated as a conversation between a master and his pupil. \gaps is one of the works that deal with species counterpoint\footnote{There are many other types of counterpoint, such as free counterpoint, dissonant counterpoint, linear counterpoint, ...}, a way of conceiving counterpoint in five different types that could then be combined. It is on this work that this dissertation is based.
@@ -20,7 +20,7 @@ For Fux, as for many other authors, species counterpoint is governed by many dif
 
 This is what makes it interesting to analyse from a constraint programming point of view. We'll come back to this later, but for now let's concentrate on Fux's music theory.
 
-\subsection{Fux's theory of counterpoint}
+\subsection{Fux's theory of counterpoint for two-, three- and four-part composition}
 As we have just said, Fux uses a set of rules to create 'the correct counterpoint'. These rules can be divided into three categories: melodic rules, harmonic rules and motion rules. We will examine them here, bearing in mind that the formalisation of all the rules for two-voice counterpoint can be found in T. Wafflard's thesis, and that the complete set of rules (in mathematical form) can be found in Appendix~\ref{appendix:complete-set-of-rule} of this thesis.
 
 \subsubsection{Melodic Rules}
@@ -33,11 +33,11 @@ Fux explains that there are rules that apply within parts (the horizontal rules)
 
 If there is a horizontal perspective to counterpoint, there is also, of course, a vertical perspective. This perspective is expressed in a harmonic relationship between the different voices. At each point in the composition, a series of rules apply that concern harmony alone (known as harmonic rules). Here are some harmonic rules from Fux, given as an example: the interval between the voices must be a consonance\footnote{A third, a fifth, a sixth or an octave.} on the first beat of each measure; imperfect consonances\footnote{Thirds and sixths.} are preferred to fifths, which in turn are preferred to octaves; and the voices can't use the same note at the same time. These rules apply between the voices.
 
-\subsubsection{Motion rules}
+\subsubsection{Motion Rules}
 Finally, there is a third type of rule: motion rules. These rules are a hybrid of the two discussed above in that they consider not only vertical interaction, i.e. harmony, but also horizontal interaction, i.e. melody. They can therefore be seen as 'diagonal' rules that relate the unique melody of each counterpoint to its respective harmonies. Here are some motion rules, given as an example: voices that move in opposite directions are preferred (i.e. if one voice goes up, we want the other to go down), there should be no successive fifths or successive octaves between voices, and a direct motion should not lead to a perfect consonance. As you can see, these rules take into account not just two voices at a given point, but over several measures. They ensure that the voices move well together.
 
 \subsubsection{Preferences}\label{subsection:preferences-vs-hard-rules}
-This last point does not really concern a kind of rule as such, but rather the preferences that Fux expresses in his work. These preferences are advice that Fux offers in order to write a nice counterpoint. As their name suggests, preferences are optional and not compulsory to follow, as other rules would be.
+This last point is one of the most important in Fux's theory, namely that of preferences. Preferences are not really a kind of rule as such, but rather an indication that Fux uses in his work to write even better counterpoints. As their name suggests, preferences are optional and not compulsory to follow, as other rules would be. However, preferences are crucial to Fux's work because they allow us to distinguish between two valid solutions (those that obey all the rules) and decide which is the best.
 
 Fux is never clear about whether a rule\footnote{We use the generic term "rule" to refer to both mandatory rules and preferences.} is a preference or a strict rule --- and that's normal, what he conveys is mostly intuition, and human beings are quite capable of understanding whether a rule is a preference or an obligation; Fux probably didn't expect someone to try to formalise his work three centuries later.
 
@@ -136,7 +136,7 @@ The question now is: what is the connection between this problem-solving method 
 
 What's more, by defining a rigorous way of distinguishing a good composition from a bad one, the solver can even find increasingly beautiful solutions.
 
-\subsection{Open Music}
+\subsection{OpenMusic}
 OpenMusic is a powerful and innovative visual programming environment, written in CommonLisp, designed specifically for composers, researchers and musicians involved in computer-aided composition~\cite{OpenMusic}. Developed by the Institute for Research and Coordination in Acoustics/Music (IRCAM) in Paris, OpenMusic provides a graphical interface that allows users to create and manipulate musical structures using a variety of predefined modules. This visual programming language facilitates the representation of complex musical ideas, algorithms and data flows through a user-friendly interface, making it accessible to both novice and experienced composers. 
 
 
