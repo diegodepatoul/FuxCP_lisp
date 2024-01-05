@@ -148,7 +148,12 @@ A very important detail, and perhaps the biggest change brought about by this pa
 A second point to bear in mind, and not the least, is that all this does not mean that \textit{all} the rules are established between the parts and the lowest stratum. Certain rules continue to apply between the different parts, regardless of whether they are high, low or intermediate.
 
 \section{Definitions of the variables used in the formalisation} \label{section:changes induced}
-In this section, we define the variables used in the formalisation. Many of those variables were already present in T. Wafflard's work. In order to generalise his work to three voices, many of these variables are reused. But in order to generalise, some changes had to be made to these variables. As a result, many variables are redefined in relation to T. Wafflard's work. Some other variables have been added to express realities that emerged with the addition of a third voice. All these (re)definitions are explained in detail in this section.
+In this section we define the variables used in the formalisation. Many of these variables were already present in T. Wafflard's work and are reused in this formalisation, with some changes. All these (re)definitions are explained in detail in this section.
+
+Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same definition", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
+
+\paragraph{Nota bene}
+Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are fully compatible with the new definitions of the variables, as discussed in~\ref{exploring-interaction-p-a}. 
 
 %TODO
 \subsection{Variables and array notation} \label{Wafflard-variables}
@@ -192,20 +197,23 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 
 \noindent It also applies to \textit{some} constants, namely:
 \begin{itemize}
-    \item \textbf{species}(p) - the species of part p,
+    \item \textbf{species}(p) - the species of part p --- by definition, $species(\mathit{cf}) = 0$,
     \item \textbf{n}(p) - the number of notes in part p,
+    \item s$_\text{m}$(p) - the maximum number of notes contained in part p, if all notes were quarter notes, excepted the last one (that is always a whole note),
     \item \textbf{lb}(p) - the lower bound of the range of part p,
     \item \textbf{ub}(p) - the upper bound of the range of part p,
-    \item $\mathcal{R}$(p) - the range of part p,
+    \item $\mathcal{R}$(p) - the range of part p, i.e. $\mathcal{R}(p) := [lb(p), ub(p)]$,
     \item \textbf{borrow}(p) - the borrowing scale\footnote{Remember that Fux mainly uses notes without a flat or sharp, which means that if the composition begins with a C, it will be written in Ionian mode, if it begins with a G, in Mixolydian mode, etc. Borrowing mode is a way for counterpoint to access notes that are not originally in its mode. For example, a counterpoint in E (i.e. Phrygian mode) that has the major mode (E major, i.e. Ionian E) as its borrowing mode will also have access to the notes F\#, C\#, G\# and D\#.} of part p,
-    \item $\mathcal{N}$(p) - the extended domain of part p, which is the notes without a flat or a sharp with the borrowed notes,
+    \item $\mathcal{N}$(p) - the borrowed notes of part p, where $\mathcal{N}^{\mathcal{R}}(p) = \mathcal{N} \cap \mathcal{R}$
     \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
     \item b(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
-    \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p.
+    \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
+    \item m - the number of measures in the composition,
+    being a whole note.
 \end{itemize}
 Please note that the constants can only be linked to the parts, never to a stratum. Indeed, it would have no sense to speak about the species of a stratum or about the extended domain of a stratum.
 
-The costs are also affected by the linking, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter are global variables that exist only once.
+The costs are also affected by the linking, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter are global variables that exist only once. For a summary of all costs, please refer to Table \ref{tab:cp-params}.
 
 \paragraph{}
 To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation in MIDI is 60).
@@ -214,70 +222,17 @@ To make sure that those notations are clear, here are some examples: the notatio
 
 Concretely, and as Fux explains it, the syncopation means that the beats of the fourth species should be considered as "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[2, j] becomes H[0, j] and H[0, j+1] becomes H[2, j]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit.
 
-Here is an example: $H[0, 0] \in Cons_{h\_triad}$ should be understood as $H[2, 0] \in Cons_{h\_triad}$ if it concerns a fourth-species counterpoint.
+Here is an example: $H[0, 0] = 7$ should be understood as $H[2, 0] = 7$ if it concerns a fourth-species counterpoint.
 
-\subsection{Added constants}
-Here are described some added constants, that are useful throughout the whole work.
-
-\vspace{.5cm} \noindent \textbf{NumberOfParts} \hspace{.2cm} \texttt{*N-PARTS}
-
-This integer describes how many parts there are in a given composition. It can either be equal to two (two-part composition) or to three (three-part composition). It is mainly used in the loops of the program as an end-condition, like in \texttt{(dotimes (i *N-PARTS))}.
-
-\vspace{.5cm} \noindent \textbf{Cons$_{h\_triad}$} \hspace{.2cm} \texttt{H\_TRIAD\_CONS}
-
-Set representing all consonances that belong to the harmonic triad
-
-\subsection{Added variables} \label{section:added-variables}
-\vspace{.5cm} \noindent \textbf{A} \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
-% expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
-
-A is an array of boolean variables with a size of $m$, where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(v)$ is true if v is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
-It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well. See~\ref{subsubsection:one-part-per-stratum} for the details.
-
-Here is the mathematical definition of the A array:
-\begin{equation}
-\begin{aligned}
-\forall j \in [0, m-1)& \colon  \\
-A(\mathit{cf})[j] &= \,  
-\begin{cases}
-    \top & \text{if } N(cf)[0,j] = N(a)[0,j] \\
-    \bot & \text{else }
-\end{cases}\\
-A(cp_1)[j] &= \,  
-\begin{cases}
-    \top & \text{if } (N(cp_1)[0,j] = N(a)[0,j]) \land \neg A(\mathit{cf})[j] \\
-    \bot & \text{else }
-\end{cases}\\
-A(cp_2)[j] &= \,  
-\begin{cases}
-    \top & \text{if } \neg A(\mathit{cf}) \land \neg A(cp_1)\\
-    \bot & \text{else }
-\end{cases}
-\end{aligned}
-\end{equation}
-
-As can be seen in these equations, only the downbeat of each measure is taken into account when computing the A array. The reason for this is that it is the downbeat note that determines which chord will be \textit{the} chord of the measure, and the other beats are just fioritures. Another reason for this is also that it is only going to serve in contexts where the first note of the measure is relevant.
-
-\paragraph{}
-In practice, there is only an \texttt{is-not-bass} array in the code (which is then equal to $\neg A$), as it is almost always more useful to know if a part is \textit{not} the lowest stratum than knowing if it is the lowest one. 
-
-\subsection{Modified constants} \label{subsection:modified_constants}
-\noindent \textbf{species} \hspace{.2cm} \texttt{species} 
-
-The species constant represents the species of a given part: 1 for the first species, 2 for the second, and so on, with each part having its own species constant. This constant can now also take the value zero: this means that we are talking about \cfs (which can be understood as a simplified first species counterpoint). This constant is more useful in the code than in the mathematical notations.
-\begin{equation}
-species(v) = 0 \iff v = \mathit{\mathit{cf}}
-\end{equation}
-
-\subsection{Redefined variables with respect to the definitions in T. Wafflard's thesis} \label{subsection:modified_variables}
-Since of the rules now apply between parts and the lowest stratum, the definition of the variables has been modified to reflect this reality. Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same definition", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
-
-\paragraph{Nota bene}
-Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are compatible with the new definitions of the variables, as discussed in~\ref{exploring-interaction-p-a}. 
+\subsection{In depth definition of the variables} \label{section:definition-variables}
 
 \vspace{.5cm} \noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
 
 N is the array corresponding the pitches of each voice. Its size is $s_m$. It is the same array as the one named \texttt{cp} in T. Wafflard's thesis, and it got renamed to \texttt{N} (for notes), for the sake of clarity. As we have now three of those arrays (one for the first counterpoint, one for the second counterpoint, and even one for the \cf), it needed a less ambiguous name than the one it had before.
+
+%\begin{equation}
+%    \forall i \in \B, \forall j \in [0, m): Cp[i, j]\in \N^{\R}
+%\end{equation} 
 
 
 
@@ -394,3 +349,37 @@ For each beat in the composition:
     \item If the part stays where it is and the lowest stratum moves (or vice versa), P is 1.
     \item If the part moves in the same direction as the lowest stratum, P is 2.
 \end{itemize}
+
+\vspace{.5cm} \noindent \textbf{A} \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
+% expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
+
+A is an array of boolean variables with a size of $m$, where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(v)$ is true if v is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
+It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well. See~\ref{subsubsection:one-part-per-stratum} for the details.
+
+Here is the mathematical definition of the A array:
+\begin{equation}
+\begin{aligned}
+\forall j \in [0, m-1)& \colon  \\
+A(\mathit{cf})[j] &= \,  
+\begin{cases}
+    \top & \text{if } N(cf)[0,j] = N(a)[0,j] \\
+    \bot & \text{else }
+\end{cases}\\
+A(cp_1)[j] &= \,  
+\begin{cases}
+    \top & \text{if } (N(cp_1)[0,j] = N(a)[0,j]) \land \neg A(\mathit{cf})[j] \\
+    \bot & \text{else }
+\end{cases}\\
+A(cp_2)[j] &= \,  
+\begin{cases}
+    \top & \text{if } \neg A(\mathit{cf}) \land \neg A(cp_1)\\
+    \bot & \text{else }
+\end{cases}
+\end{aligned}
+\end{equation}
+
+As can be seen in these equations, only the downbeat of each measure is taken into account when computing the A array. The reason for this is that it is the downbeat note that determines which chord will be \textit{the} chord of the measure, and the other beats are just fioritures. Another reason for this is also that it is only going to serve in contexts where the first note of the measure is relevant.
+
+\paragraph{}
+In practice, there is only an \texttt{is-not-bass} array in the code (which is then equal to $\neg A$), as it is almost always more useful to know if a part is \textit{not} the lowest stratum than knowing if it is the lowest one. 
+
