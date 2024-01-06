@@ -554,7 +554,7 @@ As has been discussed in the previous section, there is no constraint to add for
     This rule is quite clear and speaks for itself. Since this is not a strict rule but an advice, it was treated as a cost.
 
     \begin{equation} \begin{aligned}
-            &\forall j \in [0, m-1) \colon \\
+            &\forall j \in [0, m) \colon \\
             &(H[1, j] \notin Cons_{h\_triad}) \land  (H[2, j] \notin Cons_{h\_triad})\\
             &\iff \mathcal{C}_{harmonic-triad-3rd-species}[j] = 1       
     \end{aligned} \end{equation}
@@ -648,16 +648,16 @@ Fux introduces no new melodic constraints for the third species.
 
     \begin{figure}[h]
         \centering
-        \begin{minipage}{0.26\textwidth}
+        \begin{minipage}{0.49\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{Images/hidden-fifths-1.png}
+            \includegraphics[width=.4\textwidth]{Images/hidden-fifths-1.png}
             \caption{Invalid solution featuring hidden fifths}
             \label{fig:hidden-fifths-1}
         \end{minipage}
         \hfill
-        \begin{minipage}{0.26\textwidth}
+        \begin{minipage}{0.49\textwidth}
             \centering
-            \includegraphics[width=\textwidth]{Images/hidden-fifths-2.png}
+            \includegraphics[width=.4\textwidth]{Images/hidden-fifths-2.png}
             \caption{Valid solution replacing the hidden fifth by a rest.}
             \label{fig:hidden-fifths-2}
         \end{minipage}
@@ -683,6 +683,8 @@ Fux introduces no new melodic constraints for the third species.
 
 
 \subsubsection{Motion rules}
+In this subsection, the correct notation is used for the species (see \ref{nota-bene-4th-species}). So X[0,0] actually means X[0,0], and not X[2,0] as in other parts.
+
 \paragraph{\hspace{.6cm}\ref{rule:successive-fifths-in-4th-species}} \texttt{[PREF]} \textit{Successive fifths are allowed when using ligatures.}    
 
     The point of this rule is that Fux introduces an exception to~\ref{rule:succ-p-cons}: successive fifths are allowed in the fourth species.
@@ -692,8 +694,8 @@ Fux introduces no new melodic constraints for the third species.
         &\forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\}, \quad \text{with } p_1 \neq p_2, \quad \forall j \in [0, m-1) \colon\\
         &\mathcal{C}_{succ\_p\_cons} = \,  
         \begin{cases}
-            0 & \text{if } (H(p_1, p_2)[0, j] \notin Cons_p) \lor (H(p_1, p_2)[0, j+1] \notin Cons_p)\\
-            0 & \text{if } (H(p_1, p_2)[0, j] = 5 ) \land (H(p_1, p_2)[0, j+1] = 5) \\
+            0 & \text{if } (H(p_1, p_2)[2, j] \notin Cons_p) \lor (H(p_1, p_2)[2, j+1] \notin Cons_p)\\
+            0 & \text{if } (H(p_1, p_2)[2, j] = 7) \land (H(p_1, p_2)[2, j+1] = 7) \\
             2 & \text{otherwise } \\
         \end{cases}\\
     \end{aligned} \end{equation}
@@ -719,7 +721,7 @@ Fux introduces no new melodic constraints for the third species.
     \begin{equation}
         \begin{aligned}
             &\forall j \in [1, m-1):\\
-            &H[0, j] = 7 \land P[0,j] = 2 \iff N(0, j-1) = \emptyset  
+            &H[0, j] = 7 \land P[0,j] = 2 \iff N[0, j-1] = \emptyset  
         \end{aligned}
     \end{equation}
 
@@ -764,7 +766,7 @@ This gives us a metric for similarity, since two fifth-species counterpoints tha
 
 \begin{equation}
 \begin{aligned}
-\sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
+ \mathit{species(cp_1)} = \mathit{species}(cp_2) = 5 \iff \sum_{i=0}^{3} \sum_{j=0}^{m-1} (S(cp_1)[i,j] = S(cp_2)[i,j]) < \frac{s_m}{2}
 \end{aligned}
 \end{equation}
 
