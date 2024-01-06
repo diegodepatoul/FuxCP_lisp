@@ -1,4 +1,4 @@
-\chapter{Searching for the best existing solution}\label{chapter:search}
+\chapter{Searching for the best solution}\label{chapter:search}
 Three-part composition is much richer than two-part composition. In fact, it offers many more possibilities than the two-part composition. In constraint solver terms, this means that the search space is much larger, which means two things: the computational complexity of finding a solution is greater, and there are many more possible solutions. The first difficulty is to find a valid solution in this large search space, and the second difficulty is to find the solution that best respects the preferences expressed by Fux.
 
 In this chapter, we first discuss the computational aspect and then turn to the preference management aspect.
@@ -50,7 +50,7 @@ Knowing that we are looking for the solution whose cost must be as low as possib
 
 The way to translate each preference into a corresponding cost has of course been formalised in the previous sections, but that's not the crux of the matter. The question we face here is: what is the best way to combine all these individual costs to get the most accurate result in terms of what Fux is trying to convey in terms of preferences?
 
-Three main ways of doing this have been identified. These are, in order from the simplest to the most complex:
+Three main ways of combining the costs have been identified. These are, in order from the simplest to the most complex:
 \begin{enumerate}
     \item a linear combination of all costs,
     \item computing the maximum over all costs and minimising it,
@@ -61,7 +61,7 @@ We first describe each of these techniques and their respective advantages, and 
 Throughout this section we talk about some specific costs. All these costs are listed in~\ref{fig:default-order-lexico} with a short explanation. Some more details can be found in~\ref{appendix:interface-parameters-description}, and for the full description of a specific cost, please refer to its corresponding rule. 
 
 
-\subsection{Linear Combination}
+\subsection{Linear combination}
 
 
 The first method of calculating our costs is a linear combination. This is the technique used in T. Wafflard's thesis. More precisely, it uses a linear combination in which all the weights are equal to one.
@@ -104,7 +104,7 @@ The problem with this method arises when one cost is significantly higher than t
 Furthermore, even when considering a less extreme case (e.g. the default setting), this method requires a normalisation of the costs: there are $3\times (m-2)$ sub-costs for the variety cost, $3\times (m-1)$ sub-costs for the motion cost, but only $m$ sub-costs for the octave cost. This means that without normalisation, the motion cost will be on average three times larger than the octave cost, which means that the solver will put three times more effort into minimising the motion cost than the octave cost, which is unfair and unpractical.
 
 
-\subsection{Lexicographic Order}\label{section:lexicographic-order}
+\subsection{Lexicographic order}\label{section:lexicographic-order}
 The second way of dealing with the costs is to arrange them in an array and then perform a lexicographic minimisation. In other words, the costs would be arranged in order of importance: from most important to least important. The most important cost to minimise would be placed first in this array, and the solver would only try to minimise the other costs if the first cost remained the same or decreased. This method makes a lot of sense when you think about the rules that emanate of \gap. For example, Fux says that perfect consonance can be achieved by direct motion if there is no other possibility. This means that, all other things being equal, we would prefer to achieve perfect consonance by oblique or contrary motion, but that between a bad solution (respecting almost no preferences) in which perfect consonance is not achieved by direct motion, and a good solution (respecting almost all preferences) in which perfect consonance is achieved by direct motion, we would choose the good solution. 
 
 Some costs are also more important than others in absolute terms. For example, when Fux says that an imperfect consonance is preferred to a fifth, which is preferred to an octave. This amounts to lexicographicly ranking the cost of using an octave first (because we really don't want octaves), and then the cost of using a fifth (and there is no cost of using an imperfect consonance, since Fux indicates that this is preferable).
@@ -144,7 +144,7 @@ Knowing this, we came up with a suggested order that should be as close as possi
         \item $\mathcal{C}_\text{octaves}$
         \item $\mathcal{C}_\text{penult\_thesis\_is\_fifth}$\footnote{A specific cost for the second species, which applies when a penultimate thesis note does not make a fifth interval with the lowest stratum.} [2]
         \item $\mathcal{C}_\text{fifths}$
-        \item $\mathcal{C}_\text{off\_key}$\footnote{The cost of using sharps or flats.}
+        \item $\mathcal{C}_\text{borrowed\_notes}$\footnote{The cost of using sharps or flats.}
         \item $\mathcal{C}_\text{variety}$
         \item $\mathcal{C}_\text{m2\_eq\_zero}$\footnote{The cost of having the same note in the downbeat and the upbeat.} [3, 4, 5]
         \item $\mathcal{C}_\text{not\_cambiata}$\footnote{The cost of not using a \textit{cambiata} if it is possible. The \textit{cambiata} can be characterised by the following scheme: \texttt{consonance - dissonance - consonance}.} [3, 5]
@@ -180,7 +180,7 @@ We have now discussed the advantages and disadvantages of each of the three meth
     \label{tab:comparison}
     \begin{tabularx}{\textwidth}{|>{\centering\arraybackslash}p{4cm}|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|>{\centering\arraybackslash}X|}
         \hline
-        \textbf{Criteria} & \textbf{Linear Combination} & \textbf{Minimising the maximum} & \textbf{Lexicographic Search} \\
+        \textbf{Criteria} & \textbf{Linear combination} & \textbf{Minimising the maximum} & \textbf{Lexicographic order} \\
         \hline
         Outstanding costs & \cellcolor{red!25}Yes & \cellcolor{green!25}No & \cellcolor{orange!25}Only for minor costs \\
         \hline
@@ -225,7 +225,7 @@ For this first experiment, if the search time exceeds 30 seconds, the search is 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp.png}
-    \caption{Result 1 of the lexicographic search method with default costs. Click \href{https://youtu.be/ryrpi5QNmf0}{here} to listen.}
+    \caption{Result 1 of the lexicographic order method with default costs. Click \href{https://youtu.be/ryrpi5QNmf0}{here} to listen.}
     \label{fig:lexico-1sp}
 \end{figure}
 
@@ -238,7 +238,7 @@ In more technical terms, here are the cost arrays:
     \item for the lexicographical order: $[\underset{\text{succ\_p\_cons}}{\underbrace{0}}, \underset{\text{h\_triad}}{\underbrace{14}}, 0, 3, 0, 10, \underset{\text{motions}}{\underbrace{16}}, 14, \underset{\text{direct\_m\_p\_cons}}{\underbrace{8}}]$, with a total sum of 65.
 \end{itemize}
 
-As we can see, the difference between the two is exactly what we expected: high importance costs are prioritised and low importance costs are neglected in the lexicographic search, while the linear combination tries to minimise everything. A good example of this is the harmonic triads: they are more present in the lexicographic solution than in the linear combination (four versus one). Meanwhile, there are seven direct motions and two oblique motions in the lexicographic solution and only two direct motions in the linear combination solution\footnote{Please remember that the motions are computed with respect to the lowest sounding note.}.
+As we can see, the difference between the two is exactly what we expected: high importance costs are prioritised and low importance costs are neglected in the lexicographic order, while the linear combination tries to minimise everything. A good example of this is the harmonic triads: they are more present in the lexicographic solution than in the linear combination (four versus one). Meanwhile, there are seven direct motions and two oblique motions in the lexicographic solution and only two direct motions in the linear combination solution\footnote{Please remember that the motions are computed with respect to the lowest sounding note.}.
 
 \begin{figure}[h]
     \centering
@@ -250,7 +250,7 @@ As we can see, the difference between the two is exactly what we expected: high 
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-1sp0.png}
-    \caption{Result 2 of the lexicographic search method with default costs. Click \href{https://youtu.be/-twWU-hNcYI}{here} to listen.}
+    \caption{Result 2 of the lexicographic order method with default costs. Click \href{https://youtu.be/-twWU-hNcYI}{here} to listen.}
     \label{fig:lexico-1sp0}
 \end{figure}
 
@@ -278,10 +278,10 @@ If we now go on, here is a result combining the first and the fourth species, an
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-4sp.png}
-    \caption{Result 3 of the lexicographic search method with default costs. Click \href{https://youtu.be/rh3YdRu62J4}{here} to listen.}
+    \caption{Result 3 of the lexicographic order method with default costs. Click \href{https://youtu.be/rh3YdRu62J4}{here} to listen.}
     \label{fig:lexico-4sp}
 \end{figure}
-Looking at the results obtained with this setup (figures~\ref{fig:combili-4sp} and~\ref{fig:lexico-4sp}), we come to the following conclusion: in both cases, the melody is a little dull and lacks dynamism. There is no drastic change in quality between the solutions provided by the two search techniques. However, the solution provided by the lexicographic search is somewhat more exciting, since there is more tension in it and it uses more dissonances and resolvings than the linear combination (even if these resolvings are not the most brilliant).
+Looking at the results obtained with this setup (figures~\ref{fig:combili-4sp} and~\ref{fig:lexico-4sp}), we come to the following conclusion: in both cases, the melody is a little dull and lacks dynamism. There is no drastic change in quality between the solutions provided by the two search techniques. However, the solution provided by the lexicographic order is somewhat more exciting, since there is more tension in it and it uses more dissonances and resolvings than the linear combination (even if these resolvings are not the most brilliant).
 
 We immediately notice something else with the 4th species on the bass, which is not related to the costs: there are a few dissonances on the downbeat, as the solver doesn't really take into account the harmonic interaction between the notes of the downbeat of the fourth species and the notes of the downbeat of the other species, but rather the harmonic interaction between the upbeat of the fourth species and the downbeat of the others: which leads to a few surprises, as we can see in these examples (that tension mentioned above).
 
@@ -304,7 +304,7 @@ The results are shown in the figures:
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-2sp.png}
-    \caption{Result 4 of the lexicographic search method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
+    \caption{Result 4 of the lexicographic order method with default costs. Click \href{https://youtu.be/msY1LOGw3v8}{here} to listen.}
     \label{fig:lexico-2sp}
 \end{figure}
 
@@ -330,11 +330,11 @@ The search was run for two minutes instead of thirty seconds, as the fifth speci
 \begin{figure}[h]
     \centering
     \includegraphics[width=1\textwidth]{Images/Experiments/basic-lexico-5sp.png}
-    \caption{Result 5 of the lexicographic search method with default costs. Click \href{https://youtu.be/wYq28XcmpVw}{here} to listen.}
+    \caption{Result 5 of the lexicographic order method with default costs. Click \href{https://youtu.be/wYq28XcmpVw}{here} to listen.}
     \label{fig:lexico-5sp}
 \end{figure}
 
-Just as for the second experiment, some interesting things happen in the composition found by the lexicographic search. The intervals are more beautiful and the fact that there are dissonances that sometimes resolve gives more meaning to what's going on.
+Just as for the second experiment, some interesting things happen in the composition found by the lexicographic order. The intervals are more beautiful and the fact that there are dissonances that sometimes resolve gives more meaning to what's going on.
 
 On the other hand, the fact that the penultimate note of the middle voice resolves on a G instead of a C is a bit frustrating, as the final chord feels like it is not a real ending, but this is a recurring problem in all solutions. The reason for this is probably that there is a rule (rule~\ref{rule:prefer-fifths-over-octaves}) that makes the solver prefer fifths to octaves, and there is no mention from Fux of deviating from this rule for the last measure.
 

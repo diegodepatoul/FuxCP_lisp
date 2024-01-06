@@ -51,19 +51,19 @@ Some of the rules are different depending on whether the composition is for two 
         \end{gathered}
     \end{equation*}
 
-    To ensure that borrowed notes are used sparingly, they must be given a cost to use. Let $OffKey$ be the set of notes outside the key and $OffKey_{costs}$ the list of costs associated with each note. The cost for a note will be \textit{<no cost>} or $cost_{OffKey}$ (\dft{high cost}).
+    To ensure that borrowed notes are used sparingly, they must be given a cost to use. Let $\mathit{Offkey}$ be the set of notes outside the key and $\mathit{Offkey}_{costs}$ the list of costs associated with each note. The cost for a note will be \textit{<no cost>} or $cost_{\mathit{Offkey}}$ (\dft{high cost}).
 
     \begin{equation}
         \begin{gathered}
-            OffKey = [0, 1, 2, \dots, 127] \setminus \N_{key}\\
-            % \forall c \in OffKey_{costs}, \forall p \in N \\
+            \mathit{Offkey} = [0, 1, 2, \dots, 127] \setminus \N_{key}\\
+            % \forall c \in \mathit{Offkey}_{costs}, \forall p \in N \\
             % \forall \rho \in \mathcal{P}ositions\\
             \forp\\
-            OffKey_{costs}[\rho] = \begin{cases}
-                cost_{OffKey} & \text{if } N[\rho] \in OffKey \\
+            \mathit{Offkey}_{costs}[\rho] = \begin{cases}
+                cost_{\mathit{Offkey}} & \text{if } N[\rho] \in \mathit{Offkey} \\
                 0 & \text{otherwise}
             \end{cases}\\
-            \text{moreover } \C = \C \cup \sum _{c \in OffKey_{costs}} c
+            \text{moreover } \C = \C \cup \sum _{c \in \mathit{Offkey}_{costs}} c
         \end{gathered}
     \end{equation}
 
@@ -147,8 +147,8 @@ The rule doesn't exist.
 
 \begin{equation}
     \begin{gathered}
-        \lnot IsCfB[0, 0] \implies H[0, 0] = 0\\
-        \lnot IsCfB[0, m-1] \implies H[0, m-1] = 0
+        \lnot \mathit{IsCfB}[0, 0] \implies H[0, 0] = 0\\
+        \lnot \mathit{IsCfB}[0, m-1] \implies H[0, m-1] = 0
     \end{gathered}
 \end{equation}
 
@@ -180,10 +180,10 @@ The rule doesn't exist.
 When dealing with two-part composition:
 \begin{equation}
     \begin{gathered}
-        % \lnot IsCfB[0, m-2] \implies H[0, m-2] = 9
+        % \lnot \mathit{IsCfB}[0, m-2] \implies H[0, m-2] = 9
         \rho := \max (positions(m)) - 1\\
         H[\rho] = \begin{cases}
-            9 & \text{if } IsCfB[\rho]\\
+            9 & \text{if } \mathit{IsCfB}[\rho]\\
             3 & \text{otherwise}
         \end{cases}\\
         \text{where } \rho \text{ represents the penultimate index of any counterpoint.}
@@ -303,8 +303,8 @@ When dealing with three-part composition:
     \begin{gathered}
         i := \max (\B), \forj\\
         H[0, j+1] = 0 \land P[i, j] = 0 \land \begin{cases}
-            M_{brut}[i, j] < -4 \land IsCfB[i, j] \iff \bot\\
-            M_{cf}[i, j] < -4 \land \lnot IsCfB[i, j] \iff \bot
+            M_{brut}[i, j] < -4 \land \mathit{IsCfB}[i, j] \iff \bot\\
+            M_{cf}[i, j] < -4 \land \lnot \mathit{IsCfB}[i, j] \iff \bot
         \end{cases}\\
         \text{where } i \text{ stands for the last beat index in a measure.}
     \end{gathered}
@@ -402,7 +402,7 @@ No need to add a new constraint as this is not an actual rule.
 \begin{equation}
     \begin{gathered}
         \forj, \forall M_{cf}[j] \neq 0\\
-        M[0, j] = 12 \implies (H_{abs}[0, j] \leq 4) \land (IsCfB[j] \iff M_{cf}[j]>0)
+        M[0, j] = 12 \implies (H_{abs}[0, j] \leq 4) \land (\mathit{IsCfB}[j] \iff M_{cf}[j]>0)
     \end{gathered}
 \end{equation}
 
@@ -521,7 +521,7 @@ This constraint already had an adapted mathematical notation in the chapter of t
 
 \begin{equation}
     \begin{gathered}
-        \lnot IsCfB[m-2] \implies H[0, m-2] = 3
+        \lnot \mathit{IsCfB}[m-2] \implies H[0, m-2] = 3
     \end{gathered}
 \end{equation}
 
@@ -580,7 +580,7 @@ This implies that the costs of the motions and the first species constraints on 
 \begin{equation}
     \begin{gathered}
         \forall j \in [1, m-1) \quad
-        \lnot IsCfB[j] \implies H[0, j] \notin \{10, 11\}
+        \lnot \mathit{IsCfB}[j] \implies H[0, j] \notin \{10, 11\}
     \end{gathered}
 \end{equation}
 
@@ -589,7 +589,7 @@ This implies that the costs of the motions and the first species constraints on 
 \begin{equation}
     \begin{gathered}
         H[0, m-2] = \begin{cases}
-            9 & \text{if } IsCfB[m-2]\\
+            9 & \text{if } \mathit{IsCfB}[m-2]\\
             3 & \text{otherwise}
         \end{cases}
     \end{gathered}
@@ -646,7 +646,7 @@ This implies that the costs of the motions and the first species constraints on 
 \begin{equation}
     \begin{gathered}
         \forall j \in [1, m-1)\\
-        IsCfB[j+1] \implies H[2, j] \neq 0 \land H[0, j+1] \notin \{1, 2\}
+        \mathit{IsCfB}[j+1] \implies H[2, j] \neq 0 \land H[0, j+1] \notin \{1, 2\}
     \end{gathered}
 \end{equation}
 

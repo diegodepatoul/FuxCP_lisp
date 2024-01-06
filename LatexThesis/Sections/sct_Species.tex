@@ -229,7 +229,7 @@ The first species consists of whole notes only. It is the basis of counterpoint 
 
     Fux implies here that there should not be two consecutive perfect consonances. He does not specify whether this rule applies to all three parts at once (i.e. if there was a consonance between part 1 and part 2 in measure X, there cannot be one between part 2 and 3 in measure X+1), or whether it applies to each pair of parts separately. However, in his example (Fig. 91 of the English version \cite{GaPEng}) we can clearly see that there is a perfect consonance in every measure (parts 1-3, then 1-2, then 1-3, then 2-3, then 1-2). From this we can deduce that \textit{for each pair of parts} it is forbidden for two perfect consonances to follow each other.
 
-    However, a closer look at his examples throughout the book reveals that Fux does not respect this rule at all. To name just a few places where this rule does not apply, let's mention figure 108, in the first three measures, between the bass and the \cf; figure 109, in the same place, between the \cf and the alto; figure 110, in measures 8 and 9, between the bass and the alto. For this reason, this rule must be considered as a preference rather than an absolute constraint.
+    However, a closer look at his examples throughout the book reveals that Fux does not respect this rule at all. To name just a few places where this rule does not apply, let's mention figure 108, in the first three measures, between the bass and the \cf; figure 109, in the same place, between the \cfs and the alto; figure 110, in measures 8 and 9, between the bass and the alto. For this reason, this rule must be considered as a preference rather than an absolute constraint.
 
     To make this a preference is still very surprising, since many authors of counterpoint consider the succession of perfect consonances to be completely forbidden \cite{Bitsch}. However, we are concentrating here on the Fux formalisation, and the possibility of completely forbidding perfect consonance successions is a choice offered to the user in the interface.
 
@@ -265,7 +265,7 @@ The first species consists of whole notes only. It is the basis of counterpoint 
 \subsubsection{Structural constraints}
     \paragraph{\hspace{0.6cm}\ref{rule:allwhole}} \textit{All notes are whole notes.}
     
-    This rule needs no special constraint, since it is the very definition of the first species  to consist only of whole notes.
+    This rule needs no special constraint, since it is the very definition of the first species to consist only of whole notes.
 
 \subsubsection{Harmonic rules}
 \paragraph{\hspace{.6cm}\ref{rule:consonant}} \greendots \textit{All notes on the downbeat are consonant with the notes of the lowest stratum.}
@@ -742,7 +742,7 @@ No additional rules (be they harmonic rules, melodic rules or motion rules) were
 
 However, in order to have some rhythmic variety when composing with two fifth species counterpoints, it was decided to impose a rule that Fux never mentioned. We know that the fifth is just all the other species combined, and the way the solver understands this is that it considers each note of the composition to belong to a particular species. This is represented as S[i,j], where $S[i,j]=x$ means that the i-th note of the j-th measure belongs to the x-th species. So if $S(cp_1)[2, 3]=3$, then the second note of the third measure of the first counterpoint is constrained by the constraints of the third species. From the solver's point of view, $S$ is just an array like all the others, but it branches on it during the search to guarantee that the composition of the fifth species is composed of as many species as possible.
 
-This gives us a metric for similarity, since two fifth-species counterpoints that have the same $S$ array will be rhythmically redundant. To tackle this problem, we force the solver to find a solution where $S(cp_1)$ must be at least half as different as $S(cp_2)$. For more information on this notation and the way the solver works with the fifth species, see section 7.2.2 of T. Wafflard's thesis, where the implications of the S array are fully developed. 
+This gives us a metric for similarity, since two fifth-species counterpoints that have the same $S$ array will be rhythmically redundant. To tackle this problem, we force the solver to find a solution where $S(cp_1)$ must be at least half as different as $S(cp_2)$. 
 
 \noindent
 \begin{minipage}{0.37\textwidth}
@@ -767,6 +767,16 @@ This gives us a metric for similarity, since two fifth-species counterpoints tha
 This equation is only true if both counterpoints are of the fifth species, and its meaning is that the sum of the times $S(cp_1)=S(cp_2)$ must be less than half the number of notes in the composition.
 
 \section{Writing a three-part composition using various species}
-In \gap, Fux almost always writes his counterpoints using a combination of the first species and another species, i.e. either a counterpoint of the first species and another of the first species, a counterpoint of the first species and another of the second species, and so on, up to a counterpoint of the first species and another of the fifth species. However, he sometimes creates other combinations, either with two of the same species (for example, two of the fifth species) or with two different species (for example, the second and the third).
+In \gap, Fux almost always writes his counterpoints using a combination of the first species and another species, i.e. he makes the following combinations: 1+1, 1+2, 1+3, 1+4, 1+5. Only sometimes does he make other combinations, either with two counterpoints of the same type (5+5) or with two different types (2+3).
 
-When creating combinations of different species, Fux doesn't give any specific rules for combining them. It seems that the different species interact with each other as they would do with the first species, taking into account only the first beat of the measure. For example, if we compute a first counterpoint belonging to the third species and a second counterpoint belonging to the second species, the rules that apply between the two counterpoints will be set between all the beats of the first counterpoint and the first beat of the second counterpoint and between all the beats of the second counterpoint and the first beat of the first counterpoint. This corresponds to what we would have done if we had applied the rules between a counterpoint and the \cf, where the rules apply between all beats of the \cf and the first beat of the counterpoint.
+When creating combinations of different species, Fux doesn't give any specific rules for combining them. It seems that the different species interact with each other as they would do with the first species, taking into account only the first beat of the measure. For example, if we compute a first counterpoint belonging to the 3rd species and a second counterpoint belonging to the second species, the rules that apply between the two counterpoints will be set between all the beats of the first counterpoint and the first beat of the second counterpoint and between all the beats of the second counterpoint and the first beat of the first counterpoint. This corresponds to what we would have done if we had applied the rules between a counterpoint and the \cf, where the rules apply between all beats of the \cfs and the first beat of the counterpoint.
+
+Below is a brief summary of the rules that apply to each species:
+\begin{itemize}
+    \item \textbf{First species} --- rules of the first species,
+    \item \textbf{Second species} --- rules of the first species + rules of the second species,
+    \item \textbf{Third species} --- rules of the first species + rules of the third species,
+    \item \textbf{Fourth species} --- rules of the first species + rules of the third species,
+    \item \textbf{Fifth species} --- rules of all species, selected according to the S array.
+\end{itemize}
+This means that in a composition with two counterpoints, one of the 2nd species and one of the 3rd species, the first counterpoint will follow the rules of the 1st and the 2nd species, and the second counterpoint will follow the rules of the 1st and the 3rd species.

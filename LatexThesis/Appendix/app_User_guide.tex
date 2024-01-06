@@ -75,11 +75,12 @@ The other option is to press the "Best Solution" button. This will start an infi
 
 Please note that the preferences do not affect the speed of finding the first solution. The first solution is the first valid solution and is not affected by the costs. Only the subsequent solutions can be affected by the preferences.
 
-\begin{figure}[h!]
-    \includegraphics[width=1.4\textwidth, center]{Images/om_int_interface.png}
-    \caption{User interface of the \texttt{fuxcp::cp-params} class in OpenMusic.}
-    \label{fig:om_int_interface}
-\end{figure}
+\begin{sidewaysfigure}
+  \centering
+  \includegraphics[width=\textheight, height=\textwidth, keepaspectratio]{Images/om_int_interface.png}
+  \caption{User interface of the \texttt{fuxcp::cp-params} class in OpenMusic.}
+  \label{fig:om_int_interface}
+\end{sidewaysfigure}
 
 \section{Interface Parameters Description} \label{appendix:interface-parameters-description}
 Table~\ref{tab:cp-params} describes all the parameters available in the interface. A low cost represents a high preference while a high cost represents a low preference.
@@ -108,10 +109,10 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
         \cellcolor[HTML]{C8D6FF}Repeating notes &
           High cost means as few repeating notes as possible, i.e. as many different notes as possible. This cost corresponds to the variety cost.&
           Medium cost \\ \hline
-        \cellcolor[HTML]{C8D6FF}Not having a harmonic triad &
+        \cellcolor[HTML]{C8D6FF}No harmonic triad &
           High cost means as many harmonic triads as possible.&
           Medium cost \\ \hline
-        \cellcolor[HTML]{C8D6FF}Direct motion to perf. consonance &
+        \cellcolor[HTML]{C8D6FF}Direct motion to perfect consonance &
           High cost means as few direct motions to perfect consonances as possible.&
           Last resort \\ \hline
         \cellcolor[HTML]{C8D6FF}Direct motion &
@@ -124,7 +125,7 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
           High cost means as few contrary motions as possible. &
           No cost \\ \hline
         \cellcolor[HTML]{C8D6FF}Apply specific penultimate note rules &
-          Force all rules on the notes of the penultimate measure. This applies only to two-part composition and  refers to the penult. note having to be a major sixth or a minor third. &
+          Force all rules on the notes of the penultimate measure. This applies only to two-part composition and  refers to the penultimate note having to be a major sixth or a minor third. &
           Yes \\ \hline
         \hline
         %% MELODIC
@@ -154,7 +155,7 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
           Low cost \\ \hline
         \hline      
         %%% SPECIFIC
-        \cellcolor[HTML]{FFCE93}2nd: Penult. downbeat note is a fifth &
+        \cellcolor[HTML]{FFCE93}2nd: Penultimate downbeat note is a fifth &
           High cost means trying to ensure that the penultimate downbeat is not a fifth.&
           Last resort \\ \hline
         \cellcolor[HTML]{FFCE93}3rd: No cambiatas &
@@ -163,6 +164,9 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
         \cellcolor[HTML]{FFCE93}3rd: Force contrary motion after skip &
           Force that a melodic skip or leap is followed by a melodic step in a contrary motion. &
           No \\ \hline
+        \cellcolor[HTML]{FFCE93}3rd: No harmonic triad in 2nd/3rd beat &
+          High cost means as many harmonic triads as possible on the 2nd and 3rd beat.&
+          Medium cost \\ \hline
         \cellcolor[HTML]{FFCE93}3rd\& 4th: Same note in downbeat and upbeat two beats apart &
           High cost means as many differrent notes in the downbeat and upbeat.&
           Low cost \\ \hline
@@ -184,7 +188,7 @@ Table~\ref{tab:cp-params} describes all the parameters available in the interfac
           Determines, depending on the counterpoint size, the percentage of melodic intervals larger than one step. &
           0\% \\ \hline
         \cellcolor[HTML]{EFEFEF}Borrowing mode &
-          Type of scale from which notes can be borrowed to generate counterpoint. The first note of the \cfs determines the tonic of this scale. Applies everywhere except the penultimate bar. &
+          Type of scale from which notes can be borrowed to generate counterpoint. The first note of the \cfs determines the tonic of this scale. If none is selected, only natural notes are used. Applies everywhere except the penultimate bar. &
           Major \\ \hline
         \cellcolor[HTML]{D1D1D1}Save Config &
           Saves all established preferences and allows you to start a new search for this configuration later. &
