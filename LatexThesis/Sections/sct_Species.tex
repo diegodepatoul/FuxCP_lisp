@@ -58,7 +58,7 @@ These implicit rules apply to all types of counterpoint. They are never explicit
     \paragraph{\hspace{0.6cm}\ref{rule:penult-interval-3-voices}} \greendots \textit{The harmonic interval of the penultimate measure must be either a minor third, a perfect fifth, a major sixth, or an octave.}
     \begin{equation}
         \begin{aligned}
-            H[0, m-1] \in \{0, 3, 7, 9\}
+            H[0, m-2] \in \{0, 3, 7, 9\}
         \end{aligned}
     \end{equation}
 
@@ -78,7 +78,7 @@ These implicit rules apply to all types of counterpoint. They are never explicit
     \end{aligned} \end{equation}
 
 \section{First species}
-This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. In other words, these rules apply whenever $species(p) \in \{1, 2, 3, 4, 5\}$. More specifically, the rules in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see the note on the fourth species~\ref{nota-bene-4th-species}).
+This section deals with the rules that apply to the first species of counterpoint. As mentioned earlier, these rules apply to \textit{all} species in the context of a three-part composition. In other words, these rules apply whenever $species(p) \in \{0, 1, 2, 3, 4, 5\}$. More specifically, the rules in this section apply to the first beat of each species, except for the fourth species, where they apply to the third beat (see the note on the fourth species~\ref{nota-bene-4th-species}).
 
 \paragraph{}
 The first species consists of whole notes only. It is the basis of counterpoint and its simplest case. 
@@ -165,6 +165,7 @@ The first species consists of whole notes only. It is the basis of counterpoint 
 \end{enumerate}
 
 \subsubsection{Melodic rules}
+The following rules obviously don't apply to the \cf, since its melody is already fixed.
 \begin{enumerate}[wide, label=\bfseries 1.M\arabic*]
 \setcounter{enumi}{2} % Start from 3
     \item\label{rule:steps-prefered} \texttt{[PREF]} \textit{Steps are preferred to skips.}
@@ -186,6 +187,8 @@ The first species consists of whole notes only. It is the basis of counterpoint 
     Fux never clearly defines what he means by the "principle of variety". So we try to define it according to what we can read in his work. The examples he gives are a great help. He first writes an incorrect example and then corrects it, saying that the corrected example is better because it follows the principle of variety more closely. The difference between the two examples is that the number of different pitches has been increased. So we can define the principle of variety as: use as many different notes as possible in a single voice. 
 
     The principle of variety is therefore clearly a preference.
+
+    This principle is very interesting because it introduces the only rule \textit{across all} rules that has a scope greater than two measures. While without this rule the solver uses constraints that apply only to one measure (think of harmonic constraints) or sometimes to two measures (think of melodic constraints), this constraint is the first to give the solver some "memory" about the composition. And although seven measures may seem like a small range, it means that the constraint covers a large part of the composition (when dealing with compositions of 10 to 15 measures, of course).
 
     \item\label{rule:each-part-should-stay-in-its-voice-range}  \textit{Each part should stay in its voice range.}
 
@@ -278,12 +281,12 @@ The first species consists of whole notes only. It is the basis of counterpoint 
     \begin{equation}
     \begin{aligned}
     &\forall j \in [0, m-1) \colon \\
-    &((H(b)[0, j] \neq 3) \land (H(b)[0, j] \neq 4)) \lor (H(c)[0, j]  \neq 7) \\
-    &\iff cost_{\mathit{prefer-harmonic-triad}}[j] = 1
+    &(H(b)[0,j] \notin \{3, 4\}) \lor (H(c)[0, j]  \neq 7) \iff \mathcal{C}_{\mathit{prefer-harmonic-triad}}[j] = 1
     \end{aligned}
     \end{equation}
 
     \paragraph{\hspace{.6cm}\ref{rule:sixth-or-octaves}}  \textit{One might use sixths or octaves.}
+
     As discussed in~\ref{rule:sixth-or-octaves}, there is no constraint to add for this rule.
     
     \paragraph{\hspace{.6cm}\ref{rule:tenth-is-last-chord}}  \textit{Tenths are prohibited in the last chord.}
@@ -295,6 +298,7 @@ The first species consists of whole notes only. It is the basis of counterpoint 
     If the harmonic interval is bigger than an octave, then you cannot use thirds anymore.
 
     \paragraph{\hspace{.6cm}\ref{rule:unison-vs-octave}} \texttt{[PREF]} \textit{Octaves should be preferred over unisons.}
+
     As discussed before, there is no constraint to add for this rule.
 
     \paragraph{\hspace{.6cm}\ref{rule:minor-third}}  \textit{Last chord cannot include a minor third.}
@@ -313,17 +317,16 @@ As discussed in~\ref{rule:steps-prefered}, there is no constraint to add as it a
     As it is not explained either if this has to be true for the whole partition or only for two following notes, it has been chosen as an arbitrary seven successive notes to apply the rule on. This means that the solution is penalized if a note in measure X was already present in measures [X-3, X+3]. This amount was chosen because it represents the number of flat notes that exist, pushing for the solver to find a solution that contain all of them.
 
     \begin{equation} \begin{aligned}
-    &\forall p \in \{cp_1, cp_2\}, \quad \forall j \in [0, m-1), \quad \forall k \in [j+1, \text{min} (j+3, m-1)] :\\ 
-    &N(p)[0, j] = N(p)[0, j+k]\iff \mathcal{C}_{variety}[j+m*k]= 1
+    &\forall p \in \{cp_1, cp_2\}, \quad \forall j \in [0, m), \quad \forall k \in [j+1, \text{min} (j+3, m-1)] :\\ 
+    &N(p)[0, j] = N(p)[0, j+k]\iff \mathcal{C}_{variety}[j+m*k]= 2
     \end{aligned} \end{equation}
-
-    This rule is very interesting because it is the only \textit{across all} rule that has a scope greater than two bars. While without this rule the solver uses constraints that apply only to one bar (think of harmonic constraints) or sometimes to two bars (think of melodic constraints), this constraint is the first to give the solver some "memory" about the composition. And although seven bars may seem like a small range, it means that the constraint covers a large part of the composition (when dealing with compositions of 10 to 15 bars, of course).
 
     \paragraph{\hspace{.6cm}\ref{rule:each-part-should-stay-in-its-voice-range}}  \textit{Each part should stay in its voice range.}
 
     As was discussed before, there is no constraint associated to this rule, as it is already covered by the definition of the voice range.
 
     \paragraph{\hspace{0.6cm}~\ref{rule:melodic-intervals-cannot-be-greater-or-equal-to-a-sixth}}  \textit{Melodic intervals cannot be greater or equal to a sixth.}
+
     As was said before, no constraint must be implemented for this rule as it is a restatement of rule~\ref{rule:mlesixth}.
 
 \subsubsection{Motion rules}
@@ -333,8 +336,7 @@ As discussed in~\ref{rule:steps-prefered}, there is no constraint to add as it a
 
     \begin{equation} \begin{aligned}
     &\forall j \in [0, m-1) :\\
-    &P[0, j] = 2 \land H[0, j+1] \in Cons_{p} \\
-    &\iff \mathcal{C}_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
+    &P[0, j] = 2 \land H[0, j+1] \in Cons_{p} \iff \mathcal{C}_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
     \end{aligned} \end{equation}
 
     Remember: $P[0,j] = 2$ means that the motion is direct.
@@ -344,8 +346,8 @@ As discussed in~\ref{rule:steps-prefered}, there is no constraint to add as it a
     As discussed before, this rule is actually a preference.
 
     \begin{equation} \begin{aligned}
-    &\forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\}, \quad p_1 \neq p_2, \quad \forall j \in [0, m-1) \colon\\
-    &(H(p_1,p_2)[0, j] \in Cons_) \land (H(p_1,p_2)[0, j+1] \in Cons_p)\\
+    &\forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\}, \text{ where } p_1 \neq p_2, \quad \forall j \in [0, m-1) \colon\\
+    &(H(p_1,p_2)[0, j] \in Cons_p) \land (H(p_1,p_2)[0, j+1] \in Cons_p)\\
     &\implies \mathcal{C}_{succ\_p\_cons} = 2
     \end{aligned} \end{equation}
 
@@ -358,21 +360,22 @@ As discussed in~\ref{rule:steps-prefered}, there is no constraint to add as it a
 
     \paragraph{\hspace{.6cm}\ref{rule:same-movement}}  \textit{It is prohibited that all parts move in the same direction.}
 
-    To prevent this, we need only look at the motions between the parts and the lowest stratum. If one of their motions is contrary, then it is guaranteed that the three voices will not go in the same direction (because at least one is contrary). The same applies if one of the motions is oblique. The problem arises when all the movements are direct, because this would mean that the three voices are going in the same direction. So at least one motion must be something other than direct\footnote{Remember that 0 represents a contrary motion, 1 represents an oblique motion and 2 represents a direct motion.}.
+    To prevent this, we need only look at the motions between the parts and the lowest stratum. If one of their motions is contrary, then it is guaranteed that the three voices will not go in the same direction (because at least one is contrary). The same applies if one of the motions is oblique. The problem arises when all the movements are direct, because this would mean that the three voices are going in the same direction. So at least one motion must be something other than direct. Remember that 0 represents a contrary motion, 1 represents an oblique motion and 2 represents a direct motion.
     \begin{equation} \begin{aligned}
     &\forall j \in [0, m-1) \colon\\
-    &\bigvee_{p \in \{\mathit{cf}, cp_1, cp_2\}}  M(p)[0, j] \in \{0, 1\}
+    &\bigvee_{p \in \{\mathit{cf}, cp_1, cp_2\}}  P(p)[0, j] \in \{0, 1\}
     \end{aligned} \end{equation}
     
 
     \paragraph{\hspace{.6cm}\ref{rule:ascending-sixths}}  \textit{It is prohibited to use successive ascending sixths on a direct upwards motion.}
+
     Either the harmonic interval is not a sixth in any of both positions, or one of them is not moving up.
 
     \begin{equation}
         \begin{aligned}
-            & \forall j \in [1, m-1), \quad \forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2\} \text{ where } v_1 \neq v_2, \quad \text{sixth := } \{8,9\} \colon \\
-            & (H(v_1, v_2)[0, j-1] \notin \text{sixth}) \lor (H(v_1, v_2)[0, j] \notin \text{sixth}) \\
-            & \lor M(v_1)[0, j] > 0 \lor M(v_2)[0, j] > 0
+            & \forall j \in [1, m-1), \quad \forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\} \text{ where } p_1 \neq p_2, \quad \text{sixth := } \{8,9\} \colon \\
+            & (H(p_1, p_2)[0, j-1] \notin \text{sixth}) \lor (H(p_1, p_2)[0, j] \notin \text{sixth}) \\
+            & \lor M(p_1)[0, j] > 0 \lor M(p_2)[0, j] > 0
         \end{aligned}
         \end{equation}
 
@@ -475,17 +478,18 @@ No need to add a new constraint as this is not an actual rule.
 
     \begin{equation}
         \begin{aligned}
-            &\forall j \in [1, m-1), \quad j \neq m-2:\\
-            &((N[2, j-1] \neq N[0, j]) \land (N[0, j] \neq \land N[2, j])) \\
+            &\forall j \in [1, m), \quad j \neq m-2:\\
+            &((N[2, j-1] \neq N[0, j]) \land (N[0, j] \neq N[2, j])) \\
             &\land \\
             & ((N[2, m-3] \neq N[0, m-2]) \lor (N[0, m-2] \neq N[2, m-2]) )
         \end{aligned}
     \end{equation}
 
-    The first line prohibits the ligatures except where they are allowed, and the second lines states that only one ligature can occur.
+    The first line prohibits the ligatures except where on the positions where they are allowed, and the second line states that only one ligature can occur.
 
 \subsubsection{Motion rules}
-\paragraph{\hspace{.6cm}\ref{rule:succ-fifths-flanking-third}} \texttt{[PREF]} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.}    
+\paragraph{\hspace{.6cm}\ref{rule:succ-fifths-flanking-third}} \texttt{[PREF]} \textit{Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.} 
+
     This rule is a relaxation of the cost~\ref{rule:succ-p-cons} defined above, and is thus rewritten to correspond to a special case that occurs with the second species.
         
     In the following equation, only $p_1$ must be a second species \cp, $p_2$ can be any species.
@@ -495,7 +499,7 @@ No need to add a new constraint as this is not an actual rule.
             &\mathcal{C}_{succ\_p\_cons} = \,  
             \begin{cases}
                 0 & \text{if } (H(p_1, p_2)[0, j] \notin Cons_p) \lor (H(p_1, p_2)[0, j+1] \notin Cons_p)\\
-                0 & \text{if } (H(p_1, p_2)[0, j] = 5 ) \land (H(p_1, p_2)[0, j+1] = 5) \\
+                0 & \text{if } (H(p_1, p_2)[0, j] = 7 ) \land (H(p_1, p_2)[0, j+1] = 7) \\
                 & \quad \quad \quad \quad \quad \quad\land (H(p_1, p_2)[2, j] = 3) \lor (H(p_1, p_2)[2, j] = 4)\\
                 2 & \text{otherwise } \\
             \end{cases}\\

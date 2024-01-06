@@ -689,4 +689,126 @@ This implies that the costs of the motions and the first species constraints on 
 \end{enumerate}
 %%%%%%%%%%%%%%
 \section*{Constraints of the Fifth Species}
-The fifth type has a very specific way of working, which cannot be summarised as easily as the other types, as it requires some additional concepts. Because of this, and because no specific constraints have been added by generalising the fifth species to three voices, we recommend that you read chapter 7 of T. Wafflard's thesis to get the full rules for it.
+The fifth type has a very specific way of working, which cannot be summarised as easily as the other types, as it requires some additional concepts. We here provide the main concepts but for a fully understand of this species' formalisaiton, please refer to Chapter 7 of T. Wafflard's thesis.
+
+First of all, here is the formal definition of S:
+\begin{equation}
+    \begin{gathered}
+        \forp\\
+        S[\rho] = \begin{cases}
+            0 & \text{if } N[\rho] \text{ is not constrained by any species}\\
+            1 & \text{if } N[\rho] \text{ is constrained by the first species}\\
+            2 & \text{if } N[\rho] \text{ is constrained by the second species}\\
+            3 & \text{if } N[\rho] \text{ is constrained by the third species}\\
+            4 & \text{if } N[\rho] \text{ is constrained by the fourth species}\\
+        \end{cases}\\
+    \end{gathered}
+\end{equation}
+
+And the formal definition of IsS$_\text{x}$:
+\begin{equation}
+    \begin{gathered}
+        \forall x \in \{0, 1, 2, 3, 4\}, \forp\\
+        IsS_{x}[\rho] = \begin{cases}
+            \top & \text{if } S[\rho] = x\\
+            \bot & \text{otherwise}
+        \end{cases}\\
+    \end{gathered}
+\end{equation}
+
+
+\begin{enumerate}[wide, label=\bfseries 5.R\arabic*]
+    \item  \label{rhythm:taexist} \textit{There must always be a note in thesis and in arsis, except the very first thesis and the very last arsis.}
+       \begin{equation}
+        \begin{gathered}
+            \forall j \in [0, m)\\
+            \lnot IsS_{0}[0, j]\quad \text{ where } j \neq 0\\
+            \lnot IsS_{0}[2, j]\quad \text{ where } j \neq m-1
+        \end{gathered}
+    \end{equation}
+
+    \item \label{rhythm:no4in2and4} \textit{The \species{4} can only exist in first and third beat.}
+    
+    \begin{equation}
+        \begin{gathered}
+            \forall i \in \{1, 3\}, \forall j \in [0, m)\quad
+            \lnot IsS_{4}[i, j]
+        \end{gathered}
+    \end{equation}
+
+    \item \label{rhythm:404} \textit{A \species{4} in the third beat necessarily implies a \species{4} in the first beat of the following measure and vice versa. The fourth beat should then have no note.}
+    
+    \begin{equation}
+        \begin{gathered}
+            \forall j \in [0, m-1)\\
+            IsS_{4}[2, j] \iff IsS_{4}[0, j+1]\\
+            IsS_{4}[2, j] \implies IsS_{0}[3, j]
+        \end{gathered}
+    \end{equation}
+
+    \item \label{rhythm:no0after3} \textit{A \species{3} cannot be followed by no note.}
+    
+    \begin{equation}
+        \begin{gathered}
+            \forpm\quad
+            IsS_{3}[\rho] \implies \lnot IsS_{0}[\rho+1]
+        \end{gathered}
+    \end{equation}
+
+    \item \label{rhythm:not12} \textit{Only \species{3} and \species{4} are used.}
+
+    \begin{equation}
+        \begin{gathered}
+            \forp\quad
+            \lnot IsS_{1}[\rho] \land \lnot IsS_{2}[\rho]
+        \end{gathered}
+    \end{equation}
+
+    \item \label{rhythm:syncinfirstpenult} \textit{The first and penultimate measures are linked to the \species{4}.}
+        
+    \begin{equation}
+        \begin{gathered}
+            IsS_{0}[0, 0] \land IsS_{0}[1, 0] \land IsS_{4}[2, 0]\\
+            IsS_{4}[0, m-2] \land IsS_{0}[1, m-2] \land IsS_{4}[2, m-2]
+        \end{gathered}
+    \end{equation}
+\end{enumerate}
+
+\subsection*{Generalisation of the Species implications}
+
+\begin{equation}
+    \begin{gathered}
+        \forall x \in \{3, 4\}, \forall cst_{x} \in Constraints(x), \forall V \in Variables(cst_{x})\\
+        \left(\bigwedge_{\forall v \in V} IsS_{x}[v_{pos}]\right) \implies cst_{x}(V)\\
+        \text{where }Constraints(x) \text{ is the set of constraints of the species }x,\\
+        \text{and }Variables(cst_{x}) \text{ is the set of set of variables concerned by the constraint }cst_{x},\\
+        \text{and }v_{pos} \text{ is the position of the } v \text{ related note in the array }N.\\
+    \end{gathered}
+\end{equation}
+
+\subsection*{Avoiding Multiple Same Final Solutions}
+\begin{equation}
+    \begin{gathered}
+        \forpm\quad
+        IsS_{0}[\rho] \implies (N[\rho] = N[\rho + 1])
+    \end{gathered}
+\end{equation}
+
+\subsection*{Formalization of Inter-species Rules into Constraints}
+\begin{equation} \label{eq:syncopationvariation}
+    \begin{gathered}
+        \forall j \in [1, m-1)\\
+        \lnot IsCons[0, j] \land IsS_{4}[0, j] \implies M^{2}_{brut}[0, j] \in \{-1, -2\} \land IsCons[2, j]
+    \end{gathered}
+\end{equation}
+
+\subsection*{Parsing of the Species Array in Rhythm}
+The fifth species is unique as it is the only one that might have a different rythm in each beat. To handle this, a parsing is applied after a solution is found to determine the rhythm of the counterpoint.
+
+This parsing is shown in Figure \ref{fig:rhythmdiagram}. The letters correspond to the following: N are the notes the final counterpoint (the one that is returned), Cp are the notes computed by the solver (the array used by the solver), R is the rhythm and S is the S array.
+
+\begin{figure}[]
+    \includegraphics[scale=0.23, center]{Images/build_rhythmic_pattern.png}
+    \caption{Rhythm species parser algorithm diagram, \species{5}. A \textcolor{red}{red arrow} means the test failed while a \textcolor{blue}{blue one} means it passed.}
+    \label{fig:rhythmdiagram}
+\end{figure}

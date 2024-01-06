@@ -206,9 +206,11 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item \textbf{borrow}(p) - the borrowing scale\footnote{Remember that Fux mainly uses notes without a flat or sharp, which means that if the composition begins with a C, it will be written in Ionian mode, if it begins with a G, in Mixolydian mode, etc. Borrowing mode is a way for counterpoint to access notes that are not originally in its mode. For example, a counterpoint in E (i.e. Phrygian mode) that has the major mode (E major, i.e. Ionian E) as its borrowing mode will also have access to the notes F\#, C\#, G\# and D\#.} of part p,
     \item $\mathcal{N}$(p) - the borrowed notes of part p, where $\mathcal{N}^{\mathcal{R}}(p) = \mathcal{N} \cap \mathcal{R}$
     \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
-    \item b(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
-    \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
-    \item m - the number of measures in the composition, which is the same for all voices,
+    \item \textbf{b}(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
+    \item \textbf{d}(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
+    \item \textbf{m} - the number of measures in the composition, which is the same for all voices,
+    \item \textbf{Dis} - the set of all consonances, i.e. $\{1, 2,5, 6, 10, 11\}$
+    \item \textbf{Cons} - the set of all consonances, i.e. $\{0, 3, 4, 7, 8, 9\}$, where Cons$_p$ are the perfect consonances, i.e. $\{0, 7\}$, and Cons$_{h\_triad}$ are the consonances of a harmonic triad as defined by Fux, i.e. $\{0, 3, 4, 7\}$.
 \end{itemize}
 Please note that the constants can only be linked to the parts, never to a stratum. Indeed, it would have no sense to speak about the species of a stratum or about the extended domain of a stratum.
 
@@ -227,7 +229,11 @@ Here is an example: $H[0, 0] = 7$ should be understood as $H[2, 0] = 7$ if it co
 
 \noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
 
-N is the array corresponding the pitches of each voice. Its size is $s_m$. It is the same array as the one named \texttt{cp} in T. Wafflard's thesis, and it got renamed to \texttt{N} (for notes), for the sake of clarity. As we have now three of those arrays (one for the first counterpoint, one for the second counterpoint, and even one for the \cf), it needed a less ambiguous name than the one it had before.
+N is the array corresponding the pitches of each voice. Its size is $s_m$. It is the same array as the one named \texttt{cp} in T. Wafflard's thesis, and it got renamed to \texttt{N} (for notes), for the sake of clarity. As we have now three of those arrays (one for the first counterpoint, one for the second counterpoint, and even one for the \cf), it needed a less ambiguous name than the one it had before. 
+
+The notes in array N are written in MIDI format. This means that a middle C ($C_4$ in scientific pitch notation) is represented by 60, and each semitone has a value of 1. So, starting from the middle C, we have:
+
+$\{C_4, D_4, E_4, F_4, G_4, A_4, B_4\} \equiv \{60, 62, 64, 65, 67, 69, 71, 72\}$.
 
 %\begin{equation}
 %    \forall i \in \B, \forall j \in [0, m): Cp[i, j]\in \N^{\R}
@@ -238,6 +244,8 @@ N is the array corresponding the pitches of each voice. Its size is $s_m$. It is
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
 
 This variable is an array of size $s_m$ and represents the harmonic intervals between voice v$_1$ and voice v$_2$. It is the only variable that is associated with two different voices. So $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ can be a part and $v_2$ can be a stratum, since you can calculate harmonic intervals between a part and a stratum. If $v_2$ is not specified, it is equal to $a$ by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen because it is the most commonly used, and for a good reason: the most relevant harmonic intervals are those between the voices and the lowest layer.
+
+For example, here are the values of the intervals of the harmonic triad: a minor third is 3, a major third is 4, a fifth is 7 and an octave is 12 (or 0 if modulo).
 
 \begin{equation}
 \begin{aligned}
