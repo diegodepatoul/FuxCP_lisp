@@ -208,8 +208,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
     \item b(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
     \item d(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
-    \item m - the number of measures in the composition,
-    being a whole note.
+    \item m - the number of measures in the composition, which is the same for all voices,
 \end{itemize}
 Please note that the constants can only be linked to the parts, never to a stratum. Indeed, it would have no sense to speak about the species of a stratum or about the extended domain of a stratum.
 
@@ -370,16 +369,16 @@ For each beat in the composition:
     \item If the part moves in the same direction as the lowest stratum, P is 2.
 \end{itemize}
 
-\vspace{.5cm} \noindent \textbf{A} \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
+\vspace{.5cm} \noindent \textbf{A}(p) \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
 % expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
 
-A is an array of boolean variables with a size of $m$, where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(v)$ is true if v is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
-It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well. See~\ref{subsubsection:one-part-per-stratum} for the details.
+A is an array of boolean variables with a size of $m$ (the number of measures), where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(p)$ is true if p is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
+It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well, see~\ref{subsubsection:one-part-per-stratum} for the details.
 
 Here is the mathematical definition of the A array:
 \begin{equation}
 \begin{aligned}
-\forall j \in [0, m-1)& \colon  \\
+\forall j \in [0, m)& \colon  \\
 A(\mathit{cf})[j] &= \,  
 \begin{cases}
     \top & \text{if } N(cf)[0,j] = N(a)[0,j] \\
