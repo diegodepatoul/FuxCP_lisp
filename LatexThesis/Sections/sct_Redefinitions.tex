@@ -183,12 +183,12 @@ The relationship between a variable and a voice is expressed as a function. $X(v
 When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means that we are speaking about the variable X of all parts. Formally, $X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)$. This is very important, as it makes it possible for T. Wafflard's rules for two voices to \textit{remain valid} even with the new definition of the variables.
 
 \paragraph{}
-\noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. If no formal definition or redefinition is mentioned in this work, it means that the applicable definition is the one given in T. Wafflard's thesis.}:
+\noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. All variables are defined accordingly, even the ones from T. Wafflard's thesis. However, the explanation of these reused variables is less detailed than in T. Wafflard's thesis: for more information on them, please refer to his work.}:
 \begin{itemize}
-    \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis (an explanation of the renaming can be found in the corresponding section (section~\ref{subsection:modified_variables})).
+    \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis.
     \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs two arguments to be meaningful.
     \item \textbf{M}(v) - the melodic intervals of the voice v, 
-    \item \textbf{P}(v) - the motions of the voice v,
+    \item \textbf{P}(p) - the motions of the part p,
     \item \textbf{A}(p) - the boolean array representing whether the part p is the lowest stratum.
     \item \textbf{IsCfB}(v) - the boolean array representing whether the cantus firmus is lower than the voice v,
     \item \textbf{IsCons}(v) - to the boolean array representing whether the voice v is consonant with the lowest stratum or not,
@@ -262,6 +262,12 @@ M(p) (i.e. when related to a part) represents the melodic intervals of the part 
     \begin{aligned}
         &\forall x \in \{1, 2\}, \forall i \in \B, \forall j \in [0, m-x) \colon \\
         &M^x_{brut}[i, j] = N[(i+xd)\ mod\ 4, j+nextm(i+xd)] - N[i, j]\\
+        &M_{brut}(a)[j] = \,  
+        \begin{cases}
+            M_{brut}(\mathit{cf})[0][j] & \text{if } A(\mathit{cf})[j+1]\\
+            M_{brut}(cp_1)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_1)[j+1]\\
+            M_{brut}(cp_2)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_2)[j+1]\\
+        \end{cases}
         &M^x[i, j] = \left|M^x_{brut}[i, j]\right|\\
         &\text{where } M^x_{brut}[i, j] \in [-12, 12], \quad M^x[i, j] \in [0, 11] 
     \end{aligned}
@@ -328,8 +334,8 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
 \vspace{.5cm}
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
-The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a voice v with respect to the lowest stratum. The change from the previous work (where the motions array represented the motions with respect to the \cf) was made since Fux considers that the motions should be considered between each voice and the lowest voice. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
-However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section~\ref{is-lowest}). 
+The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a part p with respect to the lowest stratum. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
+However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section~\ref{is-lowest}). This value can be considered as a 'non-applicable' value: this part has no motion as it is currently the lowest stratum.
 
 \begin{equation}
 \begin{aligned}
@@ -358,7 +364,7 @@ It works like this:
 
 For each beat in the composition:
 \begin{itemize}
-    \item If a part is also the lowest stratum, P is -1 (i.e. non applicable, otherwise we would calculate the motion between the part and itself)
+    \item If a part is also the lowest stratum, P is -1 (i.e. non applicable, otherwise we would calculate the motion between the part and itself).
     \item If the part moves in the opposite direction to the lowest stratum, P is 0.
     \item If the part stays where it is and the lowest stratum moves (or vice versa), P is 1.
     \item If the part moves in the same direction as the lowest stratum, P is 2.
