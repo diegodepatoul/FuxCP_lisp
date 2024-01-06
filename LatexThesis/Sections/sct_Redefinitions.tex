@@ -199,7 +199,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \begin{itemize}
     \item \textbf{species}(p) - the species of part p --- by definition, $species(\mathit{cf}) = 0$,
     \item \textbf{n}(p) - the number of notes in part p,
-    \item s$_\text{m}$(p) - the maximum number of notes contained in part p, if all notes were quarter notes, excepted the last one (that is always a whole note),
+    \item \textbf{s$_\text{m}$}(p) - the maximum number of notes contained in part p, if all notes were quarter notes, excepted the last one (that is always a whole note),
     \item \textbf{lb}(p) - the lower bound of the range of part p,
     \item \textbf{ub}(p) - the upper bound of the range of part p,
     \item $\mathcal{R}$(p) - the range of part p, i.e. $\mathcal{R}(p) := [lb(p), ub(p)]$,
@@ -226,7 +226,7 @@ Here is an example: $H[0, 0] = 7$ should be understood as $H[2, 0] = 7$ if it co
 
 \subsection{In depth definition of the variables} \label{section:definition-variables}
 
-\vspace{.5cm} \noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
+\noindent \textbf{N}(v) \hspace{.2cm} \texttt{notes} 
 
 N is the array corresponding the pitches of each voice. Its size is $s_m$. It is the same array as the one named \texttt{cp} in T. Wafflard's thesis, and it got renamed to \texttt{N} (for notes), for the sake of clarity. As we have now three of those arrays (one for the first counterpoint, one for the second counterpoint, and even one for the \cf), it needed a less ambiguous name than the one it had before.
 
@@ -238,9 +238,8 @@ N is the array corresponding the pitches of each voice. Its size is $s_m$. It is
 
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
 
-This variable is an array of size $s_m$ and it represents the harmonic interval between one voice and another. The previous definition of this array was that it represented the harmonic intervals between a given voice and the \cf. This definition has been extended to include intervals other than that between the counterpoint and the \cf. In order to do so, H now accepts two arguments, and it represents the interval between those two arguments. Thus, $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ may be a part and $v_2$ may be a stratum, as you can calculate harmonic intervals between a part and a stratum. When no $v_2$ is precised, it is equal to $a$, by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen since it is the most frequently used, and for a good reason: most relevant harmonic intervals are those between the parts and the lowest stratum.
+This variable is an array of size $s_m$ and represents the harmonic intervals between voice v$_1$ and voice v$_2$. It is the only variable that is associated with two different voices. So $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ can be a part and $v_2$ can be a stratum, since you can calculate harmonic intervals between a part and a stratum. If $v_2$ is not specified, it is equal to $a$ by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen because it is the most commonly used, and for a good reason: the most relevant harmonic intervals are those between the voices and the lowest layer.
 
-Here is the generalisation explained above, matching to the current definition of the harmonic intervals array:
 \begin{equation}
 \begin{aligned}
     &\forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2, a, b, c\}, \quad \forall i \in \mathcal{B}(v_1), \quad \forall j \in [0, m):\\
@@ -253,12 +252,30 @@ Here is the generalisation explained above, matching to the current definition o
 \vspace{.5cm}
 \noindent \textbf{M}$_{\text{brut}}$(v) \hspace*{.2cm} \texttt{m-intervals-brut}
 
-The variable M represents the melodic intervals of a voice. It can either be evaluated on a part or on a stratum, each of those situations leading to different behaviours. M(p) (i.e. when related to a part) keeps representing the melodic intervals of the voice v and its way of working remains intact as in T. Wafflard's thesis. M(s) (i.e. when related to a stratum) has it own way of working, that is defined in the next paragraph. We are going to focus specifically on M(a), that is, the melodic intervals of the lowest stratum.
+The variable M represents the melodic intervals of a voice. It can be evaluated either on a part or on a stratum, each of these situations leading to different behaviours.
+\begin{itemize}
+    \item 
 
+M(p) (i.e. when related to a part) represents the melodic intervals of the part p, and its mode of operation remains the same as in T. Wafflard's thesis: M$_{brut}$[i,j] represents the melodic interval used to "leave" N[i,j]. For example, if $N[0,0]=60$ and $N[1,0]=67$, the interval used to leave $N[0,0]$ is $7$. There are several versions of this array, such as M$^x$, which represents the melodic interval between the current beat and the xth following note, according to d(p)\footnote{If d(p)=x, it means that the following note comes in x beats. So if d=1, M$^2$[0,0] represents the interval between N[0,0] and N[2,0].} and M, which represents the absolute value of M$_{brut}$. By default, $M\equiv M^1$, thus, $M\equiv \forall p \in \{\mathit{cf}, cp_1, cp_2\} \colon M^1(p)$.
+
+\begin{equation}
+    \begin{aligned}
+        &\forall x \in \{1, 2\}, \forall i \in \B, \forall j \in [0, m-x) \colon \\
+        &M^x_{brut}[i, j] = N[(i+xd)\ mod\ 4, j+nextm(i+xd)] - N[i, j]\\
+        &M^x[i, j] = \left|M^x_{brut}[i, j]\right|\\
+        &\text{where } M^x_{brut}[i, j] \in [-12, 12], \quad M^x[i, j] \in [0, 11] 
+    \end{aligned}
+\end{equation}
+
+
+\item M(s) (i.e. when related to a stratum) has it own way of working, that is defined in the next paragraphs. We focus specifically on M(a), the melodic intervals of the lowest stratum.
+\end{itemize}
+
+\paragraph{Why is it complicated to consider melodic intervals of strata?}
 Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that strata are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
 
-\paragraph{}
-To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. If the lowest stratum consists of the notes [C$_{cp_1}$, E$_{\mathit{cf}}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and in the second \cps the interval that lead to the G was a -4 (getting down of two tones), the corresponding melodic intervals array of the lowest stratum would be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
+\paragraph{Definition of M(s), the melodic intervals of a stratum}
+To understand how we arrive at a definition for the melodic intervals of a layer, we need to remember that the lowest layer is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest layer as the melodic intervals that lead to all those lowest-sounding notes. We thus define the melodic intervals of the lowest stratum to be: the interval that lead to the note of the lowest stratum in the corresponding part. Let's make this clearer with an example. Let's consider that the lowest stratum consists of the notes [C$_{cp_1}$, E$_{\mathit{cf}}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), that in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and that in the second \cps the interval that lead to the G was a -4 (getting down of two tones). The corresponding melodic intervals array of the lowest stratum would then be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
 
 
 \begin{equation}
@@ -277,11 +294,11 @@ To understand how we arrive at a definition for the melodic intervals of a layer
 \end{equation}
 
 
-The formal definition of the melodic intervals of the lowest stratum is hence as follows: the melodic interval in measure $j$ of the lowest stratum is equal to the last melodic interval in measure $j$ of the part that is the lowest stratum in measure $j+1$. Remember that this complex definition is needed in order for the computation of the motions to work fine, and that the motions of the lowest stratum are an abstract notion that serves only in formulas and constraints and \textit{does not intend to represent any concrete motion really happening in the composition, nor does it correspond to the melodic intervals between the pitches of the lowest stratum}.
+The formal definition of the melodic intervals of the lowest stratum is hence as follows: the melodic interval in measure $j$ of the lowest stratum is equal to the last melodic interval in measure $j$ of the part that is the lowest stratum in measure $j+1$. Remember that this complex definition is needed in order for the computation of the motions to work fine, and that the motions of the lowest stratum, juste as the lowest stratum, are an abstract notion that serves only in formulas and constraints. The motions of the lowest stratum \textit{do not intend to represent any concrete motion really happening in the composition, nor does it correspond to the melodic intervals between the pitches of the lowest stratum}.It may be worth noting that if a part is the lowest stratum all the time, then the motions of the lowest stratum will be completely equal to those of that part.
 
 \begin{equation}
     \begin{aligned}
-        &\forall j \in [0, m-2):\\
+        &\forall j \in [0, m-1):\\
         &M_{brut}(a)[j] = \,  
         \begin{cases}
             M_{brut}(\mathit{cf})[0][j] & \text{if } A(\mathit{cf})[j+1]\\
@@ -291,7 +308,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
     \end{aligned}
 \end{equation}
 
-\noindent It might be helpful to have a look at figures~\ref{fig:stratum-m-intervals-1} and~\ref{fig:stratum-m-intervals-2} to understand better how the melodic intervals arrays for the lowest stratum.
+\noindent It might be helpful to have a look at figures~\ref{fig:stratum-m-intervals-1} and~\ref{fig:stratum-m-intervals-2} to understand better how the melodic intervals arrays for the lowest stratum. The melodic intervals of the lowest stratum are those that lead to the notes of the lowest stratum.
 
 \vspace{.5cm}
 \begin{minipage}{0.46\textwidth}
@@ -307,9 +324,6 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
       \captionof{figure}{Understanding the melodic intervals of the lowest stratum with a second species counterpoint}
       \label{fig:stratum-m-intervals-2}
 \end{minipage}
-
-As can be seen in figures~\ref{fig:stratum-m-intervals-1} and~\ref{fig:stratum-m-intervals-2}, the melodic intervals of the lowest stratum are those that lead to the notes of the lowest stratum.
-
 
 \vspace{.5cm}
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
