@@ -248,12 +248,11 @@
     (if (eq *N-PARTS 3) (progn
         (print "Penultimate measure...")
         (gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (third (h-intervals counterpoint))))
-        ;(gil::g-member *sp* PENULT_CONS_3P_VAR (lastone (fourth (h-intervals counterpoint))))
     ))
 
     (setf is-penult-cons-to-cf (gil::add-bool-var *sp* 0 1))
     (add-is-member-cst (penult (first (h-intervals-to-cf counterpoint))) ALL_CONS_VAR is-penult-cons-to-cf)
-    ;(gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND is-penult-cons-to-cf 0) ; 4th species
+    (gil::g-op *sp* (penult (first (is-4th-species-arr counterpoint))) gil::BOT_AND is-penult-cons-to-cf 0) ; 4th species
 
     ; every thesis note should be consonant if it does not belong to the fourth species (or not constrained at all)
     (print "Every thesis note should be consonant...")

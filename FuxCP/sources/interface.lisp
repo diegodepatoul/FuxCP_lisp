@@ -88,8 +88,8 @@
             (:section "General preferences" :name "Harmonic octaves on the downbeat" :display nil :importance "5" :value "Low cost" :param h-octave-cost :cannot-be-forbidden t)
             (:section "General preferences" :name "Successive perfect consonances" :display nil :importance "2" :value "Medium cost" :param succ-p-cons-cost :cannot-be-forbidden t)
             (:section "General preferences" :name "Repeating notes" :display nil :importance "9" :value "Medium cost" :param variety-cost) 
-            (:section "General preferences" :name "Not having a harmonic triad" :display nil :importance "3" :value "High cost" :param h-triad-cost :cannot-be-forbidden t) 
-            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "High cost" :param direct-move-to-p-cons-cost :cannot-be-forbidden t)
+            (:section "General preferences" :name "No harmonic triad" :display nil :importance "3" :value "Medium cost" :param h-triad-cost :cannot-be-forbidden t) 
+            (:section "General preferences" :name "Direct motion to perf. consonance" :display nil :importance "14" :value "Last resort" :param direct-move-to-p-cons-cost :cannot-be-forbidden t)
             (:section "General preferences" :name "Motion cost" :display nil :importance "12" :value nil :subcosts ,motion-subcosts :param motions-cost)
             (:section "General preferences" :name "Apply specific penultimate note rules" :value "Yes" :special-range ("Yes" "No") :param penult-rule-check)
             
@@ -100,7 +100,7 @@
             (:section "Second species specific pref." :name "Penultimate downbeat note is a fifth" :importance "6" :value "Last resort" :param penult-sixth-cost :cannot-be-forbidden t)
             (:section "Third species specific pref." :name "No cambiatas" :importance "11" :value "High cost" :param non-cambiata-cost :cannot-be-forbidden t)
             (:section "Third species specific pref." :name "Force contrary motion after skip" :value "No" :special-range ("Yes" "No") :param con-m-after-skip-check)
-            (:section "Third species specific pref." :name "Not having a h. triad in 2nd or 3rd beat" :display nil :importance "4" :value "Medium cost" :param h-triad-3rd-species-cost) 
+            (:section "Third species specific pref." :name "No hamonic triad in 2nd/3rd beat" :display nil :importance "4" :value "Medium cost" :param h-triad-3rd-species-cost) 
             (:section "Third and fourth species specific pref." :name "Same note in downbeat and upbeat" :importance "10" :value "Low cost" :param m2-eq-zero-cost)
             (:section "Fourth species specific pref." :name "No ligatures" :importance "1" :value "Last resort" :param no-syncopation-cost :cannot-be-forbidden t)
             (:section "Fifth species specific pref." :name "Many quarters (left) or many syncopations (right)" :value 50 :make-slider t :param pref-species-slider)
@@ -209,7 +209,7 @@
               ;; Add subsection header if it's a new section
                 (when is-new-section
                     (let ((section-label (om::om-make-dialog-item 'om::om-static-text
-                                        (om::om-make-point 15 y-position) (om::om-make-point 250 20) section
+                                        (om::om-make-point 15 y-position) (om::om-make-point 300 20) section
                                         :font om::*om-default-font2b*)))
                     (om::om-add-subviews cost-table section-label))
                     (setf current-section section)
