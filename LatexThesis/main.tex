@@ -81,8 +81,11 @@
 \usepackage[
     backend=bibtex,
     %backend=biber,
-    sorting=none
+    sorting=none,
     % style=authoryear-icomp
+    style=authoryear,
+    maxnames=99,
+    dashed=false,
 ]{biblatex}
 
 % Others
@@ -194,7 +197,7 @@
 \newgeometry{left=1.65in,right=1.65in,top=2in,bottom=2in}
 \begin{abstract}
     \large{
-        This thesis presents a formalisation of three-part musical counterpoint according to the classical theory of Fux. It is an extension of Thibault Wafflard's previous thesis, which formalised two-part counterpoint and implemented it in FuxCP, a software tool designed specifically for composers to help them compose counterpoint without the need for technical expertise. Counterpoint consists of several musical voices that are independent and distinct from each other, yet balanced and beautiful in sound. It consists of a fixed part, the \cf, and one or more counterpoints derived from it. Three-part composition is much more expressive than two-part counterpoint because of the interactions between the two derived parts.
+        This thesis presents a formalisation of three-part musical counterpoint according to the classical theory of Fux. It is an extension of Thibault Wafflard's previous thesis, which formalised two-part counterpoint and implemented it in FuxCP, a software tool designed specifically for composers to help them compose counterpoint without the need for technical expertise. Counterpoint consists of several musical voices that are independent and distinct from each other, yet balanced and beautiful in sound. It consists of a fixed part, the \cf, and one or more counterpoints derived from it. Three-part composition is much more expressive than two-part counterpoint because of the interaction between the two derived parts.
 
         FuxCP is implemented in OpenMusic, a musical interface, and uses Gecode, a well-known constraint solver, to automatically generate counterpoints. The implementation is based on Johann Joseph Fux's \gap, a seminal treatise on counterpoint published in 1725, by translating its rules into formal logic and implementing them as constraints. In particular, the extension to three voices places special emphasis on the lowest voice, introducing innovative concepts and variables to address this key aspect.
         This work contributes to the research and understanding of automated contrapuntal composition by overcoming the challenge of generalising the interaction between voices. It also addresses preferences, which are treated as optional rules, introducing nuance into the generation of musical solutions and enhancing the overall aesthetic considerations in automated counterpoint composition. Importantly, this work builds seamlessly on T. Wafflard's previous efforts, ensuring full compatibility with his thesis.   }
@@ -215,17 +218,15 @@
 \input{Sections/sct_Musicality.tex}
 \input{Sections/sct_Conclusion.tex}
 \addcontentsline{toc}{chapter}{Bibliography}
+%\bibliographystyle{plain}
 \printbibliography
 
-%\bibliographystyle{plain}
 %\bibliography{Bibliography/cite}
 \appendix
 \input{Appendix/app_Architecture.tex}
 \input{Appendix/app_User_guide.tex}
 \input{Appendix/app_All_rules.tex}
 \input{Appendix/app_Code.tex}
-
-%add all translations, gecode, gil, t.Wafflard's thesis AND article, Bitsch, 
 
 \includepdf[pages=1]{BackPage.pdf}
 \end{document}
