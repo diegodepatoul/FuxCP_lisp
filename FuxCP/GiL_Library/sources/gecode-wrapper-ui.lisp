@@ -223,13 +223,7 @@
 
 (defmethod g-sorted (sp vars1 vars2 vars3)
     "Post the constraint that vars1 = sorted(vars2)"
-    (print "gecode-wrapper-ui g-sorted")
     (rel-sorted sp (vid vars1) (vid vars2) (vid vars3))
-)
-
-(defmethod g-min-value (sp (v1 int-var) (v2 int-var))
-    "returns the minimum value of v's domain" 
-    (min-value sp (vid v1) (vid v2))  
 )
 
 ;DOM
@@ -501,9 +495,7 @@
         (dolist (v v-list)
             (push (vid v) vids)
         )
-        (print (list "vids" vids))
         (let ((x (cffi::foreign-alloc :int :initial-contents vids)))
-            (print (list "x" x))
             (set-cost sp x (length vids))
         )
     )   

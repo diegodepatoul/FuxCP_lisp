@@ -549,14 +549,6 @@ void WSpace::cst_sorted(int n1, int* vids1, int n2, int* vids2, int n3, int* vid
 }
 
 /**
- Retrieves the minimum of the domain.
- */
-void WSpace::get_min(int vid1, int vid2) {
-    std::cout << "get_min in space_wrapper.cpp" << std::endl;
-    rel(*this, get_int_var(vid2), IRT_EQ, get_int_var(vid1).max());
-}
-
-/**
  Post the constraint that the number of variables in vids equal to val1 has relation rel_type
  with val2.
  */

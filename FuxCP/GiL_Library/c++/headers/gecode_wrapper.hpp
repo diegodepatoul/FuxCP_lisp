@@ -260,11 +260,6 @@ void rel_sum(void* sp, int vid, int n, int* vids);
 void rel_sorted(void* sp, int n1, int* vids1, int n2, int* vids2, int n3, int* vids3);
 
 /**
- Wraps the WSpace get_min method.
- */
-void get_min(void* sp, int vid1, int vid2);
-
-/**
  Wraps the WSpace cst_count_val_val method.
  */
 void count_val_val(void* sp, int n, int* vids, int val1, int rel_type, int val2);

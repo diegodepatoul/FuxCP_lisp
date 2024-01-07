@@ -521,12 +521,6 @@
         (rel-sum-aux sp vid (length vids) x))
 )
 
-(cffi::defcfun ("get_min" min-value) :void
-    (sp :pointer)
-    (vid1 :int)
-    (vid2 :int)
-)
-
 (cffi::defcfun ("rel_sorted" rel-sorted-aux) :void
     "Post the constraint that vid = sum(vids). n is the number of vars in vids."
     (sp :pointer)
@@ -545,7 +539,6 @@
         (y (cffi::foreign-alloc :int :initial-contents vids2))
         (z (cffi::foreign-alloc :int :initial-contents vids3))
         )
-        (print "gecode-wrapper g-sorted")
         (rel-sorted-aux sp (length vids1) x (length vids2) y (length vids3) z)
     )
 )
