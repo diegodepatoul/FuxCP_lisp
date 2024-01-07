@@ -154,7 +154,7 @@ In this section we define the variables used in the formalisation. Many of these
 Throughout this section, when reference is made to the past ("this variable used to be", "this variable keeps the same definition", ...), it means that reference is made to the previous definition of the variable, which was the one defined in T. Wafflard's work.
 
 \paragraph{Nota bene}
-Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are fully compatible with the new definitions of the variables, as discussed in~\ref{exploring-interaction-p-a}. 
+Please take into consideration that all the rules from T. Wafflard's thesis (which can be found in Appendix~\ref{appendix:complete-set-of-rule}) are fully compatible with the new definitions of the variables, as discussed in Section~\ref{exploring-interaction-p-a}. 
 
 %TODO
 \subsection{Variables and array notation} \label{Wafflard-variables}
@@ -171,8 +171,8 @@ We may now take a look at all the variables that are useful throughout this work
 The relationship between a variable and a voice is expressed as a function. $X(v)$ represents the variable $X$ of the voice $v$. The arguments of the function can be either:
 \begin{itemize}
     \item $\mathit{cf}$ - for linking the variable to the \cf.
-    \item $cp_1$ - for linking the variable to the second \cp.
-    \item $cp_2$ - for linking the variable to the third \cp.
+    \item $cp_1$ - for linking the variable to the first \cp.
+    \item $cp_2$ - for linking the variable to the second \cp.
     \item $a$ - for linking the variable to the lowest stratum.
     \item $b$ - for linking the variable to the intermediate stratum.
     \item $c$ - for linking the variable to the uppermost stratum.
@@ -185,49 +185,49 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
 \begin{equation}
     X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)    
 \end{equation}
-Note that this \textit{only applies to parts}, not strata.
-This is very important, as it allows T. Wafflard's rules for two voices to \textit{remain valid} with the new definition of the variables, and also because it simplifies all the notations.
+Note that this \textit{only applies to parts}, not strata. X could still apply to a stratum, but it would then be mentioned as X(s), where s is the layer. 
+This is very important, as it allows T. Wafflard's rules for two voices to \textit{remain valid} with the new definition of the variables, and also because it simplifies all the notations. 
 
 \paragraph{}
-\noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. All variables are defined accordingly, even the ones from T. Wafflard's thesis. However, the explanation of these reused variables is less detailed than in T. Wafflard's thesis: for more information on them, please refer to his work.}:
+The following is a summary\footnote{This list contains all the variables used in this thesis and a short description of them. All variables are defined accordingly, even the ones from T. Wafflard's thesis. However, the explanation of these reused variables is less detailed than in T. Wafflard's thesis: for more information on them, please refer to his work.} of the variables used in the formalisation and the type of voices to which they apply. X(v) means that the variable X can be linked to any voice, X(p) means that the variable only makes sense when linked to a part and X(s) means that the variable only makes sense when linked to a stratum.
 \begin{itemize}
-    \item \textbf{N}(v) - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis.
-    \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$. This variable is particular, as it needs two arguments to be meaningful.
-    \item \textbf{M}(v) - the melodic intervals of the voice v, 
-    \item \textbf{P}(p) - the motions of the part p,
-    \item \textbf{A}(p) - the boolean array representing whether the part p is the lowest stratum.
-    \item \textbf{IsCfB}(v) - the boolean array representing whether the cantus firmus is lower than the voice v,
-    \item \textbf{IsCons}(v) - to the boolean array representing whether the voice v is consonant with the lowest stratum or not,
-    \item \textbf{S}(p) - an array specific to the fifth species, representing for each beat what set of rules a note follows. For example $S(p)[0, 0]=3$ means that the very first note of the part p actually belongs to the third species. This is important since the fifth species is actually a mixture of all the others. As all other variables, there is one per part.
+    \item $\textbf{N}(v)$ - the notes (pitches) of the voice v. This is the same variable as the variable 'cp' in T. Wafflard's thesis.
+    \item \textbf{H}(v$_1$, v$_2$) - the harmonic intervals between voice v$_1$ and voice v$_2$: this variable is particular, as it needs two arguments to be meaningful,
+    \item $\textbf{M}(v)$ - the melodic intervals of the voice v, 
+    \item $\textbf{P}(p)$ - the motions of the part p,
+    \item $\textbf{A}(p)$ - the boolean array representing whether the part p is the lowest stratum.
+    \item $\textbf{IsCfB}(v)$ - the boolean array representing whether the cantus firmus is lower than the voice v,
+    \item $\textbf{IsCons}(v)$ - to the boolean array representing whether the voice v is consonant with the lowest stratum or not,
+    \item $\textbf{S}(p)$ - an array specific to the fifth species, representing for each beat what set of rules a note follows. For example $S(p)[0, 0]=3$ means that the very first note of the part p actually belongs to the third species. This is important since the fifth species is actually a mixture of all the others. As all other variables, there is one per part.
 \end{itemize}
 
 \noindent It also applies to \textit{some} constants, namely:
 \begin{itemize}
-    \item \textbf{species}(p) - the species of part p --- by definition, $species(\mathit{cf}) = 0$,
-    \item \textbf{n}(p) - the number of notes in part p,
-    \item \textbf{s$_\text{m}$}(p) - the maximum number of notes contained in part p, if all notes were quarter notes, excepted the last one (that is always a whole note),
-    \item \textbf{lb}(p) - the lower bound of the range of part p,
-    \item \textbf{ub}(p) - the upper bound of the range of part p,
-    \item $\mathcal{R}$(p) - the range of part p, i.e. $\mathcal{R}(p) := [lb(p), ub(p)]$,
-    \item \textbf{borrow}(p) - the borrowing scale\footnote{Remember that Fux mainly uses notes without a flat or sharp, which means that if the composition begins with a C, it will be written in Ionian mode, if it begins with a G, in Mixolydian mode, etc. Borrowing mode is a way for counterpoint to access notes that are not originally in its mode. For example, a counterpoint in E (i.e. Phrygian mode) that has the major mode (E major, i.e. Ionian E) as its borrowing mode will also have access to the notes F\#, C\#, G\# and D\#.} of part p,
-    \item $\mathcal{N}$(p) - the borrowed notes of part p, where $\mathcal{N}^{\mathcal{R}}(p) = \mathcal{N} \cap \mathcal{R}$
-    \item $\mathcal{B}$(p) - the set of beats\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} in a measure according to the species of part p,
-    \item \textbf{b}(p) - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
-    \item \textbf{d}(p) - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
-    \item \textbf{m} - the number of measures in the composition, which is the same for all voices,
-    \item \textbf{Dis} - the set of all consonances, i.e. $\{1, 2,5, 6, 10, 11\}$
-    \item \textbf{Cons} - the set of all consonances, i.e. $\{0, 3, 4, 7, 8, 9\}$, where Cons$_p$ are the perfect consonances, i.e. $\{0, 7\}$, and Cons$_{h\_triad}$ are the consonances of a harmonic triad as defined by Fux, i.e. $\{0, 3, 4, 7\}$.
+    \item $\textbf{species}(p)$ - the species of part p --- by definition, $species(\mathit{cf}) = 0$,
+    \item $\textbf{n}(p)$ - the number of notes in part p,
+    \item $\textbf{s$_\text{m}$}(p)$ - the maximum number of notes contained in part p, if all notes were quarter notes, excepted the last one (that is always a whole note),
+    \item $\textbf{lb}(p)$ - the lower bound of the range of part p,
+    \item $\textbf{ub}(p)$ - the upper bound of the range of part p,
+    \item $\mathcal{R}(p)$ - the range of part p, i.e. $\mathcal{R}(p) := [lb(p), ub(p)]$,
+    \item $\textbf{borrow}(p)$ - the borrowing scale\footnote{Remember that Fux mainly uses notes without a flat or sharp, which means that if the composition begins with a C, it will be written in Ionian mode, if it begins with a G, in Mixolydian mode, etc. Borrowing mode is a way for counterpoint to access notes that are not originally in its mode. For example, a counterpoint in E (i.e. Phrygian mode) that has the major mode (E major, i.e. Ionian E) as its borrowing mode will also have access to the notes F\#, C\#, G\# and D\#.} of part p,
+    \item $\mathcal{N}(p)$ - the borrowed notes of part p, where $\mathcal{N}^{\mathcal{R}}(p) = \mathcal{N} \cap \mathcal{R}$
+    \item $\mathcal{B}(p)$ - the set of beats on which a note is played\footnote{To make it clearer: for the first species, the only beat in a measure is $\{0\}$, as there is only a note on the first beat. For the second species, the set of beats is $\{0, 2\}$. For the third species, it is: $\{0, 1, 2, 3\}$. For the fourth species: $\{0, 2\}$. And for the fifth species: $\{0, 1, 2, 3\}$.} according to the species of part p,
+    \item $\textbf{b}(p)$ - the number of beats\footnote{Thus, it is always equal to the size of the set $\mathcal{B}$(p).} in a measure according to the species of part p,
+    \item $\textbf{d}(p)$ - the duration of a note\footnote{For the first species, it is equal to $1$, as each note is a whole note. For the second species, it is $\dfrac{1}{2}$, for the third, it is $\dfrac{1}{4}$, for the fourth, it is $\dfrac{1}{2}$, and for the fifth, it is $\dfrac{1}{4}$. It is always equal to $\dfrac{1}{b(p)}$.} according to the species of part p,
+    \item $\textbf{m}$ - the number of measures in the composition, which is the same for all voices,
+    \item $\textbf{Dis}$ - the set of all consonances, i.e. $\{1, 2,5, 6, 10, 11\}$
+    \item $\textbf{Cons}$ - the set of all consonances, i.e. $\{0, 3, 4, 7, 8, 9\}$, where Cons$_p$ are the perfect consonances, i.e. $\{0, 7\}$, and Cons$_{h\_triad}$ are the consonances of a harmonic triad as defined by Fux, i.e. $\{0, 3, 4, 7\}$.
 \end{itemize}
 Please note that the constants can only be linked to the parts, never to a stratum. Indeed, it would have no sense to speak about the species of a stratum or about the extended domain of a stratum.
 
-The costs are also affected by the linking, except for $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). The latter are global variables that exist only once. For a summary of all costs, please refer to Table \ref{tab:cp-params}.
+The formalisation also uses the variables $\mathcal{C}$ (the cost factors) and $\tau$ (the total cost). A summary of all the costs can be found in Table \ref{tab:cp-params}. To refer to a given cost, the formalisation uses subset notation. For example, 'example cost' is written as $\mathcal{C}_{\text{example}}$.
 
 \paragraph{}
-To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] < 60$ would mean: the pitch of the first note \textit{of all parts} must be lower than a middle C (whose representation in MIDI is 60).
+To make sure that those notations are clear, here are some examples: the notation $N(a)$ corresponds to the variable representing the notes (pitches) of the lowest stratum, whereas $N(\mathit{cf})$ are the notes of the \cf. The species of the second counterpoint is written $species(cp_2)$. If only $N$ is written, then the equation in which $N$ is located holds true for any possible \textit{part}. That is, the relationship $N[0, 0] = 60$ would mean: the pitch of the first note \textit{of all parts} must be a middle C (whose representation in MIDI is 60).
 
 \subsubsection{Note regarding the fourth species}\label{nota-bene-4th-species} Let's recall that the fourth species behaves in a particular way compared to the other species. First of all, it is exclusively composed of syncopations. Its notes are half notes, always linked two by two from bar to bar, producing a pitch change in the middle of the measure, on the upbeat. This gives the impression of hearing a whole note that is constantly shifted by two beats, in other words: syncopation.
 
-Concretely, and as Fux explains it, the syncopation means that the beats of the fourth species should be considered as "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[0, j] becomes H[2, j] and H[2, j] becomes H[0, j+1]). To avoid duplicating each of the equations (a first equation if it is not of the fourth species and a second equation if it is of the fourth species) and also to avoid equations that are too complex and difficult to read, it was decided that the index swap would be implicit.
+Concretely, and as Fux explains it, the syncopation means that the beats of the fourth species should be considered as "shifted": its upbeat should be considered as the downbeat, and its downbeat as the upbeat of the previous measure. This means that in the majority of cases, the equations for the fourth species would have to be rewritten, swapping the 0 and 2 indexes (H[0, j] becomes H[2, j] in the fourth species and H[2, j] becomes H[0, j+1] in the fourth species). To avoid duplication of the equations (a first equation for all species and a second equation for the fourth species) and also to avoid equations that were too complex and difficult to read, it was decided to make the index swap implicit.
 
 Here is an example: $H[0, 0] = 7$ should be understood as $H[2, 0] = 7$ if it concerns a fourth-species counterpoint.
 
@@ -249,9 +249,9 @@ $\{C_4, D_4, E_4, F_4, G_4, A_4, B_4\} \equiv \{60, 62, 64, 65, 67, 69, 71, 72\}
 
 \vspace{.5cm} \noindent \textbf{H}$_{(\text{abs})}$(v$_1$, v$_2$) \hspace{.2cm} \texttt{h-intervals}\hspace{.2cm} \texttt{h-intervals-abs}\hspace{.2cm} \texttt{h-intervals-to-cf}\hspace{.2cm}  ...
 
-This variable is an array of size $s_m$ and represents the harmonic intervals between voice v$_1$ and voice v$_2$. It is the only variable that is associated with two different voices. So $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of voice $v_1$ and the \textit{first} beat of voice $v_2$. $v_1$ can be a part and $v_2$ can be a stratum, since you can calculate harmonic intervals between a part and a stratum. If $v_2$ is not specified, it is equal to $a$ by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value for $v_2$ was chosen because it is the most commonly used, and for a good reason: the most relevant harmonic intervals are those between the voices and the lowest stratum.
+This variable is an array of size $s_m$ and represents the harmonic intervals between voice v$_1$ and voice v$_2$. It is the only variable that is associated with two different voices. So $H(v1,v2)[i,j]$ represents the intervals between the $i$th beat of the $j$th measure of voice $v_1$ and the \textit{first} beat of the $j$tj measue of voice $v_2$. $v_1$ can be a part and $v_2$ can be a stratum, since you can calculate harmonic intervals between a part and a stratum. If $v_2$ is not specified, it is equal to $a$ by default. In other words, $H(v_1)$ represents the intervals between the voice $v_1$ and the lowest stratum: $H(v_1) \equiv H(v_1,a)$. This default value was chosen because the most relevant harmonic intervals are those between the voices and the lowest stratum.
 
-For example, here are the values of the intervals of the harmonic triad: a minor third is 3, a major third is 4, a fifth is 7 and an octave is 12 (or 0 if modulo).
+Some important values the H variable can take: a minor third is 3, a major third is 4, a fifth is 7 and an octave is 12 (or 0 if modulo).
 
 \begin{equation}
 \begin{aligned}
@@ -291,10 +291,10 @@ M(p) (i.e. when related to a part) represents the melodic intervals of the part 
 \end{itemize}
 
 \paragraph{Why is it complicated to consider melodic intervals of strata?}
-Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that strata are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since they are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
+Since strata don't have melodic intervals \textit{per se} (they actually do have melodic intervals, but it doesn't really make sense to consider them), we need to redefine what we mean when speaking about the melodic intervals of a stratum. If it is not clear why strata have no inherent melodic intervals, remember that strata are an abstract concept that is used only in mathematical relationships (and respective constraints). People who listen to the music hear the different parts (be they different tessitura, different instruments, ...) and the way these parts interact together in melodic movements and harmonic convergences, rendering a beautiful music, or not. Strata are an abstraction of the harmonic interactions between the parts, and because of this, they are a consequence of the parts: they exist because the parts exist, and not the other way round! And since strata are defined according to harmonic principles (as was suggested before, they are successions of vertical alignments), speaking about the proper \textit{melodic} intervals of a stratum makes no sense. One could then conclude that melodic intervals do not apply to strata, and go ahead. Nevertheless, Fux \textit{does} speak about computing the motions between a part and the lowest stratum. And to be able to compute motions, one needs to compare two different melodic intervals. So we need to have a definition for the melodic intervals of a stratum. 
 
 \paragraph{Definition of M(s), the melodic intervals of a stratum}
-To understand how we arrive at a definition for the melodic intervals of a stratum, we need to remember that the lowest stratum is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest stratum as the melodic intervals that lead to all those lowest-sounding notes. We thus define the melodic intervals of the lowest stratum to be: the interval that lead to the note of the lowest stratum in the corresponding part. Let's make this clearer with an example. Let's consider that the lowest stratum consists of the notes [C$_{cp_1}$, E$_{\mathit{cf}}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), that in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and that in the second \cps the interval that lead to the G was a -4 (getting down of two tones). The corresponding melodic intervals array of the lowest stratum would then be [+0, -2]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
+To understand how we arrive at a definition for the melodic intervals of a stratum, we need to remember that the lowest stratum is just the collection of all the lowest-sounding notes in the composition. It is therefore quite logical to think of the melodic intervals of the lowest stratum as the melodic intervals that lead to all those lowest-sounding notes. We thus define the melodic intervals of the lowest stratum to be: the interval that lead to the note of the lowest stratum in the corresponding part. Let's make this clearer with an example. Let's consider that the lowest stratum consists of the notes [C$_{cp_1}$, E$_{\mathit{cf}}$, G$_{cp_2}$] (where C$_{cp_1}$ indicates that the C belongs to the first \cp), that in the \cfs the interval that lead to the E is a +0 (i.e. staying on the same note), and that in the second \cps the interval that lead to the G was a -4 (getting down of two tones). The corresponding melodic intervals array of the lowest stratum would then be [+0, -4]. This example has been written again in a more visual way in equation~\ref{eq:defining-m-intervals-bass} to make it easier to understand. To the left of the equation is the pitch array of each voice mentioned. To the right of the equation is the melodic interval array of each voice mentioned. The numbers in bold red are those corresponding to the lowest stratum.
 
 
 \begin{equation}
@@ -302,7 +302,7 @@ To understand how we arrive at a definition for the melodic intervals of a strat
     N(\mathit{cf}) &= [64,\quad  \textcolor{darkred}{\textbf{64}},\quad  71] \quad 
     &M_{brut}(\mathit{cf}) &= [\textcolor{darkred}{\textbf{+0}}, \quad +7]\\
     N(cp_1) &= [\textcolor{darkred}{\textbf{60}},\quad  67,\quad  74] \quad 
-    &M_{brut}(cp_2) &= [+7, \quad +7]\\
+    &M_{brut}(cp_1) &= [+7, \quad +7]\\
     N(cp_2) &= [72,\quad  71,\quad  \textcolor{darkred}{\textbf{67}}] \quad 
     &M_{brut}(cp_2) &= [-1, \quad \textcolor{darkred}{\textbf{-4}}]\\
     \\
@@ -322,7 +322,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
         \begin{cases}
             M_{brut}(\mathit{cf})[0][j] & \text{if } A(\mathit{cf})[j+1]\\
             M_{brut}(cp_1)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_1)[j+1]\\
-            M_{brut}(cp_2)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_2)[j+1]\\
+            M_{brut}(cp_2)[\text{max}(\mathcal{B}(cp_2))][j] & \text{if } A(cp_2)[j+1]\\
         \end{cases}
     \end{aligned}
 \end{equation}
@@ -348,7 +348,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
 The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a part p with respect to the lowest stratum. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
-However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when considering costs (it is bad to have direct motions, but it obviously should not be bad to be the lowest stratum), and when considering some constraints. To tackle this problem, the motions of a part are now equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section~\ref{is-lowest}). This value can be considered as a 'non-applicable' value: this part has no motion as it is currently the lowest stratum.
+However, a problem arises when computing the motions of the part that is also the lowest stratum in some measures. When this happens, we end up calculating motions between a part and itself. Any part is inevitably moving in direct motion with itself, and this situation leads to only direct motions being calculated. This becomes problematic when using the P array in some constraints. To tackle this problem, the motions of a part are equal to -1 when the part is also the lowest stratum (which is denoted A(p), see section~\ref{is-lowest}). This value can be considered as a 'non-applicable' value: this part has no motion with respect to the lowest stratum, as it is currently the lowest stratum.
 
 \begin{equation}
 \begin{aligned}
@@ -386,8 +386,8 @@ For each beat in the composition:
 \vspace{.5cm} \noindent \textbf{A}(p) \hspace{.cm} \texttt{is-lowest} \label{is-lowest}
 % expliquer en EN que on peut pas lambda(cp1) ET lambda(cf)
 
-A is an array of boolean variables with a size of $m$ (the number of measures), where each variable indicates whether the corresponding part is the lowest stratum. In other words, $A(p)$ is true if p is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
-It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it \textit{is} indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those two is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well, see~\ref{subsubsection:one-part-per-stratum} for the details.
+A is an array of boolean variables of size $m$ (the number of measures), where each variable indicates whether the part p is the lowest stratum. In other words, $A(p)$ is true if p is the lowest stratum. The notation "A" was chosen as the uppercase of "a", which itself represents the lowest stratum. 
+It is also worth to be noted that only one of the parts can be the lowest stratum at the time. This does not mean that two parts cannot equal the lowest stratum at the same time, it is indeed possible that two parts blend in unison in the final chord, and that both pitches are the lowest sounding notes. It means that only one of those parts is going to be considered to \textit{be} the lowest stratum (and the other one will be the intermediate stratum). This is needed in order for motions to work well, see Section~\ref{subsubsection:one-part-per-stratum} for the details.
 
 Here is the mathematical definition of the A array:
 \begin{equation}
@@ -405,13 +405,13 @@ A(cp_1)[j] &= \,
 \end{cases}\\
 A(cp_2)[j] &= \,  
 \begin{cases}
-    \top & \text{if } \neg A(\mathit{cf}) \land \neg A(cp_1)\\
+    \top & \text{if } \neg A(\mathit{cf})[j] \land \neg A(cp_1)[j]\\
     \bot & \text{else }
 \end{cases}
 \end{aligned}
 \end{equation}
 
-As can be seen in these equations, only the downbeat of each measure is taken into account when computing the A array. The reason for this is that it is the downbeat note that determines which chord will be \textit{the} chord of the measure, and the other beats are just fioritures. Another reason for this is also that it is only going to serve in contexts where the first note of the measure is relevant.
+As can be seen in these equations, only the downbeat of each measure is taken into account when computing the A array. The reason for this is that it is the downbeat note that determines which chord will be the chord of the measure, while the other beats are just fioritures. Another reason for this is that the A variable only serves in contexts where the first note of the measure is relevant.
 
 \paragraph{}
 In practice, there is only an \texttt{is-not-bass} array in the code (which is then equal to $\neg A$), as it is almost always more useful to know if a part is \textit{not} the lowest stratum than knowing if it is the lowest one. 
