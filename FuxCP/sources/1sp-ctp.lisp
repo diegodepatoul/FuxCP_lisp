@@ -1,7 +1,7 @@
 (in-package :fuxcp)
 
-; Author: Thibault Wafflard
-; Date: June 3, 2023
+; Author: Thibault Wafflard, adapted by Anton Lamotte
+; Date: June 3, 2023, adapted January 2024
 ; This file contains the function that adds all the necessary constraints to the first species.
 
 ;;==========================#
@@ -76,9 +76,8 @@
         ((1 3v-1sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
         ((2 3v-2sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
         ((3 3v-3sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
-        ;(otherwise (error "Species not supported"))
     )
-    ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_CONS_VAR)
+
     ; no unison between the cantus firmus and the counterpoint unless it is the first note or the last note
     (print "No unison...")
     (add-no-unison-cst (first (notes counterpoint)) *cf)

@@ -1,13 +1,13 @@
 (in-package :fuxcp)
 
-; Author: Thibault Wafflard
-; Date: June 3, 2023
-; This file contains the function that adds all the necessary constraints to the first species.
+; Author: Anton Lamotte
+; Date: January 2024
+; This file contains the function that adds all the necessary constraints to link the cantus firmus to the lowest stratum.
 
 ;;==========================#
-;; FIRST SPECIES            #
+;; CANTUS FIRMUS            #
 ;;==========================#
-(defun fux-cp-cf (cantus-firmus &optional (species 1))
+(defun fux-cp-cf (cantus-firmus &optional (species 0))
     (print "########## CANTUS FIRMUS RULES ##########")
     "Create the CSP for the first species of Fux's cantus-firmus."
 
@@ -21,8 +21,6 @@
     ; array of IntVar representing the absolute intervals % 12 between the cantus firmus and the cantus-firmus
     (setf (first (h-intervals cantus-firmus)) (gil::add-int-var-array *sp* *cf-len 0 11))
     (create-h-intervals (first (notes cantus-firmus)) (first (notes *lowest)) (first (h-intervals cantus-firmus)))
-    ;(create-h-intervals (first (notes *upper-voice)) (first (notes *lowest-notes)) (first (h-intervals *upper-voice)))
-    ;(create-h-intervals (first (notes *lowest-notes))  *cf                      (first (h-intervals *lowest-notes )))
 
     ; creating melodic intervals array
     (print "Creating melodic intervals array...")
@@ -42,22 +40,13 @@
     (print "Creating motion array...")
     (setf (first (motions cantus-firmus)) (gil::add-int-var-array *sp* *cf-last-index -1 2)) ; 0 = contrary, 1 = oblique, 2 = direct/parallel
     (setf (first (motions-cost cantus-firmus)) (gil::add-int-var-array-dom *sp* *cf-last-index *motions-domain*))
-    ;(create-motions (first (m-intervals-brut cantus-firmus)) *cf-brut-m-intervals (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)))
-    ;(create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *lowest)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (is-not-lowest cantus-firmus))
     (create-motions (first (m-intervals-brut cantus-firmus)) (first (m-intervals-brut *lowest)) (first (motions cantus-firmus)) (first (motions-cost cantus-firmus)) (is-not-lowest cantus-firmus))
     ;============================================ HARMONIC CONSTRAINTS ============================
     (print "Posting constraints...")
 
     ; for all intervals between the cantus firmus and the cantus-firmus, the interval must be a consonance
     (print "Harmonic consonances...")
-    (case species
-        ((1 ) (progn
-            (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)))
-        ))
-        ((2 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)) PENULT_THESIS_VAR))
-        ((3 ) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)) PENULT_1Q_VAR))
-        ;(otherwise (error "Species not supported"))
-    )
+    (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals cantus-firmus)))
 
     (if (= *N-PARTS 2) (progn 
         ; must start with a perfect consonance
@@ -69,10 +58,11 @@
         (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
     ))
 
-    ; if penultimate measure, a major sixth or a minor third must be used
-    ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")    
     (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals cantus-firmus))))
+
+    ;==================================== MELODIC CONSTRAINTS ===========================
+    ; There are no melodic constraints for the cantus firmus, as its notes are already fixed
 
     ;==================================== MOTION CONSTRAINTS ============================
     (print "Motion constraints...")

@@ -1,7 +1,7 @@
 (in-package :fuxcp)
 
-; Author: Thibault Wafflard
-; Date: June 3, 2023
+; Author: Thibault Wafflard, adapted by Anton Lamotte
+; Date: June 3, 2023, adapted January 2024
 ; This file contains the function that adds all the necessary constraints to the fourth species.
 
 ;;==========================#
