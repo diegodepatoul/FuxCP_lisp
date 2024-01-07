@@ -1,4 +1,4 @@
-\chapter{Defining some concepts and redefining the variables} \label{chapter:defining-some-concepts-and-redifing-the-variables}
+\chapter{Definition of concepts and variables} \label{chapter:defining-some-concepts-and-redifing-the-variables}
 \section{Voices, parts and strata}\label{section:parts-and-strata}
 Before we start this section, we need to look at some vocabulary to make sure we understand what we are discussing. The most important definitions we introduce are the concepts of \textit{parts} and \textit{strata}. The need for these definitions arises from the increasing complexity of the rules of counterpoint when it is generalised to three voices. Indeed, the rules are no longer (as we shall see later) concerned solely with the counterpoints and the \cf, but also with new concepts, such as that referred to by Fux as 'the lowest voice'. As the term 'voice' is too generic (it is used in Fux's text to describe notions as different as 'counterpoint', '\cf', voice range and the so called 'lowest voice'), we need to create a precise vocabulary that is different from the word 'voice' to talk about these new concepts. 
 
@@ -180,7 +180,11 @@ The relationship between a variable and a voice is expressed as a function. $X(v
 \noindent For example, $X(\mathit{cf})$ refers to the variable $X$ of the \cf.
 
 \paragraph{}
-When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means that we are speaking about the variable X of all parts. Formally, $X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)$. This is very important, as it makes it possible for T. Wafflard's rules for two voices to \textit{remain valid} even with the new definition of the variables.
+When a variable is not explicitly linked to a voice, it is implied that the relation expressed for it is true for all \textit{parts}. In other words, if the variable $X$ is written without any precision, it means that we are speaking about the variable X of all parts. Formally:
+\begin{equation}
+    X \equiv \forall v \in \{\mathit{cf}, cp_1, cp_2\}: X(v)    
+\end{equation}
+This is very important, as it allows T. Wafflard's rules for two voices to \textit{remain valid} with the new definition of the variables, and also because it simplifies all the notations.
 
 \paragraph{}
 \noindent As mentioned before, linking the variables and the voices is something that applies to all variables, namely\footnote{This list contains all the variables used in this thesis and a short description of them. All variables are defined accordingly, even the ones from T. Wafflard's thesis. However, the explanation of these reused variables is less detailed than in T. Wafflard's thesis: for more information on them, please refer to his work.}:
@@ -192,7 +196,7 @@ When a variable is not explicitly linked to a voice, it is implied that the rela
     \item \textbf{A}(p) - the boolean array representing whether the part p is the lowest stratum.
     \item \textbf{IsCfB}(v) - the boolean array representing whether the cantus firmus is lower than the voice v,
     \item \textbf{IsCons}(v) - to the boolean array representing whether the voice v is consonant with the lowest stratum or not,
-    \item \textbf{S}(p) - an array specific to the fifth species, representing for each beat what set of rules a note follows. For example $S[0, 0]=3$ means that the very first note of the fifth species counterpoint actually belongs to the third species. This is important since the fifth species is actually a mixture of all the others.
+    \item \textbf{S}(p) - an array specific to the fifth species, representing for each beat what set of rules a note follows. For example $S(p)[0, 0]=3$ means that the very first note of the part p actually belongs to the third species. This is important since the fifth species is actually a mixture of all the others. As all other variables, there is one per part.
 \end{itemize}
 
 \noindent It also applies to \textit{some} constants, namely:
