@@ -237,7 +237,7 @@ Here is an example: $H[0, 0] = 7$ should be understood as $H[2, 0] = 7$ if it co
 
 N is the array corresponding the pitches of each voice. Its size is $s_m$. It is the same array as the one named \texttt{cp} in T. Wafflard's thesis, and it got renamed to \texttt{N} (for notes), for the sake of clarity. As we have now three of those arrays (one for the first counterpoint, one for the second counterpoint, and even one for the \cf), it needed a less ambiguous name than the one it had before. 
 
-The notes in array N are written in MIDI format. This means that a middle C ($C_4$ in scientific pitch notation) is represented by 60, and each semitone has a value of 1. So, starting from the middle C, we have:
+The notes in array N are written in MIDI format. This means that a middle C ($C_4$~in scientific pitch notation) is represented by 60, and each semitone has a value of 1. So, starting from the middle C, we have:
 
 $\{C_4, D_4, E_4, F_4, G_4, A_4, B_4\} \equiv \{60, 62, 64, 65, 67, 69, 71, 72\}$.
 
@@ -274,13 +274,11 @@ M(p) (i.e. when related to a part) represents the melodic intervals of the part 
 \begin{equation}
     \begin{aligned}
         &\forall x \in \{1, 2\}, \forall i \in \B, \forall j \in [0, m-x) \colon \\
-        &M^x_{brut}[i, j] = N[(i+xd)\ mod\ 4, j+nextm(i+xd)] - N[i, j]\\
-        &M_{brut}(a)[j] = \,  
+        &M^x_{brut}[i, j] = \,  
         \begin{cases}
-            M_{brut}(\mathit{cf})[0][j] & \text{if } A(\mathit{cf})[j+1]\\
-            M_{brut}(cp_1)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_1)[j+1]\\
-            M_{brut}(cp_2)[\text{max}(\mathcal{B}(cp_1))][j] & \text{if } A(cp_2)[j+1]\\
-        \end{cases}
+            N[i+xd, j] - N[i, j] & \text{if } i+xd < 4\\
+            N[((i+xd) \text{ mod } 4), j+1] - N[i, j] & \text{if } i+xd \geq 4\\
+        \end{cases}\\
         &M^x[i, j] = \left|M^x_{brut}[i, j]\right|\\
         &\text{where } M^x_{brut}[i, j] \in [-12, 12], \quad M^x[i, j] \in [0, 11] 
     \end{aligned}
@@ -416,3 +414,8 @@ As can be seen in these equations, only the downbeat of each measure is taken in
 \paragraph{}
 In practice, there is only an \texttt{is-not-bass} array in the code (which is then equal to $\neg A$), as it is almost always more useful to know if a part is \textit{not} the lowest stratum than knowing if it is the lowest one. 
 
+\vspace{.5cm} \noindent \textbf{IsCfB}(p) \hspace{.cm} \texttt{is-cf-lower-arr} \label{is-cf-b}
+TODO
+
+\vspace{.5cm} \noindent \textbf{IsCons}(p) \hspace{.cm} \texttt{is-cons-arr} \label{is-cons}
+TODO
