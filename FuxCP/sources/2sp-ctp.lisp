@@ -81,8 +81,8 @@
     ; creating boolean is cantus firmus bass array
     (print "Creating is cantus firmus bass array...")
     ; array of BoolVar representing if the cantus firmus is lower than the arsis counterpoint
-    (setf (third (is-cf-bass-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
-    (create-is-cf-lower-arr (third (notes counterpoint)) (butlast *cf) (third (is-cf-bass-arr counterpoint)))
+    (setf (third (is-cf-lower-arr counterpoint)) (gil::add-bool-var-array *sp* *cf-last-index 0 1))
+    (create-is-cf-lower-arr (third (notes counterpoint)) (butlast *cf) (third (is-cf-lower-arr counterpoint)))
 
     ; creating boolean is cantus firmus neighboring the counterpoint array
     (print "Creating is cantus firmus neighboring array...")
@@ -115,7 +115,7 @@
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
         ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this <- this was written by Thibault
-        (add-penult-cons-cst (lastone (third (is-cf-bass-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
+        (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
     ))
 
     (if (eq *N-PARTS 3) (progn
@@ -172,7 +172,7 @@
     ; no battuta kind of motion
     ; i.e. contrary motion to an *octave, lower voice up, higher voice down, counterpoint melodic interval < -4
     (print "No battuta kind of motion...")
-    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-bass-arr counterpoint)))
+    (add-no-battuta-cst (third (motions counterpoint)) (first (h-intervals counterpoint)) (third (m-intervals-brut counterpoint)) (third (is-cf-lower-arr counterpoint)))
 
 
 

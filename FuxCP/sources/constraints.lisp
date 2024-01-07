@@ -500,12 +500,12 @@
 )
 
 
-; create the boolean array @is-cf-bass-arr indicating if the cantus firmus is the bass or not
-(defun create-is-cf-lower-arr (cp cf is-cf-bass-arr)
+; create the boolean array @is-cf-lower-arr indicating if the cantus firmus is the bass or not
+(defun create-is-cf-lower-arr (cp cf is-cf-lower-arr)
     (loop
         for p in cp
         for q in cf
-        for b in is-cf-bass-arr
+        for b in is-cf-lower-arr
         do
             (gil::g-rel-reify *sp* p gil::IRT_GQ q b) ; b = (p >= q)
     )
@@ -545,10 +545,10 @@
 
 ; create an array of BoolVar
 ; 1 -> inter(cp, cf) <= 4 && cf getting closer to cp
-(defun create-is-nbour-arr (h-intervals-abs is-cf-bass-arr cf-brut-m-intervals is-nbour-arr)
+(defun create-is-nbour-arr (h-intervals-abs is-cf-lower-arr cf-brut-m-intervals is-nbour-arr)
     (loop
         for hi in (butlast h-intervals-abs)
-        for bass in (butlast is-cf-bass-arr)
+        for bass in (butlast is-cf-lower-arr)
         for mi in cf-brut-m-intervals
         for n in is-nbour-arr
         do
@@ -1028,14 +1028,14 @@
 ;   not(is-cf-bass[0, 0]) => h-interval[0, 0] = 0
 ;   not(is-cf-bass[-1, -1]) => h-interval[-1, -1] = 0
 ; @h-interval: the harmonic interval array
-; @is-cf-bass-arr: boolean variables indicating if cf is at the bass
-(defun add-tonic-tuned-cst (h-interval is-cf-bass-arr)
+; @is-cf-lower-arr: boolean variables indicating if cf is lower than the given ctp
+(defun add-tonic-tuned-cst (h-interval is-cf-lower-arr)
     (let (
-        (bf-not (gil::add-bool-var *sp* 0 1)) ; for !(first is-cf-bass-arr)
-        (bl-not (gil::add-bool-var *sp* 0 1)) ; for !(lastone is-cf-bass-arr)
+        (bf-not (gil::add-bool-var *sp* 0 1)) ; for !(first is-cf-lower-arr)
+        (bl-not (gil::add-bool-var *sp* 0 1)) ; for !(lastone is-cf-lower-arr)
     )
-        (gil::g-op *sp* (first is-cf-bass-arr) gil::BOT_EQV FALSE bf-not) ; bf-not = !(first is-cf-bass-arr)
-        (gil::g-op *sp* (lastone is-cf-bass-arr) gil::BOT_EQV FALSE bl-not) ; bl-not = !(lastone is-cf-bass-arr)
+        (gil::g-op *sp* (first is-cf-lower-arr) gil::BOT_EQV FALSE bf-not) ; bf-not = !(first is-cf-lower-arr)
+        (gil::g-op *sp* (lastone is-cf-lower-arr) gil::BOT_EQV FALSE bl-not) ; bl-not = !(lastone is-cf-lower-arr)
         (gil::g-rel-reify *sp* (first h-interval) gil::IRT_EQ 0 bf-not gil::RM_IMP) ; bf-not => h-interval[0, 0] = 0
         (gil::g-rel-reify *sp* (lastone h-interval) gil::IRT_EQ 0 bl-not gil::RM_IMP) ; bl-not => h-interval[-1, -1] = 0
     )
@@ -1078,10 +1078,10 @@
      (* (factorial k) (factorial (- n k)))))
 
 ; add a constraint such that there is no seventh harmonic interval if cf is at the top
-(defun add-no-seventh-cst (h-intervals is-cf-bass-arr &optional (is-cst-arr nil))
+(defun add-no-seventh-cst (h-intervals is-cf-lower-arr &optional (is-cst-arr nil))
     (loop
     for h in h-intervals
-    for b in is-cf-bass-arr
+    for b in is-cf-lower-arr
     for i from 0 below (length h-intervals)
     do
         (let (
@@ -1103,11 +1103,11 @@
 ; add a constraint such that there is no second harmonic interval if:
 ;   - cf is at the bass AND
 ;   - octave/unison harmonic interval precedes it
-(defun add-no-second-cst (h-intervals-arsis h-intervals-thesis is-cf-bass-arr &optional (is-cst-arr nil))
+(defun add-no-second-cst (h-intervals-arsis h-intervals-thesis is-cf-lower-arr &optional (is-cst-arr nil))
     (loop
     for ia in h-intervals-arsis
     for it in h-intervals-thesis
-    for b in is-cf-bass-arr
+    for b in is-cf-lower-arr
     for i from 0 below (length h-intervals-arsis)
     do
         (let (
@@ -1523,12 +1523,12 @@
 ;   - contrary motion
 ;   - skip in the upper voice
 ;   - lead to an octave
-(defun add-no-battuta-cst (motions h-intervals m-intervals-brut is-cf-bass-arr &optional (is-cst-arr nil))
+(defun add-no-battuta-cst (motions h-intervals m-intervals-brut is-cf-lower-arr &optional (is-cst-arr nil))
     (loop
     for move in motions
     for hi in (rest h-intervals)
     for mi in m-intervals-brut
-    for b in (butlast is-cf-bass-arr)
+    for b in (butlast is-cf-lower-arr)
     for i from 0 below *cf-last-index
     do
         (let (
@@ -1563,13 +1563,13 @@
 ;   - contrary motion
 ;   - skip in the upper voice
 ;   - lead to an octave
-(defun add-no-battuta-bis-cst (motions h-intervals m-intervals-brut cf-brut-m-intervals is-cf-bass-arr &optional (is-cst-arr nil))
+(defun add-no-battuta-bis-cst (motions h-intervals m-intervals-brut cf-brut-m-intervals is-cf-lower-arr &optional (is-cst-arr nil))
     (loop
     for move in motions
     for hi in (rest h-intervals)
     for mi in m-intervals-brut
     for cf-mi in cf-brut-m-intervals
-    for b in (butlast is-cf-bass-arr)
+    for b in (butlast is-cf-lower-arr)
     for i from 0 below *cf-last-index
     do
         (let (

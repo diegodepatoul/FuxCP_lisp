@@ -79,7 +79,7 @@
     ;                                    COSTS                                       ;
     ;================================================================================;
     ; Cost #1 : no successive perfect consonances
-    (setf succ-p-cons-cost (gil::add-int-var-array-dom *sp* (* 3 *cf-last-index) *succ-p-cons-domain*))
+    (setf succ-p-cons-cost (gil::add-int-var-array-dom *sp* (* 3 *cf-last-index) (append '(0) (getparam-val 'succ-p-cons-cost))))
     (setf succ-p-cons-cost-index 0)
     (loop 
         ; for each possible pair or parts
@@ -105,12 +105,15 @@
                 )
                 (incf succ-p-cons-cost-index *cf-last-index)
                 
-                (if (member 4 (list (species v1) (species v2)))
-                    ; if one voice is of the fourth species the last chord was not created yet, due to the delaying of the fourth specues
-                    (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) 
-                )
 
                 (create-h-intervals (first (notes v1)) (first (notes v2)) h-intervals-1-2)
+                (if (member 4 (list (species v1) (species v2)))
+                    ; if one voice is of the fourth species the last chord was not created yet, due to the delaying of the fourth species
+                    (create-h-intervals (last (first (notes v1))) (last (first (notes v2))) (last h-intervals-1-2)) 
+                )
+                ; this works for the 4th species too as its notes array is delayed by a measure too. 
+                ; -> (first (first notes)) corresponds to the first beat of the second measure; which in the fourth species is equal to the third beat of the first species, so the harmonic interval is correctly calculated between the third beat of the 4th species ctp. and the first beat of the other ctp.
+
                 (create-is-p-cons-arr h-intervals-1-2 is-cons-arr-1-2)
                 (cond 
                     ((and (/= 2 (species v1)) (/= 2 (species v2)) (/= 4 (species v1)) (/= 4 (species v2))) ; if both voices are not from the 2nd nor from the 4th species

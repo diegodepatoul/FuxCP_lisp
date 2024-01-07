@@ -37,10 +37,10 @@
 
 ; define all the constants that are going to be used
 (defun define-global-constants ()
-    ;; CONSTANTS
-    (defparameter CANTUS-FIRMUS 0)
     ; Number of costs added
     (defparameter *n-cost-added 0)
+
+    ;; CONSTANTS
     ; Motion types
     (defparameter DIRECT 2)
     (defparameter OBLIQUE 1)
@@ -137,6 +137,7 @@
     (defparameter *con-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'con-motion-cost)))
     (defparameter *obl-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'obl-motion-cost)))
     (defparameter *dir-motion-cost* (gil::add-int-var-dom *sp* (getparam-val 'dir-motion-cost)))
+    ; 3v general costs
     (defparameter *succ-p-cons-cost* (gil::add-int-var-dom *sp* (getparam-val 'succ-p-cons-cost)))
     (defparameter *variety-cost* (gil::add-int-var-dom *sp* (getparam-val 'variety-cost)))
     (defparameter *h-triad-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-triad-cost)))
@@ -146,6 +147,7 @@
     (defparameter *non-cambiata-cost* (gil::add-int-var-dom *sp* (getparam-val 'non-cambiata-cost)))
     (defparameter *m2-eq-zero-cost* (gil::add-int-var-dom *sp* (getparam-val 'm2-eq-zero-cost)))
     (defparameter *no-syncopation-cost* (gil::add-int-var-dom *sp* (getparam-val 'no-syncopation-cost)))
+    ; 3v species specific costs
     (defparameter *h-triad-3rd-species-cost* (gil::add-int-var-dom *sp* (getparam-val 'h-triad-3rd-species-cost)))
 
     ;; Params domains
@@ -157,11 +159,10 @@
             (list 0)
         ))
     )
-
-    (defparameter *succ-p-cons-domain* (list 0 (getparam 'succ-p-cons-cost)))
 )
-; @completely new or reworked
+
 (defclass stratum-class () (
+    ; represents a stratum, it is a simplified part-class
     (solution-array :accessor solution-array :initarg :solution-array :initform nil)
     (solution-len :accessor solution-len :initarg :solution-len :initform nil)
 
@@ -204,17 +205,14 @@
     (h-intervals-brut :accessor h-intervals-brut :initarg :h-intervals-brut :initform (list nil nil nil nil))
 ))
 
-; @completely new or reworked
-(defclass counterpoint-class () (
-    ; to remove (deprecated)
-    (is-cf-bass-arr :accessor is-cf-bass-arr :initarg :is-cf-bass-arr :initform (list nil nil nil nil))
-
+(defclass part-class () (
+    ; represents a part, i.e. a counterpoint or a cantus firmus
     ; species
-    (species :accessor species :initarg :species :initform nil)
+    (species :accessor species :initarg :species :initform nil) ; 0 for cf, 1 for 1st, 2 for 2nd, 3 for 3rd, 4 for 4th, 5 for 5th
 
     ; solution-array
-    (solution-array :accessor solution-array :initarg :solution-array :initform nil)
-    (solution-len :accessor solution-len :initarg :solution-len :initform nil)
+    (solution-array :accessor solution-array :initarg :solution-array :initform nil) ; contains the whole array of notes for this part, all merged together in the good order
+    (solution-len :accessor solution-len :initarg :solution-len :initform nil) ; number of note in this part
 
     ; voice variables
     (cp-range :accessor cp-range :initarg :cp-range :initform nil)
@@ -225,17 +223,17 @@
     (voice-type :accessor voice-type :initarg :voice-type :initform nil)
 
     ; 1st species variables
-    (notes :accessor notes :initarg :notes :initform (list nil nil nil nil)) ; represents the notes of the counterpoint
-    (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil))
+    (notes :accessor notes :initarg :notes :initform (list nil nil nil nil)) ; represents the notes of the counterpoint; (first notes) are all the notes of the first beat, (second notes) of the second etc
+    (h-intervals :accessor h-intervals :initarg :h-intervals :initform (list nil nil nil nil)) ; h-intervals to the lowest stratum
     (m-intervals-brut :accessor m-intervals-brut :initarg :m-intervals-brut :initform (list 
         (gil::add-int-var-array *sp* *cf-last-index -12 12) 
         (gil::add-int-var-array *sp* *cf-last-index -12 12)
         (gil::add-int-var-array *sp* *cf-last-index -12 12) 
-        (gil::add-int-var-array *sp* *cf-last-index -12 12)))
-    (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil))
+        (gil::add-int-var-array *sp* *cf-last-index -12 12))) ; this variable is set before the others because we need it earlier
+    (m-intervals :accessor m-intervals :initarg :m-intervals :initform (list nil nil nil nil)) ; melodic intervals 
     (motions :accessor motions :initarg :motions :initform (list nil nil nil nil))
     (motions-cost :accessor motions-cost :initarg :motions-cost :initform (list nil nil nil nil))
-    (is-cf-lower-arr :accessor is-cf-lower-arr :initarg :is-cf-lower-arr :initform (list nil nil nil nil))
+    (is-cf-lower-arr :accessor is-cf-lower-arr :initarg :is-cf-lower-arr :initform (list nil nil nil nil)) ; true if the cf is lower
     (m2-intervals-brut :accessor m2-intervals-brut :initarg :m2-intervals-brut :initform nil)
     (m2-intervals :accessor m2-intervals :initarg :m2-intervals :initform nil)
     (cf-brut-m-intervals :accessor cf-brut-m-intervals :initarg :cf-brut-m-intervals :initform nil)
@@ -288,28 +286,29 @@
     (is-constrained-arr :accessor is-constrained-arr :initarg :is-constrained-arr :initform nil) ; represents !(*is-0th-species-arr) i.e. there are species constraints
     (is-cst-arr :accessor is-cst-arr :initarg :is-cst-arr :initform (list nil nil nil nil)) ; represents *is-constrained-arr for all beats of the measure
 
-    ; 6st species variables
+    ; 3v variables
     (variety-cost :accessor variety-cost :initarg :variety-cost :initform nil)
-    (is-not-lowest :accessor is-not-lowest :initarg :is-not-lowest :initform nil)
+    (is-not-lowest :accessor is-not-lowest :initarg :is-not-lowest :initform nil) ; represents if the current part is not the lowest stratum
     (h-intervals-to-cf :accessor h-intervals-to-cf :initarg :h-intervals-to-cf :initform (list nil nil nil nil))
 ))
 
 (defun init-cantus-firmus ()
+    ; init a cantus-firmus class "object"
     (let (
             (cantus-firmus-notes (gil::add-int-var-array *sp* *cf-len 0 120))
         )
         (dotimes (i *cf-len) (gil::g-rel *sp* (nth i cantus-firmus-notes) gil::IRT_EQ (nth i *cf)))
-        (make-instance 'counterpoint-class
-                    :species CANTUS-FIRMUS
-                    :notes (list cantus-firmus-notes nil nil nil)                        
+        (make-instance 'part-class
+                    :species 0 ; value 0 = cantus firmus
+                    :notes (list cantus-firmus-notes nil nil nil) ; no notes in the second, third and fourth beat
         )
     )
 )
 
-; @completely new or reworked
 (defun init-counterpoint (voice-type species)
-    ; Lower bound and upper bound related to the cantus firmus pitch
+    ; initialise a counterpoint 'object'
     (let (
+        ; Lower bound and upper bound related to the cantus firmus pitch
         (range-upper-bound (+ 12 (* 6 voice-type)))
         (range-lower-bound (+ -6 (* 6 voice-type)))
         )
@@ -327,7 +326,8 @@
                 ; set the domain of the only barrowed notes
                 (off-domain (intersection cp-range *off-scale))
                 )
-                (setf counterpoint (make-instance 'counterpoint-class 
+                ; create the instance, by passing it the arguments
+                (setf counterpoint (make-instance 'part-class 
                                                 :cp-range cp-range
                                                 :cp-domain cp-domain
                                                 :chromatic-cp-domain chromatic-cp-domain
@@ -338,24 +338,14 @@
                 ))
                 (case species
                     ((1 2 3) (progn
-                        ; add the counterpoint array to the space with the domain *cp-domain
+                        ; set the first beats of all measures of the counterpoints to be in the extended-cp-domain
                         (setf (first (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
-
-                        ; ======= 2 counterpoints specific
-                        (if (eq *N-COUNTERPOINTS 2) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
-                            (tonal (mod (car (last *cf)) 12))
-                            )
-                            (case tonal ((2 4 9 10) 
-                                ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
-                                (setf (nth *cf-last-index (first (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
-                            )))
-                        )
-                        ; =======
-                        (if (is-borrow-allowed) (case species ((1)
-                            ; then add to the penultimate note more possibilities
-                            (setf (nth *cf-penult-index (first (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
-                        )))
+                        ; then treat the case where species = 1, 2, or 3
                         (case species
+                            (1 (if (is-borrow-allowed) 
+                                ; then add to the penultimate note more possibilities
+                                (setf (nth *cf-penult-index (first (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                            ))
                             (2 (progn
                                 ; add the arsis counterpoint array (of [*cf-len - 1] length) to the space with the domain cp-domain
                                 (setf (third (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-last-index (extended-cp-domain counterpoint)))
@@ -412,14 +402,21 @@
                         (setf (third (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -16 16)) 
                     ))
                 )
+                ; 3 voices specific
+                (if (eq *N-PARTS 3) (let ( ; if re-mi-la-si is the last cf note then you can use a major third even if it's not in the harmony
+                    (tonal (mod (car (last *cf)) 12))
+                    )
+                    (case tonal ((2 4 9 10) 
+                        ; using the chromatic domain as it is going to be constrained to the harmonic triad by a later constraint
+                        (setf (car (last (first (notes counterpoint)))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
+                    )))
+                )
                 counterpoint
             )
         )
     )
 )
 
-;; DISPATCHER FUNCTION
-; @completely new or reworked
 (defun fux-cp (species-list)
     "Dispatches the counterpoint generation to the appropriate function according to the species."
     ; THE CSP SPACE 
@@ -427,28 +424,27 @@
 
     ; re/set global variables
     (define-global-constants)
-    (setq *species-list species-list)
-    (setq *cost-indexes (make-hash-table))                      
-    (setq *cost-factors (set-cost-factors))
+    (setq *species-list species-list) ; corresponds to the species of the counterpoints (1 5) means one ctp of 1st sp. and one ctp of 5th sp.
+    (setq *cost-indexes (make-hash-table)) ; a hashmap recording which cost is at which position in the cost-factors list                   
+    (setq *cost-factors (set-cost-factors)) ; the cost-factors list, contains all the individual costs
 
-    (print (list "Choosing species: " species-list))
-    (setq counterpoints (make-list *N-COUNTERPOINTS :initial-element nil))
-    (dotimes (i *N-COUNTERPOINTS) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list))))
-    (setq *is-cf-bass (list (gil::add-bool-var-array *sp* *cf-len 0 1) nil nil nil))
+    (print (list "Chosen species for the counterpoints: " species-list))
+    (setq counterpoints (make-list *N-COUNTERPOINTS :initial-element nil)) ; list containing the counterpoints
+    (dotimes (i *N-COUNTERPOINTS) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list)))) ; init the counterpoints
     
-    (setq *upper (make-list *N-COUNTERPOINTS :initial-element nil))
-    (dotimes (i *N-COUNTERPOINTS) (setf (nth i *upper) (make-instance 'stratum-class)))
-    (setq *lowest (make-instance 'stratum-class))
+    (setq *upper (make-list *N-COUNTERPOINTS :initial-element nil)) ; list containing the upper strata (the middle and the uppermost strata)
+    (dotimes (i *N-COUNTERPOINTS) (setf (nth i *upper) (make-instance 'stratum-class))) ; declare the upper strata
+    (setq *lowest (make-instance 'stratum-class)) ; declare the lowest stratum
     (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
 
-    (setq *cantus-firmus (init-cantus-firmus))    
-    (setq *parts (cons *cantus-firmus counterpoints))
+    (setq *cantus-firmus (init-cantus-firmus)) ; init the part 'object' for the cantus-firmus
+    (setq *parts (cons *cantus-firmus counterpoints)) ; list containing all the parts in this order: (cf, cp1, cp2)
     
-    (create-strata-arrays *parts)
+    (create-strata-arrays *parts) ; create the strata arrays 
     (case *N-COUNTERPOINTS
         (1 (progn 
-            (fux-cp-cf (first *parts))
-            (case (first species-list) ; if only two voices
+            (fux-cp-cf (first *parts)) ; apply the constraints wrt. the cantus firmus
+            (case (first species-list) ; in this case len(species-list) = 1
                 (1 (fux-cp-1st (second *parts)))
                 (2 (fux-cp-2nd (second *parts)))
                 (3 (fux-cp-3rd (second *parts)))
@@ -457,106 +453,27 @@
                 (otherwise (error "Species ~A not implemented" species))
             )
         ))
-        (2 (fux-cp-3v species-list *parts))
+        (2 (fux-cp-3v species-list *parts)) ; 3v dispatcher
         (otherwise (error "Only two additional voices are implemented up to now. You asked for ~A." (length species)))
     )
 )
 
-; @completely new or reworked
-(defun reorder-costs (species-list)
-    (print "########## REORDERING ##########")
-    ; first put all the costs in order according to the preferences
-    ; the list cost-names-by-order looks like this (python notation) [[cost1, cost2], [cost3], [cost4], [cost5, cost6]]
-    ; which means first level for the lexicographic order are cost1 and cost2
-    ; cost3 comes on the second level, cost4 on the third, and cost5 and cost6 are together on the fourth level
-    (setf costs-names-by-order (make-list 14 :initial-element nil))
-    (maphash #'(lambda (key value)
-            (setf value (- (parse-integer value) 1))
-            (setf (nth value costs-names-by-order) (append (nth value costs-names-by-order) (list key)))
-            )
-        *cost-preferences*)
-    ; reverse the cost order because when passing them to C++ they are reversed again
-    (setq costs-names-by-order (reverse costs-names-by-order))
-    (let (
-        (i 0)
-        (n-different-costs 0)
-        (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
-        )
-        (assert costs-names-by-order () "costs-names-by-order is nil, shouldn't be.")
-        ; for each level of the ordered cost names
-        (dolist (preference-level costs-names-by-order)
-            (let
-                (
-                    ; create a cost representing all the cost of this level
-                    (current-cost-array '())
-                    (current-cost-sum (gil::add-int-var *sp* 0 1000))
-                )
-                ; for each cost in the level
-                (dolist (cost preference-level)
-                    (let ((index (gethash cost *cost-indexes)))
-                        (if index (progn
-                            (loop for index in (gethash cost *cost-indexes) do (progn
-                                (assert index () "index should not be nil")
-                                ; get the value of the cost and put in into our temporary array
-                                (push (nth index *cost-factors) current-cost-array)
-                            ))
-                            )
-                            ; if index is nil (i.e. if this cost doesn't exist in this species)
-                            ; it is not a problem, it is the normal way of working that some cost don't exist in some species
-                            (print (list "Cost " cost " was not found."))
-                        )
-                    )
-                )
-                (if current-cost-array (progn ; if there was at least one cost on this level
-                    (if *linear-combination
-                        ; if linear combination perform a linear combination
-                        (gil::g-sum *sp* current-cost-sum current-cost-array)
-                        ; else perform a maximum minimisation
-                        (gil::g-lmax *sp* current-cost-sum current-cost-array)
-                    )
-                    ; put our linear combination or maximum minimisation into our global cost array
-                    (setf (nth n-different-costs reordered-costs) current-cost-sum)
-                    (print (list n-different-costs "th cost = " preference-level))
-                    (incf n-different-costs) 
-                ))
-            )
-        )
-        (setf reordered-costs (subseq reordered-costs 0 n-different-costs))
-        (dolist (cost reordered-costs) (assert cost () "A cost is nil. Ordered costs = ~A" reordered-costs))
-        (setf *cost-factors reordered-costs)
-    )
-)
-
-; @completely new or reworked
 (defun fux-search-engine (the-cp &optional (species '(1)) (voice-type 0))
     (let (se tstop sopts)
         (print (list "Starting fux-search-engine with species = " species))
-        ;; Reorder the costs
-        (reorder-costs species)
-
-        (setf linear-combination nil)
         ;; COST
-        (if linear-combination 
-            ; do a linear combination
-            (progn
-                (setq cost (gil::add-int-var-array *sp* 1 0 300))
-                (gil::g-sum *sp* (first cost) *cost-factors)
-                (gil::g-cost *sp* cost) ; set the cost function
-            )
-            ; else lexicographical order
-            (gil::g-cost *sp* *cost-factors) ; set the cost function
-        )
+        (reorder-costs)
+        (gil::g-cost *sp* *cost-factors) ; set the cost function
 
         ;; SPECIFY SOLUTION VARIABLES
-        (print "Specifying solution variables...")
+        ; (print "Specifying solution variables...")
         (gil::g-specify-sol-variables *sp* the-cp)
         (gil::g-specify-percent-diff *sp* 0)
         
         ;; BRANCHING
-        (print "Branching...")
+        ; (print "Branching...")
         (setq var-branch-type gil::INT_VAR_DEGREE_MAX)
         (setq val-branch-type gil::INT_VAL_SPLIT_MIN)
-        ;(setq var-branch-type gil::INT_VAR_SIZE_MIN)
 
         (gil::g-branch *sp* (first (notes *lowest)) gil::INT_VAR_DEGREE_MAX gil::INT_VAL_SPLIT_MIN)
         (dotimes (i *N-COUNTERPOINTS) (progn
@@ -564,12 +481,6 @@
             (if (eq (nth i species) 5) ; otherwise there is no species array
                 (gil::g-branch *sp* (species-arr (nth i counterpoints)) var-branch-type gil::INT_VAL_RND)
             )
-
-            ; 3rd and 5th species specific
-            (if (or (eq (nth i species) 3) (eq (nth i species) 5)) (progn
-                ;(gil::g-branch *sp* (m-degrees-cost (nth i counterpoints)) var-branch-type val-branch-type)
-                ;(gil::g-branch *sp* (off-key-cost (nth i counterpoints)) var-branch-type val-branch-type)
-            ))
 
             ; 5th species specific
             (if (eq (nth i species) 5) (progn ; otherwise there is no species array
@@ -580,18 +491,10 @@
             (if (eq (nth i species) 4) 
                 (gil::g-branch *sp* (no-syncope-cost (nth i counterpoints)) var-branch-type gil::INT_VAL_MIN)
             )
-
-            ;(gil::g-branch *sp* (first (motions (nth i counterpoints))) var-branch-type val-branch-type)
-
-            ; branching *total-cost
-            ;(if (eq (nth i species) 2)
-                ;(gil::g-branch *sp* *cost-factors var-branch-type val-branch-type) ;; TODO why would we do this?? -> asked by pano
-            ;)
         ))
 
-    
         ;; Solution variables branching
-        (gil::g-branch *sp* the-cp gil::INT_VAR_DEGREE_MAX gil::INT_VAL_RND)
+        (gil::g-branch *sp* the-cp gil::INT_VAR_DEGREE_MAX gil::INT_VAL_RND) ; the-cp is all the solution arrays merged together 
 
         ; time stop
         (setq tstop (gil::t-stop)); create the time stop object
@@ -646,6 +549,7 @@
 
         ; print the solution from GiL
         (print "Solution: ")
+        ; TODO remove all the prints
         ;(print (list "successive fifths= " (gil::g-values sol successive-fifths-print)))
         ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
         (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
@@ -749,5 +653,76 @@
     ;otherwise, check if the user wants to keep searching or not
     (if stop-user
         (error "The search was stopped. Press next to continue the search.")
+    )
+)
+
+(defun reorder-costs ()
+    ; this function serves to put the costs in the order asked by the user and combines them using either a linear combination or a maximum minimisation
+    ; in the interface the user selects an "importance" for each cost: it is the order in which the costs are being sorted.
+    ; advice if someone wants to continue with the implementation: in a OOP language just define the order directly in a dictionary or somewhat so there is no need to reorder at some point
+    
+    ; at the end of this function, 'cost-names-by-order' 
+    (setf costs-names-by-order (make-list 14 :initial-element nil)) ; there are fourteen types of cost
+    ; take the costs in *cost-preferences* and sort them according to the user preferences in list 'costs-names-by-order'
+    (maphash #'(lambda (key value)
+            (setf value (- (parse-integer value) 1))
+            (setf (nth value costs-names-by-order) (append (nth value costs-names-by-order) (list key)))
+            )
+        *cost-preferences*)
+    ; now 'costs-names-by-order looks like this (python notation) [[cost1, cost2], [cost3], [cost4], [cost5, cost6]]
+    ; which means first level for the lexicographic order are cost1 and cost2
+    ; cost3 comes on the second level, cost4 on the third, and cost5 and cost6 are together on the fourth level
+
+    ; reverse the cost order because when passing them between GiL and C++ they are reversed again 
+    (setq costs-names-by-order (reverse costs-names-by-order))
+    (let (
+        (i 0)
+        (n-different-costs 0) ; the amount of cost types that have been encountered; not all the costs will be encountered, as some are species-specific (like the cost for no syncopation, that occurs only with a 4th species ctp)
+        (reordered-costs (make-list *N-COST-FACTORS :initial-element nil))
+        )
+        (assert costs-names-by-order () "costs-names-by-order is nil, which means no preferences were passed. This is an implementation bug.")
+        ; for each level of the ordered cost names (i.e. for each sublist in [[cost1, cost2], [cost3], [cost4], [cost5, cost6]])
+        (dolist (preference-level costs-names-by-order)
+            (let
+                (
+                    (current-cost-array '()) ; the array of the actual values of the costs in the preference-level
+                    (current-cost-sum (gil::add-int-var *sp* 0 1000)) ; a variable representing the combination of the costs of this level
+                )
+                ; for each cost name in the level
+                (dolist (cost preference-level)
+                    (let ((index (gethash cost *cost-indexes)))
+                        (if index (progn
+                            (loop for index in (gethash cost *cost-indexes) do (progn
+                                ; get the value of the cost and put in into the current array of cost values
+                                (push (nth index *cost-factors) current-cost-array)
+                            ))
+                            )
+                            ; if index is nil (i.e. if this cost doesn't exist in this species)
+                            ; it is not a problem, it is the normal way of working since some costs don't exist in some species
+                            #| debug |# ; (print (list "Cost " cost " was not found in this configuration."))
+                        )
+                    )
+                )
+                (if current-cost-array (progn ; if there was at least one cost on this level
+                    (if *linear-combination 
+                        ; if the user asked for linear combination then perform a linear combination
+                        (gil::g-sum *sp* current-cost-sum current-cost-array)
+                        ; else perform a maximum minimisation (take the maximum and the solver will minimise it)
+                        (gil::g-lmax *sp* current-cost-sum current-cost-array)
+                    )
+                    ; put our linear combination or maximum minimisation into our global cost array
+                    (setf (nth n-different-costs reordered-costs) current-cost-sum)
+                    #| debug |# ; (print (list n-different-costs "th cost = " preference-level)) ; print the index at which the cost was added, please remember that it is reverted wrt. user preferences, as it will be reverted again when passing to GiL->C++
+                    (incf n-different-costs) 
+                ))
+            )
+        )
+        ; if some costs are on the same level, then not all slots were used, get rid of them
+        (setf reordered-costs (subseq reordered-costs 0 n-different-costs))
+        ; verify that no index of the newly created cost array is nil
+        (dolist (cost reordered-costs) (assert cost () "A cost is nil. Ordered costs = ~A. This is an implementation bug." reordered-costs))
+
+        ; set the global variable to now be the reordered-costs
+        (setf *cost-factors reordered-costs)
     )
 )
