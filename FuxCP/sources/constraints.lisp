@@ -402,23 +402,6 @@
 
 ;; Initialises the strata arrays, so that there is a bijection between each part (cf, cp1 and cp2) and each strata (lowest, middle, highest)
 (defun create-strata-arrays (parts)
-    #| 
-        Gecode pseudo code:
-        // for the creation of the strata
-        int n = cf.notes.size(); 
-
-        for (int i = 0; i < n; ++i) {
-            IntVarArgs sortedValues = sorted(*this, IntVarArgs(cf.notes[i], cp1.notes[i], cp2.notes[i]));
-            rel(*this, lowest.notes[i], IRT_EQ, sortedValues[0]);
-            rel(*this, middle.notes[i], IRT_EQ, sortedValues[1]);
-            rel(*this, highest.notes[i], IRT_EQ, sortedValues[2]);
-        }
-
-        // for the is_not_lowest
-        
-        // for the melodic intervals of the lowest stratum
-        
-     |#
     (setf cantus-firmus (first parts))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
     (dotimes (i *N-PARTS) (setf (is-not-lowest (nth i parts)) (gil::add-bool-var-array *sp* *cf-len 0 1))) ; is-not-lowest represents if the part is not the lowest stratum
@@ -902,7 +885,6 @@
 ; i.e. that there can be only one part moving in direct motion (since one part has motion=-1 (bc it is the lowest stratum), and if the two other parts have motion=direct then all voices go in the same direction)
 ; WARNING: this function needs to be scaled before implementing a fourth voice, it currently works by restricting the number of direct motions to max. 1
 (defun add-no-together-move-cst (motions)
-    ; gecode pseudo code : count(*this, motions, 1, IRT_LQ, 2); maximum one '2' in the motions array -> for 4 voices, maximum TWO '2' in the motions array
     (loop 
         ; for each possible pair or motions
         ; for example if we have (m1, m2 and m3), take (m1 and m2), (m1 and m3) and (m2 and m3)
@@ -1084,7 +1066,6 @@
 
 ; adds a constraint so that the last bass notes is the fundamental note of the key
 (defun last-lowest-note-same-as-root-note-cst ()
-    ; gecode pseudo code : rel(*this, lowest.notes[last_index] % 12, IRT_EQ, cf.notes[0] % 12);
     (let (
         (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
         (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12)))) ; the value of the first note of the cf modulo 12
@@ -1947,17 +1928,6 @@
 ; add the constraint that the species arrays from two fifth-species parts must be at least 50% different
 (defun add-make-fifth-species-different-cst (parts)
     ; the fifth species attributes to each note a species between 1 and 4. when composing with two fifth-species, only half the notes can be of the same species at the same time -> if not, there is a lot of redundancy between the two fifth-species voices
-
-    #| Gecode pseudo code
-    int n = cp1.species_arr.size();
-    IntVarArgs equal(*this, n, 0, 1); 
-    for (int i = 0; i < n; ++i) {
-        rel(*this, cp1.species_arr[i], IRT_EQ, cp2.species_arr[i], equal[i]); // equal == 1 when both species_arr are the same
-    }
-    count(*this, equal, 1, IRT_LQ, n / 2); // only half of the equal array can be true
-    // when scaling to four voices 50% is too much, the value should be lowered to something like 33%
-    |#
-
     (let (
             (is-same-species (gil::add-bool-var-array *sp* (solution-len (second parts)) 0 1))
             (is-same-species-int (gil::add-int-var-array *sp* (solution-len (second parts)) 0 1))

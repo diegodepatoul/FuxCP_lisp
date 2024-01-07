@@ -558,58 +558,10 @@
 
         ; print the solution from GiL
         (print "Solution: ")
-        ; TODO remove all the prints
-        ;(print (list "successive fifths= " (gil::g-values sol successive-fifths-print)))
-        ;(print (list "cf h-intervals" (gil::g-values sol (first (h-intervals *cantus-firmus)))))
-        (handler-case (print (list "h-intervals2 = " (gil::g-values sol (first (h-intervals (second *upper)))))) (error (c)  (print "error with h-intervals2")))
-        ;(print (list "h-intervals1 = " (gil::g-values sol (first (h-intervals (first *upper))))))
-        (print (list "h-interv cp1 = " (gil::g-values sol (third (h-intervals (first counterpoints))))))
-        (print (list "h-interv cp1 = " (gil::g-values sol (first (h-intervals (first counterpoints))))))
-        (print (list "h-interv cf  = " (gil::g-values sol (first (h-intervals *cantus-firmus)))))
-        (handler-case  (print (list "h-interv1-2 = " (gil::g-values sol *h-intervals-1-2))) (error (c)  (print "error with h-intervals12")))
-        (print (list "ALL_CONS_VAR = " (gil::g-values sol ALL_CONS_VAR)))
-        ;(print (list "last order = " (gil::g-values sol order)))
-        (handler-case (print (list "is-cp1Nbass= " (gil::g-values sol *is-cp1-not-bass-print))) (error (c)  (print "error with is-cp1-bass")))
-        (handler-case (print (list "is-cp2Nbass= " (gil::g-values sol *is-cp2-not-bass-print))) (error (c)  (print "error with is-cp2Nbass")))
-        (handler-case (print (list "is-cfNbass = " (gil::g-values sol *is-cf-not-bass-print))) (error (c) (print "error with is-cf-bass")))
-        (print (list "cp1-f      = " (gil::g-values sol (first (notes (first counterpoints))))))
-        (print (list "cp1-t      = " (gil::g-values sol (third (notes (first counterpoints))))))
-        (print (list "cp1        = " (gil::g-values sol (solution-array (first counterpoints)))))
-        (handler-case (print (list "cp2        = " (gil::g-values sol (solution-array (second counterpoints))))) (error (c) (print "error with cp2")))
-        (print (list "cf         = " *cf))
-        (handler-case (print (list "upper-2    = " (gil::g-values sol (first (notes (second *upper)))))) (error (c) (print "error with upper-2")))
-        (handler-case (print (list "intup-1    = " (gil::g-values sol (first (h-intervals (first *upper)))))) (error (c) (print "error with upper-1")))
-        (handler-case (print (list "upper-1    = " (gil::g-values sol (first (notes (first *upper)))))) (error (c) (print "error with upper-1")))
-        (handler-case (print (list "bass       = " (gil::g-values sol (first (notes *lowest))))) (error (c) (print "error with bass")))
-        (handler-case (print (list "bass itvls = " (gil::g-values sol (first (m-intervals-brut *lowest))))) (error (c) (print "error with *m-intervals-brut-bass")))
-        (handler-case (print (list "cf   itvls = " (gil::g-values sol (first (m-intervals-brut (first *parts)))))) (error (c) (print "error with *m-intervals-brut-cf")))
-        (handler-case (print (list "cp1  itvls = " (gil::g-values sol (first (m-intervals-brut (second *parts)))))) (error (c) (print "error with *m-intervals-brut-cp1")))
-        (handler-case (print (list "cp2  titvl = " (gil::g-values sol (third (m-intervals-brut (third *parts)))))) (error (c) (print "error with *m-intervals-brut-cp2")))
-        (handler-case (print (list "cp2  itvls = " (gil::g-values sol (first (m-intervals-brut (third *parts)))))) (error (c) (print "error with *m-intervals-brut-cp2")))
-        (handler-case (print (list "rel-moticp1= " (gil::g-values sol (real-motions (first counterpoints))))) (error (c) (print "error with rel-moticp1")))
-
-        (print (list "m-succ-intervals = " (gil::g-values sol (first (m-succ-intervals (first counterpoints))))))
-        (handler-case (print (list "succ-intcp1= " (gil::g-values sol ((first m-succ-intervals (first counterpoints)))))) (error (c) (print "error with m-succ-intervals cp1")))
-        (handler-case (print (list "p-cons-cp1 = " (gil::g-values sol (is-p-cons-arr (first counterpoints))))) (error (c) (print "error with p-cons-cp1")))
-        (handler-case (print (list "motions-cp1= " (gil::g-values sol (first (motions (first counterpoints)))))) (error (c) (print "error with motions cp1")))
-        (handler-case (print (list "m-costs-cp1= " (gil::g-values sol (first (motions-cost (first counterpoints)))))) (error (c) (print "error with motions costs cp1")))
-        (handler-case (print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus))))) (error (c) (print "error with motions cf")))
-        (handler-case (print (list "m-costs-cf = " (gil::g-values sol (first (motions-cost  *cantus-firmus))))) (error (c) (print "error with motions costs cf")))
-        (handler-case (print (list "o-costs-cp1= " (gil::g-values sol octave-cost))) (error (c) (print "error with octave-cost cp1")))
-        (handler-case (print (list "suc-p-cons = " (gil::g-values sol *successive-p-cons-print))) (error (c) (print "error with *successive-p-cons-print")))
-        (handler-case (print (list "nosyncope  = " (gil::g-values sol (no-syncope-cost (second counterpoints))))) (error (c) (print "error with syncopes")))
-        ;(print (list "motions-cf = " (gil::g-values sol (first (motions *cantus-firmus)))))
-        ;(print (list "motions-costs-cf   = " (gil::g-values sol (first (motions-cost *cantus-firmus)))))
-        ;(print (list "direct   = " (gil::g-values sol *direct)))
-        ;(print (list "oblique  = " (gil::g-values sol *oblique)))
-        ;(print (list "contrary = " (gil::g-values sol *contrary)))
-        ;(print (list "not bass = " (gil::g-values sol *not-bass)))
-        ;(print (list "    bass = " (gil::g-values sol *lowest)))
-        
         (handler-case
             (progn 
                 (print (list "*cost-factors" (gil::g-values sol *cost-factors)))
-                (print (list "current-cost = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
+                (print (list "sum of all costs = " (reduce #'+ (gil::g-values sol *cost-factors) :initial-value 0)))
             ) 
             (error (c)
                 (dotimes (i *N-COST-FACTORS)
@@ -621,9 +573,8 @@
         
         (print (list "species = " species-list))
         
+        (print "The solution can now be retrieved by evaluating the third output of cp-params.")
         (setq sol-pitches (gil::g-values sol the-cp)) ; store the values of the solution
-        (print (list "sol-pitches  =" sol-pitches))
-
         (let (
             (basic-rythmics (get-basic-rythmics species-list *cf-len sol-pitches counterpoints sol))
             (sol-voices (make-list *N-COUNTERPOINTS :initial-element nil))
