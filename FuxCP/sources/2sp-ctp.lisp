@@ -199,6 +199,6 @@
 
     (case species
         (2 (append (fux-search-engine (solution-array counterpoint) '(2)) (list (list 2))))
-        (otherwise nil)
+        (3v-2sp nil) ; if 3v don't return a search engine, just apply the constraints
     )
 )

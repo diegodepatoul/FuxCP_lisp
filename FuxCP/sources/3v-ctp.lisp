@@ -14,6 +14,9 @@
     (setf counterpoint-1 (second parts))
     (setf counterpoint-2 (third parts))
 
+    ;================================================================================;
+    ;                   APPLYING THE PART-SPECIFIC RULES                             ;
+    ;================================================================================;
     ; for each part
     (dotimes (i *N-PARTS)
         (case (species (nth i parts))
@@ -27,6 +30,10 @@
         )
     )
     
+
+    ;================================================================================;
+    ;                 CREATING SOME ADDITIONAL VARIABLES                             ;
+    ;================================================================================;
     (setf solution-array (append (solution-array counterpoint-1) (solution-array counterpoint-2))) ; the final array with both counterpoints
 
     (dotimes (i *N-COUNTERPOINTS)

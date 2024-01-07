@@ -159,5 +159,6 @@
     ; RETURN
     (case species 
         (1 (append (fux-search-engine (solution-array counterpoint)) (list (list 1))))
+        (otherwise nil) ; if 3v don't return a search engine, just apply the constraints
     )
 )

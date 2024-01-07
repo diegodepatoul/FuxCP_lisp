@@ -399,7 +399,7 @@
     (if (eq species 5)
         ; then create the search engine
         (append (fux-search-engine (solution-array counterpoint) '(5)) (list (list 5)) (voice-type counterpoint))
-        ; else
+        ; else if 3v
         nil
     )
 )

@@ -178,7 +178,7 @@
     (if (eq species 4)
         ; then create the search engine
         (append (fux-search-engine (solution-array counterpoint) '(4)) (list (list 4)))
-        ; else
+        ; else if 3v
         nil
     )
 )
