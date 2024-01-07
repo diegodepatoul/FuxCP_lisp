@@ -6,6 +6,55 @@ All the rules apply to three-voice compositions, but only the rules for two voic
 
 Some of the rules are different depending on whether the composition is for two or three voices. In these cases, the mathematical relationship to be followed for the rule in question, depending on the situation, is clearly indicated.
 
+
+\subsection*{Functions}
+Some rules, formalised by T. Wafflard, use functions that simplify the notation. Here are those functions:
+\paragraph{nextm(x)} Returns the number of measure(s) to add in 4/4 time signature depending on the number of beat $x$.
+\begin{equation}
+    nextm(x) = \begin{cases}
+        1 + nextm(x-4)& \text{if } x \geq 4\\
+        0 & \text{otherwise}
+    \end{cases}
+    \label{eq:nextm}
+\end{equation}
+
+\paragraph{buildScale(key, scale)} Returns the set of notes in the $key$ based on the $scale$ used. $key$ is a value between 0 and 11 such that $0 \equiv C$ and $11 \equiv B$.
+
+\begin{equation}
+    \begin{gathered}
+        \forall x \in [-11, 127], \forall \delta := key+x \in [0, 127]\\
+        buildScale(key, scale) = \begin{cases}
+            \bigcup _{\delta\ mod\ 12 \in key + \{0, 2, 4, 5, 7, 9, 11\}} \delta & \text{if } scale = \text{major}\\
+            \bigcup _{\delta\ mod\ 12 \in key + \{0, 2, 3, 5, 7, 8, 10\}} \delta & \text{if } scale = \text{minor}\\
+            \bigcup _{\delta\ mod\ 12 \in key + \{0, 5, 9, 11\}} \delta & \text{if } scale = \text{borrowed}
+        \end{cases}\\
+        \text{where } key \in [0, 11], scale \in \{"major", "minor", "borrowed"\}
+    \end{gathered}
+    \label{eq:buildScale}
+\end{equation}
+N.B.: $buildScale(key, "minor") \equiv buildScale([key+3]\ mod\ 12, "major")$.
+
+\paragraph{positions(upto)} Function that returns the set of non-empty positions or indexes ordered depending on the species in such a way that all the positions would follow one another to represent all the beats of that species on a score in a single list.
+
+\begin{equation}
+    \begin{gathered}
+        % \forall i \in \B, \forall j \in upto\\
+        positions(upto) = \bigcup _{\forall i \in \B, \forall j \in [0, upto)} [i, j]\\
+        \text{s.t. } \forall x \in [1, 3], \forall y \in [1, upto)\\
+        [i, j] <_{s} [i + x, j] <_{s} [i, j + y]\\
+        \text{where } <_{s} \text{ means the sorting order}\\
+    \end{gathered}
+\end{equation}
+By extension, $\rho + z >_{s} \rho$ such that:
+
+\begin{equation}
+    \begin{gathered}
+        \forall z \in \mathbb{N}^+, \forall \rho = [i, j] \in positions(upto)\\
+        \rho + z = [i + zd, j + nextm(i+zd)]\\
+        \text{where } nextm() \text{ is a function that returns the correct number of measure(s) to add.}
+    \end{gathered}
+\end{equation}
+
 \section*{Implicit General Rules of Counterpoint}
 
 
@@ -124,24 +173,24 @@ Some of the rules are different depending on whether the composition is for two 
 \end{equation}
 
 \item\label{rule:firstpcons}{\textit{The first harmonic interval must be a perfect consonance.}}
-When dealing with two-part composition:
-\begin{equation}
+
+\begin{itemize} \item  When dealing with two-part composition:\begin{equation}
     \begin{gathered}
         H[0, 0] \in Cons_{p}
     \end{gathered}
 \end{equation}
-When dealing with three-part composition:
-The rule doesn't exist.
+\item When dealing with three-part composition: The rule doesn't exist.
+\end{itemize}
 
 \item\label{rule:lastpcons}{\textit{The last harmonic intervals must be a perfect consonance.}}
-When dealing with two-part composition:
-\begin{equation}
+
+\begin{itemize} \item  When dealing with two-part composition:\begin{equation}
   \begin{gathered}
       H[0, m-1] \in Cons_{p}
   \end{gathered}
 \end{equation}
-When dealing with three-part composition:
-The rule doesn't exist.
+\item When dealing with three-part composition: The rule doesn't exist.
+\end{itemize}
 
 \item\label{rule:keytone}{\textit{The key tone is tuned according to the first note of the \cfdot}}
 
@@ -176,9 +225,9 @@ The rule doesn't exist.
 \end{equation}
 
 \item{and \textbf{1.H8} \textit{The harmonic interval of the penultimate note must be a major sixth or a minor third depending on the \cfs pitch. When writing with three voices, the harmonic interval must be either a minor third, a perfect fifth, a major sixth or an octave.}}\label{rule:penult-interval-2v}
+
 \addtocounter{enumi}{1} 
-When dealing with two-part composition:
-\begin{equation}
+\begin{itemize} \item  When dealing with two-part composition:\begin{equation}
     \begin{gathered}
         % \lnot \mathit{IsCfB}[0, m-2] \implies H[0, m-2] = 9
         \rho := \max (positions(m)) - 1\\
@@ -190,12 +239,12 @@ When dealing with two-part composition:
     \end{gathered}
 \end{equation}
 
-When dealing with three-part composition:
-\begin{equation}
+\item When dealing with three-part composition:\begin{equation}
     \begin{aligned}
         H[0, m-1] \in \{0, 3, 7, 9\}
     \end{aligned}
 \end{equation}
+\end{itemize}
 
 \item  \textit{3V - One might use sixths or octaves.}
 As discussed in \ref{rule:sixth-or-octaves}, there is no constraint to add for this rule.
@@ -259,20 +308,19 @@ This rule is already covered by the definition of the voice ranges, so no constr
 
 \item\label{rule:nopconsbydm}{ \textit{Perfect consonances cannot be reached by direct motion.}}
 
-When dealing with two-part composition:
-\begin{equation}
+\begin{itemize} \item  When dealing with two-part composition:\begin{equation}
     \begin{gathered}
         \forj\quad
         H[0, j+1] \in Cons_{p} \implies P[0, j] \neq 2
     \end{gathered}
 \end{equation}
 
-When dealing with three-part composition:
-\begin{equation} \begin{aligned}
+\item When dealing with three-part composition:\begin{equation} \begin{aligned}
   &\forall j \in [0, m-2) :\\
   &P[0, j] = 2 \land H[0, j+1] \in Cons_{p} \\
   &\iff cost_{\text{{direct\_move\_to\_p\_cons}}}[j] = 8
 \end{aligned} \end{equation}
+\end{itemize}
 
 \item\label{rule:codmotions} {\textit{Contrary motions are preferred to oblique motions which are preferred to direct motions.}}
 
@@ -407,16 +455,15 @@ No need to add a new constraint as this is not an actual rule.
 \end{equation}
 
 \item\label{rule:notsamecons}{ \textit{Two consecutive notes cannot be the same. When writing a three-part composition, the 4th-to-last, the 3rd-to-last and the 2nd-to-last may be the same.}}
-When dealing with two-part composition:
-\begin{equation}
+
+\begin{itemize} \item  When dealing with two-part composition:\begin{equation}
     \begin{gathered}
         \forp \quad
         N[\rho] \neq N[\rho+1]
     \end{gathered}
 \end{equation}
 
-When dealing with three-part composition:
-\begin{equation}
+\item When dealing with three-part composition:\begin{equation}
   \begin{aligned}
       &\forall j \in [1, m-1), \quad j \neq m-2:\\
       &((N[2, j-1] \neq N[0, j]) \land (N[0, j] \neq \land N[2, j])) \\
@@ -424,6 +471,7 @@ When dealing with three-part composition:
       & ((N[2, m-3] \neq N[0, m-2]) \lor (N[0, m-2] \neq N[2, m-2]) )
   \end{aligned}
 \end{equation}
+\end{itemize}
 
 
 \end{enumerate}
