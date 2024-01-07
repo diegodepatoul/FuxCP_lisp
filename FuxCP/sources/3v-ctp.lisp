@@ -81,6 +81,9 @@
     (print "Last chord must be a harmonic triad") 
     (add-last-chord-h-triad-cst (first (h-intervals (first *upper))) (first (h-intervals (second *upper))))
 
+    (print "The last lowest note must be the same as the root note of the key")
+    (last-lowest-note-same-as-root-note-cst)
+
     ; two fifth species counterpoints only
     (if (equal species-list '(5 5)) (progn
         (print "The rhythms of the two fifth-species counterpoints must be as different as possible")

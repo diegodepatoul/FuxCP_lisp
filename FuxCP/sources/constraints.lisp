@@ -213,13 +213,12 @@
 )
 
 ; Initializes the cost factors, accordingly to the species and the number of voices
-; @completely new or reworked
 (defun set-cost-factors ()
     (setq *N-COST-FACTORS 3)
     (case *N-PARTS
         (2 (case (first *species-list)
             (1 (incf *N-COST-FACTORS 5))
-            (2 (incf *N-COST-FACTORS 6))
+            (2 (incf *N-COST-FACTORS 6)) 
             (3 (incf *N-COST-FACTORS 7))
             (4 (incf *N-COST-FACTORS 6))
             (5 (incf *N-COST-FACTORS 8))
@@ -401,54 +400,72 @@
     )
 )
 
-; TODO to delete
-(defun bool-var-arr-printable (bool-var-arr)
-    (let (
-        (bool-var-arr-print (gil::add-int-var-array *sp* (length bool-var-arr) 0 1))
-        (not-bool-var-arr (gil::add-bool-var-array *sp* (length bool-var-arr) 0 1))
-        )
-        (dotimes (i (length bool-var-arr)) 
-            (gil::g-op *sp*  (nth i bool-var-arr) gil::BOT_XOR (nth i not-bool-var-arr) 1)
-            (gil::g-rel-reify *sp* (nth i bool-var-arr-print) gil::IRT_EQ 1 (nth i bool-var-arr))
-            (gil::g-rel-reify *sp* (nth i bool-var-arr-print) gil::IRT_EQ 0 (nth i not-bool-var-arr))
-        )
-        bool-var-arr-print
-    )
-)
-
+;; Initialises the strata arrays, so that there is a bijection between each part (cf, cp1 and cp2) and each strata (lowest, middle, highest)
 (defun create-strata-arrays (parts)
+    #| 
+        Gecode pseudo code:
+        // for the creation of the strata
+        int n = cf.notes.size(); 
+
+        for (int i = 0; i < n; ++i) {
+            IntVarArgs sortedValues = sorted(*this, IntVarArgs(cf.notes[i], cp1.notes[i], cp2.notes[i]));
+            rel(*this, lowest.notes[i], IRT_EQ, sortedValues[0]);
+            rel(*this, middle.notes[i], IRT_EQ, sortedValues[1]);
+            rel(*this, highest.notes[i], IRT_EQ, sortedValues[2]);
+        }
+
+        // for the is_not_lowest
+        
+        // for the melodic intervals of the lowest stratum
+        
+     |#
     (setf cantus-firmus (first parts))
     (setq sorted-voices (make-list *cf-len :initial-element nil))
-    (dotimes (i *N-PARTS) (setf (is-not-lowest (nth i parts)) (gil::add-bool-var-array *sp* *cf-len 0 1)))
+    (dotimes (i *N-PARTS) (setf (is-not-lowest (nth i parts)) (gil::add-bool-var-array *sp* *cf-len 0 1))) ; is-not-lowest represents if the part is not the lowest stratum
     (dotimes (i *cf-len) ; the ith measure
-        (setf voices (gil::add-int-var-array *sp* *N-PARTS 0 120))
+        (setf voices (gil::add-int-var-array *sp* *N-PARTS 0 120)) ; the notes to sort
         (dotimes (j *N-PARTS) ; the jth counterpoint
             (if (eq (species (nth j parts)) 4) 
                 (if (< i *cf-last-index)
-                    (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth i (third (notes (nth j parts)))))   
-                    (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth *cf-penult-index (first (notes (nth j parts)))))   
+                    (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth i (third (notes (nth j parts))))) ; if fourth species consider the third beat
+                    (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth *cf-penult-index (first (notes (nth j parts))))) ; else consider the first
                 )
-                (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth i (first (notes (nth j parts)))))   
+                (gil::g-rel *sp* (nth j voices) gil::IRT_EQ (nth i (first (notes (nth j parts))))) ; for the last index consider the first index no matter what: the last note is always on the first beat
             )
         )
-        (setf order (gil::add-int-var-array *sp* *N-PARTS 0 (- *N-PARTS 1)))
+        (setf order (gil::add-int-var-array *sp* *N-PARTS 0 (- *N-PARTS 1))) ; contains the order of the parts, from the lowest note to the highest
 
-        (setf (nth i sorted-voices) (gil::add-int-var-array *sp* *N-PARTS 0 120))
-        (gil::g-sorted *sp* voices (nth i sorted-voices) order)
+        (setf (nth i sorted-voices) (gil::add-int-var-array *sp* *N-PARTS 0 120)) ; the sorted notes
+        (gil::g-sorted *sp* voices (nth i sorted-voices) order) ; sort the notes and register their order 
         
-        (gil::g-rel *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (first (nth i sorted-voices)))
+        (gil::g-rel *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (first (nth i sorted-voices))) ; the lowest stratum is the first in the sorted
         (dotimes (j *N-COUNTERPOINTS) ; the jth voice
-            (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
-            (gil::g-rel *sp* (nth i (third (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices)))
+            (gil::g-rel *sp* (nth i (first (notes (nth j *upper)))) gil::IRT_EQ (nth (+ j 1) (nth i sorted-voices))) ; the upper strata are the following
         )
 
         (let (
-            (cf-is-lowest (gil::add-bool-var *sp* 0 1))
-            (cp1-is-lowest (gil::add-bool-var *sp* 0 1))
-            (cp2-is-lowest (gil::add-bool-var *sp* 0 1))
-            (cp1-equals-bass (gil::add-bool-var *sp* 0 1))
+            (cf-is-lowest (gil::add-bool-var *sp* 0 1)) ; boolean representing whether the cf is the lowest stratum or not
+            (cp1-is-lowest (gil::add-bool-var *sp* 0 1)) ; boolean representing whether the cp1 is the lowest stratum or not
+            (cp2-is-lowest (gil::add-bool-var *sp* 0 1)) ; boolean representing whether the cp2 is the lowest stratum or not
+            (cp1-equals-bass (gil::add-bool-var *sp* 0 1)) ; boolean representing whether the cp1 EQUALS the lowest stratum or not (not the same, it can be the same value but be the middle stratum, since there is a bijection between the two concepts)
             )
+            
+            ; the following lines compute the bijection and set the is-not-lowest variable for each part
+            ; if two parts compete for being the lowest stratum there is a priority: first the cf, then the cp1, then the cp2
+            ; e.g. if both cf and cp1 equal the value of the lowest stratum, cf will BE the lowest stratum and cp1 will not
+            ; e.g. if both cp1 and cp2 equal the value of the lowest stratum, cp1 will BE the lowest stratum and cp2 will not
+
+            ; if cf==lowest -> cf is lowest  <-> if cf!=lowest -> cf is not lowest
             (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_NQ (nth i (first (notes cantus-firmus))) (nth i (is-not-lowest cantus-firmus)))
+
+
+            ; if cp1==lowest AND cf!=lowest -> cp1 is lowest <-> to know if cp1 is not lowest we take the following truth table
+            ; cp1==lowest     cf is lowest   cp is notlow
+            ;    1                1             1
+            ;    1                0             0
+            ;    0                1             1
+            ;    0                0             1
+            ; which is an implication, so cp1==lowest -> cf-is-lowest = cp1-is-not-lowest
             (if (eq (species (second parts)) 4) 
                 (if (< i *cf-last-index)
                     (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (third (notes (second parts)))) cp1-equals-bass)
@@ -456,46 +473,37 @@
                 )
                 (gil::g-rel-reify *sp* (nth i (first (notes *lowest))) gil::IRT_EQ (nth i (first (notes (second parts)))) cp1-equals-bass)
             )
+            (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-lowest (nth i (is-not-lowest (second parts))))   
 
-            (gil::g-op *sp* cp1-equals-bass gil::BOT_IMP cf-is-lowest (nth i (is-not-lowest (second parts))))       
+            ; if both cf and cp1 are not the lowest then cp2 is the lowest
             (if (eq *N-COUNTERPOINTS 2) (gil::g-op *sp* (nth i (is-not-lowest cantus-firmus)) gil::BOT_XOR (nth i (is-not-lowest (second parts))) (nth i (is-not-lowest (third parts)))))
 
+            ; computing the "is-lowest" for each part
             (gil::g-op *sp* cf-is-lowest gil::BOT_XOR (nth i (is-not-lowest cantus-firmus)) 1)
             (gil::g-op *sp* cp1-is-lowest gil::BOT_XOR (nth i (is-not-lowest (second parts))) 1)
             (if (eq *N-COUNTERPOINTS 2) (gil::g-op *sp* cp2-is-lowest gil::BOT_XOR (nth i (is-not-lowest (third parts))) 1))
 
             (if (> i 0) (let 
                 (
-                    (corresponding-m-intervals (make-list *N-PARTS :initial-element nil))
+                    (corresponding-m-intervals (make-list *N-PARTS :initial-element nil)) ; the last melodic interval of each measure for each part
                 )
                 (dotimes (j *N-PARTS)
                     (case (species (nth j parts))
-                        (0 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts)))))
-                        (1 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts)))))
-                        (2 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
-                        (3 (setf (nth j corresponding-m-intervals) (fourth (m-intervals-brut (nth j parts)))))
-                        (4 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
-                        (5 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts)))))
+                        (0 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts))))) ; last melodic interval is between the first beat of the measure and the next measure
+                        (1 (setf (nth j corresponding-m-intervals) (first  (m-intervals-brut (nth j parts))))) ; last melodic interval is between the first beat of the measure and the next measure
+                        (2 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts))))) ; last melodic interval is between the third beat of the measure and the next measure
+                        (3 (setf (nth j corresponding-m-intervals) (fourth (m-intervals-brut (nth j parts))))) ; last melodic interval is between the fourth beat of the measure and the next measure
+                        (4 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts))))) ; last melodic interval is between the third beat of the measure and the next measure
+                        (5 (setf (nth j corresponding-m-intervals) (third  (m-intervals-brut (nth j parts))))) ; last melodic interval is between the third beat of the measure and the next measure
                     )
                 )
                 
+                ; setting the melodic interval of the corresponding part to be the melodic interval of the lowest stratum
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 0 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cf-is-lowest)
                 (gil::g-rel-reify *sp* (nth (- i 1) (nth 1 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp1-is-lowest)
                 (if (eq *N-COUNTERPOINTS 2) (gil::g-rel-reify *sp* (nth (- i 1) (nth 2 corresponding-m-intervals)) gil::IRT_EQ (nth (- i 1) (first (m-intervals-brut *lowest))) cp2-is-lowest))
             ))
         )
-    )
-    (setq *is-cp1-not-bass-print (bool-var-arr-printable (is-not-lowest (second parts))))
-    (if (eq *N-COUNTERPOINTS 2) (setq *is-cp2-not-bass-print (bool-var-arr-printable (is-not-lowest (third parts)))))
-    (setq *is-cf-not-bass-print (bool-var-arr-printable (is-not-lowest cantus-firmus)))
-    
-    ; todo do something with this (working) constraint (put it somewhere else to be cleaner)
-    ; it is that the last bass must be the same as the first cf
-    (let (
-        (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
-        (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12))))
-        )
-        (gil::g-mod *sp* (lastone (first (notes *lowest))) TWELVE CF-MODULO) 
     )
 )
 
@@ -682,14 +690,17 @@
     )
 )
 
-; add the constraint such that the harmonies in @h-intervals are consonances expect the penultimate note (specific rule)
+; add the constraint such that the harmonies in @h-intervals are consonances expect the penultimate note (specific rule). the fourth species also follows specific rules
 ; @len: the length of the counterpoint
 ; @cf-penult-index: the index of penultimate note in the counterpoint
 ; @h-intervals: the array of harmonic intervals
 ; @penult-dom-var: the domain of the penultimate note
+; @species: the species of the counterpoint
+; @is-not-lowest: boolean array to know whether the counterpoint is the lowest stratum
 (defun add-h-cons-cst (len cf-penult-index h-intervals &optional (penult-dom-var PENULT_CONS_VAR) (species 0) (is-not-lowest nil))
     (loop for i from 0 below len do
         (if (/= species 4)
+            ; if not 4th species (normal case)
             (if (eq i *cf-last-index) ; if it is the last note
                     ; then add only harmonic triad options
                     (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals))
@@ -700,29 +711,29 @@
                         (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))
                     )
             )
-            ; if 4th species (things get complicated)
+            ; if 4th species (if the lowest stratum doesn't move then dissonance, else consonance)
             (case i
-                (0 (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals)))
-                (*cf-penult-index (gil::g-member *sp* penult-dom-var (nth i h-intervals)))
-                (*cf-last-index (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals)))
+                (0 (gil::g-member *sp* ALL_CONS_VAR (nth i h-intervals))) ; first measure
+                (*cf-penult-index (gil::g-member *sp* penult-dom-var (nth i h-intervals))) ; penult measure
+                (*cf-last-index (gil::g-member *sp* MAJ_H_TRIAD_VAR (nth i h-intervals))) ; last measure
                 (otherwise (let
                     (
-                        (lower-stays (gil::add-bool-var *sp* 0 1))
-                        (is-not-lowest-and-lower-stays (gil::add-bool-var *sp* 0 1))
-                        (lower-not-stays (gil::add-bool-var *sp* 0 1))
-                        (is-not-lowest-and-lower-not-stays (gil::add-bool-var *sp* 0 1))
-                        (h-dis (gil::add-int-var *sp* 0 11))
-                        (h-cons (gil::add-int-var *sp* 0 11))
+                        (lower-stays (gil::add-bool-var *sp* 0 1)) ; if the lowest stratum doesn't move
+                        (is-not-lowest-and-lower-stays (gil::add-bool-var *sp* 0 1)) ; if the ctp is not the lowest and the lowest doesn't move
+                        (lower-not-stays (gil::add-bool-var *sp* 0 1)) ; if the lowest stratum moves
+                        (is-not-lowest-and-lower-not-stays (gil::add-bool-var *sp* 0 1)) ; if the ctp is not the lowest and the lowest moves
+                        (h-dis (gil::add-int-var *sp* 0 11)) ; temp 
+                        (h-cons (gil::add-int-var *sp* 0 11)) ; temp
                     )
-                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ 0 lower-stays)
-                    (gil::g-op *sp* lower-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-stays)
-                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_NQ 0 lower-not-stays)
-                    (gil::g-op *sp* lower-not-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-not-stays)
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_EQ 0 lower-stays) ; lower-stays := (m-intervals lowest = 0)
+                    (gil::g-op *sp* lower-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-stays) ; is-not-lowest-and-lower-stays := is-not-lowest AND lowest-stays
+                    (gil::g-rel-reify *sp* (nth (- i 1) (first (m-intervals-brut *lowest))) gil::IRT_NQ 0 lower-not-stays) ; lower-stays := (m-intervals lowest = 0)
+                    (gil::g-op *sp* lower-not-stays gil::BOT_AND (nth i is-not-lowest) is-not-lowest-and-lower-not-stays) ; is-not-lowest-and-lower-stays := is-not-lowest AND lowest-not-stays
 
-                    (gil::g-member *sp* DIS_VAR h-dis)    
-                    (gil::g-member *sp* ALL_CONS_VAR h-cons)    
-                    (gil::g-rel-reify *sp* h-dis gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-stays)
-                    (gil::g-rel-reify *sp* h-cons gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-not-stays)
+                    (gil::g-member *sp* DIS_VAR h-dis) ; temporary is member of DIS
+                    (gil::g-member *sp* ALL_CONS_VAR h-cons) ; temporary is member of CONS
+                    (gil::g-rel-reify *sp* h-dis gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-stays) ; is-not-lowest-and-lower-stays <-> h-interval is member of DIS
+                    (gil::g-rel-reify *sp* h-cons gil::IRT_EQ (nth i h-intervals) is-not-lowest-and-lower-not-stays) ; is-not-lowest-and-lower-not-stays <-> h-interval is member of CONS
                 ))
             )
         )
@@ -921,13 +932,11 @@
 )
 
 ; add the constraint that there cannot be a minor third in the last chord
-; @completely new or reworked
 (defun add-no-minor-third-cst (h-interval)
     (gil::g-rel *sp* h-interval gil::IRT_NQ 3)
 )
 
 ; add the constraint that there cannot be a tenth in the last chord
-; @completely new or reworked
 (defun add-no-tenth-in-last-chord-cst (h-intervals h-intervals-brut)
     (let (
         (h (lastone h-intervals))
@@ -935,13 +944,14 @@
         (is-hbrut-not-third (gil::add-bool-var *sp* 0 1))
         ) 
         (gil::g-rel-reify *sp* hbrut gil::IRT_NQ 4
-        is-hbrut-not-third)
-        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-not-third)
+        is-hbrut-not-third) ; if the hbrut is not a third
+        (gil::g-rel-reify *sp* h gil::IRT_NQ 4 is-hbrut-not-third) ; then there can be no third (as it would mean that the third would be a tenth)
+
+        ; There is no need to do the same for 3 (minor third) as minor thirds are prohibited altogether in the last chord
     )
 )
 
 ; add the constraint that the chord shall be a harmonic triad ((1-3-5) or (1-5-8) or (1-3-8))
-; @completely new or reworked
 (defun add-last-chord-h-triad-cst (h-intervals-1 h-intervals-2)
     (let (
         (h-triad (gil::add-int-var-const-array *sp* (list 0 3 4 7)))
@@ -952,8 +962,7 @@
 )
 
 ; computes the harmonic triad cost
-; for each chord not being a harmonic triad, cost += 1
-; @completely new or reworked
+; for each chord not being a harmonic triad, cost = *h-triad-cost*
 (defun compute-h-triad-cost (h-intervals-1 h-intervals-2 costs)
     (loop
     for h1 in h-intervals-1
@@ -972,7 +981,7 @@
             (is-harmonic-triad-1st-possibility (gil::add-bool-var *sp* 0 1))
             (is-harmonic-triad-2nd-possibility (gil::add-bool-var *sp* 0 1))
             (is-harmonic-triad (gil::add-bool-var *sp* 0 1))
-            (is-not-p-chord (gil::add-bool-var *sp* 0 1)) 
+            (is-not-h-triad (gil::add-bool-var *sp* 0 1)) 
         )   
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 3 is-h1-3)
             (gil::g-rel-reify *sp* h1 gil::IRT_EQ 4 is-h1-4)
@@ -988,13 +997,15 @@
 
             (gil::g-op *sp* is-harmonic-triad-1st-possibility gil::BOT_OR is-harmonic-triad-1st-possibility is-harmonic-triad)
 
-            (gil::g-op *sp* is-harmonic-triad gil::BOT_XOR is-not-p-chord 1)
+            (gil::g-op *sp* is-harmonic-triad gil::BOT_XOR is-not-h-triad 1) ; is-harmonic-triad = NOT is-not-h-triad
             (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-harmonic-triad gil::RM_IMP) ; it costs 0 to be a harmonic triad
-            (gil::g-rel-reify *sp* c gil::IRT_EQ *h-triad-cost* is-not-p-chord gil::RM_IMP) ; it costs 1 not to be a harmonic triad
+            (gil::g-rel-reify *sp* c gil::IRT_EQ *h-triad-cost* is-not-h-triad gil::RM_IMP) ; it costs *h-triad-cost* not to be a harmonic triad
         )
     )
 )
 
+; computes the harmonic triad cost for the 3rd species, i.e. 2nd and 3rd beat
+; for each chord not being a harmonic triad, cost = *h-triad-cost*
 (defun compute-h-triad-3rd-species-cost (h-intervals costs)
     (loop
         for h-interval in h-intervals
@@ -1012,7 +1023,7 @@
             (gil::g-rel-reify *sp* h-interval gil::IRT_NQ 7 not-major-fifth)
             (gil::g-op *sp* not-minor-third gil::BOT_AND not-major-third not-third)
             (gil::g-op *sp* not-third gil::BOT_AND not-major-fifth not-in-h-triad)
-            (gil::g-rel-reify *sp* cost gil::IRT_EQ *h-triad-3rd-species-cost* not-in-h-triad)
+            (gil::g-rel-reify *sp* cost gil::IRT_EQ *h-triad-3rd-species-cost* not-in-h-triad gil::RM_IMP)
         )
     )
 )
@@ -1048,6 +1059,7 @@
     )
 )
 
+; adds the constraint that if the cf is above the ctp, the interval must be a third, and if below then a sixth (to the cantus firmus)
 (defun add-penult-cons-1sp-and-cf-cst (is-not-lowest h-interval species)
     (case species
         (0 (if (getparam 'penult-rule-check) ; if the cantus firmus is not the lowest use a minor third
@@ -1060,6 +1072,7 @@
 
 )
 
+; adds the constraint that if the cf is above the ctp, the interval must be a third, and if below then a sixth (to the lowest stratum)
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
@@ -1069,16 +1082,16 @@
     )
 )
 
-
-(defun factorial (n)
-  (if (zerop n)
-      1
-      (* n (factorial (1- n)))))
-
-; how many different combinations of k items in a n items set
-(defun binomial-coefficient (n k)
-  (/ (factorial n)
-     (* (factorial k) (factorial (- n k)))))
+; adds a constraint so that the last bass notes is the fundamental note of the key
+(defun last-lowest-note-same-as-root-note-cst ()
+    ; gecode pseudo code : rel(*this, lowest.notes[last_index] % 12, IRT_EQ, cf.notes[0] % 12);
+    (let (
+        (TWELVE (gil::add-int-var-dom *sp* '(12))) ; the IntVar just used to store 12
+        (CF-MODULO (gil::add-int-var-dom *sp* (list (mod (first *cf) 12)))) ; the value of the first note of the cf modulo 12
+        )
+        (gil::g-mod *sp* (lastone (first (notes *lowest))) TWELVE CF-MODULO) ; the last note of the lowest stratum % 12 = CF-MODULO
+    )
+)
 
 ; add a constraint such that there is no seventh harmonic interval if cf is at the top
 (defun add-no-seventh-cst (h-intervals is-cf-lower-arr &optional (is-cst-arr nil))
@@ -1348,14 +1361,14 @@
                     (is-p-cons-and-is-not-lowest (gil::add-bool-var *sp* 0 1))
                 )
                 (gil::g-op *sp* is-not-lowest gil::BOT_AND b is-p-cons-and-is-not-lowest)
-                (gil::g-rel-reify *sp* m gil::IRT_NQ DIRECT is-p-cons-and-is-not-lowest gil::RM_IMP)
+                (gil::g-rel-reify *sp* m gil::IRT_NQ DIRECT is-p-cons-and-is-not-lowest gil::RM_IMP) ; if it is a p-cons and not the lowest stratum then prohibit a direct move
+                ; of course nothing happens if it is the lowest stratum
             )
     )
 )
 
 
-; add the costs such that there is perfect consonance are costly to reach by direct motion
-; @completely new or reworked
+; add the costs such that there if a perfect consonance is reached by direct motion a cost is set
 (defun compute-no-direct-move-to-p-cons-costs-cst (motions cost-array is-p-cons-arr &optional (r t))
     (loop
         for m in motions
@@ -1370,14 +1383,13 @@
                 (gil::g-op *sp* is-direct-move gil::BOT_AND is-p-cons is-direct-move-to-p-cons) ; is-direct-move-to-p-cons = (is-direct-move AND is-p-cons)
                 (gil::g-op *sp* is-direct-move-to-p-cons gil::BOT_XOR is-not-direct-move-to-p-cons 1)
 
-                (gil::g-rel-reify *sp* c gil::IRT_EQ *direct-move-to-p-cons-cost* is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
-                (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set to 8 (last resort as described in 2.2.2 of T. Wafflard's report)
+                (gil::g-rel-reify *sp* c gil::IRT_EQ *direct-move-to-p-cons-cost* is-direct-move-to-p-cons gil::RM_IMP) ; if is-direct-move-to-p-cons then cost is set
+                (gil::g-rel-reify *sp* c gil::IRT_EQ 0 is-not-direct-move-to-p-cons gil::RM_IMP) ; else it is equal to 0 
         )
     )
 )
 
-; add the constraint that there cannot be two following sixths
-; @completely new or reworked
+; add the constraint that there cannot be two ascending sixths
 (defun add-no-ascending-sixths-cst (h-intervals cp)
     (dotimes (i *cf-last-index)
         (let (
@@ -1403,8 +1415,7 @@
     )
 )
 
-; add the constraint that there cannot be two successive perfect consonances between two voices
-; @completely new or reworked
+; add the cost of having two successive perfect consonances between two voices
 (defun add-no-successive-p-cons-cst (is-p-cons-array successive-p-cons-cost)
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
@@ -1414,10 +1425,8 @@
     ))
 )
 
-; add the constraint that there cannot be two successive perfect consonances between two voices
-; @completely new or reworked
+; add the cost of having two successive perfect consonances between two voices - 4th species -> successive FIFTHS are allowed
 (defun add-no-successive-p-cons-4th-species-cst (is-p-cons-array h-intervals successive-p-cons-cost)
-
     (dotimes (i (- (length h-intervals) 1))
         (let (
             (first-not-fifth (gil::add-bool-var *sp* 0 1))
@@ -1427,17 +1436,19 @@
             (successive-p-cons (gil::add-bool-var *sp* 0 1))
             (successive-p-cons-and-not-successive-fifths (gil::add-bool-var *sp* 0 1))
             )
+
             (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_NQ 7 first-not-fifth)
             (gil::g-rel-reify *sp* (nth (+ 1 i) h-intervals) gil::IRT_NQ 7 second-not-fifth)
             (gil::g-op *sp* first-not-fifth gil::BOT_OR second-not-fifth not-successive-fifths)
             
             (gil::g-op *sp* (nth i is-p-cons-array) gil::BOT_AND (nth (+ i 1) is-p-cons-array) successive-p-cons) 
-            (gil::g-op *sp* successive-p-cons gil::BOT_AND not-successive-fifths successive-p-cons-and-not-successive-fifths)
-            (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons-and-not-successive-fifths)
+            (gil::g-op *sp* successive-p-cons gil::BOT_AND not-successive-fifths successive-p-cons-and-not-successive-fifths) 
+            (gil::g-rel-reify *sp* (nth i successive-p-cons-cost) gil::IRT_EQ *succ-p-cons-cost* successive-p-cons-and-not-successive-fifths) ; successive p cons and not successive fifths -> set the cost
         )
     ) 
 )
 
+; add the cost of having two successive perfect consonances between two voices - 2nd species -> successive FIFTHS are allowed IF there is a third in between
 (defun add-no-successive-p-cons-2nd-species-cst (is-p-cons-array h-intervals m-succ-intervals successive-p-cons-cost)
     (loop 
     for i from 0 to (- (length is-p-cons-array) 2)
@@ -1461,7 +1472,7 @@
             (successive-fifths-and-not-third (gil::add-bool-var *sp* 0 1))
 
             ; finally
-            (apply-the-cost (gil::add-bool-var *sp* 0 1))
+            (apply-the-cost (gil::add-bool-var *sp* 0 1)) ; true if the cost must be applied, else false
         )
         ; first case : the successive perfect consonances are not successive fifths
         (gil::g-rel-reify *sp* (nth i h-intervals) gil::IRT_NQ 7 first-not-fifth)
@@ -1488,7 +1499,6 @@
 )
 
 ; computes the variety cost, i.e. the number of times a note repeats itself in a frame of 7 measures
-; @completely new or reworked
 (defun compute-variety-cost (cp variety-cost)
     (let (
         (k 0)
@@ -1496,15 +1506,17 @@
     (loop
         for i from 0 below (length cp)
         do (loop
+            ; for each note in the three following
             for j from (+ i 1) to (min (+ i 3) (- (length cp) 1))
             do(let (
                 (is-equal (gil::add-bool-var *sp* 0 1))
                 (is-not-equal (gil::add-bool-var *sp* 0 1))
             )
-                (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal)
+                (gil::g-rel-reify *sp* (nth i cp) gil::IRT_EQ (nth j cp) is-equal) 
                 (gil::g-rel-reify *sp* (nth i cp) gil::IRT_NQ (nth j cp) is-not-equal)
-                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ *variety-cost* is-equal gil::RM_IMP)
+                (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ *variety-cost* is-equal gil::RM_IMP) ; if it is equal set the cost
                 (gil::g-rel-reify *sp* (nth k variety-cost) gil::IRT_EQ 0 is-not-equal gil::RM_IMP)
+
                 (setf k (+ 1 k))
             )
         )
@@ -2199,7 +2211,7 @@
 ; ((2) 5) -> ((1/2 1/2 1/2 1/2 1/2 1/2 1/2 1/2 1 (pitches))
 ; ((3) 5) -> ((1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1/4 1 (pitches))
 ; ((4) 5) -> ~((-1/2 1 1 1 1/2 1/2 1 (pitches)) depending on the counterpoint
-; @completely new or reworked
+
 (defun get-basic-rythmics (species-list len sol-pitches counterpoints sol)
     (setq len-1 (- len 1))
     (setq len-2 (- len 2))
@@ -2210,7 +2222,9 @@
             (case (nth i species-list)
                 (1 (progn 
                     (setf (nth i rythmic+pitches) (list
+                        ; rythm
                         (make-list len :initial-element 1)
+                        ; pitches
                         (subseq sol-pitches 0 len)
                     ))
                     (setf sol-pitches (subseq sol-pitches len))
@@ -2220,7 +2234,7 @@
                         (pitches (subseq sol-pitches 0 (- (* 2 len) 1)))
                         )
                         (if (eq (car (last pitches 4)) (car (last pitches 3))) (progn ; if the first note in the penult bar is the same as the last in the 2nd-to last
-                            ; then ligature them ; to test if it works : (gil::g-rel *sp* (first (last (third (notes counterpoint-1)) 2)) gil::IRT_EQ (first (last (first (notes counterpoint-1)) 2)))
+                            ; then ligature them 
                             (setf rythmic (append (butlast rythmic 4) '(1) (last rythmic 2)))
                             (loop
                                 for i from (- (length pitches) 4) below (- (length pitches) 1)
@@ -2228,7 +2242,6 @@
                             )
                         ))
                         (if (eq (car (last pitches 3)) (car (last pitches 2))) (progn ; same but for 3rd-to-last and 2nd-to-last
-                            ; to test if it works: (gil::g-rel *sp* (first (last (solution-array counterpoint) 3)) gil::IRT_EQ (first (last (solution-array counterpoint) 2)))
                             (setf rythmic (append (butlast rythmic 3) '(1) (last rythmic 1)))
                             (loop
                                 for i from (- (length pitches) 3) below (- (length pitches) 1)
@@ -2239,14 +2252,18 @@
                             rythmic
                             pitches
                         ))
+                        ; remove all the notes we've just considered from sol-pitches
                         (setf sol-pitches (subseq sol-pitches (length pitches)))
                     )                    
                 )
                 (3 (progn
                     (setf (nth i rythmic+pitches) (list 
+                        ; rhythm
                         (append (make-list (* 4 len-1) :initial-element 1/4) '(1))
+                        ; pitches
                         (subseq sol-pitches 0 (- (* 4 len) 3))
                     ))
+                    ; remove all the notes we've just considered from sol-pitches
                     (setf sol-pitches (subseq sol-pitches (- (* 4 len) 3)))
                 ))
                 (4 (progn 
@@ -2257,6 +2274,7 @@
                     (setf j 0)
                     (dotimes (k *cf-penult-index)
                         (setf j (+ j 2))
+                        ; if we have a note that creates a hidden fifth (direct motion to a fifth), then remove the note
                         (if (and
                             (eq 7 (nth (+ 1 j) (gil::g-values sol (first (h-intervals (nth i counterpoints))))))
                             (eq DIRECT (nth j (gil::g-values sol (first (motions (nth i counterpoints))))))
@@ -2279,12 +2297,6 @@
         (assert (eql sol-pitches nil) (sol-pitches) "Assertion failed: sol-pitches should be nil at the end of function get-basic-rythmics.")
         rythmic+pitches
     )
-)
-
-(defun detect-hidden-fifth ()
-    (gil::g-values sol (first (h-intervals (third *parts))))
-    (gil::g-values sol (first (h-intervals (second *parts))))
-    (gil::g-values sol (first (h-intervals (first *parts))))
 )
 
 ; return a species array for a 4th species counterpoint
@@ -2439,15 +2451,14 @@
 
 ; add the sum of the @factor-arr as a cost to the *cost-factors array and increment *n-cost-added
 ; additionnally, keeps track of the index it was added to
-; @completely new or reworked
+; @g-sum: t if we need to sum the factor-arr, false if not
 (defun add-cost-to-factors (factor-arr cost-name &optional (g-sum 1))
-    (print cost-name)
-    (print *n-cost-added)
     (assert (< *n-cost-added *N-COST-FACTORS) (*n-cost-added) "Assertion failed: Trying to set more costs than what has been defined (~A). Please increase the value of *N-COST-FACTORS." *N-COST-FACTORS)
     (if g-sum 
         (gil::g-sum *sp* (nth *n-cost-added *cost-factors) factor-arr)
         (setf (nth *n-cost-added *cost-factors) factor-arr)
     )
+    ; store the index of the cost in the cost-index hashmap
     (setf (gethash cost-name *cost-indexes) (append (gethash cost-name *cost-indexes) (list *n-cost-added)))
     (incf *n-cost-added)
 )
