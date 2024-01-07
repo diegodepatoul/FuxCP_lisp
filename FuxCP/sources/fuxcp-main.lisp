@@ -647,7 +647,7 @@
     (handler-case
         (gil::search-next se) ; search the next solution, sol is the space of the solution
         (error (c)
-            (print "gil::Unexpected error. Please investigate.")
+            (print "A search was already running. Please start over by saving the configuration and starting the search.")
             ;(try-find-solution se)
         )
     )

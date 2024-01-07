@@ -1023,7 +1023,7 @@
             (gil::g-rel-reify *sp* h-interval gil::IRT_NQ 7 not-major-fifth)
             (gil::g-op *sp* not-minor-third gil::BOT_AND not-major-third not-third)
             (gil::g-op *sp* not-third gil::BOT_AND not-major-fifth not-in-h-triad)
-            (gil::g-rel-reify *sp* cost gil::IRT_EQ *h-triad-3rd-species-cost* not-in-h-triad gil::RM_IMP)
+            (gil::g-rel-reify *sp* cost gil::IRT_EQ *h-triad-3rd-species-cost* not-in-h-triad)
         )
     )
 )
