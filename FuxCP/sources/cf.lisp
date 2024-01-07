@@ -56,10 +56,16 @@
         ; must end with a perfect consonance
         (print "Perfect consonance at the end...")
         (add-p-cons-end-cst (first (h-intervals cantus-firmus)))
-    ))
-
-    (print "Penultimate measure...")    
-    (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals cantus-firmus))))
+        
+        (print "Penultimate measure...")    
+        (add-penult-cons-1sp-and-cf-cst (penult (is-not-lowest cantus-firmus)) (penult (first (h-intervals cantus-firmus))) 0)
+        )
+        ; else (if 3 parts)
+        (progn
+            (print "Penultimate measure...")    
+            (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals cantus-firmus))))
+        )
+    )
 
     ;==================================== MELODIC CONSTRAINTS ===========================
     ; There are no melodic constraints for the cantus firmus, as its notes are already fixed

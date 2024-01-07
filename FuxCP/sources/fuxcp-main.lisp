@@ -349,7 +349,7 @@
                         (setf (first (notes counterpoint)) (gil::add-int-var-array-dom *sp* *cf-len (extended-cp-domain counterpoint)))
                         ; then treat the case where species = 1, 2, or 3
                         (case species
-                            (1 (if (is-borrow-allowed) 
+                            (1 (if (is-borrow-allowed)
                                 ; then add to the penultimate note more possibilities
                                 (setf (nth *cf-penult-index (first (notes counterpoint))) (gil::add-int-var-dom *sp* (chromatic-cp-domain counterpoint))) 
                             ))

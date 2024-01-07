@@ -907,10 +907,8 @@
             (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-direct := (motion1 == 2)
             (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-direct := (motion2 == 2)
             (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
-        )
-    )
-)
-)
+        ))
+    ))
 )
 ; add the constraint such that the first harmonic interval is a perfect consonance
 (defun add-p-cons-start-cst (h-intervals)
@@ -1050,9 +1048,19 @@
     )
 )
 
+(defun add-penult-cons-1sp-and-cf-cst (is-not-lowest h-interval species)
+    (case species
+        (0 (if (getparam 'penult-rule-check) ; if the cantus firmus is not the lowest use a minor third
+                (gil::g-rel-reify *sp* h-interval gil::IRT_EQ THREE is-not-lowest gil::RM_IMP)
+        ))
+        (1 (if (getparam 'penult-rule-check) ; if the cantus firmus is the lowest use a major sixth
+                (gil::g-rel-reify *sp* h-interval gil::IRT_EQ NINE is-not-lowest gil::RM_IMP)
+        ))
+    )
+
+)
+
 (defun add-penult-cons-cst (b-bass h-interval &optional (and-cond nil))
-    (print b-bass)
-    (print h-interval)
     (if (getparam 'penult-rule-check)
         (if (null and-cond)
             (gil::g-ite *sp* b-bass NINE THREE h-interval)

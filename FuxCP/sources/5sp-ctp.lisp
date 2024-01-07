@@ -218,13 +218,12 @@
         ; no matter what species it is, the last harmonic interval must be a perfect consonance
         (add-p-cons-end-cst (first (h-intervals counterpoint)))
     
-    ; if penultimate measure, a major sixth or a minor third must be used
-    ; depending if the cantus firmus is at the bass or on the top part
-    (print "Penultimate measure...")
-        (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint)))
-        (penult (nth 3 (is-nth-species-arr counterpoint)))
-    ) ; 3rd species
-     
+        ; if penultimate measure, a major sixth or a minor third must be used
+        ; depending if the cantus firmus is at the bass or on the top part
+        (print "Penultimate measure...")
+            (add-penult-cons-cst (lastone (fourth (is-cf-lower-arr counterpoint))) (lastone (fourth (h-intervals-to-cf counterpoint)))
+            (penult (nth 3 (is-nth-species-arr counterpoint)))
+        ) ; 3rd species
     ))
     ; the third note of the penultimate measure must be below the fourth one. (3rd species)
     (gil::g-rel-reify *sp* (lastone (third (m-succ-intervals-brut counterpoint))) gil::IRT_GR 1

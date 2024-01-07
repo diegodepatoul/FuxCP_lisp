@@ -99,7 +99,7 @@
     ; depending if the cantus firmus is at the bass or on the top part
     (print "Penultimate measure...")
     (case species
-        ((1) (add-penult-cons-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint)))))
+        ((1) (add-penult-cons-1sp-and-cf-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint))) 1))
         ((3v-1sp) (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals counterpoint)))))
     )
     ;============================================ MELODIC CONSTRAINTS =============================
