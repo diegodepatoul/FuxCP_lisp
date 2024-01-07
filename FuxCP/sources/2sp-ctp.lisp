@@ -114,7 +114,6 @@
         ; if penultimate measure, a major sixth or a minor third must be used
         ; depending if the cantus firmus is at the bass or on the top part
         (print "Penultimate measure...")
-        ; (gil::g-rel *sp* (fourth (first (h-intervals counterpoint))) gil::IRT_NQ 7) ; TODO: fix this <- this was written by Thibault
         (add-penult-cons-cst (lastone (third (is-cf-lower-arr counterpoint))) (lastone (third (h-intervals counterpoint))))
     ))
 
@@ -147,7 +146,7 @@
         (2 (add-no-unison-at-all-cst (solution-array counterpoint) (rest (solution-array counterpoint))))
         ; @completely new or reworked
         ; ========= 2 counterpoints specific
-        (7 (progn
+        (3v-2st (progn
             ; when there is more than one counterpoint, unison can occur between the fourth-to-last and third-to-last note
             (if (member 3 *species-list) (progn
                 ; when used in combination with a third species counterpoint, unison can also occurr between the third-to-last and the second-to-last

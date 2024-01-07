@@ -159,6 +159,13 @@
             (list 0)
         ))
     )
+
+    ; To make the code more readable
+    (defparameter 3v-1sp 6)
+    (defparameter 3v-2sp 7)
+    (defparameter 3v-3sp 8)
+    (defparameter 3v-4sp 9)
+    (defparameter 3v-5sp 10)
 )
 
 (defclass stratum-class () (
@@ -419,6 +426,7 @@
 
 (defun fux-cp (species-list)
     "Dispatches the counterpoint generation to the appropriate function according to the species."
+    (print (list "Chosen species for the counterpoints: " species-list))
     ; THE CSP SPACE 
     (defparameter *sp* (gil::new-space))
 
@@ -428,19 +436,20 @@
     (setq *cost-indexes (make-hash-table)) ; a hashmap recording which cost is at which position in the cost-factors list                   
     (setq *cost-factors (set-cost-factors)) ; the cost-factors list, contains all the individual costs
 
-    (print (list "Chosen species for the counterpoints: " species-list))
+    ;; CREATE THE PARTS
     (setq counterpoints (make-list *N-COUNTERPOINTS :initial-element nil)) ; list containing the counterpoints
-    (dotimes (i *N-COUNTERPOINTS) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list)))) ; init the counterpoints
-    
+    (dotimes (i *N-COUNTERPOINTS) (setf (nth i counterpoints) (init-counterpoint (nth i *voices-types) (nth i species-list)))) ; init the counterpoints-
+    (setq *cantus-firmus (init-cantus-firmus)) ; init the part 'object' for the cantus-firmus
+    (setq *parts (cons *cantus-firmus counterpoints)) ; list containing all the parts in this order: (cf, cp1, cp2)
+        
+
+    ;; CREATE THE STRATA
     (setq *upper (make-list *N-COUNTERPOINTS :initial-element nil)) ; list containing the upper strata (the middle and the uppermost strata)
     (dotimes (i *N-COUNTERPOINTS) (setf (nth i *upper) (make-instance 'stratum-class))) ; declare the upper strata
     (setq *lowest (make-instance 'stratum-class)) ; declare the lowest stratum
     (setf (first (notes *lowest)) (gil::add-int-var-array *sp* *cf-len 0 120))
-
-    (setq *cantus-firmus (init-cantus-firmus)) ; init the part 'object' for the cantus-firmus
-    (setq *parts (cons *cantus-firmus counterpoints)) ; list containing all the parts in this order: (cf, cp1, cp2)
-    
     (create-strata-arrays *parts) ; create the strata arrays 
+
     (case *N-COUNTERPOINTS
         (1 (progn 
             (fux-cp-cf (first *parts)) ; apply the constraints wrt. the cantus firmus
@@ -675,6 +684,7 @@
 
     ; reverse the cost order because when passing them between GiL and C++ they are reversed again 
     (setq costs-names-by-order (reverse costs-names-by-order))
+    (print "Order of the costs, in reversed order:")
     (let (
         (i 0)
         (n-different-costs 0) ; the amount of cost types that have been encountered; not all the costs will be encountered, as some are species-specific (like the cost for no syncopation, that occurs only with a 4th species ctp)
@@ -712,7 +722,7 @@
                     )
                     ; put our linear combination or maximum minimisation into our global cost array
                     (setf (nth n-different-costs reordered-costs) current-cost-sum)
-                    #| debug |# ; (print (list n-different-costs "th cost = " preference-level)) ; print the index at which the cost was added, please remember that it is reverted wrt. user preferences, as it will be reverted again when passing to GiL->C++
+                    (print (list n-different-costs "th cost = " preference-level)) ; print the index at which the cost was added, please remember that it is reverted wrt. user preferences, as it will be reverted again when passing to GiL->C++
                     (incf n-different-costs) 
                 ))
             )

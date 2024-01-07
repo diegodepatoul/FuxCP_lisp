@@ -31,7 +31,7 @@
     ; (setf (first (m-intervals-brut counterpoint)) (gil::add-int-var-array *sp* *cf-last-index -12 12))
     (create-m-intervals-self (first (notes counterpoint)) (first (m-intervals counterpoint)) (first (m-intervals-brut counterpoint)))
     
-    (case species ((1 6) ; only for the first species
+    (case species ((1 3v-1st) ; only for the first species
         ; then
         (progn
             ; creating melodic intervals array between the note n and n+2
@@ -73,9 +73,9 @@
     ; for all intervals between the cantus firmus and the counterpoint, the interval must be a consonance
     (print "Harmonic consonances...")
     (case species
-        ((1 6) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
-        ((2 7) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
-        ((3 8) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
+        ((1 3v-1sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint))))
+        ((2 3v-2sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_THESIS_VAR))
+        ((3 3v-3sp) (add-h-cons-cst *cf-len *cf-penult-index (first (h-intervals counterpoint)) PENULT_1Q_VAR))
         ;(otherwise (error "Species not supported"))
     )
     ;(add-penult-dom-cst (penult (first (h-intervals counterpoint))) PENULT_CONS_VAR)
@@ -101,12 +101,12 @@
     (print "Penultimate measure...")
     (case species
         ((1) (add-penult-cons-cst (penult (is-not-lowest counterpoint)) (penult (first (h-intervals counterpoint)))))
-        ((6) (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals counterpoint)))))
+        ((3v-1sp) (gil::g-member *sp* PENULT_CONS_3P_VAR (penult (first (h-intervals counterpoint)))))
     )
     ;============================================ MELODIC CONSTRAINTS =============================
     ; NOTE: with the degree iii in penultimate *cf measure -> no solution bc there is a *tritone between I#(minor third) and V.
     (print "Melodic constraints...")
-    (case species ((1 6)
+    (case species ((1 3v-1sp)
         ; then
         (progn
             ; no more than minor sixth melodic interval
@@ -119,7 +119,7 @@
 
             ;==================================== MOTION CONSTRAINTS ============================
             (print "Motion constraints...")
-            (if (eq species 1) ; for the 6th species, it isn't a constraint but a cost
+            (if (eq species 1) ; for the 3v-1st species, it isn't a constraint but a cost
             ; no direct motion to reach a perfect consonance
                 (progn
                     (print "No direct motion to reach a perfect consonance...")
@@ -136,7 +136,7 @@
     ;============================================ COST FACTORS ====================================
     (print "Cost function...")
 
-    (case species ((1 6)
+    (case species ((1 3v-1st)
         ; then
         (progn
             (setf (m-all-intervals counterpoint) (first (m-intervals counterpoint)))

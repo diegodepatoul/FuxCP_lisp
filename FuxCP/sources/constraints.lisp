@@ -888,10 +888,10 @@
 
 ; add the constraint that the three voices go in different directions
 ; i.e. that there are no two direct motions
-; i.e. that either motions1 is direct or motions 2 is direct, but not both
-; @completely new or reworked
-;; WARNING : this implementation works only for 3 voices or less, it won't work for 4 voices!!
+; i.e. that there can be only one part moving in direct motion (since one part has motion=-1 (bc it is the lowest stratum), and if the two other parts have motion=direct then all voices go in the same direction)
+; WARNING: this function needs to be scaled before implementing a fourth voice, it currently works by restricting the number of direct motions to max. 1
 (defun add-no-together-move-cst (motions)
+    ; gecode pseudo code : count(*this, motions, 1, IRT_LQ, 2); maximum one '2' in the motions array -> for 4 voices, maximum TWO '2' in the motions array
     (loop 
         ; for each possible pair or motions
         ; for example if we have (m1, m2 and m3), take (m1 and m2), (m1 and m3) and (m2 and m3)
@@ -904,13 +904,8 @@
             (m1-direct (gil::add-bool-var *sp* 0 1))
             (m2-direct (gil::add-bool-var *sp* 0 1))
         )
-            ; if a part is the lowest stratum its motion is -1, so the following is always true
-
-            ; the following has an impact if none of the current parts are the lowest stratum
-            ; then, if they both have a direct motion it means that they both move in the same direction than the lowest stratum
-            ; which means that all voices move in the same direction -> this is prohibited.
-            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-eq-two := (motion1 == 2)
-            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-eq-two := (motion2 == 2)
+            (gil::g-rel-reify *sp* m1 gil::IRT_EQ 2 m1-direct) ; m1-direct := (motion1 == 2)
+            (gil::g-rel-reify *sp* m2 gil::IRT_EQ 2 m2-direct) ; m2-direct := (motion2 == 2)
             (gil::g-op *sp* m1-direct gil::BOT_AND m2-direct 0) ; NOT (m1-direct AND m2-direct) (not both at the same time)
         )
     )
@@ -1926,6 +1921,34 @@
     for b in (rest is-syncope-arr)
     do
         (gil::g-rel-reify *sp* th gil::IRT_NQ ar b gil::RM_IMP)
+    )
+)
+
+; add the constraint that the species arrays from two fifth-species parts must be at least 50% different
+(defun add-make-fifth-species-different-cst (parts)
+    ; the fifth species attributes to each note a species between 1 and 4. when composing with two fifth-species, only half the notes can be of the same species at the same time -> if not, there is a lot of redundancy between the two fifth-species voices
+
+    #| Gecode pseudo code
+    int n = cp1.species_arr.size();
+    IntVarArgs equal(*this, n, 0, 1); 
+    for (int i = 0; i < n; ++i) {
+        rel(*this, cp1.species_arr[i], IRT_EQ, cp2.species_arr[i], equal[i]); // equal == 1 when both species_arr are the same
+    }
+    count(*this, equal, 1, IRT_LQ, n / 2); // only half of the equal array can be true
+    // when scaling to four voices 50% is too much, the value should be lowered to something like 33%
+    |#
+
+    (let (
+            (is-same-species (gil::add-bool-var-array *sp* (solution-len (second parts)) 0 1))
+            (is-same-species-int (gil::add-int-var-array *sp* (solution-len (second parts)) 0 1))
+            (percentage-same-species (gil::add-int-var *sp* 0 (solution-len (second parts))))
+        )
+        (dotimes (i (solution-len (second parts)))
+            (gil::g-rel-reify *sp* (nth i (species-arr (second parts))) gil::IRT_EQ (nth i (species-arr (third parts))) (nth i is-same-species))
+            (gil::g-rel-reify *sp* (nth i is-same-species-int) gil::IRT_EQ 1 (nth i is-same-species))
+        )
+        (gil::g-sum *sp* percentage-same-species is-same-species-int)
+        (gil::g-rel *sp* percentage-same-species gil::IRT_LE (floor (/ (solution-len (second parts)) 2)))
     )
 )
 
