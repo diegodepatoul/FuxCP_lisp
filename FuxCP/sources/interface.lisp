@@ -1,7 +1,7 @@
 (in-package :fuxcp)
 
-; Author: Thibault Wafflard
-; Date: June 3, 2023
+; Author: Thibault Wafflard and Anton Lamotte
+; Date: June 3, 2023 and January 2024
 ; This file contains all the cp-params interface.
 ; That is to say the interface blocks, as well as the global variables updated via the interface.
 

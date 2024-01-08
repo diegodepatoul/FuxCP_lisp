@@ -9,7 +9,7 @@
 ;;==========================#
 (defun fux-cp-cf (cantus-firmus &optional (species 0))
     (print "########## CANTUS FIRMUS RULES ##########")
-    "Create the CSP for the first species of Fux's cantus-firmus."
+    "Create the CSP for the cantus-firmus."
 
     ;============================================ CREATING GIL ARRAYS =============================
     ;; initialize the variables

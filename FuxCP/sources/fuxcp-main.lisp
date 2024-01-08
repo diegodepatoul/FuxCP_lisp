@@ -1,7 +1,7 @@
 (in-package :fuxcp)
 
-; Author: Thibault Wafflard
-; Date: June 3, 2023
+; Author: Thibault Wafflard and Anton Lamotte
+; Date: June 3, 2023 and January 2024
 ; This file contains the functions that:
 ;   - dispatch to the right species functions
 ;   - set the global variables of the CSP
