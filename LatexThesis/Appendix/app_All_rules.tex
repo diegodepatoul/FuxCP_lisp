@@ -90,7 +90,8 @@ By extension, $\rho + z >_{s} \rho$ such that:
     \end{lstlisting}
     
     \item \textit{The counterpoint must be in the same key as the \cfdot}\label{rule:samekey}
-    This rule is already handled by the creation of the set $\N$. The example of the actual rule given above will clarify the explanations. Let $k$ be the value of the key determined by the key signature, i.e. $60$ for $C$; and $t$ the tonic of the piece, i.e. $Cf[0]=65$. Then:
+    \item 
+    This rule is already handled by the creation of the set $\N$. The example of the actual rule given above will clarify the explanations. Let $k$ be the value of the key determined by the key signature, i.e. $60$ for $C$; and $t$ the tonic of the piece, i.e. $N[0]=65$. Then:
 
     \begin{equation*}
         \begin{gathered}
@@ -156,7 +157,7 @@ By extension, $\rho + z >_{s} \rho$ such that:
 
 \item \textit{3V - The last chord must have the same fundamental as the one of the scale used throughout the composition.}\label{rule:same-fundamental-appendix}
 \begin{equation} \begin{aligned}
-    N(a)[0, m-1] \mod 12 = N(cf)[0, 0] \mod 12
+    N(a)[0, m-1] \mod 12 = N(\mathit{cf})[0, 0] \mod 12
     \end{aligned} \end{equation}
 \end{enumerate}
 
@@ -205,7 +206,7 @@ By extension, $\rho + z >_{s} \rho$ such that:
 
 \begin{equation}
     \begin{gathered}
-        \forall p_1, p_2 \in \{cf, cp_1, cp_2\}, \text{with} p_1 \neq p_2 \forall j \in \{0, 1, 2, 3\} \forall j \in [1, m-1) \quad
+        \forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\}, \text{with} p_1 \neq p_2 \forall j \in \{0, 1, 2, 3\} \forall j \in [1, m-1) \quad
         N(p_1)[i, j] \neq N(p_2)[i, j]
     \end{gathered}
 \end{equation}
@@ -352,7 +353,7 @@ This rule is already covered by the definition of the voice ranges, so no constr
         i := \max (\B), \forj\\
         H[0, j+1] = 0 \land P[i, j] = 0 \land \begin{cases}
             M_{brut}[i, j] < -4 \land \mathit{IsCfB}[i, j] \iff \bot\\
-            M_{cf}[i, j] < -4 \land \lnot \mathit{IsCfB}[i, j] \iff \bot
+            M_{\mathit{cf}}[i, j] < -4 \land \lnot \mathit{IsCfB}[i, j] \iff \bot
         \end{cases}\\
         \text{where } i \text{ stands for the last beat index in a measure.}
     \end{gathered}
@@ -361,7 +362,7 @@ This rule is already covered by the definition of the voice ranges, so no constr
 
 \item \textit{3V - Successive perfect consonances should be avoided.}
 \begin{equation} \begin{aligned}
-    &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad v_1 \neq v_2, \quad \forall j \in [0, m-2) \colon\\
+    &\forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2\}, \quad v_1 \neq v_2, \quad \forall j \in [0, m-2) \colon\\
     &(H(v_1,v_2)[0, j] \in Cons_) \land (H(v_1,v_2)[0, j+1] \in Cons_p)\\
     &\implies Cost_{succ\_p\_cons} = 2
     \end{aligned} \end{equation}
@@ -376,7 +377,7 @@ This rule is already covered by the definition of the voice ranges, so no constr
     To prevent this, we need only look at the motions between the parts and the lowest stratum. If one of their motions is contrary, then it is guaranteed that the three voices will not go in the same direction (because at least one is contrary). The same applies if one of the motions is oblique. The problem arises when all the movements are direct, because this would mean that the three voices are going in the same direction. So it was forbidden to have all motions direct at the same time.
     \begin{equation} \begin{aligned}
     &\forall j \in [0, m-2) \colon\\
-    &\bigvee_{p \in \{cf, cp_1, cp_2\}}  M(p)[0, j] \neq 2
+    &\bigvee_{p \in \{\mathit{cf}, cp_1, cp_2\}}  M(p)[0, j] \neq 2
     \end{aligned} \end{equation}
 
     \item  \textit{3V - It is prohibited to use successive ascending sixths on a direct upwards motion.}
@@ -384,7 +385,7 @@ This rule is already covered by the definition of the voice ranges, so no constr
 
     \begin{equation}
         \begin{aligned}
-            & \forall j \in [1, m-1), \quad \forall v_1, v_2 \in \{cf, cp_1, cp_2\} \text{ where } v_1 \neq v_2, \quad \text{sixth := } \{8,9\} \colon \\
+            & \forall j \in [1, m-1), \quad \forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2\} \text{ where } v_1 \neq v_2, \quad \text{sixth := } \{8,9\} \colon \\
             & (H(v_1, v_2)[0, j-1] \notin \text{sixth}) \lor (H(v_1, v_2)[0, j] \notin \text{sixth}) \\
             & \lor M(v_1)[0, j] > 0 \lor M(v_2)[0, j] > 0
         \end{aligned}
@@ -449,8 +450,8 @@ No need to add a new constraint as this is not an actual rule.
 
 \begin{equation}
     \begin{gathered}
-        \forj, \forall M_{cf}[j] \neq 0\\
-        M[0, j] = 12 \implies (H_{abs}[0, j] \leq 4) \land (\mathit{IsCfB}[j] \iff M_{cf}[j]>0)
+        \forj, \forall M_{\mathit{cf}}[j] \neq 0\\
+        M[0, j] = 12 \implies (H_{abs}[0, j] \leq 4) \land (\mathit{IsCfB}[j] \iff M_{\mathit{cf}}[j]>0)
     \end{gathered}
 \end{equation}
 
@@ -498,7 +499,7 @@ This constraint already had an adapted mathematical notation in the chapter of t
 \item \textit{3V - Successive fifths on the downbeat are only allowed when they are separated by a third on the upbeat.}    
     \begin{equation}
         \begin{aligned}
-            & \forall p_1, p_2 \in \{cf, cp_1, cp_2\} \text{ where }  p_1 \neq p_2, \quad \forall j \in [0, m-2): \\
+            & \forall p_1, p_2 \in \{\mathit{cf}, cp_1, cp_2\} \text{ where }  p_1 \neq p_2, \quad \forall j \in [0, m-2): \\
             &Cost_{succ\_p\_cons} = \,  
             \begin{cases}
                 0 & \text{if } (H(p_1, p_2)[0, j] \notin Cons_p) \lor (H(p_1, p_2)[0, j+1] \notin Cons_p)\\
@@ -701,7 +702,7 @@ This implies that the costs of the motions and the first species constraints on 
 \item \textit{3V - Successive fifths are allowed when using ligatures.}    
 
     \begin{equation} \begin{aligned}
-        &\forall v_1, v_2 \in \{cf, cp_1, cp_2\}, \quad \text{with } v_1 \neq v_2, \quad \forall j \in [0, m-2) \colon\\
+        &\forall v_1, v_2 \in \{\mathit{cf}, cp_1, cp_2\}, \quad \text{with } v_1 \neq v_2, \quad \forall j \in [0, m-2) \colon\\
         &Cost_{succ\_p\_cons} = \,  
         \begin{cases}
             0 & \text{if } (H(p_1, p_2)[0, j] \notin Cons_p) \lor (H(p_1, p_2)[0, j+1] \notin Cons_p)\\
