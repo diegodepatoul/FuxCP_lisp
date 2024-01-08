@@ -1,70 +1,21 @@
-\chapter{Conclusion}
+\chapter*{Conclusion}\label{chapter:Conclusion}
+\addcontentsline{toc}{chapter}{Conclusion}
 It is time to look back at the work that has been done, to highlight the progress that has been made, but also the shortcomings and gaps that need to be filled by future improvements. We will therefore use this chapter to discuss some of the key points that emerge from this thesis.
 
-\section{What has been achieved}
-\dots
- 
-\section{Intended use of the FuxCP tool}
-Throughout the work it is noticeable that all the examples given are quite short (fourteen bars at most). This is largely due to Fux himself, as the examples he gives are all of the same length, presumably for pedagogical purposes. He does not mention this explicitly, but there may also be a practical reason for considering only such short compositions. Indeed, these small compositions can be thought of as 'blocks' which can then be arranged to form a whole. The great advantage of this approach is that the counterpoints between the blocks can be of different kinds, allowing the composition to be constantly renewed.
+The aim of this thesis was to succeed in formalising Gradus ad Parnassum by J.J. Fux, a baroque composer who lived in the 18th century, in order to have an exhaustive record of the rules he imparts in his work. These rules concern the composition of counterpoint. More specifically, the aim of this work was to generalise the existing formalisation for two voices to three voices. Once formalised, these rules were to be implemented in the form of a constraint solving problem, which would then make it possible to obtain automatically generated counterpoints. The result of this work should be expressed in the form of a highly customisable tool, in order to provide the user-composer with an easy-to-use tool that can assist them in their composition of counterpoint. Looking at what has been done, we consider that these benchmarks have been reached. The rules have been formalised in the most unambiguous way possible (firstly, through precise formulation in English, and secondly, through the use of logical formulae), and then implemented in the form of the FuxCP tool, which is capable of automatically generating counterpoints. 
 
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=5.2in]{Images/composition-in-blocks.png}
-  \caption{Example of what of a composition in blocks could look like}
-  \label{fig:composition-in-blocks}
-\end{figure}
-
-\section{Known issues about the current state of the work} \label{section:known-issues-about-the-current-state-of-the-work}
-\begin{itemize}
-  \item As mentioned in section~\ref{section:time-to-find-a-solution}, some few combinations of species, voice ranges and \textit{cantus firmi} cause the solver to fail to find a solution. The current roundabout way to "solve" this is to... change the voice ranges or some other parameter until a structural solution is found. These cases are relatively rare and do not prevent the use of FuxCP.
-  \item If a counterpoint of the fourth species is the lowest stratum, the solver needs more time to find a solution in which all notes are ligated. This is not a problem when combining a fourth species counterpoint with a simple species counterpoint (first or second species), but becomes difficult to handle with more complex species (third or fifth species), as the search time before the solver finds a suitable solution (i.e. with all notes tied) can become very long.
-  \item The current heuristics make the solver branch on the lowest stratum array with a "select the values smaller than (min+max)/2" policy. For some reason, it always seems to take the lowest value (or close to it), which means that the melody of the voice that is the lowest stratum is really redundant, something that even variety preference doesn't compensate for on complex species, since the time needed to find a good solution (i.e. one where the variety cost is low, which again means that many notes are different) is too high compared to the time needed to find a passable solution.
-  
-  This leads to a second problem, which is that since the downbeat of the part, which is the lowest layer, always consists of the lowest possible note, the following notes (e.g. in the upbeat) will necessarily be higher. This is because the note in the 2nd, 3rd and 4th bars cannot be the same as the note in the 1st bar, but because the 1st bar is already the lowest possible, the notes in the 2nd, 3rd and 4th bars must be higher. 
-  
-  As this may be difficult to understand, see Figure~\ref{fig:limitation-lowest-array}, which shows that the second species of counterpoint, in the bass, is composed exclusively of upbeat notes that are higher than the downbeat notes. This is a side effect of the heuristic, and a way should be found to resolve it. Note that in this example the problem is solved very quickly (a matter of seconds) because in this setting the other counterpoint is a first species counterpoint (i.e. the setting is not complex, as explained in~\ref{section:time-to-find-a-solution}) and the and the solver finds solutions where the upbeat is not always higher than the downbeat very quickly.
-\end{itemize}
-\begin{figure}[h]
-  \centering
-  \includegraphics[width=.6\textwidth]{Images/limitation-with-lowest-array.png}
-  \caption{Illustration showing the limitation of current heuristics, as the counterpoint of the second species always has a higher upbeat than its downbeat. Note that the composition has been cropped.}
-  \label{fig:limitation-lowest-array}
-\end{figure}
+\paragraph{}
+To be able to express Fux's rules in formal logic, it was necessary to create new concepts and variables, and even to change the paradigm: the cantus firmus lost its place of honour to the lowest stratum, i.e. the lowest note at any given moment. We can be pleased that the formalisation for three voices maintains full compatibility with the two-part formalisation, and that the new variables and concepts introduced can also be used by the two-part formalised rules.
 
 
+The implementation, which uses GiL to call the Gecode tool from Lisp, is also functional and allows anyone to generate counterpoints in a matter of seconds. While the musical results of these generations must be qualified, as they are not always masterpieces, they are a good basis and the current implementation can be considered successful. A major drawback of the current implementation is the cases where the solver has difficulty finding a solution, in which case the waiting time to obtain counterpoints can be long (on the order of several minutes). This is relatively harmless at the moment, but it could become a problem if we continue to add constraints by adding voices.
+With regard to the possibility of customisation by the composer-user, a great deal of thought has been given to the best way of enabling the constraint solver to understand human preferences. This reflection has led to the conclusion that each user must be as free as possible to manage the costs of the search in order to be able to engage in iterative composition: they make a first attempt, observe the result, adjust the costs and try again, and so on. The interface reflects this policy and allows the user to manipulate the costs with great flexibility. 
 
+As far as the practical side of the implementation is concerned, a major limitation in the development of the tool was the restrictive aspect of coding in Lisp a programme that would be much easier to code in object-oriented programming. Coding Gecode in Lisp is error prone (as it is much more verbose and less clear) and time consuming. If a potential successor to this work were to change one thing immediately, it would be to continue directly in C++.
 
-\section{Future work}
-The work towards fully automated counterpoint composition is progressing, but there is still a long way to go before we can claim to have finished the job. There are several ways to improve the current situation for those who want to improve FuxCP. Here are some ideas for improvement:
-\begin{enumerate}
-  \item \textbf{Solution quality improvements}
-  \begin{itemize}
-    \item \textit{Finalise the formalisation of \gap} -- The first obvious way to improve the tool is simply to complete the formalisation of Fux's work, which would make it possible to compose in four voices, but also to integrate the additional rules he mentions in his last chapter. This would make it possible to have a complete FuxCP tool, in terms of Fux's rules, and then to supplement Fux's rules with additional rules that could come from any influence. This idea of adding external rules to the Fux rules has already been tested to some extent in the work of T. Wafflard, and the results were more than promising. It is therefore clearly a direction to take in the improvement of the FuxCP tool.
-    \item \textit{Relate the notes of the 2nd, 3rd and 4th beats to each other} -- As mentioned in one of the preference ordering experiments (see~\ref{subsection:third-experiment-with-costs}), there are no direct constraints between the 2nd, 3rd and 4th beats of each counterpoint. The only way they influence each other is through the transitivity of the constraints: A and B are constrained together, and so are B and C, so A and C are connected in some way. The reason there are no direct constraints is that Fux didn't mention any. Anyway, this leads to some unmelodicity, and it is definitely a good idea to find some rules (e.g. from other authors) that could deal with this unmelodicity. 
-    \item \textit{Address any of the current limitations} -- The section~\ref{section:known-issues-about-the-current-state-of-the-work} discusses some limitations and issues with the current state of the work. Solving any of them would be an improvement for FuxCP.
-  \end{itemize}
-  
-  
-  \item \textbf{Software architecture}
-  \begin{itemize}
-    \item \textit{Migrate the project to C++} -- Gecode is written in C++, and C++ is a language much better suited to managing implementations like FuxCP. GiL works really well, but has shown its limitations more than once: way too verbose, hard to manage objects (which are useful for designing FuxCP) since using Lisp, and lacking some of Gecode's features. These reasons alone are a huge incentive to migrate the whole implementation to C++. This would make it possible to further improve the implementation with more convenience and efficiency.
-    
-    Here we repeat the words of T. Wafflard, who had already reached the same conclusion:
-    \begin{quotation}
-      ``Currently, constraints are added to a species via a long function that dispatches the constraints, rather than via class inheritance. Ideally, object-oriented inheritance
-      should be used to represent the different variable arrays and species. All variable arrays (H, M , P , etc.) have something in common, whether in terms of their size rel-
-      ative to the cantus firmus, or in terms of the way certain rules are applied. A relatively abstract class should represent this type of array to enable these commonalities to be brought together.
+\paragraph{}
+In a more global perspective, we can think about the implications of this work for the future.
+First of all, last year T. Wafflard demonstrated the relevance of using constraint programming in the field of musical composition and more specifically in counterpoint. This work confirms this conclusion.
+Secondly, by following in the footsteps of previous work on counterpoint, music and constraint programming, and by adding its own contribution to this long line, this work contributes to the creation, perhaps one day, of a tool perfectly capable of generating highly customisable, multi-voice counterpoints on complete musical compositions. Far from replacing composers, this tool would be an excellent tool for beginners, giving them a solid base to build on, and a source of inspiration for the more experienced, who could play with different preferences to produce innovative compositions.
 
-      The same applies to species that share common rules and should have been represented in a class system of their own. It would be logical for species to be children of the first species. Unfortunately, the scope of this work does not allow for a complete overhaul of the architecture. Moreover, in the near future, the entire code may have to be redone in C++ for reasons of performance, features, maintainability, and so on.
-      Also, GiL has reached its limits, both in terms of ease of programming and in terms of possibilities. The Lisp language is not designed for writing mathematics, since each operation requires a different function call. Code readability can become complicated because these calls are all represented by parentheses. At the same time, it is not possible with GiL to combine basic mathematical operations to form a larger one. One has to break down each complex operation into simple intermediate basic operations a bit like writing assembly, which is undesirable for larger projects. Not to mention that branch-and-bound, heuristics, and multithreading seem complicated to implement in
-      GiL.'' \cite[p.67]{wafflard2023}
-      \end{quotation}
-  \end{itemize}
-
-  \item \textbf{Solver performance}
-  \begin{itemize}
-    \item \textit{Bettering the heuristics and reorganising the constraints} -- Obviously, increasing the speed at which the solver finds solutions increases the speed at which the solver finds good solutions. It is therefore crucial to continue working on the heuristics to find better and better solutions. At the same time, once the globality of \gaps has been formalised, it might be interesting to rethink the constraints that apply to the composition in an intelligent way, to make the solver's work easier and to have a set of constraints that hold together better.
-    
-    This can also help the solver to find solutions for the difficult settings. For example, searching for a solution with two counterpoints of the fifth species sometimes takes a long time. 
-  \end{itemize}
-\end{enumerate}
+While there's still a considerable journey ahead, the building is steadily taking shape, brick by brick.

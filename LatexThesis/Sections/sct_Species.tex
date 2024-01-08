@@ -10,7 +10,7 @@ Each species section is divided into two subsections: the first subsection is ab
     \item \textbf{Concerning the green dot} ---
     All the rules from T. Wafflard's thesis still apply to three-part compositions. The numbering of the rules in this work is consistent with T. Wafflard's work\footnote{The whole set of rules (two-part composition and three-part composition) can be found in Appendix~\ref{appendix:complete-set-of-rule}.}. If a rule is defined with the same number as an existing rule for two-part compositions, this means that the corresponding rule from T. Wafflard's work does not apply to three-part composition, and that the new rule should be used instead. To make this clearer, there is a green dot (\greendot) next to the rules from T. Wafflard's thesis that got redefined when used in a three-voice composition.
     \item \textbf{Concerning the \texttt{[PREF]} marker} ---
-    As discussed earlier (see Section~\ref{subsection:preferences-vs-hard-rules}), some rules are mandatory and must be followed to find a valid solution, and other rules are just preferences that can be followed to find a \textit{better} solution. The preferences have been marked '\texttt{[PREF]}' throughout the chapter clearly mark which rule is mandatory and which is a preference.
+    Some rules are mandatory and must be followed to find a valid solution, and other rules are just preferences that can be followed to find a \textit{better} solution. The preferences have been marked '\texttt{[PREF]}' throughout the chapter clearly mark which rule is mandatory and which is a preference.
 
     \item \textbf{Concerning the default costs} --- Each time a cost is mentioned in the formalisation, the value corresponding to it is its default value, as defined in Appendix~\ref{chapter:user-guide}. Note, however, that in practice the value for each cost can be changed by the user to suit their needs.
     \item \textbf{Concerning the purpose of all the rules} --- 
@@ -34,7 +34,7 @@ These implicit rules apply to all types of counterpoint. They are never explicit
     \item \greendots \textit{The harmonic interval of the penultimate measure must be either a minor
     third, a perfect fifth, a major sixth, or an octave.} \label{rule:penult-interval-3-voices}
     
-    In two-part composition rules, Fux said that the last harmonic interval had to be either a minor or a majord third (see rule~\ref{rule:penult-interval-2v} for two voices). This is something he doesn't respect at all in three-part composition, but we can see that he still tries to use minor third and major sixths when possible, in the penultimate measure. The rule from two-part species was thus rewritten in order to be appropriate: either use a perfect consonance, a minor third, or a major sixth.
+    In two-part composition rules, Fux said that the last harmonic interval had to be either a minor or a majord third. This is something he doesn't respect at all in three-part composition, but we can see that he still tries to use minor third and major sixths when possible, in the penultimate measure. The rule from two-part species was thus rewritten in order to be appropriate: either use a perfect consonance, a minor third, or a major sixth.
 \end{enumerate}
 
 \begin{enumerate}[wide, label=\bfseries G\arabic*]
@@ -151,7 +151,7 @@ The first species consists of whole notes only. It is the basis of counterpoint 
     \textcite[p.79]{GaPEng}
     \end{quotation}
 
-    This rule does not bring anything new, as there is already a rule stating that two parts cannot blend in unison (\ref{rule:no-unison-appendix}). If no unison is possible, then the octaves will always be preferred over the unison (since the latter is not possible).
+    This rule does not bring anything new, as there is already a rule stating that two parts cannot blend in unison (rule \ref{rule:no-unison-appendix} in appendix). If no unison is possible, then the octaves will always be preferred over the unison (since the latter is not possible).
 
     \item\label{rule:minor-third}  \textit{Last chord cannot include a minor third.}
 
@@ -175,7 +175,7 @@ The following rules obviously don't apply to the \cf, since its melody is alread
     \textcite[p.73]{GaPEng}
     \end{quotation}
 
-    After having said this, Fux complements his explication by saying the counterpoints should be "moving gracefully, stepwise without any skip". This is clearly a preference, and has already been covered when implementing the first species for two voices (see~\ref{rule:smallmelody}). It can thus be ignored in the scope of this thesis.
+    After having said this, Fux complements his explication by saying the counterpoints should be "moving gracefully, stepwise without any skip". This is clearly a preference, and has already been covered when implementing the first species for two voices (see rule~\ref{rule:smallmelody}). It can thus be ignored in the scope of this thesis.
 
     \item\label{rule:variety} \texttt{[PREF]}  \textit{The notes of each part should be as diverse as possible.}
 
@@ -310,7 +310,7 @@ The following rules obviously don't apply to the \cf, since its melody is alread
 \subsubsection{Melodic rules}
 \paragraph{\hspace{.6cm}\ref{rule:steps-prefered}} \texttt{[PREF]} \textit{Steps are preferred to skips.}
 
-As discussed in the previous subsection, there is no constraint to add as it already exists (see~\ref{rule:smallmelody}).
+As discussed in the previous subsection, there is no constraint to add as it already exists (see rule~\ref{rule:smallmelody}).
 
 \paragraph{\hspace{.6cm}\ref{rule:variety}} \texttt{[PREF]}  \textit{The notes of each part should be as diverse as possible.}
 
@@ -351,11 +351,11 @@ As discussed in the previous subsection, there is no constraint to add as it alr
     &\implies \mathcal{C}_{succ\_p\_cons} = 2
     \end{aligned} \end{equation}
 
-    The cost has been set to two according to the cost hierarchy defined in T. Wafflard's thesis (a cost of two is a medium cost), but it is possible for the user to change this cost. The costs are discussed in detail in section~\ref{costs}.
+    The cost has been set to two according to the cost hierarchy defined in T. Wafflard's thesis (a cost of two is a medium cost), but it is possible for the user to change this cost. The costs are discussed in detail in Section~\ref{costs}.
     
     \paragraph{\hspace{.6cm}\ref{rule:start-distant}}   \textit{Each part starts distant from the lowest stratum.}
 
-    This is not a strict rule but an indication to make easier for the composer to have contrary motions. Since this is neither a requirement nor a preference, it can simply be added as a heuristic for the solver. This is discussed in section~\ref{heuristics}, on heuristics.
+    This is not a strict rule but an indication to make easier for the composer to have contrary motions. Since this is neither a requirement nor a preference, it can simply be added as a heuristic for the solver. This is discussed in Section~\ref{heuristics}, on heuristics.
 
 
     \paragraph{\hspace{.6cm}\ref{rule:same-movement}}  \textit{It is prohibited that all parts move in the same direction.}
@@ -591,7 +591,7 @@ All the rules in this section apply when $species(p) =4$. Note that the rules fo
         "The tenor takes the place of the bass - a thing that not only the tenor may do, but also the alto and even the soprano."
         \textcite[p.100]{GaPEng}
     \end{quotation}
-    Fux speaks here about our concept of strata. The tenor can become the lowest stratum, just like the alto and the soprano may do. This is a fundamental concept of the generalization of Fux counterpoint to three voices, and has already been extensively discussed before (see section~\ref{section:parts-and-strata}).
+    Fux speaks here about our concept of strata. The tenor can become the lowest stratum, just like the alto and the soprano may do. This is a fundamental concept of the generalization of Fux counterpoint to three voices, and has already been extensively discussed before (see Section~\ref{section:parts-and-strata}).
 \end{enumerate}
 
 \subsubsection{Harmonic rules}
@@ -680,7 +680,7 @@ Fux introduces no new melodic constraints for the fourth species.
 \subsubsection{Harmonic rules}
 \paragraph{\hspace{.6cm}\ref{rule:prefer-fifths-over-octaves}} \texttt{[PREF]} \textit{Imperfect consonances are preferred over fifth intervals, which in turn are preferred over octaves.}   
 
-    This rule is almost covered by the existing costs (see~\ref{rule:prefer-imp-to-perf-appendix}), as a perfect consonance has a higher cost than an imperfect consonance. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a higher cost to octaves and lower one to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see~\ref{costs}).
+    This rule is almost covered by the existing costs (see rule~\ref{rule:prefer-imp-to-perf-appendix}), as a perfect consonance has a higher cost than an imperfect consonance. But Fux says not only that imperfect consonance should be preferred over perfect ones, he says that fifths should be preferred over octaves. This precision in the rule (fifth is better than octave) could be solved by either putting a higher cost to octaves and lower one to fifths, or to put the cost for fifth before the cost for octaves in the lexicographical array of costs, but this is discussed in the parts about costs (see~\ref{costs}).
 
 
 \subsubsection{Motion rules}
