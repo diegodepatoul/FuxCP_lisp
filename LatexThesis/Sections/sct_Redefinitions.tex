@@ -270,6 +270,7 @@ Some important values the H variable can take: a minor third is 3, a major third
 \end{equation}
 
 \vspace{.5cm}
+\newpage % todo verify that it is still necessary
 \noindent \textbf{M}$_{\text{(brut)}}^{(x)}$(v) \hspace*{.2cm} \texttt{m-intervals-brut}
 
 The variable M represents the melodic intervals of a voice. It can be evaluated either on a part or on a stratum, each of these situations leading to different behaviours.
@@ -350,6 +351,7 @@ The formal definition of the melodic intervals of the lowest stratum is hence as
 \end{minipage}
 
 \vspace{.5cm}
+\newpage % todo verify that it is still necessary
 \noindent \textbf{P}(p) \hspace*{.2cm} \texttt{motions}
 
 The motions array represents the motions\footnote{Reminder: there are three types of motion: direct, when both voices move together, contrary, when one voice moves up and the other moves down, and oblique, when one voice doesn't move and the other does} of a part p with respect to the lowest stratum. Of course, to be able to compute the motions between two voices, we must compare their melodic intervals, hence, we must deal with melodic intervals of a stratum. This is not a problem anymore since we have defined what the melodic intervals of the lowest stratum mean in the previous sub-section.
