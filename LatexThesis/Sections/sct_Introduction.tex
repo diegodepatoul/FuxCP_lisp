@@ -136,7 +136,7 @@ FuxCP is a library for OpenMusic, which means that OpenMusic is the interface fo
 \subsection{GiL and Gecode}
 GiL is an interface between OpenMusic and Gecode, which in turn is an open source toolkit for developing constraint-based systems~\cite{Gecode}, which provides a high-level C++ library for efficiently modelling and solving constraint problems. GiL allows to use the Gecode tool within a Lisp environment, thanks to the Common Foreign Function Interface (CFFI)~\cite{CFFI}.
 
-\subsection{Concrete implementation}
+\subsection{Software integration}
 To put it all together: FuxCP gets its input (the \cf) from the user interface, which is OpenMusic. It then uses GiL to define a constraint programming problem in Gecode.
 
 As for the way the problem is defined, here is a little clarification: first, when the \cfs is received, a whole series of constants and variables are defined: for example, the length of the \cf, the arrays representing the pitches of the counterpoints, ...
