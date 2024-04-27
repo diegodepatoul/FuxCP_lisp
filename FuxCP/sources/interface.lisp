@@ -17,8 +17,8 @@
     ; ---------- Input cantus firmus ----------
     (cf-voice :accessor cf-voice :initarg :cf-voice :initform nil :documentation "")
     ; ---------- Solver parameters ----------
-    (species-param :accessor species-param :initform (list "1st" "1st") :type string :documentation "")
-    (voice-type-param :accessor voice-type-param :initform (list "Really far above" "Above") :type string :documentation "")
+    (species-param :accessor species-param :initform (list "1st" "1st" "1st") :type string :documentation "")
+    (voice-type-param :accessor voice-type-param :initform (list "Really far above" "Above" "Below") :type string :documentation "")
     (min-skips-slider-param :accessor min-skips-slider-param :initform 0 :type integer :documentation "")
     (borrow-mode-param :accessor borrow-mode-param :initform "Major" :type string :documentation "")
     ; ---------- Output & Stop ----------
@@ -555,6 +555,8 @@
 
                 
                 (setf species-integer-list (convert-to-species-integer-list (species-param (om::object editor))))
+                ;; (print species-integer-list)
+                ;; (error "pipou")
                 (setf *voices-types (convert-to-voice-integer-list (voice-type-param (om::object editor))))
                 (setf (current-csp (om::object editor)) (fux-cp species-integer-list))
             )
@@ -715,6 +717,7 @@
 
 ; convert a species to an integer
 (defun convert-to-species-integer-list (param-list)
+    ;; (print param-list)
     (let (
         (species-list '())
         )

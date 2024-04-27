@@ -459,11 +459,11 @@
                 (3 (fux-cp-3rd (second *parts)))
                 (4 (fux-cp-4th (second *parts)))
                 (5 (fux-cp-5th (second *parts)))
-                (otherwise (error "Species ~A not implemented" species))
+                (otherwise (error "Species ~A not implemented" (first species-list)))
             )
         ))
         (2 (fux-cp-3v species-list *parts)) ; 3v dispatcher
-        (otherwise (error "Only two additional voices are implemented up to now. You asked for ~A." (length species)))
+        (otherwise (error "Only two additional voices are implemented up to now. You asked for ~A." (length species-list)))
     )
 )
 
