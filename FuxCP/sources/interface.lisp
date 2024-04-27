@@ -330,14 +330,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 25 80)
+            (om::om-make-point 25 70)
             (om::om-make-point 150 20)
             "First voice range"
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 275 75)
+            (om::om-make-point 275 65)
             (om::om-make-point 220 20)
             "Voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
@@ -349,14 +349,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 25 130)
+            (om::om-make-point 25 110)
             (om::om-make-point 150 20)
             "Second voice species"
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 275 125)
+            (om::om-make-point 275 105)
             (om::om-make-point 220 20)
             "Second voice species"
             :range (list "None" "1st" "2nd" "3rd" "4th" "5th")
@@ -368,14 +368,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 25 180)
+            (om::om-make-point 25 150)
             (om::om-make-point 150 20)
             "Second voice range"
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 275 175)
+            (om::om-make-point 275 145)
             (om::om-make-point 220 20)
             "Second voice range"
             :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
@@ -385,16 +385,57 @@
             )
             ) 
 
+
+
+            (om::om-make-dialog-item
+            'om::om-static-text
+            (om::om-make-point 25 190)
+            (om::om-make-point 150 20)
+            "Third voice species"
+            )
+
+            (om::om-make-dialog-item
+            'om::pop-up-menu
+            (om::om-make-point 275 185)
+            (om::om-make-point 220 20)
+            "Third voice species"
+            :range (list "None" "1st" "2nd" "3rd" "4th" "5th")
+            :value (third (species-param (om::object editor)))
+            :di-action #'(lambda (cost)
+                (setf (third (species-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            )
+            )
+
             (om::om-make-dialog-item
             'om::om-static-text
             (om::om-make-point 25 230)
+            (om::om-make-point 150 20)
+            "Third voice range"
+            )
+
+            (om::om-make-dialog-item
+            'om::pop-up-menu
+            (om::om-make-point 275 225)
+            (om::om-make-point 220 20)
+            "Third voice range"
+            :range (list "Really far above" "Far above" "Above" "Same range" "Below" "Far below" "Really far below")
+            :value (third (voice-type-param (om::object editor)))
+            :di-action #'(lambda (cost)
+                (setf (third (voice-type-param (om::object editor))) (nth (om::om-get-selected-item-index cost) (om::om-get-item-list cost)))
+            )
+            ) 
+
+
+            (om::om-make-dialog-item
+            'om::om-static-text
+            (om::om-make-point 25 270)
             (om::om-make-point 150 20)
             "Borrowing mode"
             )
 
             (om::om-make-dialog-item
             'om::pop-up-menu
-            (om::om-make-point 275 225)
+            (om::om-make-point 275 265)
             (om::om-make-point 220 20)
             "Borrowing mode"
             :range (list "None" "Major" "Minor")
@@ -406,14 +447,14 @@
 
             (om::om-make-dialog-item
             'om::om-static-text
-            (om::om-make-point 25 280)
+            (om::om-make-point 25 310)
             (om::om-make-point 150 20)
             "Minimum % of skips"
             )
 
             (om::om-make-dialog-item
             'om::om-slider
-            (om::om-make-point 275 275)
+            (om::om-make-point 275 305)
             (om::om-make-point 220 20)
             "Minimum % of skips"
             :range '(0 100)
